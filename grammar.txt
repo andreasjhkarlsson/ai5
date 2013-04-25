@@ -21,12 +21,12 @@
 <declaration> = ["local"|"dim"|"global"],<small statement>, <assignment>
 <assignment> = <assignment operator>, <expression>
 <list indexing> = '[',<expression>,']'
-<function call> = '(',[<expression>,[",",<expression>]]')'
+<call> = '(',[<expression>,[",",<expression>]]')'
 <expression> = <unary operator>,<factor>,[<binary operator>, <expresion>]
 <unary operator> = "-"|"not"
 <binary operator> = "and"|"or"|"<="|">="|"<>"|"<"|">"|"=="|"="|"&"|"+"|"-"|"*"|"/"|"^"
-<factor> = (<factor terminal>|'(',<expression>,')'|<inline list>){<call>|<list indexing>|(<property>[<call>])}
-<factor terminal> = "true"|"false"|<macro>|<identifier>|<integer>|<string>|<floating>
+<factor> = (<terminal>|'(',<expression>,')'|<inline list>){<call>|<list indexing>|<property>}
+<terminal> = "true"|"false"|<macro>|<identifier>|<integer>|<string>|<floating>
 <assignment operator> = "="|"+="|"-="|"/="|"*="|"&="
 <property> = ".",<identifier>
 <inline list> = "[",[<expression>,{",",<expression>}],"]"
