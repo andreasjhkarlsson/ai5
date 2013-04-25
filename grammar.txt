@@ -1,7 +1,7 @@
 
 
-<program> = [{<include>|<directive>}], block
-<block> = [{<statement>,("newline"|"eof")}]
+<program> = [{<include>|<directive>}], <block>, "eof"
+<block> = [{<statement>,("newline")}]
 <if> = "if", <expression>, "then", ("newline", [<block>], [{<elseif>}], [<else>], "endif")|<statement>
 <elseif> = "elseif", <expression>, "then", "newline",[<block>]
 <else> = "else", "newline", <block>
@@ -16,9 +16,9 @@
 <selectcase> = "case",<expression>,"newline",<block>
 <function> = "func",<identifier>,<argument list>,"newline",[<block>], "endfunc", "newline"
 <argument list> = "(",[<identifier>,[",", <identifier>]], ")"
-<statement> = <if>|<function>|<declaration>|(<small statement>, [<assignment>|<call>,[<expression>])|<expression>])|<expression>
+<statement> = <if>|<function>|<declaration>|(<small statement>, [<assignment>|<call>], [<binary operator>,<expression>])|<expression>
 <small statement> = <identifier>,[{<list indexing>|<property>}]
-<declaration> = ["local"|"dim"|"global"],<small statement>, <assignment>
+<declaration> = ["local"|"dim"|"global"],<small statement>, [<assignment>]
 <assignment> = <assignment operator>, <expression>
 <list indexing> = '[',<expression>,']'
 <call> = '(',[<expression>,[",",<expression>]]')'
