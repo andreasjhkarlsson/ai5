@@ -42,22 +42,22 @@ class TestLexer(unittest.TestCase):
         self.assertEqual([x.value for x in tokens], ["hej","bl234'zcxnm","lol"])
     def test_boolean_before_ientifier(self):
         tokens = lex_string("false $false")[:-1]
-        self.assertEqual([(x.type,x.value) for x in tokens],[(Token.BOOLEAN,False),(Token.IDENTIFIER,"FALSE")])
+        self.assertEqual([(x.type,x.value) for x in tokens],[(Token.BOOLEAN,False),(Token.IDENTIFIER,"false")])
     def test_lots_of_tokens(self):
         code = "#include-once func hej($hej,$foo) for $i in bla next\n0xfF/12*4+=123\n123.56+'hejsan'\n123+567 ; FUNC ENDFUNC\nabc[.235] hej.foo"
         tokens = lex_string(code)[:-1]
-        self.assertEqual([(x.type,x.value) for x in tokens],[(Token.DIRECTIVE,"INCLUDE-ONCE"),
+        self.assertEqual([(x.type,x.value) for x in tokens],[(Token.DIRECTIVE,"include-once"),
                                                              (Token.KEYWORD,KeywordToken.FUNC),
-                                                             (Token.IDENTIFIER,"HEJ"),
+                                                             (Token.IDENTIFIER,"hej"),
                                                              (Token.LEFT_PAREN,"("),
-                                                             (Token.IDENTIFIER,"HEJ"),
+                                                             (Token.IDENTIFIER,"hej"),
                                                              (Token.COMMA,","),
-                                                             (Token.IDENTIFIER,"FOO"),
+                                                             (Token.IDENTIFIER,"foo"),
                                                              (Token.RIGHT_PAREN,")"),
                                                              (Token.KEYWORD,KeywordToken.FOR),
-                                                             (Token.IDENTIFIER,"I"),
+                                                             (Token.IDENTIFIER,"i"),
                                                              (Token.KEYWORD,KeywordToken.IN),
-                                                             (Token.IDENTIFIER,"BLA"),
+                                                             (Token.IDENTIFIER,"bla"),
                                                              (Token.KEYWORD,KeywordToken.NEXT),
                                                              (Token.NEWLINE,"\n"),
                                                              (Token.INTEGER,255),
@@ -76,13 +76,13 @@ class TestLexer(unittest.TestCase):
                                                              (Token.OPERATOR,"+"),
                                                              (Token.INTEGER,567),
                                                              (Token.NEWLINE,"\n"),
-                                                             (Token.IDENTIFIER,"ABC"),
+                                                             (Token.IDENTIFIER,"abc"),
                                                              (Token.LEFT_BRACKET,"["),
                                                              (Token.FLOATING,.235),
                                                              (Token.RIGHT_BRACKET,"]"),
-                                                             (Token.IDENTIFIER,"HEJ"),
+                                                             (Token.IDENTIFIER,"hej"),
                                                              (Token.DOT,"."),
-                                                             (Token.IDENTIFIER,"FOO"),])
+                                                             (Token.IDENTIFIER,"foo"),])
         
 class TestStringToken(unittest.TestCase):
     def test_double_quote_match(self):
@@ -113,6 +113,9 @@ class TestOperatorToken(unittest.TestCase):
     def test_many(self):
         tokens = lex_string("+= - -= and or ^ *= +- < > <> <= >= < < /=")[:-1]
         self.assertEqual([x.value for x in tokens], ["+=","-","-=","and","or","^","*=","+","-","<",">","<>","<=",">=","<","<","/="])
+    def test_prefix(self):
+        tokens = lex_string("== = == = =")[:-1]
+        self.assertEqual([x.value for x in tokens], ["==","=","==","=","="])
     
             
 class TestNewlineToken(unittest.TestCase):
@@ -129,10 +132,10 @@ class TestNewlineToken(unittest.TestCase):
 class TestIdentifierToken(unittest.TestCase):
     def test_single_char(self):
         res = IdentifierToken.match("a")
-        self.assertEqual(res[0].value, "A")
+        self.assertEqual(res[0].value, "a")
     def test_pound_and_single_char(self):
         res = IdentifierToken.match("$a")
-        self.assertEqual(res[0].value, "A")
+        self.assertEqual(res[0].value, "a")
     def test_pound_and_digit(self):
         res = IdentifierToken.match("$1")
         self.assertEqual(res[0].value, "1")
@@ -141,10 +144,10 @@ class TestIdentifierToken(unittest.TestCase):
         self.assertFalse(res)
     def test_multiple_char(self):
         res = IdentifierToken.match("abc123")
-        self.assertEqual(res[0].value, "ABC123")
+        self.assertEqual(res[0].value, "abc123")
     def test_pund_multiple_char(self):
         res = IdentifierToken.match("$abc123")
-        self.assertEqual(res[0].value, "ABC123")
+        self.assertEqual(res[0].value, "abc123")
         
 class TestMacroToken(unittest.TestCase):
     def test_match(self):
@@ -157,10 +160,10 @@ class TestMacroToken(unittest.TestCase):
 class TestDirectiveToken(unittest.TestCase):
     def test_simple_match(self):
         res = DirectiveToken.match("#include 123")
-        self.assertEqual(res[0].value,"INCLUDE")
+        self.assertEqual(res[0].value,"include")
     def test_with_hyphen_match(self):
         res = DirectiveToken.match("#include-once")
-        self.assertEqual(res[0].value,"INCLUDE-ONCE")
+        self.assertEqual(res[0].value,"include-once")
 
 class TestCommentToken(unittest.TestCase):
     def test_single_line_match(self):
@@ -214,7 +217,7 @@ class TestDotToken(unittest.TestCase):
 class TestKeywordToken(unittest.TestCase):
     def test_prefix_match(self):
         tokens = lex_string("ELSEIF ELSE IF EXITLOOP EXIT")[:-1]
-        self.assertEqual([x.value for x in tokens],["ELSEIF","ELSE","IF","EXITLOOP","EXIT"])
+        self.assertEqual([x.value for x in tokens],["elseif","else","if","exitloop","exit"])
         
 class TestIncludeFileToken(unittest.TestCase):
     def test_angel_match(self):

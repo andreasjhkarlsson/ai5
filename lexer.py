@@ -61,7 +61,7 @@ class Token(object):
     INCLUDE_FILE = "include file"
     
     def __repr__(self):
-        return "%s(%r)" % (self.__class__, self.__dict__)
+        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
         
     
     def __init__(self,value=None):
@@ -116,7 +116,7 @@ class MacroToken(Token):
     type = Token.MACRO
     @classmethod
     def value_transform(cls,value):
-        return value[1:]
+        return value[1:].lower()
     
 class CommentToken(Token):
     expr = re.compile(r''';.*|(#comments-start|#cs)(.|\s)*(#comments-end|#ce)''',re.IGNORECASE)
@@ -127,7 +127,7 @@ class DirectiveToken(Token):
     type = Token.DIRECTIVE
     @classmethod
     def value_transform(cls,value):
-        return value[1:].upper()
+        return value[1:].lower()
     
    
 class IdentifierToken(Token):
@@ -136,8 +136,8 @@ class IdentifierToken(Token):
     @classmethod
     def value_transform(cls,value):
         if value[0] == "$":
-            return value[1:].upper()
-        return value.upper()
+            return value[1:].lower()
+        return value.lower()
 
 class NewlineToken(Token):
     expr = re.compile(r"""((\n+)|((\r\n)+))""")
@@ -155,7 +155,7 @@ class WhitespaceToken(Token):
     type = Token.WHITESPACE
     
 class OperatorToken(Token):
-    expr = re.compile(r""">\=|<\=|<>|<|>|\-\=|\*\=|\/\=|&\=|\+\=|\+|\-|\*|\/|&|\=\=|\=|\^|AND|OR|NOT""",re.IGNORECASE)
+    expr = re.compile(r""">\=|<\=|<>|<|>|\-\=|\*|\/\=|&\=|\+\=|\+|\-|\*|\/|&|\=\=|\=|\^|AND|OR|NOT""",re.IGNORECASE)
     type = Token.OPERATOR
     
     
@@ -189,43 +189,43 @@ class DotToken(Token):
     type = Token.DOT
     
 class KeywordToken(Token):
-    CONTINUECASE = "CONTINUECASE"
-    CONTINUELOOP = "CONTINUELOOP"
-    DEFAULT = "DEFAULT"
-    DIM = "DIM"
-    GLOBAL = "GLOBAL"
-    LOCAL = "LOCAL"
-    CONST = "CONST"
-    DO = "DO"
-    UNTIL = "UNTIL"
-    ENUM = "ENUM"
-    EXIT = "EXIT"
-    EXITLOOP = "EXITLOOP"
-    FOR = "FOR"
-    TO = "TO"
-    STEP = "STEP"
-    NEXT = "NEXT"
-    IN = "IN"
-    FUNC = "FUNC"
-    RETURN = "RETURN"
-    ENDFUNC = "ENDFUNC"
-    IF = "IF"
-    THEN = "THEN"
-    ELSE = "ELSE"
-    ELSEIF = "ELSEIF"
-    ENDIF = "ENDIF"
-    REDIM = "REDIM"
-    SELECT = "SELECT"
-    CASE = "CASE"
-    ENDSELECT = "ENDSELECT"
-    STATIC = "STATIC"
-    SWITCH = "SWITCH"
-    ENDSWITCH = "ENDSWITCH"
-    WHILE = "WHILE"
-    WEND = "WEND"
-    WITH = "WITH"
-    ENDWITH = "ENDWITH"
-    BYREF = "BYREF"
+    CONTINUECASE = "CONTINUECASE".lower()
+    CONTINUELOOP = "CONTINUELOOP".lower()
+    DEFAULT = "DEFAULT".lower()
+    DIM = "DIM".lower()
+    GLOBAL = "GLOBAL".lower()
+    LOCAL = "LOCAL".lower()
+    CONST = "CONST".lower()
+    DO = "DO".lower()
+    UNTIL = "UNTIL".lower()
+    ENUM = "ENUM".lower()
+    EXIT = "EXIT".lower()
+    EXITLOOP = "EXITLOOP".lower()
+    FOR = "FOR".lower()
+    TO = "TO".lower()
+    STEP = "STEP".lower()
+    NEXT = "NEXT".lower()
+    IN = "IN".lower()
+    FUNC = "FUNC".lower()
+    RETURN = "RETURN".lower()
+    ENDFUNC = "ENDFUNC".lower()
+    IF = "IF".lower().lower()
+    THEN = "THEN".lower()
+    ELSE = "ELSE".lower()
+    ELSEIF = "ELSEIF".lower()
+    ENDIF = "ENDIF".lower()
+    REDIM = "REDIM".lower()
+    SELECT = "SELECT".lower()
+    CASE = "CASE".lower()
+    ENDSELECT = "ENDSELECT".lower()
+    STATIC = "STATIC".lower()
+    SWITCH = "SWITCH".lower()
+    ENDSWITCH = "ENDSWITCH".lower()
+    WHILE = "WHILE".lower()
+    WEND = "WEND".lower()
+    WITH = "WITH".lower()
+    ENDWITH = "ENDWITH".lower()
+    BYREF = "BYREF".lower()
     regex = ""
     keywords = [CONTINUECASE,CONTINUELOOP,DEFAULT,DIM,GLOBAL,LOCAL,CONST,
                     DO,UNTIL,ENUM,EXIT,EXITLOOP,FOR,TO,STEP,NEXT,IN,FUNC,
@@ -245,6 +245,6 @@ class KeywordToken(Token):
 
     @classmethod
     def value_transform(cls,value):
-        return value.upper()
+        return value.lower()
 
 
