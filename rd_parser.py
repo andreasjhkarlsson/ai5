@@ -81,9 +81,7 @@ class Declaration(Rule):
                 parser.accept(Token.KEYWORD,KeywordToken.GLOBAL)):
             return None
         nodes = [parser.current]
-        nodes.append(parser.expectRule(SmallStatement))
-        if parser.acceptRule(Assignment):  
-            nodes.append(parser.matched_rule)
+        nodes.append(parser.expectRule(LineStatement))
         return Declaration(nodes)
     
 
@@ -98,59 +96,67 @@ class Assignment(Rule):
                 return Assignment(nodes)
         return None
  
-class SmallStatement(Rule):
+class LineStatement(Rule):
     @staticmethod
     def match(parser):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = [parser.current]
-        while parser.acceptAnyRule([ListIndexing,Property]):
+        while parser.acceptRule(Qualifier):
             nodes.append(parser.matched_rule)
-        return SmallStatement(nodes)
+        if parser.acceptRule(Assignment):
+            nodes.append(parser.matched_rule)
+        return LineStatement(nodes)
 
 class Statement(Rule):
     @staticmethod
     def match(parser):
-        if parser.acceptAnyRule([Declaration,Function,While,If]):
+        if parser.acceptAnyRule([Declaration,Function,While,If,Switch,LineStatement]):
             return Statement([parser.matched_rule])
-        if parser.acceptRule(SmallStatement):
-            nodes = [parser.matched_rule]
-            if parser.acceptRule(Assignment):
-                nodes.append(parser.matched_rule)
-                return Statement(nodes)
-            if parser.acceptRule(Call):
-                nodes.append(parser.matched_rule)
-            if parser.acceptRule(BinaryOperator):
-                nodes.append(parser.matched_rule)
-                nodes.append(parser.expectRule(Expression))
-            return Statement(nodes)
-        if parser.acceptRule(Expression):
-            return Statement([parser.matched_rule])
+        #if parser.acceptRule(Expression):
+        #    return Statement([parser.matched_rule])
         
         return None
 
+class Qualifier(Rule):
+    @staticmethod
+    def match(parser):
+        if parser.acceptAnyRule([Property,Call,ListIndexing]):
+            return Qualifier([parser.matched_rule])
+        return None    
             
+class ArgumentList(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.LEFT_PAREN):
+            return None
+        
+        nodes = []
+        
+        
+        if parser.accept(Token.IDENTIFIER):
+            nodes.append(parser.current)
+            while parser.accept(Token.COMMA):
+                nodes.append(parser.expect(Token.IDENTIFIER))      
+        
+        parser.expect(Token.RIGHT_PAREN) 
+        return ArgumentList(nodes)   
 
 class Function(Rule):
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.FUNC):
-            func_name = parser.expect(Token.IDENTIFIER)
-            parser.expect(Token.LEFT_PAREN)
-            arguments = []
-            body = None
-            while parser.accept(Token.IDENTIFIER):
-                arguments.append(parser.current)
-                if not parser.accept(Token.COMMA):
-                    break   
-            parser.expect(Token.RIGHT_PAREN)
+            nodes = []
+            nodes.append(parser.expect(Token.IDENTIFIER))
+            nodes.append(parser.expectRule(ArgumentList))
             parser.expectNewline() 
             
-            body = parser.acceptRule(Block)
+            if parser.acceptRule(Block):
+                nodes.append(parser.matched_rule)
             
             parser.expect(Token.KEYWORD,KeywordToken.ENDFUNC)
             
-            return Function([func_name,arguments,body])
+            return Function(nodes)
         else:
             return None
         
@@ -181,13 +187,58 @@ class While(Rule):
             return None
         nodes = []
         nodes.append(parser.expectRule(Expression))
+        parser.expect(Token.NEWLINE)
         if parser.acceptRule(Block):
             nodes.append(parser.matched_rule)
         parser.expect(Token.KEYWORD,KeywordToken.WEND)
         return While(nodes)
-#<if> = "if", <expression>, "then", ("newline", [<block>], [{<elseif>}], [<else>], "endif")|<statement>
-#<elseif> = "elseif", <expression>, "then", "newline",[<block>]
-#<else> = "else", "newline", <block>
+
+
+
+
+class Switch(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.SWITCH):
+            return None
+        nodes = []
+        nodes.append(parser.expectRule(Expression))
+        parser.expect(Token.NEWLINE)
+        while parser.acceptRule(SwitchCase):
+            nodes.append(parser.matched_rule)
+        parser.expect(Token.KEYWORD,KeywordToken.ENDSWITCH)
+        return Switch(nodes)
+    
+    
+class SwitchCondition(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.acceptRule(Expression):
+            return None
+        nodes = [parser.matched_rule]
+        if parser.accept(Token.KEYWORD,KeywordToken.TO):
+            nodes.append(parser.expectRule(Expression))
+        return SwitchCondition(nodes)
+    
+class SwitchCase(Rule):    
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.CASE):
+            return None
+        
+        nodes = [parser.expectRule(SwitchCondition)]
+        while parser.accept(Token.COMMA):
+            nodes.append(parser.expectRule(SwitchCondition))
+        
+        parser.expect(Token.NEWLINE)
+        
+        nodes.append(parser.expectRule(Block))
+        
+        return SwitchCase(nodes)
+            
+        
+        
+        
 class If(Rule):
     @staticmethod
     def match(parser):
@@ -287,7 +338,7 @@ class Factor(Rule):
             parser.expect(Token.RIGHT_PAREN)
         else:
             return None
-        while parser.acceptAnyRule([Call,ListIndexing,Property]):
+        while parser.acceptRule(Qualifier):
             nodes.append(parser.matched_rule)
         return Factor(nodes)
 
@@ -378,26 +429,27 @@ class Program(Rule):
             nodes.append(parser.matched_rule)
         parser.expect(Token.EOF)
         return Program(nodes)
+    
+    
+def print_ast(node,depth=0):
+    print("  "*depth,node.__class__.__name__,end="")
+    if "nodes" in node.__dict__:
+        print("")
+        for child in node.nodes:
+            print_ast(child,depth+1)
+    else:
+        print(" "+str(node.value))
         
    
     
 test_code = """
-if True or False then
-123
-if "derp" then
-"herp"
-elseif "hihi" then
-"kebab"
-endif
-else
-321
-endif
+a = (1+(2+3))
 """
 parser = Parser(lexer.lex_string(test_code))
 
 
 p = parser.acceptRule(Program)
-print(p)
+print_ast(p)
 
     
     

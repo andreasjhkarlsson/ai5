@@ -11,27 +11,26 @@
 <forto> = "=", <expression> "to", <expression>, ["step", <expression>]
 <dountil> = "do", "newline",[<block>],"until", <expression>
 <switch> = "switch", <expression>,"newline",{<switchcase>}, "endswitch"
-<switchchase> = "case",<expression>,["to",<expression>],{",",<expression>,["to",<expression>]}
+<switchchase> = "case",<switchcondition>,{",",<switchcondition>},"newline",[<block>]
+<switchcondition> = <expression>,["to",<expression>]
 <select> = "select", "newline", {<selectcase>}, "endselect"
 <selectcase> = "case",<expression>,"newline",<block>
 <function> = "func",<identifier>,<argument list>,"newline",[<block>], "endfunc", "newline"
 <argument list> = "(",[<identifier>,[",", <identifier>]], ")"
-<statement> = <if>|<function>|<declaration>|(<small statement>, [<assignment>|<call>], [<binary operator>,<expression>])|<expression>
-<small statement> = <identifier>,[{<list indexing>|<property>}]
-<declaration> = ["local"|"dim"|"global"],<small statement>, [<assignment>]
+<statement> = <if>|<function>|<declaration>|<line statement>
+<line statement> = <identifier>,{<qualifier>}, [<assignment>]
+<declaration> = ["local"|"dim"|"global"],<line statement>
 <assignment> = <assignment operator>, <expression>
 <list indexing> = '[',<expression>,']'
 <call> = '(',[<expression>,[",",<expression>]]')'
 <expression> = <unary operator>,<factor>,[<binary operator>, <expresion>]
 <unary operator> = "-"|"not"
 <binary operator> = "and"|"or"|"<="|">="|"<>"|"<"|">"|"=="|"="|"&"|"+"|"-"|"*"|"/"|"^"
-<factor> = (<terminal>|'(',<expression>,')'|<inline list>){<call>|<list indexing>|<property>}
+<factor> = (<terminal>|'(',<expression>,')'|<inline list>){<qualifier>}
 <terminal> = "true"|"false"|<macro>|<identifier>|<integer>|<string>|<floating>
 <assignment operator> = "="|"+="|"-="|"/="|"*="|"&="
 <property> = ".",<identifier>
 <inline list> = "[",[<expression>,{",",<expression>}],"]"
-
-
-
+<qualifier> = <property>|<call>|<list indexing>
 
 
