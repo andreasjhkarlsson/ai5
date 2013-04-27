@@ -36,6 +36,7 @@ class Parser:
             self.back()
             return None
         return self.current
+    # Consumes and returns expected token. Throws if not equal.
     def expect(self,token_type,value=None):
         self.next()
         if self.current.type != token_type:
@@ -43,23 +44,26 @@ class Parser:
         if value != None and self.current.value != value:
             raise Exception("Expected: "+token_type+" with value: "+str(value))
         return self.current
+    # Match a rule and return None if it doesn't match.
     def acceptRule(self,rule_class):
         self.matched_rule = rule_class.match(self)
         return self.matched_rule
-    
+    # Try matching any of the supplied rules.
     def acceptAnyRule(self,rules):
         for rule in rules:
             if self.acceptRule(rule):
                 return self.matched_rule
         return None
-    
+    # Expect that the next token(s) are matched by rule.
     def expectRule(self,rule_class):
         self.matched_rule = rule_class.match(self)
         if not self.matched_rule:
             raise Exception("Expected "+rule_class.__name__)
         return self.matched_rule
+    # Expect token of newline type.
     def expectNewline(self):
         self.expect(Token.NEWLINE)
+    # Check if next token is EOF without consuming token.
     def isNextEOF(self):
         self.next()
         result = self.current.type == Token.EOF
@@ -331,6 +335,13 @@ class Factor(Rule):
     @staticmethod
     def match(parser):
         nodes = []
+        
+        
+        if parser.acceptRule(UnaryOperator):
+            nodes.append(parser.matched_rule)
+            
+        
+        
         if parser.acceptAnyRule([Terminal,InlineList]):
             nodes.append(parser.matched_rule)
         elif parser.accept(Token.LEFT_PAREN):
@@ -406,16 +417,16 @@ class Expression(Rule):
     @staticmethod
     def match(parser):
         nodes = []
-        if parser.acceptRule(UnaryOperator):
-            nodes.append(parser.matched_rule)
-            nodes.append(parser.expectRule(Factor))
-        elif parser.acceptRule(Factor):
+        
+        if parser.acceptRule(Factor):
             nodes.append(parser.matched_rule)
         else:
             return None
-        if parser.acceptRule(BinaryOperator):
+
+        while parser.acceptRule(BinaryOperator):
             nodes.append(parser.matched_rule)
-            nodes.append(parser.expectRule(Expression))
+            nodes.append(parser.expectRule(Factor))            
+
         return Expression(nodes)
             
 
@@ -441,9 +452,9 @@ def print_ast(node,depth=0):
         print(" "+str(node.value))
         
    
-    
+
 test_code = """
-a = (1+(2+3))
+if 2 * (1+3) then derp.herp()
 """
 parser = Parser(lexer.lex_string(test_code))
 
