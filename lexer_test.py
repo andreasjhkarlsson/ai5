@@ -116,6 +116,7 @@ class TestOperatorToken(unittest.TestCase):
     def test_prefix(self):
         tokens = lex_string("== = == = =")[:-1]
         self.assertEqual([x.value for x in tokens], ["==","=","==","=","="])
+        
     
             
 class TestNewlineToken(unittest.TestCase):

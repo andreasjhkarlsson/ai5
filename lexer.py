@@ -16,7 +16,17 @@ def lex_string(string):
             if result:
                 new_token = result[0]
                 offset += result[1]
-                if new_token.type != Token.WHITESPACE and new_token.type != Token.COMMENT:
+                
+                do_not_append = False
+                if new_token.type == Token.NEWLINE:
+                    if len(tokens) > 2:
+                        if tokens[-1].type == Token.IDENTIFIER and tokens[-1].value == "_":
+                            tokens = tokens[:-1]
+                            do_not_append = True
+                                
+                
+                
+                if new_token.type != Token.WHITESPACE and new_token.type != Token.COMMENT and not do_not_append:
                     tokens.append(new_token)
                 break
         else:

@@ -192,6 +192,18 @@ class Assignment(Rule):
                 return Assignment(nodes)
         return None
  
+ 
+class ReDim(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.REDIM):
+            return None
+        nodes = [parser.expectRule(Terminal)]
+        while parser.acceptAnyRule([Property,ListIndexing]):
+            nodes.append(parser.matched_rule)
+        return ReDim(nodes)
+     
+ 
 class LineStatement(Rule):
     @staticmethod
     def match(parser):
@@ -207,12 +219,27 @@ class LineStatement(Rule):
 class Statement(Rule):
     @staticmethod
     def match(parser):
-        if parser.acceptAnyRule([Enum,Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
+        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
             return Statement([parser.matched_rule])
         #if parser.acceptRule(Expression):
         #    return Statement([parser.matched_rule])
         
         return None
+    
+    
+class With(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.WITH):
+            return None
+        nodes = [parser.expectRule(Expression)]
+        parser.expect(Token.NEWLINE)
+        while parser.accept(Token.DOT):
+            nodes.append(parser.expectRule(LineStatement))
+            parser.expect(Token.NEWLINE)
+        parser.expect(Token.KEYWORD,KeywordToken.ENDWITH)
+        return With(nodes)
+            
 
 class Return(Rule):
     @staticmethod
@@ -680,12 +707,6 @@ def print_ast(node,depth=0):
 
 
 test_code = """
-global a = 10
-global enum $a=10, $b
-enum step *2 $a
-
-
-
 """
 #test_code = open("test.au3").read()
 tokens = lexer.lex_string(test_code)
