@@ -115,7 +115,7 @@ class MacroToken(Token):
         return value[1:].lower()
     
 class CommentToken(Token):
-    expr = re.compile(r''';.*|(#comments-start|#cs)(.|\s)*(#comments-end|#ce)''',re.IGNORECASE)
+    expr = re.compile(r''';.*|(#comments-start|#cs)(.|\s)*?(#comments-end|#ce)''',re.IGNORECASE)
     type = Token.COMMENT
 
 class DirectiveToken(Token):

@@ -18,9 +18,9 @@
 <function> = "func",<identifier>,<argument list>,"newline",[<block>], "endfunc", "newline"
 <argument list> = "(",<argument>,{",",<argument>} ")"
 <argument> = [["byref"], <identifier>, ["=",<terminal>]]
-<statement> = <if>|<return>|<exit>|<continueloop>|<exitloop>|<while>|<for>|<switch>|<select>|<function>|<declaration>|<line statement>
+<statement> = <if>|<enum>|<return>|<exit>|<continueloop>|<exitloop>|<while>|<for>|<switch>|<select>|<function>|<declaration>|<line statement>
 <line statement> = <identifier>,{<qualifier>}, [<assignment>]
-<declaration> = ("local"|"dim"|"global"),["const"],<line statement>,{",",<line statement>}
+<declaration> = ("local"|"dim"|"global"),(<enum>|(["const"],<line statement>,{",",<line statement>})
 <assignment> = <assignment operator>, <expression>
 <list indexing> = '[',<expression>,']'
 <call> = '(',[<expression>,[",",<expression>]]')'
@@ -37,3 +37,7 @@
 <exitloop> = "exitloop", [<integer>]
 <continueloop> = "continueloop", [<integer>]
 <return> = "return", [<expression>]
+<with> = "with", <expression>, "newline", {".", <line statement>, "newline"}, "endwith"
+<redim> = "redim",<terminal>,[{<property>|<list indexing>}]
+<enum> = "enum", ["step", ["+"|"-"|"*"], <integer>], <enum constant>{",",<enum constant>}
+<enum constant> = <identifier>,[<assignment>]

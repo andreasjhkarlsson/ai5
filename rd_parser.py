@@ -119,6 +119,10 @@ class Declaration(Rule):
                 parser.accept(Token.KEYWORD,KeywordToken.GLOBAL)):
             return None
         nodes = [parser.current]
+        if parser.acceptRule(Enum):
+            nodes.append(parser.matched_rule)
+            return Declaration(nodes)
+        
         if parser.accept(Token.KEYWORD,KeywordToken.CONST):
             nodes.append(parser.current)
         
@@ -129,7 +133,53 @@ class Declaration(Rule):
             nodes.append(parser.expectRule(LineStatement))
         
         return Declaration(nodes)
-    
+
+
+class Enum(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.ENUM):
+            return None
+        nodes = []
+        if parser.acceptRule(EnumStep):
+            nodes.append(parser.matched_rule)
+        nodes.append(parser.expectRule(EnumList))
+        return Enum(nodes)
+
+class EnumList(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.acceptRule(EnumConstant):
+            return None
+        nodes = [parser.matched_rule]
+        while parser.accept(Token.COMMA):
+            nodes.append(parser.expectRule(EnumConstant))
+        return EnumList(nodes)
+
+
+class EnumConstant(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.IDENTIFIER):
+            return None
+        nodes = [parser.current]
+        if parser.acceptRule(Assignment):
+            nodes.append(parser.matched_rule)
+        return EnumConstant(nodes)
+
+        
+        
+class EnumStep(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.STEP):
+            return None
+        nodes = []
+        if parser.accept(Token.OPERATOR,OperatorToken.ADD) or parser.accept(Token.OPERATOR,OperatorToken.SUBTRACT) or parser.accept(Token.OPERATOR,OperatorToken.MULTIPLY):
+            nodes.append(parser.current)
+        nodes.append(parser.expect(Token.INTEGER))
+        return EnumStep(nodes)
+            
 
 class Assignment(Rule):
     @staticmethod
@@ -157,7 +207,7 @@ class LineStatement(Rule):
 class Statement(Rule):
     @staticmethod
     def match(parser):
-        if parser.acceptAnyRule([Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
+        if parser.acceptAnyRule([Enum,Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
             return Statement([parser.matched_rule])
         #if parser.acceptRule(Expression):
         #    return Statement([parser.matched_rule])
@@ -236,10 +286,9 @@ class ArgumentList(Rule):
     def match(parser):
         if not parser.accept(Token.LEFT_PAREN):
             return None
-        
+    
         nodes = []
         
-    
         if parser.acceptRule(Argument):
             nodes.append(parser.current)
             while parser.accept(Token.COMMA):
@@ -378,8 +427,7 @@ class If(Rule):
                 nodes.append(parser.matched_rule)
             parser.expect(Token.KEYWORD,KeywordToken.ENDIF)
         else:
-            # TODO: Only allow single line statement
-            nodes.append(parser.expectRule(Statement))    
+            nodes.append(parser.expectRule(LineStatement))    
         return If(nodes)
 
 class ElseIf(Rule):
@@ -620,7 +668,7 @@ class Program(Rule):
     
     
 def print_ast(node,depth=0):
-    print("  "*depth,node.__class__.__name__,end="")
+    print(" "*depth,node.__class__.__name__,end="")
     if "nodes" in node.__dict__:
         print("")
         for child in node.nodes:
@@ -632,10 +680,14 @@ def print_ast(node,depth=0):
 
 
 test_code = """
-func abc(byref a,byref b=10)
-endfunc
+global a = 10
+global enum $a=10, $b
+enum step *2 $a
+
+
+
 """
-test_code = open("test.au3").read()
+#test_code = open("test.au3").read()
 tokens = lexer.lex_string(test_code)
 parser = Parser(tokens)
 
