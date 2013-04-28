@@ -1,8 +1,12 @@
 from collections import deque
 import lexer
-from lexer import Token, KeywordToken
+from lexer import Token, KeywordToken, OperatorToken
 
 class Parser:
+    
+    def generate_parse_error(self,msg):
+        raise Exception(msg)
+    
     def __init__(self,tokens):
         self.tokens = deque(tokens)
         self.current = None
@@ -14,6 +18,10 @@ class Parser:
     def back(self):
         self.tokens.appendleft(self.current)
         self.current = self.discarded.pop()
+    def skip_to_newline(self):
+        while self.current.type != Token.NEWLINE and self.current.type != Token.EOF:
+            self.next()
+        self.back()
         
     def accept_multiple_tokens(self,tokens):
         matched = []
@@ -40,9 +48,9 @@ class Parser:
     def expect(self,token_type,value=None):
         self.next()
         if self.current.type != token_type:
-            raise Exception("Expected "+token_type+" but found "+self.current.type)
+            self.generate_parse_error("Expected "+token_type+" but found "+self.current.type+" with value "+str(self.current.value))
         if value != None and self.current.value != value:
-            raise Exception("Expected: "+token_type+" with value: "+str(value))
+            self.generate_parse_error("Expected: "+token_type+" with value: "+str(value))
         return self.current
     # Match a rule and return None if it doesn't match.
     def acceptRule(self,rule_class):
@@ -58,7 +66,7 @@ class Parser:
     def expectRule(self,rule_class):
         self.matched_rule = rule_class.match(self)
         if not self.matched_rule:
-            raise Exception("Expected "+rule_class.__name__)
+            self.generate_parse_error("Expected "+rule_class.__name__+" but found "+str(self.current))
         return self.matched_rule
     # Expect token of newline type.
     def expectNewline(self):
@@ -77,6 +85,32 @@ class Rule:
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.nodes)
     
+class Exit(Rule):
+    @staticmethod
+    def match(parser):
+        if parser.accept(Token.KEYWORD,KeywordToken.EXIT):
+            return Exit([parser.current])
+        return None
+class ExitLoop(Rule):
+    @staticmethod
+    def match(parser):
+        if parser.accept(Token.KEYWORD,KeywordToken.EXITLOOP):
+            nodes = [parser.current]
+            if parser.accept(Token.INTEGER):
+                nodes.append(parser.current)
+            return ExitLoop(nodes)
+        return None
+    
+class ContinueLoop(Rule):
+    @staticmethod
+    def match(parser):
+        if parser.accept(Token.KEYWORD,KeywordToken.CONTINUELOOP):
+            nodes = [parser.current]
+            if parser.accept(Token.INTEGER):
+                nodes.append(parser.current)
+            return ContinueLoop(nodes)
+        return None
+
 class Declaration(Rule):
     @staticmethod
     def match(parser): 
@@ -85,18 +119,26 @@ class Declaration(Rule):
                 parser.accept(Token.KEYWORD,KeywordToken.GLOBAL)):
             return None
         nodes = [parser.current]
+        if parser.accept(Token.KEYWORD,KeywordToken.CONST):
+            nodes.append(parser.current)
+        
+        
         nodes.append(parser.expectRule(LineStatement))
+        
+        while parser.accept(Token.COMMA):
+            nodes.append(parser.expectRule(LineStatement))
+        
         return Declaration(nodes)
     
 
 class Assignment(Rule):
-    operators = ["=","+=","-=","*=","/=","&="]
     @staticmethod
     def match(parser):
-        for operator in Assignment.operators:
+        for operator in OperatorToken.ASSIGNMENT_OPERATORS:
             if parser.accept(Token.OPERATOR,operator):
                 nodes = [parser.current]
                 nodes.append(parser.expectRule(Expression))
+                
                 return Assignment(nodes)
         return None
  
@@ -115,12 +157,72 @@ class LineStatement(Rule):
 class Statement(Rule):
     @staticmethod
     def match(parser):
-        if parser.acceptAnyRule([Declaration,Function,While,If,Switch,LineStatement]):
+        if parser.acceptAnyRule([Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
             return Statement([parser.matched_rule])
         #if parser.acceptRule(Expression):
         #    return Statement([parser.matched_rule])
         
         return None
+
+class Return(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.RETURN):
+            return None
+        nodes = []
+        if parser.acceptRule(Expression):
+            nodes.append(parser.matched_rule)
+        return Return(nodes)  
+    
+class DoUntil(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.DO):
+            return None
+        parser.expect(Token.NEWLINE)
+        nodes = [parser.expectRule(Block)]
+        parser.expect(Token.KEYWORD,KeywordToken.UNTIL)
+        nodes.append(parser.expectRule(Expression))
+        return DoUntil(nodes)    
+
+class For(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.FOR):
+            return None
+        nodes = [parser.expect(Token.IDENTIFIER)]
+        if parser.acceptRule(ForTo):
+            nodes.append(parser.matched_rule)
+        else:
+            nodes.append(parser.expectRule(ForIn))
+        parser.expect(Token.NEWLINE)
+        if parser.acceptRule(Block):
+            nodes.append(parser.matched_rule)
+        parser.expect(Token.KEYWORD,KeywordToken.NEXT)
+        return For(nodes)
+            
+        
+class ForTo(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
+            return None
+        nodes = [parser.expectRule(Expression)]
+        parser.expect(Token.KEYWORD,KeywordToken.TO)
+        nodes.append(parser.expectRule(Expression))
+        if parser.accept(Token.KEYWORD,KeywordToken.STEP):
+            nodes.append(parser.expectRule(Expression))
+        return ForTo(nodes)    
+        
+        
+        
+class ForIn(Rule):
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.IN):
+            return None
+        return ForIn([parser.expectRule(Expression)])       
+
 
 class Qualifier(Rule):
     @staticmethod
@@ -137,14 +239,30 @@ class ArgumentList(Rule):
         
         nodes = []
         
-        
-        if parser.accept(Token.IDENTIFIER):
+    
+        if parser.acceptRule(Argument):
             nodes.append(parser.current)
             while parser.accept(Token.COMMA):
-                nodes.append(parser.expect(Token.IDENTIFIER))      
+                nodes.append(parser.expectRule(Argument))      
         
         parser.expect(Token.RIGHT_PAREN) 
         return ArgumentList(nodes)   
+    
+class Argument(Rule):
+    @staticmethod
+    def match(parser):
+        nodes = []
+        if parser.accept(Token.KEYWORD,KeywordToken.BYREF):
+            nodes.append(parser.current)
+            nodes.append(parser.expect(Token.IDENTIFIER))
+        elif parser.accept(Token.IDENTIFIER):
+            nodes.append(parser.current)
+        else:
+            return None
+        if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
+            nodes.append(parser.expectRule(Terminal))
+        return Argument(nodes)
+            
 
 class Function(Rule):
     @staticmethod
@@ -300,7 +418,7 @@ class Directive(Rule):
             return Directive([directive,argument])
         if parser.accept(Token.DIRECTIVE):
             token = parser.current
-            parser.expectNewline()
+            parser.skip_to_newline()
             return Directive([token])
         
         return None
@@ -310,26 +428,16 @@ class Include(Rule):
     def match(parser):
         if parser.accept(Token.INCLUDE_FILE):
             token = parser.current
-            parser.expectNewline()
             return Include([token])
         
         
 class UnaryOperator(Rule):
     @staticmethod
     def match(parser):
-        if parser.accept(Token.OPERATOR,"not") or parser.accept(Token.OPERATOR,"-"):
-            return UnaryOperator([parser.current])
-
-
-
-class BinaryOperator(Rule):
-    operators = [">=","<=","<>","<",">","-","=","*","+","-","/","&","==","^","and","or"]
-    @staticmethod
-    def match(parser):
-        for operator in BinaryOperator.operators:
+        for operator in OperatorToken.UNARY_OPERATORS:  
             if parser.accept(Token.OPERATOR,operator):
-                return BinaryOperator([parser.current])
-        return None
+                return UnaryOperator([parser.current])
+
 
 class Factor(Rule):
     @staticmethod
@@ -337,7 +445,7 @@ class Factor(Rule):
         nodes = []
         
         
-        if parser.acceptRule(UnaryOperator):
+        while parser.acceptRule(UnaryOperator):
             nodes.append(parser.matched_rule)
             
         
@@ -412,8 +520,79 @@ class Terminal(Rule):
                 return Terminal([parser.current])
         return None
 
+
+class BinaryOperator(Rule):
+    PRECEDENCE_LEVELS = [[OperatorToken.BOOLEAN_AND,OperatorToken.BOOLEAN_OR],
+              [OperatorToken.GREATER,OperatorToken.LESSER,OperatorToken.GREATER_EQUAL,
+                                    OperatorToken.LESSER_EQUAL,OperatorToken.EQUAL,
+                                    OperatorToken.NOT_EQUAL,OperatorToken.STRONG_EQUAL],
+              [OperatorToken.CONCAT],
+              [OperatorToken.ADD,OperatorToken.SUBTRACT],
+              [OperatorToken.MULTIPLY,OperatorToken.DIVIDE],
+              [OperatorToken.POW]
+              ]
+    @staticmethod
+    def match(parser):
+        for operator in OperatorToken.BINARY_OPERATORS:
+            if parser.accept(Token.OPERATOR,operator):
+                return BinaryOperator([parser.current])
+        return None
+        
+    def precedence_level(self):
+        for index,level in enumerate(BinaryOperator.PRECEDENCE_LEVELS):
+            if self.nodes[0].value in level:
+                return index
+        raise Exception("No precedence level for token "+str(self.value))
+    def is_left_associative(self):
+        return self.nodes[0].value != OperatorToken.POW
+
     
 class Expression(Rule):
+    
+    
+    @staticmethod
+    def climb_precedence(nodes):
+        nodes = deque(nodes)
+        
+        
+        def get_tree(min_prec=0,rec=0):
+            
+            
+            lhs = nodes.popleft()
+            
+            tree = [lhs]
+            #   while cur token is a binary operator with precedence >= min_prec:
+            while True:
+                
+                if len(nodes) == 0:
+                    return Expression(tree)
+                
+                op = nodes[0]
+                
+
+                prec = op.precedence_level()
+                if prec < min_prec:
+                    return Expression(tree)
+                
+                nodes.popleft()
+                
+                next_min_prec = prec
+                if op.is_left_associative():
+                    next_min_prec += 1
+                
+                rhs = get_tree(next_min_prec,rec+1)
+                
+                if len(rhs.nodes) == 1:
+                    rhs = rhs.nodes[0]
+                
+                tree.append(op)
+                tree.append(rhs)
+                
+                
+                
+        
+        return get_tree().nodes
+    
     @staticmethod
     def match(parser):
         nodes = []
@@ -427,15 +606,13 @@ class Expression(Rule):
             nodes.append(parser.matched_rule)
             nodes.append(parser.expectRule(Factor))            
 
-        return Expression(nodes)
+        return Expression(Expression.climb_precedence(nodes))
             
 
 class Program(Rule):
     @staticmethod
     def match(parser):
         nodes = []
-        while parser.acceptAnyRule([Include,Directive]):
-            nodes.append(parser.matched_rule)
         if parser.acceptRule(Block):
             nodes.append(parser.matched_rule)
         parser.expect(Token.EOF)
@@ -453,14 +630,18 @@ def print_ast(node,depth=0):
         
    
 
+
 test_code = """
-if 2 * (1+3) then derp.herp()
+func abc(byref a,byref b=10)
+endfunc
 """
-parser = Parser(lexer.lex_string(test_code))
+test_code = open("test.au3").read()
+tokens = lexer.lex_string(test_code)
+parser = Parser(tokens)
 
 
 p = parser.acceptRule(Program)
-print_ast(p)
 
-    
+
+print_ast(p)    
     

@@ -9,12 +9,8 @@ def lex_string(string):
     tokens = []
     
     offset = 0
-    
-    inc = 0
+ 
     while len(string) > offset:
-        inc += 1
-        if (inc % 10000) == 0:
-            print(offset)
         for token_class in token_classes:
             result = token_class.match(string,offset)
             if result:
@@ -155,9 +151,51 @@ class WhitespaceToken(Token):
     type = Token.WHITESPACE
     
 class OperatorToken(Token):
-    expr = re.compile(r""">\=|<\=|<>|<|>|\-\=|\*|\/\=|&\=|\+\=|\+|\-|\*|\/|&|\=\=|\=|\^|AND|OR|NOT""",re.IGNORECASE)
-    type = Token.OPERATOR
+    GREATER_EQUAL = ">="
+    LESSER_EQUAL = "<="
+    NOT_EQUAL = "<>"
+    GREATER = ">"
+    LESSER = "<"
+    ADD_ASSIGN = "+="
+    SUBTRACT_ASSIGN = "-="
+    MULTIPLY_ASSIGN = "*="
+    DIVIDE_ASSIGN = "/="
+    CONCAT_ASSIGN = "&="
+    ADD = "+"
+    SUBTRACT = "-"
+    MULTIPLY = "*"
+    DIVIDE = "/"
+    CONCAT = "&"
+    STRONG_EQUAL = "=="
+    EQUAL = "="
+    POW = "^"
+    BOOLEAN_AND = "and"
+    BOOLEAN_OR = "or"
+    BOOLEAN_NOT = "not"
     
+    OPERATORS = [GREATER_EQUAL,LESSER_EQUAL,NOT_EQUAL,GREATER,LESSER,
+                 ADD_ASSIGN,SUBTRACT_ASSIGN,MULTIPLY_ASSIGN,DIVIDE_ASSIGN,
+                 CONCAT_ASSIGN,ADD,SUBTRACT,MULTIPLY,DIVIDE,CONCAT,
+                 STRONG_EQUAL,EQUAL,POW,BOOLEAN_AND,BOOLEAN_NOT,BOOLEAN_OR]
+    
+    BINARY_OPERATORS = [GREATER_EQUAL,LESSER_EQUAL,NOT_EQUAL,GREATER,LESSER,
+                        ADD,SUBTRACT,MULTIPLY,DIVIDE,CONCAT,
+                        STRONG_EQUAL,EQUAL,POW,BOOLEAN_AND,BOOLEAN_OR]
+    UNARY_OPERATORS = [BOOLEAN_NOT,SUBTRACT]
+    ASSIGNMENT_OPERATORS = [EQUAL,ADD_ASSIGN,SUBTRACT_ASSIGN,MULTIPLY_ASSIGN,DIVIDE_ASSIGN,CONCAT_ASSIGN]
+    
+    regex = ""
+    OPERATORS.sort(key=lambda x:len(x), reverse=True)
+    for operator in OPERATORS:
+        if len(regex) > 0:
+            regex += "|"
+        regex += re.escape(operator)
+    
+    expr = re.compile(regex,re.IGNORECASE)
+    type = Token.OPERATOR
+    @classmethod
+    def value_transform(cls,value):
+        return value.lower()
     
 class StringToken(Token):
     #expr = re.compile("""(?:^\"([^\"]*)\")|(?:^'([^']*)')""")
@@ -226,7 +264,7 @@ class KeywordToken(Token):
     WITH = "WITH".lower()
     ENDWITH = "ENDWITH".lower()
     BYREF = "BYREF".lower()
-    regex = ""
+    regex = "("
     keywords = [CONTINUECASE,CONTINUELOOP,DEFAULT,DIM,GLOBAL,LOCAL,CONST,
                     DO,UNTIL,ENUM,EXIT,EXITLOOP,FOR,TO,STEP,NEXT,IN,FUNC,
                     RETURN,ENDFUNC,IF,THEN,ELSE,ELSEIF,ENDIF,REDIM,
@@ -234,10 +272,10 @@ class KeywordToken(Token):
     
     keywords.sort(key=lambda x:len(x), reverse=True)
     for keyword in keywords:
-        if len(regex) > 0:
+        if len(regex) > 1:
             regex += "|"
         regex += keyword
-    
+    regex += ")(?=\s|$)"
     
      
     expr = re.compile(regex,re.IGNORECASE)
@@ -245,6 +283,6 @@ class KeywordToken(Token):
 
     @classmethod
     def value_transform(cls,value):
-        return value.lower()
+        return value.lower().rstrip()
 
 

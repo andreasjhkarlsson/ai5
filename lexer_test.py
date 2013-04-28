@@ -101,15 +101,15 @@ class TestStringToken(unittest.TestCase):
         self.assertFalse(StringToken.match('"hej'))
         
 class TestOperatorToken(unittest.TestCase):
-    OPERATORS = ["+","-","*","/","&","=","==","+=","-=","*=","/=","&=","^","<>","<",">","<=",">=","AND","OR","NOT"]
+    OPERATORS = ["+","-","*","/","&","=","==","+=","-=","*=","/=","&=","^","<>","<",">","<=",">=","and","or","not"]
     def test_match(self):
         for op in TestOperatorToken.OPERATORS:
             self.assertTrue(OperatorToken.match(op), "Operator not matched: "+op)
             self.assertEqual(OperatorToken.match(op)[0].value, op,"Operator not matched: "+op) 
     def test_case(self):
-        self.assertEqual(OperatorToken.match("aNd")[0].value, "aNd")
+        self.assertEqual(OperatorToken.match("aNd")[0].value, "and")
         self.assertEqual(OperatorToken.match("or")[0].value, "or")
-        self.assertEqual(OperatorToken.match("NoT")[0].value, "NoT")
+        self.assertEqual(OperatorToken.match("NoT")[0].value, "not")
     def test_many(self):
         tokens = lex_string("+= - -= and or ^ *= +- < > <> <= >= < < /=")[:-1]
         self.assertEqual([x.value for x in tokens], ["+=","-","-=","and","or","^","*=","+","-","<",">","<>","<=",">=","<","<","/="])
@@ -133,6 +133,9 @@ class TestIdentifierToken(unittest.TestCase):
     def test_single_char(self):
         res = IdentifierToken.match("a")
         self.assertEqual(res[0].value, "a")
+    def test_underscore(self):
+        res = IdentifierToken.match("a_b")
+        self.assertEqual(res[0].value, "a_b")
     def test_pound_and_single_char(self):
         res = IdentifierToken.match("$a")
         self.assertEqual(res[0].value, "a")
@@ -218,6 +221,17 @@ class TestKeywordToken(unittest.TestCase):
     def test_prefix_match(self):
         tokens = lex_string("ELSEIF ELSE IF EXITLOOP EXIT")[:-1]
         self.assertEqual([x.value for x in tokens],["elseif","else","if","exitloop","exit"])
+    def test_name_conflict(self):
+        tokens = lex_string("iniread() in")
+        self.assertEqual(tokens[0].type,Token.IDENTIFIER)
+        self.assertEqual(tokens[3].type,Token.KEYWORD)
+        
+    def test_match(self):
+        self.assertEqual(KeywordToken.match("exit ")[0].value, "exit")
+        self.assertEqual(KeywordToken.match("exit\n")[0].value, "exit")
+        self.assertEqual(KeywordToken.match("exit")[0].value, "exit")
+        
+        
         
 class TestIncludeFileToken(unittest.TestCase):
     def test_angel_match(self):
