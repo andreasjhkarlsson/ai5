@@ -454,7 +454,7 @@ class If(Rule):
                 nodes.append(parser.matched_rule)
             parser.expect(Token.KEYWORD,KeywordToken.ENDIF)
         else:
-            nodes.append(parser.expectRule(LineStatement))    
+            nodes.append(parser.expectRule(Statement))    
         return If(nodes)
 
 class ElseIf(Rule):
@@ -708,7 +708,7 @@ def print_ast(node,depth=0):
 
 test_code = """
 """
-#test_code = open("test.au3").read()
+test_code = open("test.au3").read()
 tokens = lexer.lex_string(test_code)
 parser = Parser(tokens)
 
