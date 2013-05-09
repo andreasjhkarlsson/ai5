@@ -14,23 +14,6 @@ int main()
 
 
 	/*
-	CREATE_GLOBAL 33
-	PUSH_SMALL_INTEGER 0
-	ASSIGN_NAME 33
-	PUSH_NAME 33
-	PUSH 1
-	ADDITION
-	ASSIGN_NAME 33
-	PUSH_NAME 33
-	PUSH_LARGE_INTEGER 100000000
-	GREATER
-	JUMP_LONG_RELATIVE_IF_TRUE 2
-	JUMP_LONG_RELATIVE -8
-	TERMINATE
-
-	*/
-
-	
 	char a = 0;
 	char b = 1;
 	__int64 c = 100000000;
@@ -50,23 +33,28 @@ int main()
 	program->push_back(new Instruction(Instruction::JUMP_LONG_RELATIVE_IF_TRUE,&trueJump));
 	program->push_back(new Instruction(Instruction::JUMP_LONG_RELATIVE,&jump));
 	program->push_back(new Instruction(Instruction::TERMINATE,nullptr));
-	
-	/*
-	int a = 10;
-	__int64 num = 12345;
-	program->push_back(new Instruction(Instruction::CREATE_GLOBAL,&a));
-	program->push_back(new Instruction(Instruction::PUSH_LARGE_INTEGER,&num));
-	program->push_back(new Instruction(Instruction::ASSIGN_NAME,&a));
-	program->push_back(new Instruction(Instruction::PUSH_NAME,&a));
-	program->push_back(new Instruction(Instruction::TERMINATE,nullptr));
 	*/
 
+
+	
+	
+	
+	int a = 35;
+	__int64 num = 12345;
+	program->push_back(new Instruction(Instruction::CALL_NAME,&a));
+	program->push_back(new Instruction(Instruction::TERMINATE,nullptr));
+	program->push_back(new Instruction(Instruction::PUSH_LARGE_INTEGER,&num));
+	program->push_back(new Instruction(Instruction::RET,nullptr));
+	
+
 	StackMachine sm(statics,program);
+
+	sm.getName(35)->setGlobal(new UserFunctionVariant(2));
 
 	clock_t begin = clock();
 
 	sm.start();
-	//sm.getDataStack()->pop()->print();
+	sm.getDataStack()->pop()->print();
 
 	clock_t end = clock();
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

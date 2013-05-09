@@ -128,5 +128,11 @@ void Instruction::execute(StackMachine* machine)
 	case ASSIGN_NAME:
 		assignName(machine,arg);
 		break;
+	case CALL_NAME:
+		callName(machine,arg);
+		break;
+	case RET:
+		ret(machine);
+		break;
 	}
 }

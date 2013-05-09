@@ -20,6 +20,7 @@ void StackMachine::start()
 
 	while (!terminated) 
 	{
+		std::cout << "Executing instruction @ " << programCounter << std::endl;
 		(*program)[programCounter]->execute(this);
 	}
 }
@@ -37,13 +38,15 @@ StackMachine* StackMachine::LoadFromStructuredData(const std::string& filename)
 
 void StackMachine::createLocal(int index)
 {
-	nameStorage.getName(index)->pushLocal(&NullVariant::Instance);
+	if(!callStack.size())
+	{
+		// throw error.
+	}
+	Name* name = nameStorage.getName(index);
+	name->pushLocal(&NullVariant::Instance);
+	callStack.top()->attachName(name);
 }
 void StackMachine::createGlobal(int index)
 {
 	nameStorage.getName(index)->setGlobal(&NullVariant::Instance);
-}
-Name* StackMachine::getName(int index)
-{
-	return nameStorage.getName(index);
 }

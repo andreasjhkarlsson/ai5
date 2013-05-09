@@ -1,5 +1,5 @@
 #include "StackMachine.h"
-
+#include "UserFunctionVariant.h"
 
 
 
@@ -41,4 +41,24 @@ __forceinline void jumpLongRelativeIfTrue(StackMachine* machine,void* arg)
 	else
 		machine->advanceCounter();
 	v->release();
+}
+
+__forceinline void callName(StackMachine* machine,void* arg)
+{
+	Variant* toCall = machine->getName(*(int*)arg)->findNearest();
+	if(toCall->getType() == Variant::FUNCTION_VAR)
+	{
+		((UserFunctionVariant*)toCall)->call(machine);
+		
+	}
+	else
+	{
+		// Throw error!!
+	}
+}
+
+__forceinline void ret(StackMachine* machine)
+{
+	int returnAddress = machine->popCallFrame();
+	machine->jumpAbsolute(returnAddress);
 }

@@ -146,6 +146,7 @@
     <ClCompile Include="BooleanVariant.cpp" />
     <ClCompile Include="CallFrame.cpp" />
     <ClCompile Include="FloatingVariant.cpp" />
+    <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="Instruction.cpp" />
     <ClCompile Include="IntegerVariant.cpp" />
     <ClCompile Include="main.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ReferenceVariant.cpp" />
     <ClCompile Include="StackMachine.cpp" />
+    <ClCompile Include="UserFunctionVariant.cpp" />
     <ClCompile Include="Variant.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +163,7 @@
     <ClInclude Include="DataStack.h" />
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />
+    <ClInclude Include="FunctionVariant.h" />
     <ClInclude Include="IntegerVariant.h" />
     <ClInclude Include="jump_instructions.h" />
     <ClInclude Include="misc_instructions.h" />
@@ -172,6 +175,7 @@
     <ClInclude Include="Static.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="StackMachine.h" />
+    <ClInclude Include="UserFunctionVariant.h" />
     <ClInclude Include="Variant.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

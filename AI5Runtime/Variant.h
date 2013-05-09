@@ -14,7 +14,8 @@ public:
 	static const VARIANT_TYPE BOOLEAN = 2;
 	static const VARIANT_TYPE FLOATING = 3;
 	static const VARIANT_TYPE NULL_VAR = 4;
-	static const int NUMBER_OF_VARIANT_TYPES = 5;
+	static const VARIANT_TYPE FUNCTION_VAR = 5;
+	static const int NUMBER_OF_VARIANT_TYPES = 6;
 	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
 	virtual void print()=0;

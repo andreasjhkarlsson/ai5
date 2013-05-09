@@ -4,6 +4,8 @@
 #include "Variant.h"
 #include "FastStack.h"
 
+// Represents a name. Can be builtin, global and local
+// at the same time. Handy huh?
 class Name
 {
 public:
@@ -13,31 +15,31 @@ public:
 	virtual ~Name()
 	{
 	}
-	bool hasLocal()
+	__forceinline bool hasLocal()
 	{
 		return locals.size() > 0;
 	}
-	bool hasGlobal()
+	__forceinline bool hasGlobal()
 	{
 		return global != nullptr;
 	}
-	bool hasBuiltin()
+	__forceinline bool hasBuiltin()
 	{
 		return builtIn != nullptr;
 	}
 
-	void pushLocal(Variant* var)
+	__forceinline void pushLocal(Variant* var)
 	{
 		var->addRef();
 		locals.push(var);
 	}
 
-	void popLocal()
+	__forceinline void popLocal()
 	{
 		locals.pop()->release();
 	}
 
-	void setGlobal(Variant *var)
+	__forceinline void setGlobal(Variant *var)
 	{
 		var->addRef();
 		if(hasGlobal())
@@ -45,8 +47,7 @@ public:
 		global = var;
 	}
 
-
-	void setNearest(Variant* var)
+	__forceinline void setNearest(Variant* var)
 	{
 		if(hasLocal())
 		{
@@ -59,7 +60,6 @@ public:
 			var->addRef();
 			global->release();
 			global = var;
-			
 		}
 		else
 		{
@@ -67,7 +67,7 @@ public:
 		}
 	}
 
-	Variant* findNearest()
+	__forceinline Variant* findNearest()
 	{
 		if(hasLocal())
 			return locals.top();

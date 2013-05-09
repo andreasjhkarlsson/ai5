@@ -21,6 +21,7 @@ public:
 	__forceinline void advanceCounter();
 	__forceinline void jumpRelative(int offset);
 	__forceinline void jumpAbsolute(int position);
+	__forceinline int getCurrentAddress();
 	__forceinline STATIC_DATA* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
@@ -29,7 +30,9 @@ public:
 	void terminate();
 	void createLocal(int index);
 	void createGlobal(int index); 
-	Name* getName(int index);
+	__forceinline void pushCallFrame(int returnAddress);
+	__forceinline Name* getName(int index);
+	__forceinline int popCallFrame();
 private:
 	std::shared_ptr<std::vector<Instruction*>> program;
 	std::shared_ptr<std::vector<STATIC_DATA*>> staticsTable;
@@ -67,4 +70,29 @@ void StackMachine::advanceCounter()
 VariantFactory* StackMachine::getVariantFactory()
 {
 	return &variantFactory;
+}
+
+Name* StackMachine::getName(int index)
+{
+	return nameStorage.getName(index);
+}
+
+void StackMachine::pushCallFrame(int returnAddress)
+{
+	callStack.push(new CallFrame(returnAddress));
+}
+
+int StackMachine::popCallFrame()
+{
+	CallFrame *frame = callStack.pop();
+	frame->detachNames();
+	int returnAddress = frame->getReturnAddress();
+	delete frame;
+	return returnAddress;
+}
+
+
+int StackMachine::getCurrentAddress()
+{
+	return programCounter;
 }

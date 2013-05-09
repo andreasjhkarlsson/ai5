@@ -54,6 +54,12 @@
     <ClCompile Include="NameStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FunctionVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="UserFunctionVariant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -105,6 +111,12 @@
       <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="NameStorage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="UserFunctionVariant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

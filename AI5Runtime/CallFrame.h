@@ -1,6 +1,7 @@
 #pragma once
 
-#include <vector>
+#include "FastStack.h"
+#include "NameStorage.h"
 
 class StackMachine;
 
@@ -15,11 +16,21 @@ public:
 		return returnAddress;
 	}
 
-	void rememberName(int index);
-	void popLocals(StackMachine* machine);
+	void attachName(Name* name)
+	{
+		locals.push(name);
+
+	}
+	void detachNames()
+	{
+		while(locals.size() > 0)
+		{
+			locals.pop()->popLocal();
+		}
+	}
 
 private:
 	int returnAddress;
-	std::vector<int> locals;
+	FastStack<Name*> locals;
 };
 

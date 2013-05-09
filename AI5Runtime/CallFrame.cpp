@@ -1,7 +1,7 @@
 #include "CallFrame.h"
 
 
-CallFrame::CallFrame(int returnAddress): returnAddress(returnAddress)
+CallFrame::CallFrame(int returnAddress): returnAddress(returnAddress), locals(1024)
 {
 }
 
@@ -9,3 +9,5 @@ CallFrame::CallFrame(int returnAddress): returnAddress(returnAddress)
 CallFrame::~CallFrame(void)
 {
 }
+
+
