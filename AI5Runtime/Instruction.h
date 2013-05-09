@@ -66,6 +66,7 @@ public:
 	static const INSTRUCTION_TYPE CONCAT						= 0x33;
 	static const INSTRUCTION_TYPE POW							= 0x34;
 	static const INSTRUCTION_TYPE TERMINATE						= 0x35;
+	static const INSTRUCTION_TYPE NEGATION						= 0x36;
 	static void LoadInstructions(unsigned char* data,size_t size,std::vector<Instruction*> out);
 	__forceinline void execute(StackMachine* machine);
 	Instruction(INSTRUCTION_TYPE type,void* arg);
