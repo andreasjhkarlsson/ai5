@@ -45,7 +45,7 @@ __forceinline void jumpLongRelativeIfTrue(StackMachine* machine,void* arg)
 
 __forceinline void callName(StackMachine* machine,void* arg)
 {
-	Variant* toCall = machine->getName(*(int*)arg)->findNearest();
+	Variant* toCall = machine->getNameStorage()->getNameFromIndex(*(int*)arg)->findNearest();
 	if(toCall->getType() == Variant::FUNCTION_VAR)
 	{
 		((UserFunctionVariant*)toCall)->call(machine);

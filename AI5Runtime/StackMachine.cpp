@@ -2,12 +2,13 @@
 #include <map>
 #include "NullVariant.h"
 #include "Instruction.h"
+#include "..\AI5StandardLibrary\StandardLibrary.h"
 
 StackMachine::StackMachine(std::shared_ptr<std::vector<STATIC_DATA*>> statics,
 	std::shared_ptr<std::vector<Instruction*>> program): programCounter(0),
-	dataStack(64*1024),staticsTable(statics),program(program),nameStorage(128), callStack(128)
+	dataStack(64*1024),staticsTable(statics),program(program), callStack(128)
 {
-
+	AI5StandardLibrary::registerFunctions(this);
 }
 
 StackMachine::~StackMachine(void)
@@ -20,11 +21,10 @@ void StackMachine::start()
 
 	while (!terminated) 
 	{
-		std::cout << "Executing instruction @ " << programCounter << std::endl;
+	//	std::cout << "Executing instruction @ " << programCounter << std::endl;
 		(*program)[programCounter]->execute(this);
 	}
 }
-
 
 void StackMachine::terminate()
 {
@@ -36,17 +36,8 @@ StackMachine* StackMachine::LoadFromStructuredData(const std::string& filename)
 	return nullptr;
 }
 
-void StackMachine::createLocal(int index)
+
+void StackMachine::addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function)
 {
-	if(!callStack.size())
-	{
-		// throw error.
-	}
-	Name* name = nameStorage.getName(index);
-	name->pushLocal(&NullVariant::Instance);
-	callStack.top()->attachName(name);
-}
-void StackMachine::createGlobal(int index)
-{
-	nameStorage.getName(index)->setGlobal(&NullVariant::Instance);
+	nameStorage.createName(name)->setBuiltin(new BuiltinFunctionVariant(name,function));
 }

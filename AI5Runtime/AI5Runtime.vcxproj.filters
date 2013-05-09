@@ -58,7 +58,10 @@
       <Filter>variants</Filter>
     </ClCompile>
     <ClCompile Include="UserFunctionVariant.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="BuiltinFunctionVariant.cpp">
+      <Filter>variants</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,8 +119,11 @@
     <ClInclude Include="FunctionVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
+    <ClInclude Include="BuiltinFunctionVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
     <ClInclude Include="UserFunctionVariant.h">
-      <Filter>Header Files</Filter>
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

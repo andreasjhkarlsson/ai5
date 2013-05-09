@@ -1,12 +1,14 @@
 #pragma once
 
 #include <vector>
-#include <string>
 #include <memory>
+#include <string>
+#include <map>
 #include "Static.h"
 #include "DataStack.h"
 #include "NameStorage.h"
 #include "CallFrame.h"
+#include "BuiltinFunctionVariant.h"
 
 class Instruction;
 
@@ -28,11 +30,13 @@ public:
 	static StackMachine* LoadFromStructuredData(const std::string& filename);
 	void start();
 	void terminate();
-	void createLocal(int index);
-	void createGlobal(int index); 
 	__forceinline void pushCallFrame(int returnAddress);
-	__forceinline Name* getName(int index);
+	__forceinline NameStorage* getNameStorage()
+	{
+		return &nameStorage;
+	}
 	__forceinline int popCallFrame();
+	void addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function);
 private:
 	std::shared_ptr<std::vector<Instruction*>> program;
 	std::shared_ptr<std::vector<STATIC_DATA*>> staticsTable;
@@ -72,11 +76,6 @@ VariantFactory* StackMachine::getVariantFactory()
 	return &variantFactory;
 }
 
-Name* StackMachine::getName(int index)
-{
-	return nameStorage.getName(index);
-}
-
 void StackMachine::pushCallFrame(int returnAddress)
 {
 	callStack.push(new CallFrame(returnAddress));
@@ -90,7 +89,6 @@ int StackMachine::popCallFrame()
 	delete frame;
 	return returnAddress;
 }
-
 
 int StackMachine::getCurrentAddress()
 {

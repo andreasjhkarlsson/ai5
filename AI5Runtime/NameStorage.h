@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <map>
+#include <string>
 #include "Variant.h"
 #include "FastStack.h"
 
@@ -9,7 +11,7 @@
 class Name
 {
 public:
-	Name(): builtIn(nullptr),global(nullptr), locals(256)
+	Name(std::string name): builtIn(nullptr),global(nullptr), locals(32), name(name)
 	{
 	}
 	virtual ~Name()
@@ -47,6 +49,15 @@ public:
 		global = var;
 	}
 
+	__forceinline void setBuiltin(Variant *var)
+	{
+		var->addRef();
+		if(hasBuiltin())
+			builtIn->release();
+		builtIn = var;
+	}
+
+
 	__forceinline void setNearest(Variant* var)
 	{
 		if(hasLocal())
@@ -81,23 +92,52 @@ private:
 	Variant* builtIn;
 	Variant* global;
 	FastStack<Variant*> locals;
+	std::string name;
 };
+
+
 
 class NameStorage
 {
 public:
-	NameStorage(int tableSize);
-	~NameStorage(void);
-	__forceinline Name* getName(int index);
-private:
-	std::vector<Name*> nameTable;
-};
-
-Name* NameStorage::getName(int index)
-{
-	if(nameTable[index] == nullptr)
+	NameStorage()
 	{
-		nameTable[index] = new Name();
+
 	}
-	return nameTable[index];
-}
+	__forceinline Name* getNameFromString(const std::string &name)
+	{
+		return lookup[name];
+	}
+	__forceinline Name* getNameFromIndex(int index)
+	{
+		return indexTable[index];
+	}
+	__forceinline Name* createName(const std::string &name)
+	{
+		Name* n = new Name(name);
+		lookup[name] = n;
+		return n;
+
+	}
+	__forceinline Name* createIndexForName(const std::string &name,int index)
+	{
+		if (lookup.find(name) == lookup.end())
+		{
+			lookup[name] = new Name(name);
+		}
+
+		if((index) >= indexTable.size())
+		{
+			indexTable.resize(index+1);
+		}
+
+		Name* nameObj = lookup[name];
+
+		indexTable[index] = nameObj;
+		return nameObj;
+	}
+private:
+	std::map<std::string,Name*> lookup;
+	std::vector<Name*> indexTable;
+
+};
