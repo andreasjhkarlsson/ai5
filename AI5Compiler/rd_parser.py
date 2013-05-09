@@ -80,18 +80,64 @@ class Parser:
         
 
 class Rule:
+    EXIT = "rule_exit"
+    EXITLOOP = "rule_exitloop"
+    CONTINUELOOP = "rule_continueloop"
+    DECLARATION = "rule_declaration"
+    ENUM = "rule_enum"
+    ENUMLIST = "rule_enumlist"
+    ENUM_CONSTANT = "rule_enum_constant"
+    ENUM_STEP = "rule_enum_step"
+    ASSIGNMENT = "rule_assignment"
+    REDIM = "rule_redim"
+    LINE_STATEMENT = "rule_line_statement"
+    STATEMENT = "rule_statement"
+    WITH = "rule_with"
+    RETURN = "rule_return"
+    DO_UNTIL = "rule_do_until"
+    FOR = "rule_for"
+    FOR_TO = "rule_for_to"
+    FOR_IN = "rule_for_in"
+    QUALIFIER = "rule_qualifier"
+    ARGUMENT_LIST = "rule_argument_list"
+    ARGUMENT = "rule_argument"
+    FUNCTION = "rule_function"
+    BLOCK = "rule_block"
+    WHILE = "rule_while"
+    SWITCH = "rule_switch"
+    SWITCH_CASE = "rule_case"
+    SWITCH_CONDITION = "rule_switch_condition"
+    IF = "rule_if"
+    ELSEIF = "rule_elseif"
+    ELSE = "rule_else"
+    DIRECTIVE = "rule_directive"
+    INCLUDE = "rule_include"
+    UNARY_OPERATOR = "rule_unary_operator"
+    FACTOR = "rule_factor"
+    INLINE_LIST = "rule_inline_list"
+    CALL = "rule_call"
+    PROPERTY = "rule_property"
+    LIST_INDEXING = "rule_list_indexing"
+    TERMINAL = "rule_terminal"
+    BINARY_OPERATOR = "rule_binary_operator"
+    EXPRESSION = "rule_expression"
+    PROGRAM = "rule_program"
+    
+    
     def __init__(self,nodes):
         self.nodes = nodes
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.nodes)
     
 class Exit(Rule):
+    type = Rule.EXIT
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.EXIT):
             return Exit([parser.current])
         return None
 class ExitLoop(Rule):
+    type = Rule.EXITLOOP
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.EXITLOOP):
@@ -102,6 +148,7 @@ class ExitLoop(Rule):
         return None
     
 class ContinueLoop(Rule):
+    type = Rule.CONTINUELOOP
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.CONTINUELOOP):
@@ -112,6 +159,7 @@ class ContinueLoop(Rule):
         return None
 
 class Declaration(Rule):
+    type = Rule.DECLARATION
     @staticmethod
     def match(parser): 
         if not (parser.accept(Token.KEYWORD,KeywordToken.DIM) or 
@@ -136,6 +184,7 @@ class Declaration(Rule):
 
 
 class Enum(Rule):
+    type = Rule.ENUM
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.ENUM):
@@ -147,6 +196,7 @@ class Enum(Rule):
         return Enum(nodes)
 
 class EnumList(Rule):
+    type = Rule.ENUMLIST
     @staticmethod
     def match(parser):
         if not parser.acceptRule(EnumConstant):
@@ -158,6 +208,7 @@ class EnumList(Rule):
 
 
 class EnumConstant(Rule):
+    type = Rule.ENUM_CONSTANT
     @staticmethod
     def match(parser):
         if not parser.accept(Token.IDENTIFIER):
@@ -170,6 +221,7 @@ class EnumConstant(Rule):
         
         
 class EnumStep(Rule):
+    type = Rule.ENUM_STEP
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.STEP):
@@ -182,6 +234,7 @@ class EnumStep(Rule):
             
 
 class Assignment(Rule):
+    type = Rule.ASSIGNMENT
     @staticmethod
     def match(parser):
         for operator in OperatorToken.ASSIGNMENT_OPERATORS:
@@ -194,6 +247,7 @@ class Assignment(Rule):
  
  
 class ReDim(Rule):
+    type = Rule.REDIM
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.REDIM):
@@ -205,6 +259,7 @@ class ReDim(Rule):
      
  
 class LineStatement(Rule):
+    type = Rule.LINE_STATEMENT
     @staticmethod
     def match(parser):
         if not parser.accept(Token.IDENTIFIER):
@@ -217,6 +272,7 @@ class LineStatement(Rule):
         return LineStatement(nodes)
 
 class Statement(Rule):
+    type = Rule.STATEMENT
     @staticmethod
     def match(parser):
         if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
@@ -228,6 +284,7 @@ class Statement(Rule):
     
     
 class With(Rule):
+    type = Rule.WITH
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.WITH):
@@ -242,6 +299,7 @@ class With(Rule):
             
 
 class Return(Rule):
+    type = Rule.RETURN
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.RETURN):
@@ -252,6 +310,7 @@ class Return(Rule):
         return Return(nodes)  
     
 class DoUntil(Rule):
+    type = Rule.DO_UNTIL
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.DO):
@@ -263,6 +322,7 @@ class DoUntil(Rule):
         return DoUntil(nodes)    
 
 class For(Rule):
+    type = Rule.FOR
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.FOR):
@@ -280,6 +340,7 @@ class For(Rule):
             
         
 class ForTo(Rule):
+    type = Rule.FOR_TO
     @staticmethod
     def match(parser):
         if not parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
@@ -294,6 +355,7 @@ class ForTo(Rule):
         
         
 class ForIn(Rule):
+    type = Rule.FOR_IN
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.IN):
@@ -302,6 +364,7 @@ class ForIn(Rule):
 
 
 class Qualifier(Rule):
+    type = Rule.QUALIFIER
     @staticmethod
     def match(parser):
         if parser.acceptAnyRule([Property,Call,ListIndexing]):
@@ -309,6 +372,7 @@ class Qualifier(Rule):
         return None    
             
 class ArgumentList(Rule):
+    type = Rule.ARGUMENT_LIST
     @staticmethod
     def match(parser):
         if not parser.accept(Token.LEFT_PAREN):
@@ -325,6 +389,7 @@ class ArgumentList(Rule):
         return ArgumentList(nodes)   
     
 class Argument(Rule):
+    type = Rule.ARGUMENT
     @staticmethod
     def match(parser):
         nodes = []
@@ -341,6 +406,7 @@ class Argument(Rule):
             
 
 class Function(Rule):
+    type = Rule.FUNCTION
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.FUNC):
@@ -359,6 +425,7 @@ class Function(Rule):
             return None
         
 class Block(Rule):
+    type = Rule.BLOCK
     @staticmethod
     def match(parser):
         nodes = []
@@ -379,6 +446,7 @@ class Block(Rule):
         
 
 class While(Rule):
+    type = Rule.WHILE
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.WHILE):
@@ -395,6 +463,7 @@ class While(Rule):
 
 
 class Switch(Rule):
+    type = Rule.SWITCH
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.SWITCH):
@@ -409,6 +478,7 @@ class Switch(Rule):
     
     
 class SwitchCondition(Rule):
+    type = Rule.SWITCH_CONDITION
     @staticmethod
     def match(parser):
         if not parser.acceptRule(Expression):
@@ -418,7 +488,8 @@ class SwitchCondition(Rule):
             nodes.append(parser.expectRule(Expression))
         return SwitchCondition(nodes)
     
-class SwitchCase(Rule):    
+class SwitchCase(Rule):  
+    type = Rule.SWITCH_CASE  
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.CASE):
@@ -438,6 +509,7 @@ class SwitchCase(Rule):
         
         
 class If(Rule):
+    type = Rule.IF
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.IF):
@@ -458,6 +530,7 @@ class If(Rule):
         return If(nodes)
 
 class ElseIf(Rule):
+    type = Rule.ELSEIF
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.ELSEIF):
@@ -470,6 +543,7 @@ class ElseIf(Rule):
         return ElseIf(nodes)
 
 class Else(Rule):
+    type = Rule.ELSE
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.ELSE):
@@ -481,6 +555,7 @@ class Else(Rule):
         return Else(nodes)
 
 class Directive(Rule):
+    type = Rule.DIRECTIVE
     @staticmethod
     def match(parser):
         argument = None
@@ -499,6 +574,7 @@ class Directive(Rule):
         return None
     
 class Include(Rule):
+    type = Rule.INCLUDE
     @staticmethod
     def match(parser):
         if parser.accept(Token.INCLUDE_FILE):
@@ -507,6 +583,7 @@ class Include(Rule):
         
         
 class UnaryOperator(Rule):
+    type = Rule.UNARY_OPERATOR
     @staticmethod
     def match(parser):
         for operator in OperatorToken.UNARY_OPERATORS:  
@@ -515,6 +592,7 @@ class UnaryOperator(Rule):
 
 
 class Factor(Rule):
+    type = Rule.FACTOR
     @staticmethod
     def match(parser):
         nodes = []
@@ -540,6 +618,7 @@ class Factor(Rule):
                 
         
 class InlineList(Rule):
+    type = Rule.INLINE_LIST
     @staticmethod
     def match(parser):
         if not parser.accept(Token.LEFT_BRACKET):
@@ -556,6 +635,7 @@ class InlineList(Rule):
             
 
 class Call(Rule):
+    type = Rule.CALL
     @staticmethod
     def match(parser):
         if not parser.accept(Token.LEFT_PAREN):
@@ -570,6 +650,7 @@ class Call(Rule):
         
 
 class Property(Rule):
+    type = Rule.PROPERTY
     @staticmethod
     def match(parser):
         if not parser.accept(Token.DOT):
@@ -578,6 +659,7 @@ class Property(Rule):
 
 
 class ListIndexing(Rule):
+    type = Rule.LIST_INDEXING
     @staticmethod
     def match(parser):
         if not parser.accept(Token.LEFT_BRACKET):
@@ -587,6 +669,7 @@ class ListIndexing(Rule):
         return ListIndexing([node])
 
 class Terminal(Rule):
+    type = Rule.TERMINAL
     @staticmethod
     def match(parser):
         accepted = [Token.BOOLEAN,Token.MACRO,Token.IDENTIFIER,Token.INTEGER,Token.STRING,Token.FLOATING]
@@ -597,6 +680,9 @@ class Terminal(Rule):
 
 
 class BinaryOperator(Rule):
+    
+    type = Rule.BINARY_OPERATOR
+    
     PRECEDENCE_LEVELS = [[OperatorToken.BOOLEAN_AND,OperatorToken.BOOLEAN_OR],
               [OperatorToken.GREATER,OperatorToken.LESSER,OperatorToken.GREATER_EQUAL,
                                     OperatorToken.LESSER_EQUAL,OperatorToken.EQUAL,
@@ -624,6 +710,17 @@ class BinaryOperator(Rule):
     
 class Expression(Rule):
     
+    type = Rule.EXPRESSION
+    
+    def __init__(self,nodes):
+        super(Expression,self).__init__(nodes)
+        self.first_factor = nodes[0]
+        if len(nodes) == 3:
+            self.operator = nodes[1]
+            self.second_factor = nodes[2]
+        else:
+            self.operator = None
+            self.second_factor = None
     
     @staticmethod
     def climb_precedence(nodes):
@@ -685,6 +782,7 @@ class Expression(Rule):
             
 
 class Program(Rule):
+    type = Rule.PROGRAM
     @staticmethod
     def match(parser):
         nodes = []
@@ -706,15 +804,14 @@ def print_ast(node,depth=0):
    
 
 
-test_code = """
-"""
-test_code = open("test.au3").read()
-tokens = lexer.lex_string(test_code)
-parser = Parser(tokens)
+test_code = """1+2*3"""
+#test_code = open("test.au3").read()
+#tokens = lexer.lex_string(test_code)
+#parser = Parser(tokens)
 
 
-p = parser.acceptRule(Program)
 
+#p = parser.acceptRule(Expression)
 
-print_ast(p)    
+#print_ast(p)    
     
