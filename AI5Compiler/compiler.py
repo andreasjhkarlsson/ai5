@@ -22,6 +22,15 @@ class DivisionInstruction(Instruction):
 class SubtractionInstruction(Instruction):
     pass
 
+class PowInstruction(Instruction):
+    pass
+
+class NegationInstruction(Instruction):
+    pass
+
+class BooleanNotInstruction(Instruction):
+    pass
+
 def compile_expression(expr):
     code = compile_factor(expr.nodes.pop(0))
     
@@ -38,10 +47,26 @@ def compile_expression(expr):
 
 def compile_factor(factor):
     rule = factor.nodes[0]
+    code = []
+    
+    unary = None
+    if rule.type == Rule.UNARY_OPERATOR:
+        unary = compile_unary_operator(rule)
+        rule = factor.nodes[1]
+    
     if rule.type == Rule.TERMINAL:
-        return compile_terminal(rule)
-    if rule.type == Rule.EXPRESSION:
-        return compile_expression(rule)
+        code = compile_terminal(rule)
+    elif rule.type == Rule.EXPRESSION:
+        code = compile_expression(rule)
+    
+    if unary:
+        code += unary
+        
+    return code
+    
+def compile_unary_operator(unary):
+    return [{OperatorToken.SUBTRACT:NegationInstruction,
+             OperatorToken.BOOLEAN_NOT: BooleanNotInstruction}[unary.nodes[0].value]()]
 
 def compile_terminal(terminal):
     token = terminal.nodes[0]
@@ -51,13 +76,12 @@ def compile_terminal(terminal):
 def compile_operator(operator):
     token = operator.nodes[0]
     
-    operator_instructions = {
-                 OperatorToken.ADD: AdditionInstruction,
-                 OperatorToken.SUBTRACT: SubtractionInstruction,
-                 OperatorToken.MULTIPLY: MultiplicationInstruction,
-                 OperatorToken.DIVIDE: DivisionInstruction
-                 }
-    return [operator_instructions[token.value]()]
+    return [{OperatorToken.ADD: AdditionInstruction,
+             OperatorToken.SUBTRACT: SubtractionInstruction,
+             OperatorToken.MULTIPLY: MultiplicationInstruction,
+             OperatorToken.DIVIDE: DivisionInstruction,
+             OperatorToken.POW: PowInstruction
+             }[token.value]()]
     
     
     if token.value == OperatorToken.ADD:
@@ -66,14 +90,20 @@ def compile_operator(operator):
         return [MultiplicationInstruction()]
     
     # throw or something
+    
+def compile_line_statement(line_statement):
+    return [123,123,123,123]
+
+def compile_statement(statement):
+    return {Rule.LINE_STATEMENT: compile_line_statement}[statement.nodes[0].type](statement.nodes[0])
+    
 
 
-
-tokens = lex_string("1/2/3")
+tokens = lex_string("foo()")
 parser = Parser(tokens)
-e = parser.acceptRule(Expression)
+e = parser.expectRule(Statement)
 
 print_ast(e)
 
-print(compile_expression(e))
+print(compile_statement(e))
 
