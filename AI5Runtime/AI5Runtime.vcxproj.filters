@@ -63,6 +63,9 @@
     <ClCompile Include="BuiltinFunctionVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="DataStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">

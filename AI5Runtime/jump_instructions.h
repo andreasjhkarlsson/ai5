@@ -48,7 +48,7 @@ __forceinline void callName(StackMachine* machine,void* arg)
 	Variant* toCall = machine->getNameStorage()->getNameFromIndex(*(int*)arg)->findNearest();
 	if(toCall->getType() == Variant::FUNCTION_VAR)
 	{
-		((UserFunctionVariant*)toCall)->call(machine);
+		((FunctionVariant*)toCall)->call(machine);
 		
 	}
 	else

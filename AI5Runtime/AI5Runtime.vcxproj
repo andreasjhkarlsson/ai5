@@ -146,6 +146,7 @@
     <ClCompile Include="BooleanVariant.cpp" />
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
     <ClCompile Include="CallFrame.cpp" />
+    <ClCompile Include="DataStack.cpp" />
     <ClCompile Include="FloatingVariant.cpp" />
     <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="Instruction.cpp" />

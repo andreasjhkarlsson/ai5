@@ -62,9 +62,11 @@ int main()
 
 
 
-	int hello = 10;
-	program->push_back(new Instruction(Instruction::CALL_NAME,&hello));
-	sm.getNameStorage()->createIndexForName("hello",hello);
+	int sleep = 10;
+	__int64 delay = 2500;
+	sm.getNameStorage()->createIndexForName("sleep",sleep);
+	program->push_back(new Instruction(Instruction::PUSH_LARGE_INTEGER,&delay));
+	program->push_back(new Instruction(Instruction::CALL_NAME,&sleep));
 	program->push_back(new Instruction(Instruction::TERMINATE,nullptr));
 
 

@@ -3,4 +3,11 @@
 #include "FastStack.h"
 #include "Variant.h"
 
-typedef FastStack<Variant*> DataStack;
+class DataStack: public FastStack<Variant*>
+{
+public:
+	DataStack(int size): FastStack(size)
+	{
+	}
+	void pushNull();
+};
