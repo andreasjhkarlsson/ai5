@@ -446,6 +446,14 @@ class Block(Rule):
         
 
 class While(Rule):
+    
+    def __init__(self,nodes):
+        super(While,self).__init__(nodes)
+        self.condition = nodes[0]
+        self.body = None
+        if len(nodes) == 2:
+            self.body = nodes[1]
+    
     type = Rule.WHILE
     @staticmethod
     def match(parser):
@@ -804,14 +812,14 @@ def print_ast(node,depth=0):
    
 
 
-test_code = """1+2*3"""
+#test_code = """if 1+2==3 then a = 10"""
 #test_code = open("test.au3").read()
 #tokens = lexer.lex_string(test_code)
 #parser = Parser(tokens)
 
 
 
-#p = parser.acceptRule(Expression)
+#p = parser.acceptRule(Program)
 
 #print_ast(p)    
     
