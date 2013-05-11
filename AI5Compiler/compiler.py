@@ -1,64 +1,138 @@
 
 from rd_parser import *
 from lexer import *
+from runtime_types import StaticType
+from runtime_types import InstructionType
+import struct
+
+
+def fits_in_char(integer):
+    return integer >= -128 and integer <= 127
 
 class Instruction:
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.__dict__)
+    def to_binary_without_arg(self,type):
+        return struct.pack("=B",type)
+    def to_binary_with_char_arg(self,type,char):
+        return struct.pack("=Bb",type,char)
+    def to_binary_with_int_arg(self,type,int):
+        return struct.pack("=Bi",type,int)
+    def to_binary_with_int64_arg(self,type,int64):
+        return struct.pack("=Bq",type,int64)
 
 class PushIntegerInstruction(Instruction):
     def __init__(self,integer):
         self.integer = integer
+    def to_binary(self):
+        if fits_in_char(self.integer):
+            return self.to_binary_with_char_arg(InstructionType.PUSH_SMALL_INTEGER, self.integer)
+        else:
+            return self.to_binary_with_int64_arg(InstructionType.PUSH_LARGE_INTEGER, self.integer)
 
+class PushStringInstruction(Instruction):
+    def __init__(self,id):
+        self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_STRING, self.id)
+    
 class PushNameInstruction(Instruction):
     def __init__(self,id):
         self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_NAME, self.id)
 
 class AssignNameInstruction(Instruction):
     def __init__(self,id):
         self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.ASSIGN_NAME, self.id)
 
 class AdditionInstruction(Instruction):
-    pass
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ADDITION)
 
 class MultiplicationInstruction(Instruction):
-    pass
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.MULTIPLICATION)
 
 class DivisionInstruction(Instruction):
-    pass
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.DIVISION)
 
 class SubtractionInstruction(Instruction):
-    pass
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.SUBTRACTION)
 
 class PowInstruction(Instruction):
-    pass
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.POW)
 
 class NegationInstruction(Instruction):
-    pass
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.NEGATION)
 
 class BooleanNotInstruction(Instruction):
-    pass
-
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.BOOLEAN_NOT)
+    
 class JumpRelativeInstruction(Instruction):
     def __init__(self,offset):
         self.offset = offset
+    def to_binary(self):
+        if fits_in_char(self.offset):
+            return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_RELATIVE, self.offset)
+        else:
+            return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_RELATIVE, self.offset)
         
 class JumpRelativeIfFalseInstruction(Instruction):
     def __init__(self,offset):
-        self.offset = offset;
+        self.offset = offset
+    def to_binary(self):
+        if fits_in_char(self.offset):
+            return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_RELATIVE_IF_FALSE, self.offset)
+        else:
+            return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_RELATIVE_IF_FALSE, self.offset)
+        
+class TerminateInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.TERMINATE)
 
-class SymbolTable:
+class StaticTable:
     def __init__(self):
-        self.symbols = {}
-    def get_symbol_id(self,symbol):
-        if symbol not in self.symbols:
-            self.symbols[symbol] = len(self.symbols)
-        return self.symbols[symbol]
+        self.statics = {}
+        
+    
+    def get_static_id(self,type,value):
+        key = (type,value)
+        if key not in self.statics:
+            self.statics[key] = len(self.statics)
+        return self.statics[key]       
+    def get_string_id(self,value):
+        return self.get_static_id(StaticType.STRING, value)        
+    def get_name_id(self,name):
+        return self.get_static_id(StaticType.NAME, name)
+    
+    def to_binary(self):
+        keys = list(self.statics.keys())
+        keys.sort(key=lambda x:self.statics[x])
+        binary = b""
+        for type,value in keys:
+            if type == StaticType.NAME:
+                binary += struct.pack("BI"+str(len(value))+"s",type,len(value),value)
+            elif type == StaticType.STRING:
+                binary += struct.pack("BB"+str(len(value))+"s",type,len(value),value)
+        return binary
+        
+        
+    def length(self):
+        return len(self.statics)
+
             
 
 class Compiler:
     def __init__(self):
-        self.symbol_table = SymbolTable()
+        self.static_table = StaticTable()
 
     def compile_statement(self,statement):
         return {Rule.LINE_STATEMENT: self.compile_line_statement,
@@ -72,7 +146,7 @@ class Compiler:
         if line_statement.nodes[1].type == Rule.ASSIGNMENT:
             assignment = line_statement.nodes[1]
             code += self.compile_expression(assignment.nodes[1])
-            code.append(AssignNameInstruction(self.symbol_table.get_symbol_id(ident.value)))
+            code.append(AssignNameInstruction(self.static_table.get_name_id(ident.value)))
             
         
         return code
@@ -119,8 +193,9 @@ class Compiler:
         if token.type == Token.INTEGER:
             return [PushIntegerInstruction(token.value)]
         if token.type == Token.IDENTIFIER:
-            return [PushNameInstruction(self.symbol_table.get_symbol_id(token.value))]
-        
+            return [PushNameInstruction(self.static_table.get_name_id(token.value))]
+        if token.type == Token.STRING:
+            return [PushStringInstruction(self.static_table.get_string_id(token.value))]        
         
     def compile_factor(self,factor):
         rule = factor.nodes[0]
@@ -161,19 +236,7 @@ class Compiler:
         return code
     
     def compile_program(self,program):
-        return self.compile_block(program.nodes[0])
+        return self.compile_block(program.nodes[0]) + [TerminateInstruction()]
     
-tokens = lex_string("""
-while 1+2
-a = 1+2+3+4+5+6+7+8+9+10
-wend
-""")
-parser = Parser(tokens)
-e = parser.expectRule(Program)
 
-print_ast(e)
-
-compiler = Compiler()
-
-print(compiler.compile_program(e))
 

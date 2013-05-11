@@ -1,0 +1,356 @@
+== VM Overview ==
+
+This document describes the runtime for compiled autoit5 scripts.
+
+The runtime provides an instruction set for code execution, data management and built in language functions.
+
+The instruction set is built for rapid code execution while still allowing high-level programming constructs. For example; the virtual machine manages scope and name lookup for the bytecode even though this could have been solved at compile time (this also simplifies the compiler).
+
+The instructions never directly manipulates data. All data access is done through references to the variants. Even simple data types such as integers and booleans are references. However as these data types are immutable, passing a reference to an integer can never mean that the value changes.
+
+Small data such as integers are directly encoded in the instructions (an instruction can hold up to 8 bytes of data). Bigger data types such as binary blops and strings are instead stored in a global table called the static table. The virtual machine loads this table at startup and references to data in this table are done through their indexes in the table. The table also contains function names, variable names and property names as these are usually too big for a single instruction and keeping them in a single place is more space efficient anyway.
+
+The supported data types in the runtime are as follows:
+
+Name 		|	 Mutable 	|	Info
+Integer		|		No		|	32 or 64 bits.
+Floating	|		No		|	Stored as double
+Boolean		|		No		|
+String		|		No		|	Always encoded as UTF-8
+Binary		|		No		|
+List		|		Yes		|
+
+== Stacks and scopes ==
+
+This runtime is a so called stack machine. This means that the general way of passing data, executing expresions and controlling flow is done through one or more stacks.
+
+AutoIt5 currently makes use of three stacks. These are called the data stack, the function stack and the exception handler stack. 
+
+The data stack is the stack where references to data is pushed and popped. When doing function calls this is where the arguments are pushed and where the result is finally put after a successful call. This stack is also used to control program flow through the JUMP_*_IF_* instructions.
+
+The function stack is never manipulated directly, but is pushed and popped by the runtime during call and ret instructions. When a function is called a new local scope is pushed onto the function stack and is stored along the return address for the caller. This allows for recursive calls and is used when returning from a function.
+
+The exception handler stack is actually a part of the function stack and is used to push positions to exception handlers. These are called when an exception is thrown.
+
+All of these stacks has a fixed amount of storage for fast stack manipulations.
+
+== Instructions ==
+
+PUSH_NAME (static index, 4 bytes) 		
+# Push the reference of a named value.
+
+PUSH_64_INTEGER (int, 8 bytes)
+# Creates a reference to a new integer and pushes it.
+
+PUSH_32_INTEGER (int, 4 bytes)
+# Creates a reference to a new integer and pushes it.
+
+PUSH_16_INTEGER (int, 2 bytes)
+# Creates a reference to a new integer and pushes it.
+
+PUSH_8_INTEGER (int, 1 byte)
+# Creates a reference to a new integer and pushes it.
+
+PUSH_FLOATING (double, 8 bytes)	
+# Creates a reference to a new double and pushes it.
+
+PUSH_BOOLEAN (boolean, 1 byte)
+# Creates a reference to a new boolean and pushes it.
+
+PUSH_STRING (static index, 4 bytes)
+
+PUSH_FUNCTION (position, 4 bytes).
+
+PUSH_NULL
+# Pushes a NULL reference.
+
+INDEX
+# Pops two values and uses the first as an index to the second and pushes the result.	
+
+PROPERTY (static index, 4 bytes)
+# Pops the stack and pushes the named property reference.
+
+POP
+# Pops the stack.
+
+CREATE_GLOBAL (static index, 4 bytes)
+# Creates an empty, global reference to a named variable
+
+CREATE_LOCAL (static index, 4 bytes)
+# Creates an empty, local reference to a named variable. Local references are released when encountering a ret instructions.
+
+ASSIGN_NAME (static index, 4 bytes)
+# Pops the stack and stores the reference in named variable.
+
+ASSIGN_INDEX
+# Pops three values of the stack. The first is the index of list in the second value which is assigned the value of the third.
+
+JUMP_LONG_ABSOLUTE (position, 4 bytes)
+# Jumps to the specified position. 
+
+JUMP_SHORT_ABSOLUTE (position, 1 bytes)
+# Jumps to the specified position. 
+
+JUMP_LONG_RELATIVE (offset, 4 bytes)
+# Jumps forward or backwards specified number of instructions.
+
+JUMP_SHORT_RELATIVE (offset, 1 bytes)
+# Jumps forward or backwards specified number of instructions.
+
+JUMP_LONG_ABSOLUTE_IF_TRUE (position, 4 bytes)
+# Pops the top of the stack and jumps to position if the value evaluates to true.
+
+JUMP_SHORT_ABSOLUTE_IF_TRUE (position, 1 bytes)
+# Pops the top of the stack and jumps to position if the value evaluates to true.
+
+JUMP_LONG_RELATIVE_IF_TRUE (offset, 4 bytes)
+# Pops the top of the stack and jumps specified offset if the value evaluates to true.
+
+JUMP_SHORT_RELATIVE_IF_TRUE (offset, 1 byte)
+# Pops the top of the stack and jumps specified offset if the value evaluates to true.
+
+JUMP_LONG_ABSOLUTE_IF_FALSE (position, 4 bytes)
+# Pops the top of the stack and jumps to position if the value evaluates to false.
+
+JUMP_SHORT_ABSOLUTE_IF_FALSE (position, 1 byte)
+# Pops the top of the stack and jumps to position if the value evaluates to false.
+
+JUMP_LONG_RELATIVE_IF_FALSE (offset, 4 bytes)
+# Pops the top of the stack and jumps specified offset if the value evaluates to false.
+
+JUMP_SHORT_RELATIVE_IF_FALSE (offset, 1 byte)
+# Pops the top of the stack and jumps specified offset if the value evaluates to false.
+
+CALL_NAME (static index, 4 bytes)
+# Jumps and pushed a new local scope to the function located be name. This instruction is the same as PUSH_NAME followed by CALL_TOP.
+
+CALL_TOP
+# Pops the stack and calls the popped function reference.
+
+SWAP_TOP
+# Swaps the two top elements of the stack.
+
+DOUBLE_TOP
+# Pushes the top of the stack another time.
+
+RET
+# Returns to previous call instruction and pops local scope.
+
+PUSH_EXCEPTION_HANDLER (position, 4 bytes)
+# Pushes a position to be used as an exception handler. This causes the vm to jump to this position when an exception is raised. The handler is tied to the current local scope (function) so every scope above this is unwind before reaching this code. If the specified handler does not want to handle the exception (wrong type for example) the RAISE_EXCEPTION should be used to reraise the exception to the next exception handler.
+
+POP_EXCEPTION_HANDLER
+# Removes an exception handler. 
+
+RAISE_EXCEPTION
+# Popping the stack and throwing the result as an exception. This causes the local scope stack to be unwind until an exception handler is found.
+
+BOOLEAN_NOT
+# Pops the stack, converts the value to boolean, negates it and pushes it back on the stack.
+
+BOOLEAL_AND
+# Pops two values and pushes back the result of the boolean expression AND.
+
+BOOLEAN_OR
+# Pops two values and pushes back the result of the boolean expression OR.
+
+ADD
+# Pops two values off the stack, adds them together and pushes back the result.
+
+SUB
+# Pops two values, subtracts the first from the second and pushes the result.
+
+MUL
+# Multiplies two popped values and pushes back the result.
+
+DIV
+# Pops two values, divides the second with the first and pushes result.
+
+GREATER
+# Pops two and checks if the second is larger than the first.
+
+GREATER_EQUAL
+# Same as GREATER but also matches equal.
+
+LESSER
+# Pops two and checks if the second is smaller than the first.
+
+LESSER_EQUAL
+# Same as LESSER but also matches equal.
+
+EQUAL
+# Pops the two top stack elements and do a case insensitive match (if strings) and pushes result.
+
+STRONG_EQUAL
+# Pops the two top stack elements and do a case sensitive match (if strings) and pushes result.
+
+NOT_EQUAL
+# Pops two and pushes back result of not equal comparison.
+
+CONCAT
+# Converts two popped values to strings and joins them. Result is pushed to stack.
+
+POW
+# Pops two values. Raises the second the to first an pushes result.
+
+NOOP
+# Placeholder instruction that does nothing.
+
+== Examples ==
+
+func a(b)
+return [b,1]
+endfunc
+func c()
+return 123
+endfunc
+foo = c
+bar = a(foo)
+bar[0]()
+---------------
+CREATE_LOCAL b
+ASSIGN_NAME b
+PUSH_INTEGER 1
+PUSH_NAME b
+PUSH_INTEGER 0
+CALL_NAME "createlist" ; Create list with 0 elements.
+PROPERTY "add"
+CALL_TOP
+PROPERTY "add"
+CALL_TOP
+RET
+PUSH 123
+RET
+CREATE_GLOBAL foo
+PUSH_NAME c
+ASSIGN_NAME foo
+CREATE_GLOBAL bar
+PUSH_NAME foo
+CALL_NAME a
+ASSIGN_NAME bar
+PUSH_NAME bar
+PUSH 0
+INDEX
+CALL_TOP
+POP
+
+a = [[1+1,2+2]][0]
+---------------
+PUSH_INTEGER 2
+PUSH_INTEGER 2
+ADD
+PUSH_INTEGER 1
+PUSH_INTEGER 1
+ADD
+PUSH_INTEGER 0
+CALL_NAME createlist ; Create list with zero elements
+PROPERTY add
+CALL_TOP
+PROPERTY add
+CALL_TOP
+PUSH_INTEGER 0
+CALL_NAME createlist ; Create list with zero elements
+PROPERTY add
+CALL_TOP
+PUSH 0
+INDEX
+CREATE_GLOBAL a
+ASSIGN_NAME a
+
+a[1+1] = 2+2
+---------------
+PUSH_INTEGER 2
+PUSH_INTEGER 2
+ADD
+PUSH_NAME a
+PUSH 1
+PUSH 1
+ADD
+ASSIGN_INDEX 
+
+a = 10
+while a > 0
+	a-=1
+wend
+---------------
+CREATE__GLOBAL a
+PUSH_INTEGER 10
+ASSIGN_NAME a
+PUSH_NAME a
+PUSH_INTEGER 0
+GREATER
+JUMP_RELATIVE_IF_FALSE 6
+PUSH_NAME a
+PUSH_INTEGER 1
+SUB
+ASSIGN_NAME a
+JUMP_RELATIVE -8
+NOOP
+
+Local a[20]
+a[10/2] = foo(a)
+---------------
+CREATE_LOCAL a
+PUSH_INTEGER 20
+CALL_NAME createlist ; Create list with 20 elements.
+ASSIGN_NAME a
+PUSH_NAME a
+CALL_NAME foo
+PUSH_NAME a
+PUSH 10
+PUSH 2
+DIV
+ASSIGN_INDEX
+
+a[0][1][2] = 123
+---------------
+PUSH_INTEGER 123
+PUSH_NAME a
+PUSH 0
+INDEX
+PUSH_INTEGER 1
+INDEX
+PUSH_INTEGER 2
+ASSIGN_INDEX
+
+Global a[1+5][20] ; This should be considered legacy syntax, but we still need to support it...
+---------------
+CREATE_GLOBAL a
+PUSH_INTEGER 20
+PUSH_INTEGER 1
+PUSH_INTEGER 6
+ADD
+PUSH_INTEGER 2 ; Two levels.
+CALL_NAME createnestedlist
+ASSIGN_NAME a
+
+
+
+== Program file structure ==
+program {
+unsigned int magic; // Something that identifies this file.
+unsigned short compiler;
+unsigned short target;
+unsigned int start_instructions; // Where in the file the first instruction can be found.
+unsigned int num_instructions; // How many instructions there are.
+unsigned int entry_instruction; // Which instruction should execution start at.
+unsigned int statics_start; // Where in the file is the statics stored?
+unsigned int num_statics; // How many statics are there.
+}
+
+// Statics are of variable size
+// as they can be of arbitrary size.
+static {
+	byte type; // String, binary, name, whatever.
+	int length;
+	byte[] data:
+}
+
+// All instructions are the same size for quick
+// blitting into memory.
+instruction {
+	byte type;
+	byte[] payload; // Size depends on type.
+};
+
+
