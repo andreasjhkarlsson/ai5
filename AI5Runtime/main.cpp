@@ -5,13 +5,14 @@
 #include "Variant.h"
 #include <ctime>
 #include <memory>
+#include "ProgramLoader.h"
 
 int main() 
 {
 
-	auto program = std::shared_ptr<std::vector<Instruction*>>(new std::vector<Instruction*>());
-	auto statics = std::shared_ptr<std::vector<STATIC_DATA*>>(new std::vector<STATIC_DATA*>());
-	StackMachine sm(statics,program);
+	//auto program = std::shared_ptr<std::vector<Instruction*>>(new std::vector<Instruction*>());
+	//auto statics = std::shared_ptr<std::vector<StaticData*>>(new std::vector<StaticData*>());
+	//StackMachine sm(statics,program);
 	
 	/*
 	char start = 0;
@@ -60,7 +61,7 @@ int main()
 	
 	
 
-
+	/*
 
 	int sleep = 10;
 	__int64 delay = 2500;
@@ -69,10 +70,16 @@ int main()
 	program->push_back(new Instruction(Instruction::CALL_NAME,&sleep));
 	program->push_back(new Instruction(Instruction::TERMINATE,nullptr));
 
+	*/
+
+	std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile("..\\AI5Compiler\\test.aic");
+
 
 	clock_t begin = clock();
 
-	sm.start();
+	machine->start();
+
+	//sm.start();
 	//sm.getDataStack()->pop()->print();
 
 	clock_t end = clock();

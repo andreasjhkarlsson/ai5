@@ -154,6 +154,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NameStorage.cpp" />
     <ClCompile Include="NullVariant.cpp" />
+    <ClCompile Include="ProgramLoader.cpp" />
     <ClCompile Include="ReferenceVariant.cpp" />
     <ClCompile Include="StackMachine.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="NameStorage.h" />
     <ClInclude Include="NullVariant.h" />
     <ClInclude Include="operators.h" />
+    <ClInclude Include="ProgramLoader.h" />
     <ClInclude Include="stack_instructions.h" />
     <ClInclude Include="ReferenceVariant.h" />
     <ClInclude Include="Static.h" />

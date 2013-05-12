@@ -30,6 +30,11 @@ public:
 		return builtIn != nullptr;
 	}
 
+	__forceinline bool hasAny()
+	{
+		return hasBuiltin() || hasGlobal() || hasLocal();
+	}
+
 	__forceinline void pushLocal(Variant* var)
 	{
 		var->addRef();

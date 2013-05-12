@@ -6,21 +6,21 @@ import binascii
 class Header():
     SIZE = 28
     def __init__(self,magic,compiler_version,target_version,
-                 entry_instruction,instructions_start,num_instructions,
-                 statics_start,num_statics):
+                 entry_instruction,instructions_start,instructions_size,
+                 statics_start,statics_size):
         self.magic = magic
         self.compiler_version = compiler_version
         self.target_version = target_version
         self.entry_instruction = entry_instruction
         self.instructions_start = instructions_start
-        self.num_instructions = num_instructions
+        self.instructions_size = instructions_size
         self.statics_start = statics_start
-        self.num_statics = num_statics
+        self.statics_size = statics_size
     def to_binary(self):
         return struct.pack("IHHIIIII",self.magic,self.compiler_version,
                            self.target_version,self.entry_instruction,
-                           self.instructions_start,self.num_instructions,
-                           self.statics_start,self.num_statics)
+                           self.instructions_start,self.instructions_size,
+                           self.statics_start,self.statics_size)
         
 
 
@@ -30,6 +30,7 @@ class Instructions:
     def to_binary(self):
         binary = b""
         for instruction in self.instructions:
+            print(instruction,instruction.to_binary())
             binary += instruction.to_binary()
         return binary
 
@@ -41,8 +42,8 @@ class CompiledFile:
         statics_binary = self.statics_table.to_binary()
         instructions_binary = Instructions(self.instructions).to_binary()
         header_binary = Header(0xFEEFDEEF,0,0,0,
-                               Header.SIZE+len(statics_binary),len(self.instructions),
-                               Header.SIZE,self.statics_table.length()).to_binary()
+                               Header.SIZE+len(statics_binary),len(instructions_binary),
+                               Header.SIZE,len(statics_binary)).to_binary()
         open_file.write(header_binary)
         open_file.write(statics_binary)
         open_file.write(instructions_binary)

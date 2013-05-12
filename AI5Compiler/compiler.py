@@ -52,6 +52,10 @@ class AdditionInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ADDITION)
 
+class GreaterInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.GREATER)
+
 class MultiplicationInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.MULTIPLICATION)
@@ -118,10 +122,11 @@ class StaticTable:
         keys.sort(key=lambda x:self.statics[x])
         binary = b""
         for type,value in keys:
+            print(type,value)
             if type == StaticType.NAME:
-                binary += struct.pack("BI"+str(len(value))+"s",type,len(value),value)
+                binary += struct.pack("=BI"+str(len(value))+"s",type,len(value),value)
             elif type == StaticType.STRING:
-                binary += struct.pack("BB"+str(len(value))+"s",type,len(value),value)
+                binary += struct.pack("=BI"+str(len(value))+"s",type,len(value),value)
         return binary
         
         
@@ -173,7 +178,8 @@ class Compiler:
                  OperatorToken.SUBTRACT: SubtractionInstruction,
                  OperatorToken.MULTIPLY: MultiplicationInstruction,
                  OperatorToken.DIVIDE: DivisionInstruction,
-                 OperatorToken.POW: PowInstruction
+                 OperatorToken.POW: PowInstruction,
+                 OperatorToken.GREATER: GreaterInstruction
                  }[token.value]()]
         
         

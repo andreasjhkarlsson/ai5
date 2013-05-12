@@ -41,7 +41,7 @@ double ReferenceVariant::toFloating()
 __int64 ReferenceVariant::toInteger()
 {
 	// raise error
-	return 0.0;
+	return 0;
 }
 bool ReferenceVariant::toBoolean()
 {

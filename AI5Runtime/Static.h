@@ -1,22 +1,45 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 typedef unsigned char STATIC_TYPE;
 
-const STATIC_TYPE STATIC_STRING = 1;
-const STATIC_TYPE STATIC_BINARY = 2;
-const STATIC_TYPE STATIC_NAME = 3;
 
-
-struct STATIC_DATA
+class StaticData
 {
+public:
+	typedef std::shared_ptr<StaticData> PTR;
+	const static STATIC_TYPE STRING = 0;
+	const static STATIC_TYPE BINARY = 1;
+	const static STATIC_TYPE NAME = 2;
+	StaticData(STATIC_TYPE type): type(type)
+	{
+	}
+	__forceinline STATIC_TYPE getType()
+	{
+		return type;
+	}
+private:
 	STATIC_TYPE type;
-	size_t data_length;
-	void* data;
+
 };
 
 
+class StaticName: public StaticData
+{
+public:
+	StaticName(const std::string& name): StaticData(NAME), name(name)
+	{
 
-void LoadStatics(unsigned char* data,size_t length,std::vector<STATIC_DATA*>* out);
+	}
+	__forceinline std::string& getName()
+	{
+		return name;
+	}
+private:
+	std::string name;
+};
+
+
 

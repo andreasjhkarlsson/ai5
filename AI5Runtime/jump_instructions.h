@@ -4,12 +4,12 @@
 
 
 
-__forceinline void jumpLongRelative(StackMachine* machine,void* arg)
+__forceinline void jumpLongRelative(StackMachine* machine,unsigned int arg)
 {
-	machine->jumpRelative(*(int*)arg);
+	machine->jumpRelative(arg);
 }
 
-__forceinline void jumpLongRelativeIfFalse(StackMachine* machine,void* arg)
+__forceinline void jumpLongRelativeIfFalse(StackMachine* machine,unsigned int arg)
 {
 	Variant *v = machine->getDataStack()->pop();
 
@@ -20,13 +20,25 @@ __forceinline void jumpLongRelativeIfFalse(StackMachine* machine,void* arg)
 		cond = v->toBoolean();
 
 	if(!cond)
-		machine->jumpRelative(*(int*)arg);
+		machine->jumpRelative(arg);
 	else
 		machine->advanceCounter();
 	v->release();
 }
 
-__forceinline void jumpLongRelativeIfTrue(StackMachine* machine,void* arg)
+
+__forceinline void jumpShortRelativeIfFalse(StackMachine* machine,char arg)
+{
+	jumpLongRelativeIfFalse(machine,arg);
+}
+
+
+__forceinline void jumpShortRelative(StackMachine* machine,char arg)
+{
+	jumpLongRelative(machine,arg);
+}
+
+__forceinline void jumpLongRelativeIfTrue(StackMachine* machine,unsigned int arg)
 {
 	Variant *v = machine->getDataStack()->pop();
 
@@ -37,15 +49,15 @@ __forceinline void jumpLongRelativeIfTrue(StackMachine* machine,void* arg)
 		cond = v->toBoolean();
 
 	if(cond)
-		machine->jumpRelative(*(int*)arg);
+		machine->jumpRelative(arg);
 	else
 		machine->advanceCounter();
 	v->release();
 }
 
-__forceinline void callName(StackMachine* machine,void* arg)
+__forceinline void callName(StackMachine* machine,unsigned int arg)
 {
-	Variant* toCall = machine->getNameStorage()->getNameFromIndex(*(int*)arg)->findNearest();
+	Variant* toCall = machine->getNameStorage()->getNameFromIndex(arg)->findNearest();
 	if(toCall->getType() == Variant::FUNCTION_VAR)
 	{
 		((FunctionVariant*)toCall)->call(machine);

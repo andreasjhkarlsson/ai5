@@ -12,11 +12,14 @@
 
 class Instruction;
 
+using std::shared_ptr;
+using std::vector;
+
 class StackMachine
 {
 public:
-	StackMachine(std::shared_ptr<std::vector<STATIC_DATA*>> statics,
-					std::shared_ptr<std::vector<Instruction*>> program);
+	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
+					shared_ptr<vector<shared_ptr<Instruction>>> program);
 	~StackMachine(void);
 	// These methods are called by instructions, so they need
 	// to be inlined for maximum speed.
@@ -24,7 +27,7 @@ public:
 	__forceinline void jumpRelative(int offset);
 	__forceinline void jumpAbsolute(int position);
 	__forceinline int getCurrentAddress();
-	__forceinline STATIC_DATA* getStaticData(int index);
+	__forceinline StaticData* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
 	static StackMachine* LoadFromStructuredData(const std::string& filename);
@@ -35,11 +38,17 @@ public:
 	{
 		return &nameStorage;
 	}
+	__forceinline CallFrame* getCurrentCallFrame()
+	{
+		if(callStack.size() > 0)
+			return callStack.top();
+		return nullptr;
+	}
 	__forceinline int popCallFrame();
 	void addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function);
 private:
-	std::shared_ptr<std::vector<Instruction*>> program;
-	std::shared_ptr<std::vector<STATIC_DATA*>> staticsTable;
+	shared_ptr<vector<shared_ptr<Instruction>>> program;
+	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
 	NameStorage nameStorage;
 	DataStack dataStack;
@@ -56,9 +65,9 @@ void StackMachine::jumpAbsolute(int position)
 {
 	programCounter = position;
 }
-STATIC_DATA* StackMachine::getStaticData(int index)
+StaticData* StackMachine::getStaticData(int index)
 {
-	return (*staticsTable)[index];
+	return (*staticsTable)[index].get();
 }
 
 DataStack* StackMachine::getDataStack()
@@ -94,3 +103,4 @@ int StackMachine::getCurrentAddress()
 {
 	return programCounter;
 }
+

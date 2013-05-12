@@ -66,6 +66,9 @@
     <ClCompile Include="DataStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ProgramLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -127,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="UserFunctionVariant.h">
       <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgramLoader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

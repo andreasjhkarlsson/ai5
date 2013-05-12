@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include "StackMachine.h"
 #include "operators.h"
 #include "stack_instructions.h"
@@ -9,9 +10,12 @@
 
 typedef unsigned char INSTRUCTION_TYPE;
 
+class ProgramLoader;
+
 class Instruction
 {
 public:
+	typedef std::shared_ptr<Instruction> PTR;
 	static const INSTRUCTION_TYPE NOOP							= 0x00;
 	static const INSTRUCTION_TYPE PUSH_NAME						= 0x01;
 	static const INSTRUCTION_TYPE PUSH_LARGE_INTEGER			= 0x02;
@@ -67,12 +71,19 @@ public:
 	static const INSTRUCTION_TYPE POW							= 0x34;
 	static const INSTRUCTION_TYPE TERMINATE						= 0x35;
 	static const INSTRUCTION_TYPE NEGATION						= 0x36;
-	static void LoadInstructions(unsigned char* data,size_t size,std::vector<Instruction*> out);
+	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
-	Instruction(INSTRUCTION_TYPE type,void* arg);
+	friend class ProgramLoader;
 private:
 	INSTRUCTION_TYPE type;
-	void* arg;
+	union
+	{
+		char byte;
+		int integer;
+		double floating;
+		__int64 int64;
+
+	} arg;
 };
 
 
@@ -88,19 +99,25 @@ void Instruction::execute(StackMachine* machine)
 		noop(machine);
 		break;
 	case JUMP_LONG_RELATIVE:
-		jumpLongRelative(machine,arg);
+		jumpLongRelative(machine,arg.integer);
 		break;
 	case JUMP_LONG_RELATIVE_IF_FALSE:
-		jumpLongRelativeIfFalse(machine,arg);
+		jumpLongRelativeIfFalse(machine,arg.integer);
 		break;
 	case JUMP_LONG_RELATIVE_IF_TRUE:
-		jumpLongRelativeIfTrue(machine,arg);
+		jumpLongRelativeIfTrue(machine,arg.integer);
+		break;
+	case JUMP_SHORT_RELATIVE_IF_FALSE:
+		jumpShortRelativeIfFalse(machine,arg.byte);
+		break;
+	case JUMP_SHORT_RELATIVE:
+		jumpShortRelative(machine,arg.byte);
 		break;
 	case PUSH_SMALL_INTEGER:
-		pushSmallInteger(machine,arg);
+		pushSmallInteger(machine,arg.integer);
 		break;
 	case PUSH_LARGE_INTEGER:
-		pushLargeInteger(machine,arg);
+		pushLargeInteger(machine,arg.int64);
 		break;
 	case POP:
 		pop(machine);
@@ -118,19 +135,19 @@ void Instruction::execute(StackMachine* machine)
 		doubleTop(machine);
 		break;
 	case CREATE_GLOBAL:
-		createGlobal(machine,arg);
+		createGlobal(machine,arg.integer);
 		break;
 	case CREATE_LOCAL:
-		createLocal(machine,arg);
+		createLocal(machine,arg.integer);
 		break;
 	case PUSH_NAME:
-		pushName(machine,arg);
+		pushName(machine,arg.integer);
 		break;
 	case ASSIGN_NAME:
-		assignName(machine,arg);
+		assignName(machine,arg.integer);
 		break;
 	case CALL_NAME:
-		callName(machine,arg);
+		callName(machine,arg.integer);
 		break;
 	case RET:
 		ret(machine);
