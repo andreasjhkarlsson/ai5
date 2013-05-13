@@ -29,8 +29,8 @@ class InstructionType:
     JUMP_SHORT_ABSOLUTE_IF_FALSE        = 0x1A;
     JUMP_LONG_RELATIVE_IF_FALSE         = 0x1B;
     JUMP_SHORT_RELATIVE_IF_FALSE        = 0x1C;
-    CALL_NAME                           = 0x1D;
-    CALL_TOP                            = 0x1E;
+    NEGATION                            = 0x1D;
+    CALL_FUNCTION                       = 0x1E;
     SWAP_TOP                            = 0x1F;
     DOUBLE_TOP                          = 0x20;
     RET                                 = 0x21;
@@ -54,7 +54,7 @@ class InstructionType:
     CONCAT                              = 0x33;
     POW                                 = 0x34;
     TERMINATE                           = 0x35;
-    NEGATION                            = 0x36;
+    
     
 class StaticType:
     STRING  = 0x0

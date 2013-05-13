@@ -45,8 +45,8 @@ public:
 	static const INSTRUCTION_TYPE JUMP_SHORT_ABSOLUTE_IF_FALSE	= 0x1A;
 	static const INSTRUCTION_TYPE JUMP_LONG_RELATIVE_IF_FALSE	= 0x1B;
 	static const INSTRUCTION_TYPE JUMP_SHORT_RELATIVE_IF_FALSE	= 0x1C;
-	static const INSTRUCTION_TYPE CALL_NAME						= 0x1D;
-	static const INSTRUCTION_TYPE CALL_TOP						= 0x1E;
+	static const INSTRUCTION_TYPE NEGATION						= 0x1D;
+	static const INSTRUCTION_TYPE CALL_FUNCTION					= 0x1E;
 	static const INSTRUCTION_TYPE SWAP_TOP						= 0x1F;
 	static const INSTRUCTION_TYPE DOUBLE_TOP					= 0x20;
 	static const INSTRUCTION_TYPE RET							= 0x21;
@@ -70,7 +70,7 @@ public:
 	static const INSTRUCTION_TYPE CONCAT						= 0x33;
 	static const INSTRUCTION_TYPE POW							= 0x34;
 	static const INSTRUCTION_TYPE TERMINATE						= 0x35;
-	static const INSTRUCTION_TYPE NEGATION						= 0x36;
+	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
 	friend class ProgramLoader;
@@ -146,8 +146,8 @@ void Instruction::execute(StackMachine* machine)
 	case ASSIGN_NAME:
 		assignName(machine,arg.integer);
 		break;
-	case CALL_NAME:
-		callName(machine,arg.integer);
+	case CALL_FUNCTION:
+		callFunction(machine,arg.integer);
 		break;
 	case RET:
 		ret(machine);
