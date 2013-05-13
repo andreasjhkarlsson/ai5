@@ -38,6 +38,6 @@
 <continueloop> = "continueloop", [<integer>]
 <return> = "return", [<expression>]
 <with> = "with", <expression>, "newline", {".", <line statement>, "newline"}, "endwith"
-<redim> = "redim",<terminal>,[{<property>|<list indexing>}]
+<redim> = "redim",<terminal>,{<qualifier>}
 <enum> = "enum", ["step", ["+"|"-"|"*"], <integer>], <enum constant>{",",<enum constant>}
 <enum constant> = <identifier>,[<assignment>]
