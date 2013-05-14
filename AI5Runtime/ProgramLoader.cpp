@@ -67,7 +67,6 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::POP							:
 		case Instruction::NOOP							:
 		case Instruction::PUSH_NULL						:
-		case Instruction::CALL_TOP						:
 		case Instruction::INDEX							:
 		case Instruction::BOOLEAN_NOT					:
 		case Instruction::BOOLEAN_OR					:
@@ -105,7 +104,6 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_FUNCTION:
 		case Instruction::PROPERTY						:
 		case Instruction::ASSIGN_PROPERTY				:
-		case Instruction::CALL_NAME						:
 		case Instruction::PUSH_EXCEPTION_HANDLER		:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_TRUE	:
@@ -134,6 +132,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_SHORT_RELATIVE_IF_FALSE	:
 		case Instruction::PUSH_BOOLEAN:
+		case Instruction::CALL_FUNCTION:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.byte = *(char*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);

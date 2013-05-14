@@ -147,7 +147,7 @@ void Instruction::execute(StackMachine* machine)
 		assignName(machine,arg.integer);
 		break;
 	case CALL_FUNCTION:
-		callFunction(machine,arg.integer);
+		callFunction(machine,arg.byte);
 		break;
 	case RET:
 		ret(machine);

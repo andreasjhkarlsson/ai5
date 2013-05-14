@@ -101,6 +101,12 @@ class JumpRelativeIfFalseInstruction(Instruction):
 class TerminateInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.TERMINATE)
+    
+class CallFunctionInstruction(Instruction):
+    def __init__(self,num_arguments):
+        self.num_arguments = num_arguments
+    def to_binary(self):
+        return self.to_binary_with_char_arg(InstructionType.CALL_FUNCTION,self.num_arguments)    
 
 class StaticTable:
     def __init__(self):
@@ -140,18 +146,39 @@ class Compiler:
         self.static_table = StaticTable()
 
     def compile_statement(self,statement):
-        return {Rule.LINE_STATEMENT: self.compile_line_statement,
-                Rule.WHILE: self.compile_while_statement}[statement.nodes[0].type](statement.nodes[0])
+        return {Rule.LINE_STATEMENT:
+                self.compile_line_statement,
+                Rule.WHILE:
+                self.compile_while_statement}[statement.nodes[Statement.NODE_SUBSTATEMENT].type](statement.nodes[Statement.NODE_SUBSTATEMENT])
+                
+    def compile_qualifier(self,qualifier):
+        if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
+            return self.compile_call(qualifier.nodes[Qualifier.NODE_SUBQUALIFIER])
+        
+    
+    def compile_call(self,call):
+        code = []
+        for expression in call.nodes[Call.NODE_ARGUMENTS]:
+            code += self.compile_expression(expression)
+        code += [CallFunctionInstruction(len(call.nodes[Call.NODE_ARGUMENTS]))]
+        return code
     
     def compile_line_statement(self,line_statement):
+        nodes = line_statement.nodes
         code = []
         
-        ident = line_statement.nodes[0]
+        ident = nodes[LineStatement.NODE_START]
+        code.append(PushNameInstruction(self.static_table.get_name_id(ident.value)))
         
-        if line_statement.nodes[1].type == Rule.ASSIGNMENT:
-            assignment = line_statement.nodes[1]
-            code += self.compile_expression(assignment.nodes[1])
-            code.append(AssignNameInstruction(self.static_table.get_name_id(ident.value)))
+        qualifiers = nodes[LineStatement.NODE_QUALIFIERS]
+        while len(qualifiers) > 0:
+            code += self.compile_qualifier(qualifiers.pop(0))
+        
+#        if len(nodes) > 0 and nodes[0].type == Rule.ASSIGNMENT:
+#            pass
+#            assignment = nodes[1]
+#            code += self.compile_expression(nodes[1])
+#            code.append(AssignNameInstruction(self.static_table.get_name_id(ident.value)))
             
         
         return code
@@ -194,7 +221,7 @@ class Compiler:
                  OperatorToken.BOOLEAN_NOT: BooleanNotInstruction}[unary.nodes[0].value]()]
     
     def compile_terminal(self,terminal):
-        token = terminal.nodes[0]
+        token = terminal.nodes[Terminal.NODE_TYPE]
         
         if token.type == Token.INTEGER:
             return [PushIntegerInstruction(token.value)]
@@ -204,30 +231,23 @@ class Compiler:
             return [PushStringInstruction(self.static_table.get_string_id(token.value))]        
         
     def compile_factor(self,factor):
-        rule = factor.nodes[0]
+        rule = factor.nodes[Factor.NODE_SUBNODE]
         code = []
-        
-        unary = None
-        if rule.type == Rule.UNARY_OPERATOR:
-            unary = self.compile_unary_operator(rule)
-            rule = factor.nodes[1]
         
         if rule.type == Rule.TERMINAL:
             code = self.compile_terminal(rule)
         elif rule.type == Rule.EXPRESSION:
             code = self.compile_expression(rule)
-        
-        if unary:
-            code += unary
             
         return code
     
     def compile_expression(self,expr):
-        code = self.compile_factor(expr.nodes.pop(0))
+        nodes = expr.nodes[Expression.NODE_ELEMENTS]
+        code = self.compile_factor(nodes.pop(0))
         
-        while expr.nodes:
-            op = expr.nodes.pop(0)
-            right_hand = expr.nodes.pop(0)
+        while nodes:
+            op = nodes.pop(0)
+            right_hand = nodes.pop(0)
             if right_hand.type == Rule.FACTOR:
                 code += self.compile_factor(right_hand)
             elif right_hand.type == Rule.EXPRESSION:
@@ -237,12 +257,12 @@ class Compiler:
     
     def compile_block(self,block):
         code = []
-        for stm in block.nodes:
+        for stm in block.nodes[Block.NODE_STATEMENTS]:
             code += self.compile_statement(stm)
         return code
     
     def compile_program(self,program):
-        return self.compile_block(program.nodes[0]) + [TerminateInstruction()]
+        return self.compile_block(program.nodes[Program.NODE_BLOCK]) + [TerminateInstruction()]
     
 
 

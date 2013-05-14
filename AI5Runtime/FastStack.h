@@ -10,6 +10,7 @@ public:
 	__forceinline void push(T element);
 	__forceinline T pop();
 	__forceinline T top();
+	__forceinline T get(int offset_from_top);
 	__forceinline size_t size();
 private:
 	T* stack;
@@ -26,6 +27,12 @@ template<typename T>
 T FastStack<T>::pop()
 {
 	return stack[position--];
+}
+
+template<typename T>
+T FastStack<T>::get(int offset_from_top)
+{
+	return stack[position-offset_from_top];
 }
 
 template<typename T>

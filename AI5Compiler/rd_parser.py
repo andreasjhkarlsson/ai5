@@ -481,7 +481,7 @@ class Block(Rule):
     NODE_STATEMENTS = "statements"
     @staticmethod
     def match(parser):
-        nodes = {}
+        nodes = {Block.NODE_STATEMENTS:[]}
         something_matched = False
         while True:
             if parser.accept(Token.NEWLINE):
@@ -489,7 +489,7 @@ class Block(Rule):
                 continue
             if parser.acceptRule(Statement):
                 something_matched = True
-                nodes[Block.NODE_STATEMENTS]=parser.matched_rule
+                nodes[Block.NODE_STATEMENTS].append(parser.matched_rule)
                 if not parser.isNextEOF():
                     parser.expect(Token.NEWLINE)
                 continue
@@ -674,8 +674,7 @@ class UnaryOperator(Rule):
 class Factor(Rule):
     type = Rule.FACTOR
     NODE_UNARIES = "unaries"
-    NODE_TERMINAL = "terminal"
-    NODE_EXPRESSION = "expression"
+    NODE_SUBNODE = "subnode"
     NODE_QUALIFIERS = "qualifiers"
     @staticmethod
     def match(parser):
@@ -688,9 +687,9 @@ class Factor(Rule):
         
         
         if parser.acceptAnyRule([Terminal,InlineList]):
-            nodes[Factor.NODE_TERMINAL]=parser.matched_rule
+            nodes[Factor.NODE_SUBNODE]=parser.matched_rule
         elif parser.accept(Token.LEFT_PAREN):
-            nodes[Factor.NODE_EXPRESSION]=parser.expectRule(Expression)
+            nodes[Factor.NODE_SUBNODE]=parser.expectRule(Expression)
             parser.expect(Token.RIGHT_PAREN)
         else:
             return None
@@ -808,11 +807,11 @@ class BinaryOperator(Rule):
 class Expression(Rule):
     
     type = Rule.EXPRESSION
-    NODE_ELEMENTS = "operators"
+    NODE_ELEMENTS = "elements"
     
     def __init__(self,nodes):
         super(Expression,self).__init__(nodes)
-        self.nodes = {Expression.NODE_ELEMENTS:self.nodes}
+        #self.nodes = {Expression.NODE_ELEMENTS:self.nodes}
     
     @staticmethod
     def climb_precedence(nodes):
@@ -848,8 +847,7 @@ class Expression(Rule):
                 
                 tree.append(op)
                 tree.append(rhs)
-
-        return get_tree().nodes
+        return {Expression.NODE_ELEMENTS:get_tree().nodes}
     
     @staticmethod
     def match(parser):
@@ -901,15 +899,10 @@ def print_ast(node,depth=0):
    
 
 
-test_code = """if 1+2==3 then a = 10"""
+#test_code = """if 1+2==3 then a = 10"""
 #test_code = open("test.au3").read()
-tokens = lexer.lex_string(test_code)
-parser = Parser(tokens)
-
-
-
-p = parser.acceptRule(Program)
-
-
-print_ast(p)    
+#tokens = lexer.lex_string(test_code)
+#parser = Parser(tokens)
+#p = parser.acceptRule(Program)
+#print_ast(p)    
     

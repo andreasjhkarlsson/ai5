@@ -55,10 +55,12 @@ __forceinline void jumpLongRelativeIfTrue(StackMachine* machine,unsigned int arg
 	v->release();
 }
 
-__forceinline void callFunction(StackMachine* machine,unsigned int arg)
+__forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 {
-	/*
-	Variant* toCall = machine->getNameStorage()->getNameFromIndex(arg)->findNearest();
+	// The actual object resides below the arguments on the stack. 
+	// It's up the the function to pop arguments + function from stack.
+	Variant* toCall = machine->getDataStack()->get(numberOfArgs);
+
 	if(toCall->getType() == Variant::FUNCTION_VAR)
 	{
 		((FunctionVariant*)toCall)->call(machine);
@@ -68,7 +70,6 @@ __forceinline void callFunction(StackMachine* machine,unsigned int arg)
 	{
 		// Throw error!!
 	}
-	*/
 }
 
 __forceinline void ret(StackMachine* machine)
