@@ -1,5 +1,6 @@
 #include "StackMachine.h"
 #include "IntegerVariant.h"
+#include "UserFunctionVariant.h"
 
 __forceinline void pushSmallInteger(StackMachine* machine,char arg)
 {
@@ -32,11 +33,25 @@ __forceinline void doubleTop(StackMachine* machine)
 }
 
 
-__forceinline void pushName(StackMachine* machine,unsigned int arg)
+__forceinline void pushName(StackMachine* machine,int nameIndex)
 {
-	Name* name = machine->getNameStorage()->getNameFromIndex(arg);
+	Name* name = machine->getNameStorage()->getNameFromIndex(nameIndex);
 	Variant* var = name->findNearest();
 	var->addRef();
 	machine->getDataStack()->push(var);
+	machine->advanceCounter();
+}
+
+
+__forceinline void pushFunction(StackMachine* machine,int address)
+{
+	machine->getDataStack()->push(new UserFunctionVariant(address));
+	machine->advanceCounter();
+
+}
+
+__forceinline void pushNull(StackMachine* machine)
+{
+	machine->getDataStack()->pushNull();
 	machine->advanceCounter();
 }

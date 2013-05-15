@@ -128,6 +128,15 @@ void Instruction::execute(StackMachine* machine)
 	case ADDITION:
 		addition(machine);
 		break;
+	case MULTIPLICATION:
+		multiplication(machine);
+		break;
+	case DIVISION:
+		division(machine);
+		break;
+	case SUBTRACTION:
+		subtraction(machine);
+		break;
 	case GREATER:
 		greater(machine);
 		break;
@@ -143,6 +152,9 @@ void Instruction::execute(StackMachine* machine)
 	case PUSH_NAME:
 		pushName(machine,arg.integer);
 		break;
+	case PUSH_FUNCTION:
+		pushFunction(machine,arg.integer);
+		break;
 	case ASSIGN_NAME:
 		assignName(machine,arg.integer);
 		break;
@@ -151,6 +163,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case RET:
 		ret(machine);
+		break;
+	case PUSH_NULL:
+		pushNull(machine);
 		break;
 	}
 }

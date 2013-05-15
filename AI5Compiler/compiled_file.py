@@ -30,7 +30,7 @@ class Instructions:
     def to_binary(self):
         binary = b""
         for instruction in self.instructions:
-            print(instruction,instruction.to_binary())
+            print(instruction,binascii.hexlify(instruction.to_binary()))
             binary += instruction.to_binary()
         return binary
 

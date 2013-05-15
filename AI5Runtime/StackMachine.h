@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <iostream>
 #include "Static.h"
 #include "DataStack.h"
 #include "NameStorage.h"
@@ -50,6 +51,7 @@ private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
+	FastStack<CallFrame*> callFramePool;
 	NameStorage nameStorage;
 	DataStack dataStack;
 	VariantFactory variantFactory;
@@ -87,7 +89,9 @@ VariantFactory* StackMachine::getVariantFactory()
 
 void StackMachine::pushCallFrame(int returnAddress)
 {
-	callStack.push(new CallFrame(returnAddress));
+	CallFrame* frame = callFramePool.pop();
+	frame->setReturnAddress(returnAddress);
+	callStack.push(frame);
 }
 
 int StackMachine::popCallFrame()
@@ -95,7 +99,7 @@ int StackMachine::popCallFrame()
 	CallFrame *frame = callStack.pop();
 	frame->detachNames();
 	int returnAddress = frame->getReturnAddress();
-	delete frame;
+	callFramePool.push(frame);
 	return returnAddress;
 }
 

@@ -6,7 +6,7 @@ namespace AI5StandardLibrary
 
 void hello(StackMachine*);
 void sleep(StackMachine*);
-
+void printline(StackMachine*);
 
 }
 

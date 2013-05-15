@@ -9,6 +9,7 @@ import struct
 def fits_in_char(integer):
     return integer >= -128 and integer <= 127
 
+
 class Instruction:
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.__dict__)
@@ -30,6 +31,14 @@ class PushIntegerInstruction(Instruction):
         else:
             return self.to_binary_with_int64_arg(InstructionType.PUSH_LARGE_INTEGER, self.integer)
 
+
+class PushFunctionInstruction(Instruction):
+    def __init__(self,address):
+        self.address = address
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_FUNCTION, self.address)    
+
+
 class PushStringInstruction(Instruction):
     def __init__(self,id):
         self.id = id
@@ -42,6 +51,18 @@ class PushNameInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_NAME, self.id)
 
+class PopInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.POP)
+    
+class PushNullInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.PUSH_NULL)
+    
+class RetInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.RET)
+    
 class AssignNameInstruction(Instruction):
     def __init__(self,id):
         self.id = id
@@ -128,7 +149,7 @@ class StaticTable:
         keys.sort(key=lambda x:self.statics[x])
         binary = b""
         for type,value in keys:
-            print(type,value)
+            print(self.statics[(type,value)],value,type)
             if type == StaticType.NAME:
                 binary += struct.pack("=BI"+str(len(value))+"s",type,len(value),value)
             elif type == StaticType.STRING:
@@ -143,13 +164,39 @@ class StaticTable:
 
 class Compiler:
     def __init__(self):
-        self.static_table = StaticTable()
+        self.static_table = StaticTable()   
+    
+    def compile_function(self,function):
+        compiled_body = []
+        arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
+        for argument in reversed(arguments):
+            compiled_body += [AssignNameInstruction(self.static_table.get_name_id(argument.value))]
+        
+        # Pop of 'this'
+        compiled_body += [PopInstruction()]
+        
+        compiled_body += self.compile_block(function.nodes[Function.NODY_BODY])
+        
+        compiled_body += [PushNullInstruction(),RetInstruction()]
+        
+        
+        code = [PushFunctionInstruction(3),
+                AssignNameInstruction(self.static_table.get_name_id(function.nodes[Function.NODE_NAME].value)),
+                JumpRelativeInstruction(len(compiled_body)+1)]
+        code += compiled_body
+        
+        return code
 
     def compile_statement(self,statement):
-        return {Rule.LINE_STATEMENT:
-                self.compile_line_statement,
-                Rule.WHILE:
-                self.compile_while_statement}[statement.nodes[Statement.NODE_SUBSTATEMENT].type](statement.nodes[Statement.NODE_SUBSTATEMENT])
+        substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
+        
+        if substatement.type == Rule.FUNCTION:
+            return self.compile_function(substatement)
+        if substatement.type == Rule.WHILE:
+            return self.compile_while_statement(substatement)
+        if substatement.type == Rule.LINE_STATEMENT:
+            return self.compile_line_statement(substatement)
+
                 
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
@@ -163,6 +210,17 @@ class Compiler:
         code += [CallFunctionInstruction(len(call.nodes[Call.NODE_ARGUMENTS]))]
         return code
     
+    def compile_name_assignment(self,assignment,name):
+        code = self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
+        code += [AssignNameInstruction(name)]
+        return code
+    
+    def compile_qualifiers(self,qualifiers):
+        code = []
+        while len(qualifiers) > 0:
+            code += self.compile_qualifier(qualifiers.pop(0))
+        return code
+    
     def compile_line_statement(self,line_statement):
         nodes = line_statement.nodes
         code = []
@@ -171,25 +229,25 @@ class Compiler:
         code.append(PushNameInstruction(self.static_table.get_name_id(ident.value)))
         
         qualifiers = nodes[LineStatement.NODE_QUALIFIERS]
-        while len(qualifiers) > 0:
-            code += self.compile_qualifier(qualifiers.pop(0))
+        code += self.compile_qualifiers(qualifiers)
         
-#        if len(nodes) > 0 and nodes[0].type == Rule.ASSIGNMENT:
-#            pass
-#            assignment = nodes[1]
-#            code += self.compile_expression(nodes[1])
-#            code.append(AssignNameInstruction(self.static_table.get_name_id(ident.value)))
-            
+        if LineStatement.NODE_ASSIGNMENT in nodes:
+            # remove last push_name instruction
+            code.pop(0)
+            assignment = nodes[LineStatement.NODE_ASSIGNMENT]
+            code += self.compile_name_assignment(assignment, self.static_table.get_name_id(ident.value))     
+        else:
+            code += [PopInstruction()]       
         
         return code
     
     def compile_while_statement(self,while_statement):
 
         
-        compiled_condition = self.compile_expression(while_statement.condition)
+        compiled_condition = self.compile_expression(while_statement.nodes[While.NODE_CONDITION])
         compiled_body = []
-        if while_statement.body:
-            compiled_body = self.compile_block(while_statement.body)
+        if While.NODE_BODY in while_statement.nodes:
+            compiled_body = self.compile_block(while_statement.nodes[While.NODE_BODY])
         
         code = []
         code += compiled_condition
@@ -199,7 +257,7 @@ class Compiler:
         return code
     
     def compile_operator(self,operator):
-        token = operator.nodes[0]
+        token = operator.nodes[BinaryOperator.NODE_OPERATOR]
         
         return [{OperatorToken.ADD: AdditionInstruction,
                  OperatorToken.SUBTRACT: SubtractionInstruction,
@@ -239,10 +297,12 @@ class Compiler:
         elif rule.type == Rule.EXPRESSION:
             code = self.compile_expression(rule)
             
+        code += self.compile_qualifiers(factor.nodes[Factor.NODE_QUALIFIERS])
+        
         return code
     
     def compile_expression(self,expr):
-        nodes = expr.nodes[Expression.NODE_ELEMENTS]
+        nodes = expr.nodes
         code = self.compile_factor(nodes.pop(0))
         
         while nodes:

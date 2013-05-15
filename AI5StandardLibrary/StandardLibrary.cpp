@@ -8,5 +8,6 @@ namespace AI5StandardLibrary
 	{
 		machine->addBuiltInFunction("hello",hello);
 		machine->addBuiltInFunction("sleep",sleep);
+		machine->addBuiltInFunction("printline",printline);
 	}
 }

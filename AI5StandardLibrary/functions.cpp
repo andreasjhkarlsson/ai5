@@ -25,5 +25,15 @@ void sleep(StackMachine* machine)
 	machine->getDataStack()->pushNull();
 }
 
+void printline(StackMachine* machine)
+{
+	Variant* var = machine->getDataStack()->pop();
+	machine->getDataStack()->pop();
+
+	var->print();
+
+	var->release();
+	machine->getDataStack()->pushNull();
+}
 
 }

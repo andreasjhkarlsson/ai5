@@ -8,7 +8,7 @@ class StackMachine;
 class CallFrame
 {
 public:
-	CallFrame(int returnAddress);
+	CallFrame();
 	~CallFrame(void);
 
 	int getReturnAddress()
@@ -27,6 +27,11 @@ public:
 		{
 			locals.pop()->popLocal();
 		}
+	}
+
+	void setReturnAddress(int address)
+	{
+		this->returnAddress = address;
 	}
 
 private:

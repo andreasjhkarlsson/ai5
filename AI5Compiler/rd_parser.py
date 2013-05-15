@@ -457,7 +457,7 @@ class Argument(Rule):
 class Function(Rule):
     type = Rule.FUNCTION
     NODE_NAME = "name"
-    NODE_ARGUMENTS = ""
+    NODE_ARGUMENTS = "arguments list"
     NODY_BODY = "body"
     @staticmethod
     def match(parser):
@@ -807,17 +807,24 @@ class BinaryOperator(Rule):
 class Expression(Rule):
     
     type = Rule.EXPRESSION
-    NODE_ELEMENTS = "elements"
     
     def __init__(self,nodes):
         super(Expression,self).__init__(nodes)
-        #self.nodes = {Expression.NODE_ELEMENTS:self.nodes}
+        self.first_factor = nodes[0]
+        if len(nodes) == 3:
+            self.operator = nodes[1]
+            self.second_factor = nodes[2]
+        else:
+            self.operator = None
+            self.second_factor = None
     
     @staticmethod
     def climb_precedence(nodes):
         nodes = deque(nodes)
         
+        
         def get_tree(min_prec=0,rec=0):
+            
             
             lhs = nodes.popleft()
             
@@ -829,6 +836,7 @@ class Expression(Rule):
                     return Expression(tree)
                 
                 op = nodes[0]
+                
 
                 prec = op.precedence_level()
                 if prec < min_prec:
@@ -840,14 +848,18 @@ class Expression(Rule):
                 if op.is_left_associative():
                     next_min_prec += 1
                 
-                rhs = get_tree(next_min_prec,rec+1) # <-- Recursion!
+                rhs = get_tree(next_min_prec,rec+1)
                 
-                if len(rhs.nodes[Expression.NODE_ELEMENTS]) == 1:
-                    rhs = rhs.nodes[Expression.NODE_ELEMENTS][0]
+                if len(rhs.nodes) == 1:
+                    rhs = rhs.nodes[0]
                 
                 tree.append(op)
                 tree.append(rhs)
-        return {Expression.NODE_ELEMENTS:get_tree().nodes}
+                
+                
+                
+        
+        return get_tree().nodes
     
     @staticmethod
     def match(parser):

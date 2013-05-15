@@ -4,5 +4,6 @@
 
 void DataStack::pushNull()
 {
+	NullVariant::Instance.addRef();
 	push(&NullVariant::Instance);
 }
