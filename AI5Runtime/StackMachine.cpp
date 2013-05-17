@@ -37,7 +37,10 @@ void StackMachine::start()
 
 	while (!terminated) 
 	{
-	//	std::cout << "Executing instruction @ " << programCounter << std::endl;
+		#ifdef _DEBUG
+			std::cout << *(program->operator[](programCounter)) << std::endl;
+		#endif
+			
 		program->operator[](programCounter)->execute(this);
 		
 	}
