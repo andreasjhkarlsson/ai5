@@ -28,9 +28,9 @@ public:
 	static const INSTRUCTION_TYPE INDEX							= 0x09;
 	static const INSTRUCTION_TYPE PROPERTY						= 0x0A;
 	static const INSTRUCTION_TYPE POP							= 0x0B;
-	static const INSTRUCTION_TYPE CREATE_GLOBAL					= 0x0C;
-	static const INSTRUCTION_TYPE CREATE_LOCAL					= 0x0D;
-	static const INSTRUCTION_TYPE ASSIGN_NAME					= 0x0E;
+	static const INSTRUCTION_TYPE ASSIGN_GLOBAL					= 0x0C;
+	static const INSTRUCTION_TYPE ASSIGN_LOCAL					= 0x0D;
+	static const INSTRUCTION_TYPE ASSIGN_NEAREST				= 0x0E;
 	static const INSTRUCTION_TYPE ASSIGN_INDEX					= 0x0F;
 	static const INSTRUCTION_TYPE ASSIGN_PROPERTY				= 0x10;
 	static const INSTRUCTION_TYPE JUMP_LONG_ABSOLUTE			= 0x11;
@@ -144,11 +144,11 @@ void Instruction::execute(StackMachine* machine)
 	case DOUBLE_TOP:
 		doubleTop(machine);
 		break;
-	case CREATE_GLOBAL:
-		createGlobal(machine,arg.integer);
+	case ASSIGN_GLOBAL:
+		assignGlobal(machine,arg.integer);
 		break;
-	case CREATE_LOCAL:
-		createLocal(machine,arg.integer);
+	case ASSIGN_LOCAL:
+		assignLocal(machine,arg.integer);
 		break;
 	case PUSH_NAME:
 		pushName(machine,arg.integer);
@@ -156,8 +156,8 @@ void Instruction::execute(StackMachine* machine)
 	case PUSH_FUNCTION:
 		pushFunction(machine,arg.integer);
 		break;
-	case ASSIGN_NAME:
-		assignName(machine,arg.integer);
+	case ASSIGN_NEAREST:
+		assignNearest(machine,arg.integer);
 		break;
 	case CALL_FUNCTION:
 		callFunction(machine,arg.byte);

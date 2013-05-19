@@ -7,23 +7,24 @@ template<typename T>
 class FastList
 {
 public:
-	FastList(size_t reserveSize): FastList(reserveSize,false)
-	{
-		
-	}
-	FastList(int reserveSize,bool clearMemory): clearMemory(clearMemory)
+	FastList(int reserveSize,bool clearMemory): clearMemory(clearMemory),listSize(0)
 	{
 		bufferSize = reserveSize;
 		buffer = new T[reserveSize];
 		if(clearMemory)
-			memset(bufer,0,sizeof(T)*bufferSize);
+			memset(buffer,0,sizeof(T)*bufferSize);
 
 	}
 	~FastList()
 	{
 		delete[] buffer;
 	}
-	__forceinline T get(int index)
+	__forceinline T get(size_t index)
+	{
+		return buffer[index];
+	}
+
+	__forceinline T& operator[](size_t index)
 	{
 		return buffer[index];
 	}
@@ -33,33 +34,41 @@ public:
 	}
 	__forceinline void push_back(T data)
 	{
-		if((size+1) > this->bufferSize)
+		if((listSize+1) > this->bufferSize)
 		{
-			realloc((size+1)*2);
+			realloc((listSize+1)*2);
 		}
 
-		buffer[size++] = data;
+		buffer[listSize++] = data;
 
 	}
 	__forceinline size_t size()
 	{
-		return size;
+		return listSize;
 	}
-	__forceinline void resize(size_t size)
+	__forceinline void resize(size_t newSize)
 	{
-		if(size > this->bufferSize)
+		if(newSize > this->bufferSize)
 		{
-			realloc((size+1)*2);
+			realloc((newSize+1)*2);
 		}
 
-		this->size = size;
+		this->listSize = newSize;
 
 	}
+
+	__forceinline void clear()
+	{
+		if(clearMemory)
+			memset(buffer,0,sizeof(T)*listSize);
+		listSize = 0;
+	}
+
 private:
 	__forceinline void realloc(size_t newSize)
 	{
 		T* newBuffer = new T[newSize];
-		memcpy(newBuffer,buffer,this->size*sizeof(T));
+		memcpy(newBuffer,buffer,this->listSize*sizeof(T));
 		delete[] buffer;
 		this->buffer = newBuffer;
 		bufferSize = newSize;
@@ -71,6 +80,6 @@ private:
 	}
 	T* buffer;
 	size_t bufferSize;
-	size_t size;
+	size_t listSize;
 	bool clearMemory;
 };

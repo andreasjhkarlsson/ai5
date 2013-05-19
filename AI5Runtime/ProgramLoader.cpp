@@ -96,9 +96,9 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			pos++;
 			break;
 			// int argument
-		case Instruction::CREATE_GLOBAL					:
-		case Instruction::CREATE_LOCAL					:
-		case Instruction::ASSIGN_NAME					:
+		case Instruction::ASSIGN_GLOBAL					:
+		case Instruction::ASSIGN_LOCAL					:
+		case Instruction::ASSIGN_NEAREST				:
 		case Instruction::PUSH_NAME:
 		case Instruction::PUSH_STRING:
 		case Instruction::PUSH_FUNCTION:
@@ -152,7 +152,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 	in.seekg(header.statics_start,std::ios::beg);
 	in.read(reinterpret_cast<char*>(&staticsBuffer[0]),header.statics_size);
 
-	for (unsigned int index = 0;index < header.statics_size;)
+	for (size_t index = 0;index < header.statics_size;)
 	{
 		StaticData::PTR inst;
 		switch(staticsBuffer[index])
@@ -172,9 +172,6 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 
 	StackMachine* machine = new StackMachine(statics,instructions);
 	machine->jumpAbsolute(header.entry_instruction);
-
-
-
 
 	return shared_ptr<StackMachine>(machine);
 }

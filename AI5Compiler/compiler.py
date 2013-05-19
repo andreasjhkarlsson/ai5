@@ -63,11 +63,11 @@ class RetInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.RET)
     
-class AssignNameInstruction(Instruction):
+class AssignNearestInstruction(Instruction):
     def __init__(self,id):
         self.id = id
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.ASSIGN_NAME, self.id)
+        return self.to_binary_with_int_arg(InstructionType.ASSIGN_NEAREST, self.id)
 
 class AdditionInstruction(Instruction):
     def to_binary(self):
@@ -170,7 +170,7 @@ class Compiler:
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in reversed(arguments):
-            compiled_body += [AssignNameInstruction(self.static_table.get_name_id(argument.value))]
+            compiled_body += [AssignNearestInstruction(self.static_table.get_name_id(argument.value))]
         
         # Pop of 'this'
         compiled_body += [PopInstruction()]
@@ -181,7 +181,7 @@ class Compiler:
         
         
         code = [PushFunctionInstruction(3),
-                AssignNameInstruction(self.static_table.get_name_id(function.nodes[Function.NODE_NAME].value)),
+                AssignNearestInstruction(self.static_table.get_name_id(function.nodes[Function.NODE_NAME].value)),
                 JumpRelativeInstruction(len(compiled_body)+1)]
         code += compiled_body
         
@@ -212,7 +212,7 @@ class Compiler:
     
     def compile_name_assignment(self,assignment,name):
         code = self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
-        code += [AssignNameInstruction(name)]
+        code += [AssignNearestInstruction(name)]
         return code
     
     def compile_qualifiers(self,qualifiers):

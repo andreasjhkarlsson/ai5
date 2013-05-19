@@ -1,9 +1,6 @@
 #include "StackMachine.h"
 #include "UserFunctionVariant.h"
 
-
-
-
 __forceinline void jumpLongRelative(StackMachine* machine,unsigned int arg)
 {
 	machine->jumpRelative(arg);
@@ -26,12 +23,10 @@ __forceinline void jumpLongRelativeIfFalse(StackMachine* machine,unsigned int ar
 	v->release();
 }
 
-
 __forceinline void jumpShortRelativeIfFalse(StackMachine* machine,char arg)
 {
 	jumpLongRelativeIfFalse(machine,arg);
 }
-
 
 __forceinline void jumpShortRelative(StackMachine* machine,char arg)
 {
@@ -60,9 +55,6 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 	// The actual object resides below the arguments on the stack. 
 	// It's up the the function to pop arguments + function from stack.
 	Variant* toCall = machine->getDataStack()->get(numberOfArgs);
-
-	
-
 
 	if(toCall->getType() == Variant::USER_FUNCTION_VAR)
 	{

@@ -165,6 +165,7 @@
     <ClInclude Include="BuiltinFunctionVariant.h" />
     <ClInclude Include="CallFrame.h" />
     <ClInclude Include="DataStack.h" />
+    <ClInclude Include="FastList.h" />
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />
     <ClInclude Include="FunctionVariant.h" />

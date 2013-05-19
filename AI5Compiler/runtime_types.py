@@ -12,9 +12,9 @@ class InstructionType:
     INDEX                               = 0x09;
     PROPERTY                            = 0x0A;
     POP                                 = 0x0B;
-    CREATE_GLOBAL                       = 0x0C;
-    CREATE_LOCAL                        = 0x0D;
-    ASSIGN_NAME                         = 0x0E;
+    ASSIGN_GLOBAL                       = 0x0C;
+    ASSIGN_LOCAL                        = 0x0D;
+    ASSIGN_NEAREST                      = 0x0E;
     ASSIGN_INDEX                        = 0x0F;
     ASSIGN_PROPERTY                     = 0x10;
     JUMP_LONG_ABSOLUTE                  = 0x11;

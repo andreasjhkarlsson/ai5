@@ -43,6 +43,8 @@ public:
 	}
 	__forceinline Variant* getNearest(int identifier);
 	__forceinline void setNearest(int identifier,Variant* variant);
+	__forceinline void setLocal(int identifier,Variant* variant);
+	__forceinline void setGlobal(int identifier,Variant* variant); 
 	__forceinline int popCallFrame();
 	void addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function);
 private:
@@ -145,6 +147,35 @@ void StackMachine::setNearest(int identifier,Variant* variant)
 
 
 	foundName->set(variant);
+}
 
 
+void StackMachine::setLocal(int identifier,Variant* variant)
+{
+	// This function is the same thing as setNearest.
+	Scope* targetScope = &globalScope;
+	if(!callStack.empty())
+		targetScope = callStack.pop()->getScope();
+
+	Name* name = targetScope->getNameFromIndex(identifier);
+
+	if(name == nullptr)
+	{
+		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
+		name = targetScope->createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+	}
+
+	name->set(variant);
+
+
+}
+void StackMachine::setGlobal(int identifier,Variant* variant)
+{
+	Name* foundName = globalScope.getNameFromIndex(identifier);
+	if(foundName == nullptr)
+	{		
+		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
+		foundName = globalScope.createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+	}
+	foundName->set(variant);
 }
