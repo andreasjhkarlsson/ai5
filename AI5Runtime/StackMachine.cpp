@@ -19,16 +19,6 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	{
 		scopePool.push(new Scope());
 	}
-	
-	for(size_t index = 0;index < statics->size(); index++)
-	{
-		unsigned char t = statics->operator[](index)->getType();
-		if(t == StaticData::NAME)
-		{
-			globalScope.createIndexForName(std::static_pointer_cast<StaticName>(statics->operator[](index))->getName(),index);			;
-		}
-	}
-
 }
 
 StackMachine::~StackMachine(void)

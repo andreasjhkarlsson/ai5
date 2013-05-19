@@ -123,7 +123,19 @@ Variant* StackMachine::getNearest(int identifier)
 			return name->get();
 	}
 
-	return globalScope.getNameFromIndex(identifier)->get();
+	Name* name = globalScope.getNameFromIndex(identifier);
+
+	// If name not found from index, do a "hard" search with the name
+	// Add it as an index afterwords so next lookup is FAST.
+	if(name == nullptr)
+	{
+		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
+		name = globalScope.getNameFromString(std::static_pointer_cast<StaticName>(staticData)->getName());
+		// If name is still nullptr, throw error!
+		globalScope.createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+	}
+
+	return name->get();
 }
 void StackMachine::setNearest(int identifier,Variant* variant)
 {
