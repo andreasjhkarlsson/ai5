@@ -258,6 +258,17 @@ class Compiler:
                 code += self.compile_line_statement(stmt, assignment_instruction)        
         
         return code
+    
+    def compile_return(self,statement):
+        code = []
+        
+        if Return.NODE_EXPRESSION in statement.nodes:
+            code += self.compile_expression(statement.nodes[Return.NODE_EXPRESSION])
+        else:
+            code += [PushNullInstruction()]
+        
+        code += [RetInstruction()]
+        return code
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
@@ -270,6 +281,8 @@ class Compiler:
             return self.compile_line_statement(substatement)
         if substatement.type == Rule.DECLARATION:
             return self.compile_declaration(substatement)
+        if substatement.type == Rule.RETURN:
+            return self.compile_return(substatement)
                 
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
