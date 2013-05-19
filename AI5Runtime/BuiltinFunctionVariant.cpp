@@ -1,7 +1,8 @@
 #include "BuiltinFunctionVariant.h"
 #include "StackMachine.h"
 
-BuiltinFunctionVariant::BuiltinFunctionVariant(const std::string &name,BuiltinFunctionPointer func): name(name),func(func)
+BuiltinFunctionVariant::BuiltinFunctionVariant(const std::string &name,BuiltinFunctionPointer func): name(name),
+	func(func),FunctionVariant(NATIVE_FUNCTION_VAR)
 {
 }
 

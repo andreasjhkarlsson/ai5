@@ -3,6 +3,7 @@
 #include "FastStack.h"
 #include "NameStorage.h"
 
+
 class StackMachine;
 
 class CallFrame
@@ -16,26 +17,24 @@ public:
 		return returnAddress;
 	}
 
-	void attachName(Name* name)
-	{
-		locals.push(name);
-
-	}
-	void detachNames()
-	{
-		while(locals.size() > 0)
-		{
-			locals.pop()->popLocal();
-		}
-	}
 
 	void setReturnAddress(int address)
 	{
 		this->returnAddress = address;
 	}
 
+	void setScope(Scope* scope)
+	{
+		this->scope = scope;
+	}
+
+	Scope* getScope()
+	{
+		return scope;
+	}
+
 private:
 	int returnAddress;
-	FastStack<Name*> locals;
+	Scope* scope;
 };
 

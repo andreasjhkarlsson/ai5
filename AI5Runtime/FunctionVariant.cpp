@@ -1,7 +1,7 @@
 #include "FunctionVariant.h"
 
 
-FunctionVariant::FunctionVariant(void): Variant(FUNCTION_VAR)
+FunctionVariant::FunctionVariant(VARIANT_TYPE type): Variant(type)
 {
 }
 

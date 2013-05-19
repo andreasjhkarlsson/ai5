@@ -6,7 +6,7 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(64*1024),staticsTable(statics),program(program), callStack(128), callFramePool(128)
+	dataStack(64*1024),staticsTable(statics),program(program), callStack(128), callFramePool(128),scopePool(128)
 {
 	AI5StandardLibrary::registerFunctions(this);
 
@@ -14,14 +14,18 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	{
 		callFramePool.push(new CallFrame());
 	}
+
+	for(int i=0;i<128;i++)
+	{
+		scopePool.push(new Scope());
+	}
 	
 	for(size_t index = 0;index < statics->size(); index++)
 	{
 		unsigned char t = statics->operator[](index)->getType();
 		if(t == StaticData::NAME)
 		{
-			
-			nameStorage.createIndexForName(std::static_pointer_cast<StaticName>(statics->operator[](index))->getName(),index);			;
+			globalScope.createIndexForName(std::static_pointer_cast<StaticName>(statics->operator[](index))->getName(),index);			;
 		}
 	}
 
@@ -59,5 +63,5 @@ StackMachine* StackMachine::LoadFromStructuredData(const std::string& filename)
 
 void StackMachine::addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function)
 {
-	nameStorage.createName(name)->setBuiltin(new BuiltinFunctionVariant(name,function));
+	globalScope.createName(name)->set(new BuiltinFunctionVariant(name,function));
 }

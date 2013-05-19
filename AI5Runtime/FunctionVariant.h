@@ -5,7 +5,7 @@ class FunctionVariant :
 	public Variant
 {
 public:
-	FunctionVariant(void);
+	FunctionVariant(VARIANT_TYPE type);
 	~FunctionVariant(void);
 	virtual double toFloating()
 	{
@@ -19,6 +19,5 @@ public:
 	{
 		return true;
 	}
-	virtual void call(StackMachine* machine)=0;
 };
 

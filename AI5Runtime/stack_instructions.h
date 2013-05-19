@@ -35,8 +35,7 @@ __forceinline void doubleTop(StackMachine* machine)
 
 __forceinline void pushName(StackMachine* machine,int nameIndex)
 {
-	Name* name = machine->getNameStorage()->getNameFromIndex(nameIndex);
-	Variant* var = name->findNearest();
+	Variant* var = machine->getNearest(nameIndex);
 	var->addRef();
 	machine->getDataStack()->push(var);
 	machine->advanceCounter();

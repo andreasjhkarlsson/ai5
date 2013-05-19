@@ -12,6 +12,7 @@ public:
 	__forceinline T top();
 	__forceinline T get(int offset_from_top);
 	__forceinline size_t size();
+	__forceinline bool empty();
 private:
 	T* stack;
 	int position;
@@ -45,6 +46,12 @@ template<typename T>
 T FastStack<T>::top()
 {
 	return stack[position];
+}
+
+template<typename T>
+bool FastStack<T>::empty()
+{
+	return position == -1;
 }
 
 template<typename T>

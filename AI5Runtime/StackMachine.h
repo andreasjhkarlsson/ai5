@@ -35,16 +35,14 @@ public:
 	void start();
 	void terminate();
 	__forceinline void pushCallFrame(int returnAddress);
-	__forceinline NameStorage* getNameStorage()
-	{
-		return &nameStorage;
-	}
 	__forceinline CallFrame* getCurrentCallFrame()
 	{
 		if(callStack.size() > 0)
 			return callStack.top();
 		return nullptr;
 	}
+	__forceinline Variant* getNearest(int identifier);
+	__forceinline void setNearest(int identifier,Variant* variant);
 	__forceinline int popCallFrame();
 	void addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function);
 private:
@@ -52,7 +50,8 @@ private:
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
 	FastStack<CallFrame*> callFramePool;
-	NameStorage nameStorage;
+	FastStack<Scope*> scopePool;
+	Scope globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;
 	bool terminated;
@@ -90,6 +89,7 @@ VariantFactory* StackMachine::getVariantFactory()
 void StackMachine::pushCallFrame(int returnAddress)
 {
 	CallFrame* frame = callFramePool.pop();
+	frame->setScope(scopePool.pop());
 	frame->setReturnAddress(returnAddress);
 	callStack.push(frame);
 }
@@ -97,7 +97,10 @@ void StackMachine::pushCallFrame(int returnAddress)
 int StackMachine::popCallFrame()
 {
 	CallFrame *frame = callStack.pop();
-	frame->detachNames();
+	
+	frame->getScope()->reset();
+	scopePool.push(frame->getScope());
+
 	int returnAddress = frame->getReturnAddress();
 	callFramePool.push(frame);
 	return returnAddress;
@@ -108,3 +111,40 @@ int StackMachine::getCurrentAddress()
 	return programCounter;
 }
 
+
+Variant* StackMachine::getNearest(int identifier)
+{
+	if(!callStack.empty())
+	{
+		Name* name = callStack.top()->getScope()->getNameFromIndex(identifier);
+		if(name != nullptr)
+			return name->get();
+	}
+
+	return globalScope.getNameFromIndex(identifier)->get();
+}
+void StackMachine::setNearest(int identifier,Variant* variant)
+{
+
+	Name* foundName = nullptr;
+	if(!callStack.empty())
+		foundName = callStack.top()->getScope()->getNameFromIndex(identifier);
+	if(foundName == nullptr)
+		foundName = globalScope.getNameFromIndex(identifier);
+
+	if(foundName == nullptr)
+	{
+		Scope* targetScope = nullptr;
+		if(!callStack.empty())
+			targetScope = callStack.top()->getScope();
+		else
+			targetScope = &globalScope;
+		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
+		foundName = targetScope->createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+	}
+
+
+	foundName->set(variant);
+
+
+}

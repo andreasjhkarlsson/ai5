@@ -5,107 +5,52 @@
 #include <string>
 #include "Variant.h"
 #include "FastStack.h"
+#include <algorithm>
 
-// Represents a name. Can be builtin, global and local
-// at the same time. Handy huh?
+// Represents a name.
 class Name
 {
 public:
-	Name(std::string name): builtIn(nullptr),global(nullptr), locals(32), name(name)
+	Name(): variant(nullptr)
 	{
 	}
 	virtual ~Name()
 	{
 	}
-	__forceinline bool hasLocal()
+
+	__forceinline void set(Variant *newVariant)
 	{
-		return locals.size() > 0;
-	}
-	__forceinline bool hasGlobal()
-	{
-		return global != nullptr;
-	}
-	__forceinline bool hasBuiltin()
-	{
-		return builtIn != nullptr;
+		newVariant->addRef();
+		if(variant != nullptr)
+			variant->release();
+		variant = newVariant;
 	}
 
-	__forceinline bool hasAny()
+	__forceinline Variant* get()
 	{
-		return hasBuiltin() || hasGlobal() || hasLocal();
+		return variant;
 	}
 
-	__forceinline void pushLocal(Variant* var)
+	__forceinline void clear()
 	{
-		var->addRef();
-		locals.push(var);
+		variant->release();
+		variant = nullptr;
 	}
 
-	__forceinline void popLocal()
-	{
-		locals.pop()->release();
-	}
-
-	__forceinline void setGlobal(Variant *var)
-	{
-		var->addRef();
-		if(hasGlobal())
-			global->release();
-		global = var;
-	}
-
-	__forceinline void setBuiltin(Variant *var)
-	{
-		var->addRef();
-		if(hasBuiltin())
-			builtIn->release();
-		builtIn = var;
-	}
-
-
-	__forceinline void setNearest(Variant* var)
-	{
-		if(hasLocal())
-		{
-			var->addRef();
-			locals.pop()->release();
-			locals.push(var);
-		}
-		else if(hasGlobal())
-		{
-			var->addRef();
-			global->release();
-			global = var;
-		}
-		else
-		{
-			// TODO: Raise error!!!
-		}
-	}
-
-	__forceinline Variant* findNearest()
-	{
-		if(hasLocal())
-			return locals.top();
-		if(hasGlobal())
-			return global;
-		if(hasBuiltin())
-			return builtIn;
-		return nullptr;
-	}
 private:
-	Variant* builtIn;
-	Variant* global;
-	FastStack<Variant*> locals;
-	std::string name;
+	Variant* variant;
 };
 
 
-
-class NameStorage
+// Ok, here goes:
+// Keeping this class optimized is VERY important.
+// 
+class Scope
 {
+private:
+	static const int POOL_SIZE = 64;
 public:
-	NameStorage()
+	Scope(): indexTable(128,0),usedIndexes(16), namePool(POOL_SIZE)
 	{
 
 	}
@@ -119,7 +64,7 @@ public:
 	}
 	__forceinline Name* createName(const std::string &name)
 	{
-		Name* n = new Name(name);
+		Name* n = new Name();
 		lookup[name] = n;
 		return n;
 
@@ -128,7 +73,10 @@ public:
 	{
 		if (lookup.find(name) == lookup.end())
 		{
-			lookup[name] = new Name(name);
+			if(!namePool.empty())
+				lookup[name] = namePool.pop();
+			else
+				lookup[name] = new Name();
 		}
 
 		if((index) >= indexTable.size())
@@ -139,10 +87,35 @@ public:
 		Name* nameObj = lookup[name];
 
 		indexTable[index] = nameObj;
+
+		usedIndexes.push_back(index);
+
 		return nameObj;
+	}
+
+	void reset()
+	{
+		for(auto it=lookup.begin();it!=lookup.end();it++)
+		{
+			it->second->clear();
+		}
+
+		for(int i=0;i<usedIndexes.size();i++)
+		{
+			
+			if(namePool.size() < POOL_SIZE)
+				namePool.push(indexTable[usedIndexes[i]]);
+			else
+				delete indexTable[usedIndexes[i]];
+			indexTable[usedIndexes[i]] = nullptr;
+		}
+
+		lookup.clear();
+		usedIndexes.clear();
 	}
 private:
 	std::map<std::string,Name*> lookup;
 	std::vector<Name*> indexTable;
-
+	std::vector<int> usedIndexes;
+	FastStack<Name*> namePool;
 };
