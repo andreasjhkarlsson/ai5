@@ -68,6 +68,19 @@ class AssignNearestInstruction(Instruction):
         self.id = id
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.ASSIGN_NEAREST, self.id)
+    
+class AssignGlobalInstruction(Instruction):
+    def __init__(self,id):
+        self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.ASSIGN_GLOBAL, self.id)
+    
+class AssignLocalInstruction(Instruction):
+    def __init__(self,id):
+        self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.ASSIGN_LOCAL, self.id)    
+    
 
 class AdditionInstruction(Instruction):
     def to_binary(self):
@@ -186,6 +199,24 @@ class Compiler:
         code += compiled_body
         
         return code
+    
+    def compile_declaration(self,declaration):
+        code = []
+        
+        scope_token = declaration.nodes[Declaration.NODE_SCOPE]
+        
+        if scope_token.value == KeywordToken.DIM:
+            assignment_instruction = AssignNearestInstruction
+        elif scope_token.value == KeywordToken.GLOBAL:
+            assignment_instruction = AssignGlobalInstruction
+        elif scope_token.value == KeywordToken.LOCAL:
+            assignment_instruction = AssignLocalInstruction
+            
+        if Declaration.NODE_STATEMENTS in declaration.nodes:
+            for stmt in declaration.nodes[Declaration.NODE_STATEMENTS]:
+                code += self.compile_line_statement(stmt, assignment_instruction)        
+        
+        return code
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
@@ -196,7 +227,8 @@ class Compiler:
             return self.compile_while_statement(substatement)
         if substatement.type == Rule.LINE_STATEMENT:
             return self.compile_line_statement(substatement)
-
+        if substatement.type == Rule.DECLARATION:
+            return self.compile_declaration(substatement)
                 
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
@@ -210,9 +242,11 @@ class Compiler:
         code += [CallFunctionInstruction(len(call.nodes[Call.NODE_ARGUMENTS]))]
         return code
     
-    def compile_name_assignment(self,assignment,name):
+    
+    
+    def compile_name_assignment(self,assignment,name,assignment_instruction=AssignNearestInstruction):
         code = self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
-        code += [AssignNearestInstruction(name)]
+        code += [assignment_instruction(name)]
         return code
     
     def compile_qualifiers(self,qualifiers):
@@ -221,7 +255,7 @@ class Compiler:
             code += self.compile_qualifier(qualifiers.pop(0))
         return code
     
-    def compile_line_statement(self,line_statement):
+    def compile_line_statement(self,line_statement,assignment_instruction=AssignNearestInstruction):
         nodes = line_statement.nodes
         code = []
         
@@ -235,7 +269,7 @@ class Compiler:
             # remove last push_name instruction
             code.pop(0)
             assignment = nodes[LineStatement.NODE_ASSIGNMENT]
-            code += self.compile_name_assignment(assignment, self.static_table.get_name_id(ident.value))     
+            code += self.compile_name_assignment(assignment, self.static_table.get_name_id(ident.value),assignment_instruction)     
         else:
             code += [PopInstruction()]       
         

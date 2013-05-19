@@ -155,7 +155,7 @@ void StackMachine::setLocal(int identifier,Variant* variant)
 	// This function is the same thing as setNearest.
 	Scope* targetScope = &globalScope;
 	if(!callStack.empty())
-		targetScope = callStack.pop()->getScope();
+		targetScope = callStack.top()->getScope();
 
 	Name* name = targetScope->getNameFromIndex(identifier);
 

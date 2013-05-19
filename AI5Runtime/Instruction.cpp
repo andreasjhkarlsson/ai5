@@ -42,13 +42,13 @@ std::ostream& operator<< (std::ostream& stream, const Instruction& inst)
 		stream << "POP";
 		break;
 	case Instruction::ASSIGN_GLOBAL:
-		stream << "CREATE_GLOBAL";
+		stream << "ASSIGN_GLOBAL";
 		break;
 	case Instruction::ASSIGN_LOCAL:
-		stream << "CREATE_LOCAL";
+		stream << "ASSIGN_LOCAL";
 		break;
 	case Instruction::ASSIGN_NEAREST:
-		stream << "ASSIGN_NAME";
+		stream << "ASSIGN_NEAREST";
 		break;
 	case Instruction::ASSIGN_INDEX:
 		stream << "ASSIGN_INDEX";
