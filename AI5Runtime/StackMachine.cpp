@@ -32,7 +32,9 @@ void StackMachine::start()
 	while (!terminated) 
 	{
 		#ifdef _DEBUG
-			std::cout << "\t" << *(program->operator[](programCounter)) << std::endl;
+			std::cout << "\t";
+			program->operator[](programCounter)->format(std::cout,this);
+			std::cout << std::endl;
 		#endif
 			
 		program->operator[](programCounter)->execute(this);

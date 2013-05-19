@@ -73,7 +73,7 @@ public:
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
-	friend std::ostream& operator<< (std::ostream& stream, const Instruction& matrix);
+	std::ostream& format(std::ostream& stream,StackMachine* machine);
 	friend class ProgramLoader;
 private:
 	INSTRUCTION_TYPE type;

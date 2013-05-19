@@ -1,33 +1,40 @@
 #include "Instruction.h"
 #include <iostream>
 
-std::ostream& operator<< (std::ostream& stream, const Instruction& inst)
+
+const std::string& getName(StackMachine* machine,int index)
 {
-	switch(inst.type)
+	StaticData* staticData = machine->getStaticData(index);
+	return static_cast<StaticName*>(staticData)->getName();
+}
+
+std::ostream& Instruction::format(std::ostream& stream,StackMachine* machine)
+{
+	switch(this->type)
 	{
 	case Instruction::NOOP:
 		stream << "NOOP";
 		break;
 	case Instruction::PUSH_NAME:
-		stream << "PUSH_NAME";
+		stream << "PUSH_NAME" << " " << getName(machine,this->arg.integer);
 		break;
 	case Instruction::PUSH_LARGE_INTEGER:
-		stream << "PUSH_LARGE_INTEGER";
+		stream << "PUSH_LARGE_INTEGER" << " " << this->arg.int64;
 		break;
 	case Instruction::PUSH_SMALL_INTEGER:
-		stream << "PUSH_SMALL_INTEGER";
+		stream << "PUSH_SMALL_INTEGER" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::PUSH_FLOATING:
-		stream << "PUSH_FLOATING";
+		stream << "PUSH_FLOATING" << " " << this->arg.floating;
 		break;
 	case Instruction::PUSH_BOOLEAN:
-		stream << "PUSH_BOOLEAN";
+		stream << "PUSH_BOOLEAN" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::PUSH_STRING:
-		stream << "PUSH_STRING";
+		stream << "PUSH_STRING" << " " << getName(machine,this->arg.integer);
 		break;
 	case Instruction::PUSH_FUNCTION:
-		stream << "PUSH_FUNCTION";
+		stream << "PUSH_FUNCTION" << " " << this->arg.integer;
 		break;
 	case Instruction::PUSH_NULL:
 		stream << "PUSH_NULL";
@@ -42,55 +49,55 @@ std::ostream& operator<< (std::ostream& stream, const Instruction& inst)
 		stream << "POP";
 		break;
 	case Instruction::ASSIGN_GLOBAL:
-		stream << "ASSIGN_GLOBAL";
+		stream << "ASSIGN_GLOBAL" << " " << getName(machine,this->arg.integer);
 		break;
 	case Instruction::ASSIGN_LOCAL:
-		stream << "ASSIGN_LOCAL";
+		stream << "ASSIGN_LOCAL" << " " << getName(machine,this->arg.integer);
 		break;
 	case Instruction::ASSIGN_NEAREST:
-		stream << "ASSIGN_NEAREST";
+		stream << "ASSIGN_NEAREST" << " " << getName(machine,this->arg.integer);
 		break;
 	case Instruction::ASSIGN_INDEX:
 		stream << "ASSIGN_INDEX";
 		break;
 	case Instruction::ASSIGN_PROPERTY:
-		stream << "ASSIGN_PROPERTY";
+		stream << "ASSIGN_PROPERTY" << " " << getName(machine,this->arg.integer);
 		break;
 	case Instruction::JUMP_LONG_ABSOLUTE:
-		stream << "JUMP_LONG_ABSOLUTE";
+		stream << "JUMP_LONG_ABSOLUTE" << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_ABSOLUTE:
-		stream << "JUMP_SHORT_ABSOLUTE";
+		stream << "JUMP_SHORT_ABSOLUTE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::JUMP_LONG_RELATIVE:
-		stream << "JUMP_LONG_RELATIVE";
+		stream << "JUMP_LONG_RELATIVE"  << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_RELATIVE:
-		stream << "JUMP_SHORT_RELATIVE";
+		stream << "JUMP_SHORT_RELATIVE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::JUMP_LONG_ABSOLUTE_IF_TRUE:
-		stream << "JUMP_LONG_ABSOLUTE_IF_TRUE";
+		stream << "JUMP_LONG_ABSOLUTE_IF_TRUE" << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE:
-		stream << "JUMP_SHORT_ABSOLUTE_IF_TRUE";
+		stream << "JUMP_SHORT_ABSOLUTE_IF_TRUE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::JUMP_LONG_RELATIVE_IF_TRUE:
-		stream << "JUMP_LONG_RELATIVE_IF_TRUE";
+		stream << "JUMP_LONG_RELATIVE_IF_TRUE" << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_RELATIVE_IF_TRUE:
-		stream << "JUMP_SHORT_RELATIVE_IF_TRUE";
+		stream << "JUMP_SHORT_RELATIVE_IF_TRUE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::JUMP_LONG_ABSOLUTE_IF_FALSE:
-		stream << "JUMP_LONG_ABSOLUTE_IF_TRUE";
+		stream << "JUMP_LONG_ABSOLUTE_IF_TRUE" << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_ABSOLUTE_IF_FALSE:
-		stream << "JUMP_SHORT_ABSOLUTE_IF_TRUE";
+		stream << "JUMP_SHORT_ABSOLUTE_IF_TRUE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::JUMP_LONG_RELATIVE_IF_FALSE:
-		stream << "JUMP_LONG_RELATIVE_IF_FALSE";
+		stream << "JUMP_LONG_RELATIVE_IF_FALSE" << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_RELATIVE_IF_FALSE:
-		stream << "JUMP_SHORT_RELATIVE_IF_FALSE";
+		stream << "JUMP_SHORT_RELATIVE_IF_FALSE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::NEGATION:
 		stream << "NEGATION";
@@ -166,7 +173,6 @@ std::ostream& operator<< (std::ostream& stream, const Instruction& inst)
 		break;
 	case Instruction::TERMINATE:
 		stream << "TERMINATE";
-		break;
 		break;
 
 	}
