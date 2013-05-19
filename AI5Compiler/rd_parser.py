@@ -458,7 +458,7 @@ class Function(Rule):
     type = Rule.FUNCTION
     NODE_NAME = "name"
     NODE_ARGUMENTS = "arguments list"
-    NODY_BODY = "body"
+    NODE_BODY = "body"
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.FUNC):
@@ -468,7 +468,7 @@ class Function(Rule):
             parser.expectNewline() 
             
             if parser.acceptRule(Block):
-                nodes[Function.NODY_BODY]=parser.matched_rule
+                nodes[Function.NODE_BODY]=parser.matched_rule
             
             parser.expect(Token.KEYWORD,KeywordToken.ENDFUNC)
             

@@ -9,6 +9,27 @@ import struct
 def fits_in_char(integer):
     return integer >= -128 and integer <= 127
 
+class Address:
+    RELATIVE = "relative"
+    ABSOLUTE = "absolute"
+    UNRESOLVED_ABSOLUTE = "unresolved absolute"
+
+class RelativeAddress:
+    type = Address.RELATIVE
+    def __init__(self,offset):
+        self.value = offset
+
+class AbsoluteAddress:
+    type = Address.ABSOLUTE
+    def __init__(self,position):
+        self.value = position
+
+class UnresolvedAbsoluteAddress:
+    type = Address.UNRESOLVED_ABSOLUTE
+    def __init__(self,offset):
+        self.offset = offset
+    def resolve(self,position):
+        return AbsoluteAddress(position + self.offset)
 
 class Instruction:
     def __repr__(self):
@@ -36,7 +57,7 @@ class PushFunctionInstruction(Instruction):
     def __init__(self,address):
         self.address = address
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.PUSH_FUNCTION, self.address)    
+        return self.to_binary_with_int_arg(InstructionType.PUSH_FUNCTION, self.address.value)    
 
 
 class PushStringInstruction(Instruction):
@@ -114,23 +135,35 @@ class BooleanNotInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.BOOLEAN_NOT)
     
-class JumpRelativeInstruction(Instruction):
-    def __init__(self,offset):
-        self.offset = offset
+class JumpInstruction(Instruction):
+    def __init__(self,address):
+        self.address = address
     def to_binary(self):
-        if fits_in_char(self.offset):
-            return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_RELATIVE, self.offset)
+        if fits_in_char(self.address.value):
+            if self.address.type == Address.RELATIVE:
+                return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_RELATIVE, self.address.value)
+            else:
+                return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_ABSOLUTE, self.address.value)
         else:
-            return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_RELATIVE, self.offset)
+            if self.address.type == Address.RELATIVE:
+                return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_RELATIVE, self.address.value)
+            else:
+                return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_ABSOLUTE, self.address.value)
         
-class JumpRelativeIfFalseInstruction(Instruction):
-    def __init__(self,offset):
-        self.offset = offset
+class JumpIfFalseInstruction(Instruction):
+    def __init__(self,address):
+        self.address = address
     def to_binary(self):
-        if fits_in_char(self.offset):
-            return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_RELATIVE_IF_FALSE, self.offset)
+        if fits_in_char(self.address.value):
+            if self.address.type == Address.RELATIVE:
+                return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_RELATIVE_IF_FALSE, self.address.value)
+            else:
+                return self.to_binary_with_char_arg(InstructionType.JUMP_SHORT_ABSOLUTE_IF_FALSE, self.address.value)
         else:
-            return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_RELATIVE_IF_FALSE, self.offset)
+            if self.address.type == Address.RELATIVE:
+                return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_RELATIVE_IF_FALSE, self.address.value)
+            else:
+                return self.to_binary_with_int_arg(InstructionType.JUMP_LONG_ABSOLUTE_IF_FALSE, self.address.value)
         
 class TerminateInstruction(Instruction):
     def to_binary(self):
@@ -177,7 +210,15 @@ class StaticTable:
 
 class Compiler:
     def __init__(self):
-        self.static_table = StaticTable()   
+        self.static_table = StaticTable()  
+    
+    def resolve_addresses(self,code):
+        for index,instruction in enumerate(code):
+            if not hasattr(instruction,"address"): continue
+            address = instruction.address
+            if address.type == Address.UNRESOLVED_ABSOLUTE:
+                instruction.address = address.resolve(index)
+            
     
     def compile_function(self,function):
         compiled_body = []
@@ -188,14 +229,14 @@ class Compiler:
         # Pop of 'this'
         compiled_body += [PopInstruction()]
         
-        compiled_body += self.compile_block(function.nodes[Function.NODY_BODY])
+        compiled_body += self.compile_block(function.nodes[Function.NODE_BODY])
         
         compiled_body += [PushNullInstruction(),RetInstruction()]
         
         
-        code = [PushFunctionInstruction(3),
+        code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(3)),
                 AssignNearestInstruction(self.static_table.get_name_id(function.nodes[Function.NODE_NAME].value)),
-                JumpRelativeInstruction(len(compiled_body)+1)]
+                JumpInstruction(RelativeAddress(len(compiled_body)+1))]
         code += compiled_body
         
         return code
@@ -285,9 +326,9 @@ class Compiler:
         
         code = []
         code += compiled_condition
-        code += [JumpRelativeIfFalseInstruction(len(compiled_body)+2)]
+        code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+2))]
         code += compiled_body
-        code += [JumpRelativeInstruction(-(len(compiled_body)+len(compiled_condition)+1))]
+        code += [JumpInstruction(RelativeAddress(-(len(compiled_body)+len(compiled_condition)+1)))]
         return code
     
     def compile_operator(self,operator):
@@ -356,7 +397,9 @@ class Compiler:
         return code
     
     def compile_program(self,program):
-        return self.compile_block(program.nodes[Program.NODE_BLOCK]) + [TerminateInstruction()]
+        code = self.compile_block(program.nodes[Program.NODE_BLOCK]) + [TerminateInstruction()]
+        self.resolve_addresses(code)
+        return code
     
 
 
