@@ -44,15 +44,14 @@ private:
 
 // Ok, here goes:
 // Keeping this class optimized is VERY important.
-// 
 class Scope
 {
 private:
 	static const int POOL_SIZE = 64;
 public:
-	Scope(): indexTable(128,0),usedIndexes(16), namePool(POOL_SIZE)
+	Scope(): indexTable(128,0),usedIndexes(), namePool(POOL_SIZE)
 	{
-
+		usedIndexes.reserve(16);
 	}
 	__forceinline Name* getNameFromString(const std::string &name)
 	{
@@ -104,9 +103,13 @@ public:
 		{
 			
 			if(namePool.size() < POOL_SIZE)
+			{
 				namePool.push(indexTable[usedIndexes[i]]);
+			}
 			else
+			{
 				delete indexTable[usedIndexes[i]];
+			}
 			indexTable[usedIndexes[i]] = nullptr;
 		}
 
