@@ -56,12 +56,12 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 	// It's up the the function to pop arguments + function from stack.
 	Variant* toCall = machine->getDataStack()->get(numberOfArgs);
 
-	if(toCall->getType() == Variant::USER_FUNCTION_VAR)
+	if(toCall->getType() == Variant::USER_FUNCTION)
 	{
 		((UserFunctionVariant*)toCall)->call(machine);
 		
 	}
-	else if(toCall->getType() == Variant::NATIVE_FUNCTION_VAR)
+	else if(toCall->getType() == Variant::NATIVE_FUNCTION)
 	{
 		((BuiltinFunctionVariant*)toCall)->call(machine);
 	}

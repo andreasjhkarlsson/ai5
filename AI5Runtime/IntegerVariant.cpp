@@ -24,7 +24,7 @@ bool IntegerVariant::INITIALIZE()
 
 void IntegerVariant::print()
 {
-	std::cout << "IntegerVariant: " << this->value << std::endl;
+	std::wcout << "IntegerVariant: " << this->value << std::endl;
 }
 
 __int64 IntegerVariant::toInteger()

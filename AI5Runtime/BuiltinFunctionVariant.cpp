@@ -1,8 +1,8 @@
 #include "BuiltinFunctionVariant.h"
 #include "StackMachine.h"
 
-BuiltinFunctionVariant::BuiltinFunctionVariant(const std::string &name,BuiltinFunctionPointer func): name(name),
-	func(func),FunctionVariant(NATIVE_FUNCTION_VAR)
+BuiltinFunctionVariant::BuiltinFunctionVariant(const std::wstring &name,BuiltinFunctionPointer func): name(name),
+	func(func),FunctionVariant(NATIVE_FUNCTION)
 {
 }
 
@@ -20,5 +20,5 @@ void BuiltinFunctionVariant::call(StackMachine* machine)
 
 void BuiltinFunctionVariant::print()
 {
-	std::cout << "Builtin function: " << name << std::endl;
+	std::wcout << "Builtin function: " << name.c_str() << std::endl;
 }

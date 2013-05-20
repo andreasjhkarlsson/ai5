@@ -25,5 +25,5 @@ bool FloatingVariant::toBoolean()
 }
 void FloatingVariant::print()
 {
-	std::cout << "FloatingVariant: " << value << std::endl;
+	std::wcout << "FloatingVariant: " << value << std::endl;
 }

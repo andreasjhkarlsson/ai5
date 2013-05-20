@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include "StringVariant.h"
 
 typedef unsigned char STATIC_TYPE;
 
@@ -25,20 +26,35 @@ private:
 
 };
 
+class StaticString: public StaticData
+{
+public:
+	StaticString(const std::wstring& str): StaticData(STRING), strVar(str)
+	{
+
+	}
+	StringVariant* getVariant()
+	{
+		return &strVar;
+	}
+private:
+	StringVariant strVar;
+};
 
 class StaticName: public StaticData
 {
 public:
-	StaticName(const std::string& name): StaticData(NAME), name(name)
+	StaticName(const std::wstring& str): StaticData(NAME),name(str)
 	{
 
 	}
-	__forceinline std::string& getName()
+
+	__forceinline std::wstring& getName()
 	{
 		return name;
 	}
 private:
-	std::string name;
+	std::wstring name;
 };
 
 

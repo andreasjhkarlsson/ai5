@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <fstream>
 #include "Instruction.h"
-
+#include "encode.h"
 #include <memory>
 using std::shared_ptr;
 using std::vector;
@@ -158,14 +158,27 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		switch(staticsBuffer[index])
 		{
 		case StaticData::NAME:
-			index++;
-			size_t strsize = *(unsigned int*)&staticsBuffer[index];
-			index += 4;
-			std::string str((const char*)&staticsBuffer[index],strsize);
-			index += strsize;
-			statics->push_back(StaticData::PTR(new StaticName(str)));
+			{
+				index++;
+				size_t nameSize = *(unsigned int*)&staticsBuffer[index];
+				index += 4;
+				std::wstring name = utf8_to_utf16((const char*)&staticsBuffer[index],nameSize);
+				index += nameSize;
+				statics->push_back(StaticData::PTR(new StaticName(name)));
+				
+			}
 			break;
-
+		case StaticData::STRING:
+			{
+				index++;
+				size_t strsize = *(unsigned int*)&staticsBuffer[index];
+				index += 4;
+				std::wstring str = utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
+				index += strsize;
+				statics->push_back(StaticData::PTR(new StaticString(str)));
+				
+			}
+			break;
 		}
 	}
 

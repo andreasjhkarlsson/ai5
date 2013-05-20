@@ -14,7 +14,7 @@ NullVariant::~NullVariant(void)
 
 void NullVariant::print()
 {
-	std::cout << "NullVariant: Null" << std::endl;
+	std::wcout << "NullVariant: Null" << std::endl;
 }
 
 double NullVariant::toFloating()

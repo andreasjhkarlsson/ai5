@@ -31,7 +31,7 @@ public:
 	__forceinline StaticData* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
-	static StackMachine* LoadFromStructuredData(const std::string& filename);
+	static StackMachine* LoadFromStructuredData(const std::wstring& filename);
 	void start();
 	void terminate();
 	__forceinline void pushCallFrame(int returnAddress);
@@ -46,7 +46,7 @@ public:
 	__forceinline void setLocal(int identifier,Variant* variant);
 	__forceinline void setGlobal(int identifier,Variant* variant); 
 	__forceinline int popCallFrame();
-	void addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function);
+	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
 private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;

@@ -157,6 +157,7 @@
     <ClCompile Include="ProgramLoader.cpp" />
     <ClCompile Include="ReferenceVariant.cpp" />
     <ClCompile Include="StackMachine.cpp" />
+    <ClCompile Include="StringVariant.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />
     <ClCompile Include="Variant.cpp" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="BuiltinFunctionVariant.h" />
     <ClInclude Include="CallFrame.h" />
     <ClInclude Include="DataStack.h" />
+    <ClInclude Include="encode.h" />
     <ClInclude Include="FastList.h" />
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />
@@ -181,6 +183,7 @@
     <ClInclude Include="Static.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="StackMachine.h" />
+    <ClInclude Include="StringVariant.h" />
     <ClInclude Include="UserFunctionVariant.h" />
     <ClInclude Include="Variant.h" />
   </ItemGroup>

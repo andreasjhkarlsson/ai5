@@ -2,13 +2,13 @@
 #include <iostream>
 
 
-const std::string& getName(StackMachine* machine,int index)
+const std::wstring& getName(StackMachine* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticName*>(staticData)->getName();
 }
 
-std::ostream& Instruction::format(std::ostream& stream,StackMachine* machine)
+std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 {
 	switch(this->type)
 	{
@@ -31,7 +31,7 @@ std::ostream& Instruction::format(std::ostream& stream,StackMachine* machine)
 		stream << "PUSH_BOOLEAN" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::PUSH_STRING:
-		stream << "PUSH_STRING" << " " << getName(machine,this->arg.integer);
+		stream << "PUSH_STRING" << " " << this->arg.integer;
 		break;
 	case Instruction::PUSH_FUNCTION:
 		stream << "PUSH_FUNCTION" << " " << this->arg.integer;

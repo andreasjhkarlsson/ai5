@@ -1,7 +1,7 @@
 #include "UserFunctionVariant.h"
 #include "StackMachine.h"
 
-UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(USER_FUNCTION_VAR)
+UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(USER_FUNCTION)
 {
 }
 
@@ -22,5 +22,5 @@ void UserFunctionVariant::call(StackMachine* machine)
 
 void UserFunctionVariant::print()
 {
-	std::cout << "UserFunction @" << address << std::endl;
+	std::wcout << "UserFunction @" << address << std::endl;
 }

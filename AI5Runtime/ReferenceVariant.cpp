@@ -4,7 +4,7 @@
 
 void ReferenceVariant::print()
 {
-	std::cout << "ReferenceVariant: <" << this->var << ">" << std::endl;
+	std::wcout << "ReferenceVariant: <" << this->var << ">" << std::endl;
 }
 
 ReferenceVariant::ReferenceVariant(Variant* var): Variant(REFERENCE), var(nullptr)

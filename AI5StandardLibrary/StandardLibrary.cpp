@@ -6,8 +6,8 @@ namespace AI5StandardLibrary
 {
 	void registerFunctions(StackMachine* machine)
 	{
-		machine->addBuiltInFunction("hello",hello);
-		machine->addBuiltInFunction("sleep",sleep);
-		machine->addBuiltInFunction("printline",printline);
+		machine->addBuiltInFunction(L"hello",hello);
+		machine->addBuiltInFunction(L"sleep",sleep);
+		machine->addBuiltInFunction(L"printline",printline);
 	}
 }

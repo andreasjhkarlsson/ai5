@@ -53,7 +53,7 @@ public:
 	{
 		usedIndexes.reserve(16);
 	}
-	__forceinline Name* getNameFromString(const std::string &name)
+	__forceinline Name* getNameFromString(const std::wstring &name)
 	{
 		return lookup[name];
 	}
@@ -61,14 +61,14 @@ public:
 	{
 		return indexTable[index];
 	}
-	__forceinline Name* createName(const std::string &name)
+	__forceinline Name* createName(const std::wstring &name)
 	{
 		Name* n = new Name();
 		lookup[name] = n;
 		return n;
 
 	}
-	__forceinline Name* createIndexForName(const std::string &name,int index)
+	__forceinline Name* createIndexForName(const std::wstring &name,int index)
 	{
 		if (lookup.find(name) == lookup.end())
 		{
@@ -117,7 +117,7 @@ public:
 		usedIndexes.clear();
 	}
 private:
-	std::map<std::string,Name*> lookup;
+	std::map<std::wstring,Name*> lookup;
 	std::vector<Name*> indexTable;
 	std::vector<int> usedIndexes;
 	FastStack<Name*> namePool;

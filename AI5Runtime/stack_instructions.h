@@ -17,6 +17,13 @@ __forceinline void pushLargeInteger(StackMachine* machine,__int64 arg)
 	machine->advanceCounter();
 }
 
+__forceinline void pushString(StackMachine* machine,int staticIndex)
+{
+	StaticString* sString = static_cast<StaticString*>(machine->getStaticData(staticIndex));
+	sString->getVariant()->addRef();
+	machine->getDataStack()->push(sString->getVariant());
+	machine->advanceCounter();
+}
 
 __forceinline void pop(StackMachine* machine)
 {

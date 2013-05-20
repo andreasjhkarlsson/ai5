@@ -9,12 +9,12 @@ class BuiltinFunctionVariant :
 	public FunctionVariant
 {
 public:
-	BuiltinFunctionVariant(const std::string &name,BuiltinFunctionPointer func);
+	BuiltinFunctionVariant(const std::wstring &name,BuiltinFunctionPointer func);
 	~BuiltinFunctionVariant(void);
 	void call(StackMachine* machine);
 	void print();
 private:
 	BuiltinFunctionPointer func;
-	std::string name;
+	std::wstring name;
 };
 

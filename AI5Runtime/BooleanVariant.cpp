@@ -34,7 +34,7 @@ bool BooleanVariant::toBoolean()
 void BooleanVariant::print()
 {
 	if(value)
-		std::cout << "BooleanVariant: true" << std::endl;
+		std::wcout << "BooleanVariant: true" << std::endl;
 	else
-		std::cout << "BooleanVariant: false" << std::endl;
+		std::wcout << "BooleanVariant: false" << std::endl;
 }

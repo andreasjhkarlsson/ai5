@@ -32,9 +32,9 @@ void StackMachine::start()
 	while (!terminated) 
 	{
 		#ifdef _DEBUG
-			std::cout << "\t";
-			program->operator[](programCounter)->format(std::cout,this);
-			std::cout << std::endl;
+			std::wcout << "\t";
+			program->operator[](programCounter)->format(std::wcout,this);
+			std::wcout << std::endl;
 		#endif
 			
 		program->operator[](programCounter)->execute(this);
@@ -47,13 +47,13 @@ void StackMachine::terminate()
 	terminated = true;
 }
 
-StackMachine* StackMachine::LoadFromStructuredData(const std::string& filename)
+StackMachine* StackMachine::LoadFromStructuredData(const std::wstring& filename)
 {
 	return nullptr;
 }
 
 
-void StackMachine::addBuiltInFunction(const std::string &name,BuiltinFunctionPointer function)
+void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function)
 {
 	globalScope.createName(name)->set(new BuiltinFunctionVariant(name,function));
 }

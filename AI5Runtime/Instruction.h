@@ -73,7 +73,7 @@ public:
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
-	std::ostream& format(std::ostream& stream,StackMachine* machine);
+	std::wostream& format(std::wostream& stream,StackMachine* machine);
 	friend class ProgramLoader;
 private:
 	INSTRUCTION_TYPE type;
@@ -167,6 +167,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case PUSH_NULL:
 		pushNull(machine);
+		break;
+	case PUSH_STRING:
+		pushString(machine,arg.integer);
 		break;
 	}
 }

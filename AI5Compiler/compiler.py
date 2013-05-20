@@ -24,6 +24,8 @@ class AbsoluteAddress:
     def __init__(self,position):
         self.value = position
 
+# Can be used as a placeholder when absolute address is needed but absolute address
+# needs to be calculated later.
 class UnresolvedAbsoluteAddress:
     type = Address.UNRESOLVED_ABSOLUTE
     def __init__(self,offset):
@@ -197,9 +199,11 @@ class StaticTable:
         for type,value in keys:
             print(self.statics[(type,value)],value,type)
             if type == StaticType.NAME:
-                binary += struct.pack("=BI"+str(len(value))+"s",type,len(value),value)
+                s = value.encode("utf-8")
+                binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
             elif type == StaticType.STRING:
-                binary += struct.pack("=BI"+str(len(value))+"s",type,len(value),value)
+                s = value.encode("utf-8")
+                binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
         return binary
         
         
@@ -262,12 +266,42 @@ class Compiler:
     def compile_return(self,statement):
         code = []
         
+        # Return expression or NULL.
         if Return.NODE_EXPRESSION in statement.nodes:
             code += self.compile_expression(statement.nodes[Return.NODE_EXPRESSION])
         else:
             code += [PushNullInstruction()]
         
         code += [RetInstruction()]
+        return code
+    
+    def compile_if(self,statement):
+        code = []
+        
+        compiled_condition = self.compile_expression(statement.nodes[If.NODE_CONDITION])
+        
+        if If.NODE_INLINE_STATEMENT in statement.nodes:
+            compiled_inline_statement = self.compile_statement(statement.nodes[If.NODE_INLINE_STATEMENT])
+            return compiled_condition + [JumpIfFalseInstruction(RelativeAddress(len(compiled_inline_statement)+1))] + compiled_inline_statement
+        
+        # Contains this structure:
+        # If         (condition,body) 
+        # ElseIf     (condition,body)
+        # ElseIf     (condition,body)
+        # Else       (,body)
+        #
+        compiled_components = []
+    
+        compiled_components.append((compiled_condition,self.compile_block(statement.nodes[If.NODE_BODY])))
+        
+        if If.NODE_ELSEIFS in statement.nodes:
+            for elseif in statement.nodes[If.NODE_ELSEIFS]:
+                compiled_components.append((self.compile_expression(statement.nodes[ElseIf.NODE_CONDITION]),
+                                            self.compile_block(statement.nodes[ElseIf.NODE_BODY])))
+            
+        
+        
+    
         return code
 
     def compile_statement(self,statement):
@@ -283,6 +317,8 @@ class Compiler:
             return self.compile_declaration(substatement)
         if substatement.type == Rule.RETURN:
             return self.compile_return(substatement)
+        if substatement.type == Rule.IF:
+            return self.compile_if(substatement)
                 
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
