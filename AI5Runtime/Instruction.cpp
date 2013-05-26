@@ -8,6 +8,12 @@ const std::wstring& getName(StackMachine* machine,int index)
 	return static_cast<StaticName*>(staticData)->getName();
 }
 
+const std::wstring& getString(StackMachine* machine,int index)
+{
+	StaticData* staticData = machine->getStaticData(index);
+	return static_cast<StaticString*>(staticData)->getVariant()->getString();
+}
+
 std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 {
 	switch(this->type)
@@ -31,7 +37,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "PUSH_BOOLEAN" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::PUSH_STRING:
-		stream << "PUSH_STRING" << " " << this->arg.integer;
+		stream << "PUSH_STRING" << " " << getString(machine,this->arg.integer);
 		break;
 	case Instruction::PUSH_FUNCTION:
 		stream << "PUSH_FUNCTION" << " " << this->arg.integer;
@@ -103,7 +109,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "NEGATION";
 		break;
 	case Instruction::CALL_FUNCTION:
-		stream << "CALL_FUNCTION";
+		stream << "CALL_FUNCTION" << " " << (int)this->arg.byte;
 		break;
 	case Instruction::SWAP_TOP:
 		stream << "SWAP_TOP";
