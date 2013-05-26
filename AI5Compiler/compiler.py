@@ -13,6 +13,8 @@ class Address:
     RELATIVE = "relative"
     ABSOLUTE = "absolute"
     UNRESOLVED_ABSOLUTE = "unresolved absolute"
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
 
 class RelativeAddress:
     type = Address.RELATIVE
@@ -32,6 +34,8 @@ class UnresolvedAbsoluteAddress:
         self.offset = offset
     def resolve(self,position):
         return AbsoluteAddress(position + self.offset)
+
+
 
 class Instruction:
     def __repr__(self):
@@ -276,14 +280,18 @@ class Compiler:
         return code
     
     def compile_if(self,statement):
-        code = []
         
         compiled_condition = self.compile_expression(statement.nodes[If.NODE_CONDITION])
         
+        # Inline if-statements are easy to compile!
         if If.NODE_INLINE_STATEMENT in statement.nodes:
             compiled_inline_statement = self.compile_statement(statement.nodes[If.NODE_INLINE_STATEMENT])
             return compiled_condition + [JumpIfFalseInstruction(RelativeAddress(len(compiled_inline_statement)+1))] + compiled_inline_statement
         
+
+        # Full blown if statements with possible elseifs and else is
+        # harder. There are a lot of jump offsets that needs to be computed.
+
         # Contains this structure:
         # If         (condition,body) 
         # ElseIf     (condition,body)
@@ -292,17 +300,53 @@ class Compiler:
         #
         compiled_components = []
     
-        compiled_components.append((compiled_condition,self.compile_block(statement.nodes[If.NODE_BODY])))
+        compiled_components.append((compiled_condition+[JumpIfFalseInstruction(None)],self.compile_block(statement.nodes[If.NODE_BODY])+[JumpInstruction(None)]))
         
         if If.NODE_ELSEIFS in statement.nodes:
             for elseif in statement.nodes[If.NODE_ELSEIFS]:
-                compiled_components.append((self.compile_expression(statement.nodes[ElseIf.NODE_CONDITION]),
-                                            self.compile_block(statement.nodes[ElseIf.NODE_BODY])))
+                elseif_compiled_condition = self.compile_expression(elseif.nodes[ElseIf.NODE_CONDITION])
+                # Add dummy jump instruction to NEXT elseif/else/endif
+                elseif_compiled_condition += [JumpIfFalseInstruction(None)]
+
+                elseif_compiled_body = self.compile_block(elseif.nodes[ElseIf.NODE_BODY])
+                # Add jump to endif
+                elseif_compiled_body += [JumpInstruction(None)]
+
+                compiled_components.append((elseif_compiled_condition,elseif_compiled_body))
+
+        if If.NODE_ELSE in statement.nodes:
+            compiled_body = self.compile_block(statement.nodes[If.NODE_ELSE].nodes[Else.NODE_BODY])
+            compiled_body += [JumpInstruction(None)]
+            compiled_components += [([],compiled_body)]
+
+        # How many instructions does this whole statement contain?
+        # Works by first mapping the component structure to a new list
+        # containing each sum of each component which are then summed together.
+        number_of_instructions = sum(map(lambda x:len(x[0])+len(x[1]),compiled_components))
+        consumed_instructions = 0
+        output_instructions = []
+
+        # Resolve all the jump addresses. Complicated :(
+        for index,component in enumerate(compiled_components):
             
+            condition, body = component
+
+            # Calculate condition jump offset.
+            if condition: # If the component has a condition (only else lacks this).
+                consumed_instructions += len(condition)-1
+                condition[-1].address = RelativeAddress(len(body)+1)
+                consumed_instructions += 1
+
+            consumed_instructions += len(body)-1
+            print(number_of_instructions,consumed_instructions)
+            body[-1].address = RelativeAddress(number_of_instructions - consumed_instructions)
+            consumed_instructions += 1
+
+            output_instructions += condition + body
         
         
     
-        return code
+        return output_instructions
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
