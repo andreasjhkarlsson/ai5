@@ -1,6 +1,6 @@
 #include "IntegerVariant.h"
 #include <iostream>
-
+#include "StackMachine.h"
 
 
 IntegerVariant::IntegerVariant(__int64 integer): Variant(INTEGER), value(integer)
@@ -40,4 +40,9 @@ bool IntegerVariant::toBoolean()
 double IntegerVariant::toFloating()
 {
 	return (double)value;
+}
+
+IntegerVariant* IntegerVariant::createFromFactory(VariantFactory* factory,__int64 value)
+{
+	return factory->create<IntegerVariant,__int64>(Variant::INTEGER,value);
 }

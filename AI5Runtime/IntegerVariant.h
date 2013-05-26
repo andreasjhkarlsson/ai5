@@ -1,5 +1,8 @@
 #pragma once
 #include "variant.h"
+
+
+
 class IntegerVariant: public Variant
 {
 public:
@@ -13,6 +16,7 @@ public:
 	static bool INITIALIZE();
 	friend class VariantFactory;
 	__forceinline __int64 getValue();
+	static IntegerVariant* createFromFactory(VariantFactory* factory,__int64 value);
 private:
 	__int64 value;
 	
@@ -23,3 +27,5 @@ __int64 IntegerVariant::getValue()
 {
 	return value;
 }
+
+

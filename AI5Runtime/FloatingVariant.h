@@ -1,5 +1,6 @@
 #pragma once
 #include "variant.h"
+class StackMachine;
 class FloatingVariant:
 	public Variant
 {
@@ -10,6 +11,13 @@ public:
 	virtual __int64 toInteger();
 	virtual bool toBoolean();
 	virtual void print();
+	double getValue()
+	{
+		return value;
+	}
+	friend class VariantFactory;
+	static FloatingVariant* createFromFactory(VariantFactory* factory,double value);
+
 private:
 	double value;
 };

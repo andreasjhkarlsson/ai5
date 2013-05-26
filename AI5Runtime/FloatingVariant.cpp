@@ -27,3 +27,9 @@ void FloatingVariant::print()
 {
 	std::wcout << "FloatingVariant: " << value << std::endl;
 }
+
+
+FloatingVariant* FloatingVariant::createFromFactory(VariantFactory* factory,double value)
+{
+	return factory->create<FloatingVariant,double>(Variant::FLOATING,value);
+}
