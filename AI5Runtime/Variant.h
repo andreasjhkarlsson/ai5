@@ -2,6 +2,8 @@
 #include <vector>
 #include <iostream>
 #include "FastStack.h"
+#include "types.h"
+
 class VariantFactory;
 
 typedef int VARIANT_TYPE;
@@ -24,6 +26,7 @@ public:
 	virtual double toFloating()=0;
 	virtual __int64 toInteger()=0;
 	virtual bool toBoolean()=0;
+	virtual shared_string toString()=0;
 	__forceinline void addRef();
 	__forceinline void release();
 	__forceinline VARIANT_TYPE getType();

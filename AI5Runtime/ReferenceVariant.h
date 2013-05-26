@@ -12,6 +12,7 @@ public:
 	virtual double toFloating();
 	virtual __int64 toInteger();
 	virtual bool toBoolean();
+	virtual shared_string toString();
 	__forceinline Variant* deref();
 private:
 	Variant* var;

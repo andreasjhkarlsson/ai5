@@ -33,8 +33,13 @@ bool BooleanVariant::toBoolean()
 }
 void BooleanVariant::print()
 {
+	std::wcout << "BooleanVariant: " << *toString() << std::endl;
+}
+
+shared_string BooleanVariant::toString()
+{
 	if(value)
-		std::wcout << "BooleanVariant: true" << std::endl;
+		return create_shared_string(L"true");
 	else
-		std::wcout << "BooleanVariant: false" << std::endl;
+		return create_shared_string(L"false");
 }

@@ -33,7 +33,7 @@ private:
 class StaticString: public StaticData
 {
 public:
-	StaticString(const std::wstring& str): StaticData(STRING), strVar(str)
+	StaticString(const std::wstring& str): StaticData(STRING), strVar(create_shared_string(str))
 	{
 
 	}
@@ -48,17 +48,17 @@ private:
 class StaticName: public StaticData
 {
 public:
-	StaticName(const std::wstring& str): StaticData(NAME),name(str)
+	StaticName(const std::wstring& str): StaticData(NAME),name(create_shared_string(str))
 	{
 
 	}
 
-	__forceinline std::wstring& getName()
+	__forceinline shared_string getName()
 	{
 		return name;
 	}
 private:
-	std::wstring name;
+	shared_string name;
 };
 
 class StaticInteger: public StaticData

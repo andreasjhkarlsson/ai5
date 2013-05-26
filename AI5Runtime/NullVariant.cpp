@@ -33,3 +33,8 @@ bool NullVariant::toBoolean()
 }
 
 NullVariant NullVariant::Instance;
+
+shared_string NullVariant::toString()
+{
+	return create_shared_string(L"Null");
+}

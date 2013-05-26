@@ -11,6 +11,7 @@ public:
 	virtual __int64 toInteger();
 	virtual bool toBoolean();
 	virtual void print();
+	virtual shared_string toString();
 	double getValue()
 	{
 		return value;

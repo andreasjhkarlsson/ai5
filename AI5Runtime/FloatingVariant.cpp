@@ -1,5 +1,6 @@
 #include "FloatingVariant.h"
 #include <iostream>
+#include <sstream>
 
 FloatingVariant::FloatingVariant(double value): Variant(FLOATING), value(value)
 {
@@ -25,7 +26,15 @@ bool FloatingVariant::toBoolean()
 }
 void FloatingVariant::print()
 {
-	std::wcout << "FloatingVariant: " << value << std::endl;
+	std::wcout << "FloatingVariant: " << *toString() << std::endl;
+}
+
+
+shared_string FloatingVariant::toString()
+{
+	std::wstringstream sstream;
+	sstream << value;
+	return create_shared_string(sstream.str());
 }
 
 

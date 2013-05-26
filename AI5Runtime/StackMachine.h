@@ -130,9 +130,9 @@ Variant* StackMachine::getNearest(int identifier)
 	if(name == nullptr)
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
-		name = globalScope.getNameFromString(std::static_pointer_cast<StaticName>(staticData)->getName());
+		name = globalScope.getNameFromString(*std::static_pointer_cast<StaticName>(staticData)->getName());
 		// If name is still nullptr, throw error!
-		globalScope.createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+		globalScope.createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
 	}
 
 	return name->get();
@@ -154,7 +154,7 @@ void StackMachine::setNearest(int identifier,Variant* variant)
 		else
 			targetScope = &globalScope;
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
-		foundName = targetScope->createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+		foundName = targetScope->createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
 	}
 
 
@@ -174,7 +174,7 @@ void StackMachine::setLocal(int identifier,Variant* variant)
 	if(name == nullptr)
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
-		name = targetScope->createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+		name = targetScope->createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
 	}
 
 	name->set(variant);
@@ -187,7 +187,7 @@ void StackMachine::setGlobal(int identifier,Variant* variant)
 	if(foundName == nullptr)
 	{		
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier];
-		foundName = globalScope.createIndexForName(std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
+		foundName = globalScope.createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier);
 	}
 	foundName->set(variant);
 }

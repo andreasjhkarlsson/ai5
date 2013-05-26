@@ -1,17 +1,18 @@
 #include "Instruction.h"
 #include <iostream>
+#include "types.h"
 
 
-const std::wstring& getName(StackMachine* machine,int index)
+shared_string getName(StackMachine* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticName*>(staticData)->getName();
 }
 
-const std::wstring& getString(StackMachine* machine,int index)
+shared_string getString(StackMachine* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
-	return static_cast<StaticString*>(staticData)->getVariant()->getString();
+	return static_cast<StaticString*>(staticData)->getVariant()->toString();
 }
 
 double getFloating(StackMachine* machine,int index)
@@ -35,7 +36,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "NOOP";
 		break;
 	case Instruction::PUSH_NAME:
-		stream << "PUSH_NAME" << " " << getName(machine,this->arg.integer);
+		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.integer);
 		break;
 	case Instruction::PUSH_INTEGER:
 		stream << "PUSH_INTEGER" << " " << getInteger(machine, this->arg.integer);
@@ -47,7 +48,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "PUSH_BOOLEAN" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::PUSH_STRING:
-		stream << "PUSH_STRING" << " " << getString(machine,this->arg.integer);
+		stream << "PUSH_STRING" << " " << *getString(machine,this->arg.integer);
 		break;
 	case Instruction::PUSH_FUNCTION:
 		stream << "PUSH_FUNCTION" << " " << this->arg.integer;
@@ -65,19 +66,19 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "POP";
 		break;
 	case Instruction::ASSIGN_GLOBAL:
-		stream << "ASSIGN_GLOBAL" << " " << getName(machine,this->arg.integer);
+		stream << "ASSIGN_GLOBAL" << " " << *getName(machine,this->arg.integer);
 		break;
 	case Instruction::ASSIGN_LOCAL:
-		stream << "ASSIGN_LOCAL" << " " << getName(machine,this->arg.integer);
+		stream << "ASSIGN_LOCAL" << " " << *getName(machine,this->arg.integer);
 		break;
 	case Instruction::ASSIGN_NEAREST:
-		stream << "ASSIGN_NEAREST" << " " << getName(machine,this->arg.integer);
+		stream << "ASSIGN_NEAREST" << " " << *getName(machine,this->arg.integer);
 		break;
 	case Instruction::ASSIGN_INDEX:
 		stream << "ASSIGN_INDEX";
 		break;
 	case Instruction::ASSIGN_PROPERTY:
-		stream << "ASSIGN_PROPERTY" << " " << getName(machine,this->arg.integer);
+		stream << "ASSIGN_PROPERTY" << " " << *getName(machine,this->arg.integer);
 		break;
 	case Instruction::JUMP_LONG_ABSOLUTE:
 		stream << "JUMP_LONG_ABSOLUTE" << " " << this->arg.integer;

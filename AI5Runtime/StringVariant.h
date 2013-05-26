@@ -5,14 +5,14 @@ class StringVariant :
 	public Variant
 {
 public:
-	StringVariant(const std::wstring& str);
+	StringVariant(shared_string str);
 	~StringVariant(void);
 	virtual void print();
 	virtual double toFloating();
 	virtual __int64 toInteger();
 	virtual bool toBoolean();
-	const std::wstring& getString();
+	virtual shared_string toString();
 private:
-	std::wstring str;
+	shared_string str;
 };
 

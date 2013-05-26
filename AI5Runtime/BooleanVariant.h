@@ -11,6 +11,7 @@ public:
 	static BooleanVariant True;
 	static BooleanVariant False;
 	const bool value;
+	virtual shared_string toString();
 private:
 	BooleanVariant(bool value);
 	~BooleanVariant(void);

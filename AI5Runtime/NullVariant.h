@@ -10,6 +10,7 @@ public:
 	virtual double toFloating();
 	virtual __int64 toInteger();
 	virtual bool toBoolean();
+	virtual shared_string toString();
 private:
 	NullVariant(void);
 };

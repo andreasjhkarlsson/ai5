@@ -1,10 +1,17 @@
 #include "ReferenceVariant.h"
 #include <iostream>
-
+#include <sstream>
 
 void ReferenceVariant::print()
 {
-	std::wcout << "ReferenceVariant: <" << this->var << ">" << std::endl;
+	std::wcout << "ReferenceVariant: <" << *toString() << ">" << std::endl;
+}
+
+shared_string ReferenceVariant::toString()
+{
+	std::wstringstream stream;
+	stream << var;
+	return create_shared_string(stream.str());
 }
 
 ReferenceVariant::ReferenceVariant(Variant* var): Variant(REFERENCE), var(nullptr)

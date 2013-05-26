@@ -1,7 +1,7 @@
 #include "IntegerVariant.h"
 #include <iostream>
 #include "StackMachine.h"
-
+#include <sstream>
 
 IntegerVariant::IntegerVariant(__int64 integer): Variant(INTEGER), value(integer)
 {
@@ -24,7 +24,7 @@ bool IntegerVariant::INITIALIZE()
 
 void IntegerVariant::print()
 {
-	std::wcout << "IntegerVariant: " << this->value << std::endl;
+	std::wcout << "IntegerVariant: " << *toString() << std::endl;
 }
 
 __int64 IntegerVariant::toInteger()
@@ -45,4 +45,11 @@ double IntegerVariant::toFloating()
 IntegerVariant* IntegerVariant::createFromFactory(VariantFactory* factory,__int64 value)
 {
 	return factory->create<IntegerVariant,__int64>(Variant::INTEGER,value);
+}
+
+shared_string IntegerVariant::toString()
+{
+	std::wstringstream stream;
+	stream << value;
+	return create_shared_string(stream.str());
 }

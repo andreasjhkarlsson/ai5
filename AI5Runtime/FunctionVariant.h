@@ -19,5 +19,10 @@ public:
 	{
 		return true;
 	}
+
+	virtual shared_string toString()
+	{
+		return create_shared_string(L"");
+	}
 };
 

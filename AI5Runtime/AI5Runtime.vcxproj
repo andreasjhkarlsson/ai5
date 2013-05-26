@@ -184,6 +184,7 @@
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="StackMachine.h" />
     <ClInclude Include="StringVariant.h" />
+    <ClInclude Include="types.h" />
     <ClInclude Include="UserFunctionVariant.h" />
     <ClInclude Include="Variant.h" />
   </ItemGroup>
