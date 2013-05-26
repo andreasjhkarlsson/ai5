@@ -42,7 +42,6 @@ private:
 };
 
 
-// Ok, here goes:
 // Keeping this class optimized is VERY important.
 class Scope
 {

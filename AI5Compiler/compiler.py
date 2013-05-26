@@ -246,7 +246,7 @@ class Compiler:
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in reversed(arguments):
-            compiled_body += [AssignNearestInstruction(self.static_table.get_name_id(argument.value))]
+            compiled_body += [AssignNearestInstruction(self.static_table.get_name_id(argument.nodes[Argument.NODE_NAME].value))]
         
         # Pop of 'this'
         compiled_body += [PopInstruction()]

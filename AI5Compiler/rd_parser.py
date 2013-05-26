@@ -426,9 +426,9 @@ class ArgumentList(Rule):
         
         arguments = []
         if parser.acceptRule(Argument):
-            arguments.append(parser.current)
+            arguments.append(parser.matched_rule)
             while parser.accept(Token.COMMA):
-                arguments.append(parser.expectRule(Argument))     
+                arguments.append(parser.acceptRule(Argument))     
         nodes[ArgumentList.NODE_ARGUMENT_LIST] = arguments 
         
         parser.expect(Token.RIGHT_PAREN) 
