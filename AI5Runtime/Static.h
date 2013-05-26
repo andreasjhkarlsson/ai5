@@ -3,6 +3,8 @@
 #include <vector>
 #include <memory>
 #include "StringVariant.h"
+#include "FloatingVariant.h"
+#include "IntegerVariant.h"
 
 typedef unsigned char STATIC_TYPE;
 
@@ -14,6 +16,8 @@ public:
 	const static STATIC_TYPE STRING = 0;
 	const static STATIC_TYPE BINARY = 1;
 	const static STATIC_TYPE NAME = 2;
+	const static STATIC_TYPE FLOATING = 3;
+	const static STATIC_TYPE INTEGER = 4;
 	StaticData(STATIC_TYPE type): type(type)
 	{
 	}
@@ -57,5 +61,37 @@ private:
 	std::wstring name;
 };
 
+class StaticInteger: public StaticData
+{
+public:
+	StaticInteger(__int64 value): StaticData(INTEGER),variant(value)
+	{
+
+	}
+
+	__forceinline IntegerVariant* getVariant()
+	{
+		return &variant;
+	}
+private:
+	IntegerVariant variant;
+};
+
+
+class StaticFloating: public StaticData
+{
+public:
+	StaticFloating(double value): StaticData(FLOATING),variant(value)
+	{
+
+	}
+
+	__forceinline FloatingVariant* getVariant()
+	{
+		return &variant;
+	}
+private:
+	FloatingVariant variant;
+};
 
 

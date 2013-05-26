@@ -111,20 +111,14 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::JUMP_LONG_RELATIVE_IF_TRUE	:
 		case Instruction::JUMP_LONG_RELATIVE			:
 		case Instruction::JUMP_LONG_RELATIVE_IF_FALSE	:
+		case Instruction::PUSH_FLOATING:
+		case Instruction::PUSH_INTEGER:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
 			pos += 5;
 			break;
-			// int64 argument
-		case Instruction::PUSH_LARGE_INTEGER:
-			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
-			inst->arg.int64 = *(int*)&instructionBuffer[pos+1];
-			instructions->push_back(inst);
-			pos += 9;
-			break;
 			// char argument
-		case Instruction::PUSH_SMALL_INTEGER:
 		case Instruction::JUMP_SHORT_RELATIVE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE	:
@@ -137,11 +131,6 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			inst->arg.byte = *(char*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
 			pos += 2;
-			break;
-			// double argument
-		case Instruction::PUSH_FLOATING:
-	//		instructions->push_back(Instruction::PTR(new Instruction(instructionBuffer[pos])));
-			pos += 9;
 			break;
 		}
 	}
@@ -160,8 +149,8 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case StaticData::NAME:
 			{
 				index++;
-				size_t nameSize = *(unsigned int*)&staticsBuffer[index];
-				index += 4;
+				unsigned int nameSize = *(unsigned int*)&staticsBuffer[index];
+				index += sizeof(unsigned int);
 				std::wstring name = utf8_to_utf16((const char*)&staticsBuffer[index],nameSize);
 				index += nameSize;
 				statics->push_back(StaticData::PTR(new StaticName(name)));
@@ -171,12 +160,31 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case StaticData::STRING:
 			{
 				index++;
-				size_t strsize = *(unsigned int*)&staticsBuffer[index];
-				index += 4;
+				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
+				index += sizeof(unsigned int);
 				std::wstring str = utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
 				index += strsize;
 				statics->push_back(StaticData::PTR(new StaticString(str)));
 				
+			}
+			break;
+		case StaticData::FLOATING:
+			{
+				index++;
+				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
+				index += sizeof(unsigned int);
+				double value = atof(std::string((const char*)&staticsBuffer[index],strsize).c_str());				
+				index += strsize;
+				statics->push_back(StaticData::PTR(new StaticFloating(value)));
+			}
+			break;
+		case StaticData::INTEGER:
+			{
+				index++;
+				__int64 value = *(__int64*)&staticsBuffer[index];
+				index += sizeof(__int64);
+
+				statics->push_back(StaticData::PTR(new StaticInteger(value)));
 			}
 			break;
 		}

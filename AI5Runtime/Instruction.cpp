@@ -14,6 +14,19 @@ const std::wstring& getString(StackMachine* machine,int index)
 	return static_cast<StaticString*>(staticData)->getVariant()->getString();
 }
 
+double getFloating(StackMachine* machine,int index)
+{
+	StaticData* staticData = machine->getStaticData(index);
+	return static_cast<StaticFloating*>(staticData)->getVariant()->getValue();
+}
+
+__int64 getInteger(StackMachine* machine,int index)
+{
+	StaticData* staticData = machine->getStaticData(index);
+	return static_cast<StaticInteger*>(staticData)->getVariant()->getValue();
+}
+
+
 std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 {
 	switch(this->type)
@@ -24,14 +37,11 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::PUSH_NAME:
 		stream << "PUSH_NAME" << " " << getName(machine,this->arg.integer);
 		break;
-	case Instruction::PUSH_LARGE_INTEGER:
-		stream << "PUSH_LARGE_INTEGER" << " " << this->arg.int64;
-		break;
-	case Instruction::PUSH_SMALL_INTEGER:
-		stream << "PUSH_SMALL_INTEGER" << " " <<  (int)this->arg.byte;
+	case Instruction::PUSH_INTEGER:
+		stream << "PUSH_INTEGER" << " " << getInteger(machine, this->arg.integer);
 		break;
 	case Instruction::PUSH_FLOATING:
-		stream << "PUSH_FLOATING" << " " << this->arg.floating;
+		stream << "PUSH_FLOATING" << " " << getFloating(machine, this->arg.integer);
 		break;
 	case Instruction::PUSH_BOOLEAN:
 		stream << "PUSH_BOOLEAN" << " " <<  (int)this->arg.byte;

@@ -2,18 +2,22 @@
 #include "IntegerVariant.h"
 #include "UserFunctionVariant.h"
 
-__forceinline void pushSmallInteger(StackMachine* machine,char arg)
+
+
+
+__forceinline void pushInteger(StackMachine* machine,int arg)
 {
-	Variant *v = IntegerVariant::BYTE_TABLE[arg+128];
-	v->addRef();
-	machine->getDataStack()->push(v);
+	IntegerVariant* variant = static_cast<StaticInteger*>(machine->getStaticData(arg))->getVariant();
+	variant->addRef();
+	machine->getDataStack()->push(variant);
 	machine->advanceCounter();
 }
 
-
-__forceinline void pushLargeInteger(StackMachine* machine,__int64 arg)
+__forceinline void pushFloating(StackMachine* machine,int arg)
 {
-	machine->getDataStack()->push(machine->getVariantFactory()->create<IntegerVariant,__int64>(Variant::INTEGER,arg));
+	FloatingVariant* variant = static_cast<StaticFloating*>(machine->getStaticData(arg))->getVariant();
+	variant->addRef();
+	machine->getDataStack()->push(variant);
 	machine->advanceCounter();
 }
 

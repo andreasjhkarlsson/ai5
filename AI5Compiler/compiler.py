@@ -48,15 +48,14 @@ class Instruction:
         return struct.pack("=Bi",type,int)
     def to_binary_with_int64_arg(self,type,int64):
         return struct.pack("=Bq",type,int64)
+    def to_binary_with_double_arg(self,type,double):
+        return struct.pack("=Bd",type,double)
 
 class PushIntegerInstruction(Instruction):
-    def __init__(self,integer):
-        self.integer = integer
+    def __init__(self,id):
+        self.id = id
     def to_binary(self):
-        if fits_in_char(self.integer):
-            return self.to_binary_with_char_arg(InstructionType.PUSH_SMALL_INTEGER, self.integer)
-        else:
-            return self.to_binary_with_int64_arg(InstructionType.PUSH_LARGE_INTEGER, self.integer)
+        return self.to_binary_with_int_arg(InstructionType.PUSH_INTEGER, self.id)
 
 
 class PushFunctionInstruction(Instruction):
@@ -77,6 +76,12 @@ class PushNameInstruction(Instruction):
         self.id = id
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_NAME, self.id)
+
+class PushFloatingInstruction(Instruction):
+    def __init__(self,id):
+        self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_FLOATING,self.id)
 
 class PopInstruction(Instruction):
     def to_binary(self):
@@ -195,6 +200,10 @@ class StaticTable:
         return self.get_static_id(StaticType.STRING, value)        
     def get_name_id(self,name):
         return self.get_static_id(StaticType.NAME, name)
+    def get_floating_id(self,floating):
+        return self.get_static_id(StaticType.FLOATING, floating)
+    def get_integer_id(self,integer):
+        return self.get_static_id(StaticType.INTEGER, integer)
     
     def to_binary(self):
         keys = list(self.statics.keys())
@@ -208,6 +217,11 @@ class StaticTable:
             elif type == StaticType.STRING:
                 s = value.encode("utf-8")
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
+            elif type == StaticType.FLOATING:
+                s = str(value)
+                binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
+            elif type == StaticType.INTEGER:
+                binary += struct.pack("=Bq",type,value)
         return binary
         
         
@@ -450,11 +464,13 @@ class Compiler:
         token = terminal.nodes[Terminal.NODE_TYPE]
         
         if token.type == Token.INTEGER:
-            return [PushIntegerInstruction(token.value)]
+            return [PushIntegerInstruction(self.static_table.get_integer_id(token.value))]
         if token.type == Token.IDENTIFIER:
             return [PushNameInstruction(self.static_table.get_name_id(token.value))]
         if token.type == Token.STRING:
-            return [PushStringInstruction(self.static_table.get_string_id(token.value))]        
+            return [PushStringInstruction(self.static_table.get_string_id(token.value))]   
+        if token.type == Token.FLOATING:
+            return [PushFloatingInstruction(self.static_table.get_floating_id(token.value))]     
         
     def compile_factor(self,factor):
         rule = factor.nodes[Factor.NODE_SUBNODE]
