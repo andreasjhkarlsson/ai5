@@ -114,19 +114,7 @@ public:
 		// Make sure the indexTable is all null's.
 		for(int i=0;i<usedIndexes.size();i++)
 		{
-/*			// Is there room left in the name pool?
-			// If it is, add released name into it.
-			if(namePool.size() < POOL_SIZE)
-			{
-				namePool.push(indexTable[usedIndexes[i]]);
-			}
-			else
-			{
-				delete indexTable[usedIndexes[i]];
-			}
-			*/
 			indexTable[usedIndexes[i]] = nullptr;
-			
 		}
 
 		lookup.clear();
