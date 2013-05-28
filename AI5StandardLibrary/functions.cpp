@@ -49,4 +49,17 @@ void getint(StackMachine* machine)
 
 }
 
+void stringlen(StackMachine* machine)
+{
+	Variant* var = machine->getDataStack()->pop();
+	machine->getDataStack()->pop();
+
+	int result = var->toString()->length();
+
+	var->release();
+
+	machine->getDataStack()->push(new IntegerVariant(result));
+
+}
+
 }
