@@ -29,11 +29,14 @@ class RelativeAddress:
     type = Address.RELATIVE
     def __init__(self,offset):
         self.value = offset
-
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
 class AbsoluteAddress:
     type = Address.ABSOLUTE
     def __init__(self,position):
         self.value = position
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
 
 # Can be used as a placeholder when absolute address is needed but absolute address
 # needs to be calculated later.
@@ -396,6 +399,13 @@ class Compiler:
     
         return output_instructions
 
+    def compile_dountil(self,statement):
+        code = []
+        code += self.compile_block(statement.nodes[DoUntil.NODE_BODY])
+        code += self.compile_expression(statement.nodes[DoUntil.NODE_CONDITION])
+        code += [JumpIfFalseInstruction(RelativeAddress(-len(code)))]
+        return code
+
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
         
@@ -411,6 +421,8 @@ class Compiler:
             return self.compile_return(substatement)
         if substatement.type == Rule.IF:
             return self.compile_if(substatement)
+        if substatement.type == Rule.DO_UNTIL:
+            return self.compile_dountil(substatement)
                 
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
