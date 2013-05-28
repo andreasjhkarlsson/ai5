@@ -3,9 +3,9 @@
 #include "types.h"
 
 
-shared_string getName(StackMachine* machine,int index)
+shared_string getName(StackMachine* machine,NameIdentifier nameId)
 {
-	StaticData* staticData = machine->getStaticData(index);
+	StaticData* staticData = machine->getStaticData(nameId.staticId);
 	return static_cast<StaticName*>(staticData)->getName();
 }
 
@@ -36,7 +36,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "NOOP";
 		break;
 	case Instruction::PUSH_NAME:
-		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.integer);
+		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::PUSH_INTEGER:
 		stream << "PUSH_INTEGER" << " " << getInteger(machine, this->arg.integer);
@@ -66,19 +66,19 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "POP";
 		break;
 	case Instruction::ASSIGN_GLOBAL:
-		stream << "ASSIGN_GLOBAL" << " " << *getName(machine,this->arg.integer);
+		stream << "ASSIGN_GLOBAL" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::ASSIGN_LOCAL:
-		stream << "ASSIGN_LOCAL" << " " << *getName(machine,this->arg.integer);
+		stream << "ASSIGN_LOCAL" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::ASSIGN_NEAREST:
-		stream << "ASSIGN_NEAREST" << " " << *getName(machine,this->arg.integer);
+		stream << "ASSIGN_NEAREST" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::ASSIGN_INDEX:
 		stream << "ASSIGN_INDEX";
 		break;
 	case Instruction::ASSIGN_PROPERTY:
-		stream << "ASSIGN_PROPERTY" << " " << *getName(machine,this->arg.integer);
+		stream << "ASSIGN_PROPERTY" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::JUMP_LONG_ABSOLUTE:
 		stream << "JUMP_LONG_ABSOLUTE" << " " << this->arg.integer;

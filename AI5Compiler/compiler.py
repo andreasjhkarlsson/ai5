@@ -9,6 +9,15 @@ import struct
 def fits_in_char(integer):
     return integer >= -128 and integer <= 127
 
+class Identifier:
+    def __init__(self,global_id,local_id,static_id):
+        self.global_id = global_id
+        self.local_id = local_id
+        self.static_id = static_id
+    def to_binary(self):
+        return struct.pack("=III",self.global_id,self.local_id,self.static_id)
+    def __repr__(self):
+        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
 class Address:
     RELATIVE = "relative"
     ABSOLUTE = "absolute"
@@ -72,10 +81,10 @@ class PushStringInstruction(Instruction):
         return self.to_binary_with_int_arg(InstructionType.PUSH_STRING, self.id)
     
 class PushNameInstruction(Instruction):
-    def __init__(self,id):
-        self.id = id
+    def __init__(self,identifier):
+        self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.PUSH_NAME, self.id)
+        return self.to_binary_without_arg(InstructionType.PUSH_NAME) + self.identifier.to_binary()
 
 class PushFloatingInstruction(Instruction):
     def __init__(self,id):
@@ -96,22 +105,22 @@ class RetInstruction(Instruction):
         return self.to_binary_without_arg(InstructionType.RET)
     
 class AssignNearestInstruction(Instruction):
-    def __init__(self,id):
-        self.id = id
+    def __init__(self,identifier):
+        self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.ASSIGN_NEAREST, self.id)
+        return self.to_binary_without_arg(InstructionType.ASSIGN_NEAREST) + self.identifier.to_binary()
     
 class AssignGlobalInstruction(Instruction):
-    def __init__(self,id):
-        self.id = id
+    def __init__(self,identifier):
+        self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.ASSIGN_GLOBAL, self.id)
+        return self.to_binary_without_arg(InstructionType.ASSIGN_GLOBAL) + self.identifier.to_binary()
     
 class AssignLocalInstruction(Instruction):
-    def __init__(self,id):
-        self.id = id
+    def __init__(self,identifier):
+        self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.ASSIGN_LOCAL, self.id)    
+        return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL) + self.identifier.to_binary()
     
 
 class AdditionInstruction(Instruction):
@@ -228,11 +237,33 @@ class StaticTable:
     def length(self):
         return len(self.statics)
 
+class ScopeLookup:
+    def __init__(self):
+        self.stack = []
+    def push_scope(self):
+        self.stack.append({})
+    def pop_scope(self):
+        self.stack.pop()
+    def get_identifier(self,id):
+        nearest_scope = self.stack[len(self.stack)-1]
+        farest_scope = self.stack[0]
+        if id not in nearest_scope:
+            nearest_scope[id] = len(nearest_scope)
+        if id not in farest_scope:
+            farest_scope[id] = len(farest_scope)
+        return farest_scope[id],nearest_scope[id]
+
+
             
 
 class Compiler:
     def __init__(self):
         self.static_table = StaticTable()  
+        self.scope_lookup = ScopeLookup()
+    def get_identifier(self,name):
+        global_id, local_id = self.scope_lookup.get_identifier(name)
+        static_id = self.static_table.get_name_id(name)
+        return Identifier(global_id,local_id,static_id)
     
     def resolve_addresses(self,code):
         for index,instruction in enumerate(code):
@@ -243,10 +274,11 @@ class Compiler:
             
     
     def compile_function(self,function):
+        self.scope_lookup.push_scope()
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in reversed(arguments):
-            compiled_body += [AssignNearestInstruction(self.static_table.get_name_id(argument.nodes[Argument.NODE_NAME].value))]
+            compiled_body += [AssignNearestInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
         
         # Pop of 'this'
         compiled_body += [PopInstruction()]
@@ -257,10 +289,12 @@ class Compiler:
         
         
         code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(3)),
-                AssignNearestInstruction(self.static_table.get_name_id(function.nodes[Function.NODE_NAME].value)),
+                AssignNearestInstruction(self.get_identifier(function.nodes[Function.NODE_NAME].value)),
                 JumpInstruction(RelativeAddress(len(compiled_body)+1))]
         code += compiled_body
         
+        self.scope_lookup.pop_scope()
+
         return code
     
     def compile_declaration(self,declaration):
@@ -408,7 +442,7 @@ class Compiler:
         code = []
         
         ident = nodes[LineStatement.NODE_START]
-        code.append(PushNameInstruction(self.static_table.get_name_id(ident.value)))
+        code.append(PushNameInstruction(self.get_identifier(ident.value)))
         
         qualifiers = nodes[LineStatement.NODE_QUALIFIERS]
         code += self.compile_qualifiers(qualifiers)
@@ -417,7 +451,7 @@ class Compiler:
             # remove last push_name instruction
             code.pop(0)
             assignment = nodes[LineStatement.NODE_ASSIGNMENT]
-            code += self.compile_name_assignment(assignment, self.static_table.get_name_id(ident.value),assignment_instruction)     
+            code += self.compile_name_assignment(assignment, self.get_identifier(ident.value),assignment_instruction)     
         else:
             code += [PopInstruction()]       
         
@@ -466,7 +500,7 @@ class Compiler:
         if token.type == Token.INTEGER:
             return [PushIntegerInstruction(self.static_table.get_integer_id(token.value))]
         if token.type == Token.IDENTIFIER:
-            return [PushNameInstruction(self.static_table.get_name_id(token.value))]
+            return [PushNameInstruction(self.get_identifier(token.value))]
         if token.type == Token.STRING:
             return [PushStringInstruction(self.static_table.get_string_id(token.value))]   
         if token.type == Token.FLOATING:
@@ -506,6 +540,7 @@ class Compiler:
         return code
     
     def compile_program(self,program):
+        self.scope_lookup.push_scope()
         code = self.compile_block(program.nodes[Program.NODE_BLOCK]) + [TerminateInstruction()]
         self.resolve_addresses(code)
         return code

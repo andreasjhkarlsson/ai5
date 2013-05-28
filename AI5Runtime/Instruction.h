@@ -10,6 +10,8 @@
 
 typedef unsigned char INSTRUCTION_TYPE;
 
+
+
 class ProgramLoader;
 
 class Instruction
@@ -82,6 +84,7 @@ private:
 		int integer;
 		double floating;
 		__int64 int64;
+		NameIdentifier identifier;
 
 	} arg;
 };
@@ -144,19 +147,19 @@ void Instruction::execute(StackMachine* machine)
 		doubleTop(machine);
 		break;
 	case ASSIGN_GLOBAL:
-		assignGlobal(machine,arg.integer);
+		assignGlobal(machine,arg.identifier);
 		break;
 	case ASSIGN_LOCAL:
-		assignLocal(machine,arg.integer);
+		assignLocal(machine,arg.identifier);
 		break;
 	case PUSH_NAME:
-		pushName(machine,arg.integer);
+		pushName(machine,arg.identifier);
 		break;
 	case PUSH_FUNCTION:
 		pushFunction(machine,arg.integer);
 		break;
 	case ASSIGN_NEAREST:
-		assignNearest(machine,arg.integer);
+		assignNearest(machine,arg.identifier);
 		break;
 	case CALL_FUNCTION:
 		callFunction(machine,arg.byte);

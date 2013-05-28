@@ -96,14 +96,12 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			pos++;
 			break;
 			// int argument
-		case Instruction::ASSIGN_GLOBAL					:
-		case Instruction::ASSIGN_LOCAL					:
-		case Instruction::ASSIGN_NEAREST				:
-		case Instruction::PUSH_NAME:
+
+
 		case Instruction::PUSH_STRING:
 		case Instruction::PUSH_FUNCTION:
-		case Instruction::PROPERTY						:
-		case Instruction::ASSIGN_PROPERTY				:
+		
+		
 		case Instruction::PUSH_EXCEPTION_HANDLER		:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_TRUE	:
@@ -118,7 +116,17 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			instructions->push_back(inst);
 			pos += 5;
 			break;
-			// char argument
+		case Instruction::ASSIGN_GLOBAL					:
+		case Instruction::ASSIGN_LOCAL					:
+		case Instruction::ASSIGN_NEAREST				:			
+		case Instruction::PUSH_NAME:
+		case Instruction::ASSIGN_PROPERTY				:
+		case Instruction::PROPERTY						:
+			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
+			inst->arg.identifier = *(NameIdentifier*)&instructionBuffer[pos+1];
+			instructions->push_back(inst);
+			pos += 13;
+			break;
 		case Instruction::JUMP_SHORT_RELATIVE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE	:

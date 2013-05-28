@@ -11,7 +11,7 @@ __forceinline void terminate(StackMachine* machine)
 	machine->terminate();
 }
 
-__forceinline void assignGlobal(StackMachine* machine, unsigned int arg)
+__forceinline void assignGlobal(StackMachine* machine, NameIdentifier arg)
 {
 	Variant* var = machine->getDataStack()->pop();
 	
@@ -21,7 +21,7 @@ __forceinline void assignGlobal(StackMachine* machine, unsigned int arg)
 	machine->advanceCounter();
 }
 
-__forceinline void assignLocal(StackMachine* machine, unsigned int arg)
+__forceinline void assignLocal(StackMachine* machine, NameIdentifier arg)
 {
 	Variant* var = machine->getDataStack()->pop();
 	
@@ -31,7 +31,7 @@ __forceinline void assignLocal(StackMachine* machine, unsigned int arg)
 	machine->advanceCounter();
 }
 
-__forceinline void assignNearest(StackMachine* machine,unsigned int arg)
+__forceinline void assignNearest(StackMachine* machine,NameIdentifier arg)
 {
 	Variant* var = machine->getDataStack()->pop();
 	
