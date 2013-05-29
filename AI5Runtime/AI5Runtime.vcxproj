@@ -151,6 +151,7 @@
     <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="Instruction.cpp" />
     <ClCompile Include="IntegerVariant.cpp" />
+    <ClCompile Include="ListVariant.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NameStorage.cpp" />
     <ClCompile Include="NullVariant.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="FunctionVariant.h" />
     <ClInclude Include="IntegerVariant.h" />
     <ClInclude Include="jump_instructions.h" />
+    <ClInclude Include="ListVariant.h" />
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="NameStorage.h" />
     <ClInclude Include="NullVariant.h" />

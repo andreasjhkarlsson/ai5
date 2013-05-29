@@ -118,6 +118,14 @@ class PushNullInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NULL)
 
+class PushEmptyListInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.PUSH_EMPTY_LIST)
+
+class AddListElementInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ADD_LIST_ELEMENT)
+
 class PushBooleanInstruction(Instruction):
     def __init__(self,value):
         self.value=value
@@ -557,6 +565,13 @@ class Compiler:
             return [PushFloatingInstruction(self.static_table.get_floating_id(token.value))]     
         if token.type == Token.BOOLEAN:
             return [PushBooleanInstruction(token.value)]
+
+    def compile_inline_list(self,inline_list):
+        code = [PushEmptyListInstruction()]
+        for element in inline_list.nodes[InlineList.NODE_ELEMENTS]:
+            code += self.compile_expression(element)
+            code += [AddListElementInstruction()]
+        return code
         
     def compile_factor(self,factor):
         rule = factor.nodes[Factor.NODE_SUBNODE]
@@ -566,6 +581,9 @@ class Compiler:
             code = self.compile_terminal(rule)
         elif rule.type == Rule.EXPRESSION:
             code = self.compile_expression(rule)
+        elif rule.type == Rule.INLINE_LIST:
+            code = self.compile_inline_list(rule)
+
             
         code += self.compile_qualifiers(factor.nodes[Factor.NODE_QUALIFIERS])
 

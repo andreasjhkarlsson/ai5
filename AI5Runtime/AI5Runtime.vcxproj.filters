@@ -72,6 +72,9 @@
     <ClCompile Include="StringVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="ListVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="types.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ListVariant.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

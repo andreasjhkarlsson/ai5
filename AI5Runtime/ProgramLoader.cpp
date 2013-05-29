@@ -57,7 +57,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		Instruction::PTR inst;
 		switch(instructionBuffer[pos])
 		{
-			// No arguments
+		// No arguments
 		case Instruction::POP							:
 		case Instruction::NOOP							:
 		case Instruction::PUSH_NULL						:
@@ -86,10 +86,12 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::ASSIGN_INDEX					:
 		case Instruction::POP_EXCEPTION_HANDLER			:
 		case Instruction::RAISE_EXCEPTION				:
+		case Instruction::PUSH_EMPTY_LIST:
+		case Instruction::ADD_LIST_ELEMENT:
 			instructions->push_back(Instruction::PTR(new Instruction(instructionBuffer[pos])));
 			pos++;
 			break;
-			// int argument
+		// int argument
 		case Instruction::PUSH_STRING:
 		case Instruction::PUSH_FUNCTION:
 		case Instruction::PUSH_EXCEPTION_HANDLER		:
@@ -101,11 +103,13 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::JUMP_LONG_RELATIVE_IF_FALSE	:
 		case Instruction::PUSH_FLOATING:
 		case Instruction::PUSH_INTEGER:
+		case Instruction::PUSH_MULTIDIM_LIST:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
 			pos += 5;
 			break;
+		// identifier argument.
 		case Instruction::ASSIGN_GLOBAL					:
 		case Instruction::ASSIGN_LOCAL					:
 		case Instruction::ASSIGN_NEAREST				:			
@@ -120,6 +124,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			instructions->push_back(inst);
 			pos += 13;
 			break;
+		// char argument.
 		case Instruction::JUMP_SHORT_RELATIVE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE	:

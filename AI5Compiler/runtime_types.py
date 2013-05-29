@@ -56,8 +56,11 @@ class InstructionType:
     ASSIGN_GLOBAL_CONST                 = 0x36;
     ASSIGN_LOCAL_CONST                  = 0x37;
     ASSIGN_NEAREST_CONST                = 0x38;
-    
-    
+    PUSH_EMPTY_LIST     				= 0x39;
+    ADD_LIST_ELEMENT				    = 0x3A;
+    PUSH_MULTIDIM_LIST			        = 0x3B;
+
+
 class StaticType:
     STRING      = 0x0
     BINARY      = 0x1

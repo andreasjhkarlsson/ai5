@@ -1,8 +1,13 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <vector>
+
+class Variant;
 
 typedef std::shared_ptr<std::wstring> shared_string;
+
+typedef std::shared_ptr<std::vector<Variant*>> shared_var_list;
 
 inline shared_string create_shared_string(const std::wstring& string)
 {

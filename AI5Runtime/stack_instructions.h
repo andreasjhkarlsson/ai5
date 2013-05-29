@@ -1,7 +1,7 @@
 #include "StackMachine.h"
 #include "IntegerVariant.h"
 #include "UserFunctionVariant.h"
-
+#include "ListVariant.h"
 
 
 
@@ -77,5 +77,28 @@ __forceinline void pushBoolean(StackMachine* machine,char arg)
 
 	var->addRef();
 	machine->getDataStack()->push(var);
+	machine->advanceCounter();
+}
+
+__forceinline void pushEmptyList(StackMachine* machine)
+{
+	machine->getDataStack()->push(new ListVariant());
+	machine->advanceCounter();
+}
+
+__forceinline void addListElement(StackMachine* machine)
+{
+	// No need to release element as we would have
+	// addRef'ed it anyway when adding it to the list.
+	Variant* element = machine->getDataStack()->pop();
+
+	// No need to pop list as it should be left on the stack when the instruction returns.
+	ListVariant* list = static_cast<ListVariant*>(machine->getDataStack()->top());
+
+	list->addElement(element);
+
+	element->release();
+
+	
 	machine->advanceCounter();
 }
