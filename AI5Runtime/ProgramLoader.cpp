@@ -17,41 +17,35 @@ ProgramLoader::~ProgramLoader(void)
 }
 
 
-
+// This method creates a fully prepared StackMachine from a file.
+// This involves decoding all instructions, statics, headers and 
+// setting the proper state of the machine.
 std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&filename)
 {
 	std::ifstream in;
 
 	in.open(filename, std::ios::in | std::ios::binary);
 
+	// File couldn't be read!
 	if(!in.is_open())
 	{
+		// Throw error instead?
 		return nullptr;
 	}
-	// get the starting position
+
+	// This little scheme gets the filesize without
+	// involving the OS.
 	std::streampos start = in.tellg();
-
-	// go to the end
 	in.seekg(0, std::ios::end);
-
-	// get the ending position
 	std::streampos end = in.tellg();
-
-	// go back to the start
 	in.seekg(0, std::ios::beg);
 
-	// create a vector to hold the data that
-	// is resized to the total size of the file    
-	std::vector<char> contents;
-	contents.resize(static_cast<size_t>(end - start));
 
-	// read it in
-	//	in.read(&contents[0], contents.size());
-
+	// Read header directly into a ProgramHeader struct.
 	ProgramHeader header;
 	in.read(reinterpret_cast<char*>(&header),sizeof(header));
 
-
+	// Read all instructions at once!
 	std::vector<unsigned char> instructionBuffer;
 	instructionBuffer.resize(header.instructions_size);
 	in.seekg(header.instructions_start,std::ios::beg);
@@ -96,12 +90,8 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			pos++;
 			break;
 			// int argument
-
-
 		case Instruction::PUSH_STRING:
 		case Instruction::PUSH_FUNCTION:
-		
-		
 		case Instruction::PUSH_EXCEPTION_HANDLER		:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_TRUE	:
@@ -146,12 +136,22 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		}
 	}
 
+	// Allocate statics and save it in a shared_ptr as someone else need
+	// to deallocate it.
 	auto statics = shared_ptr<vector<StaticData::PTR>>(new vector<StaticData::PTR>());
+	
+	// Seek to correct position in file for statics table.
+	in.seekg(header.statics_start,std::ios::beg);
+
+	// Read entire statics table at once!
+	// If this turns out to be too big, change to memory mapped file instead.
 	std::vector<unsigned char> staticsBuffer;
 	staticsBuffer.resize(header.statics_size);
-	in.seekg(header.statics_start,std::ios::beg);
 	in.read(reinterpret_cast<char*>(&staticsBuffer[0]),header.statics_size);
 
+	// Loop through each static.
+	// Since statics can have different lengths, let each decode routine
+	// advance the index.
 	for (size_t index = 0;index < header.statics_size;)
 	{
 		StaticData::PTR inst;
@@ -159,6 +159,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		{
 		case StaticData::NAME:
 			{
+				// Names are prefixed by 32 bit length.
 				index++;
 				unsigned int nameSize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
@@ -172,6 +173,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			break;
 		case StaticData::STRING:
 			{
+				// Bad DRY from NAME here.. :P
 				index++;
 				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
@@ -185,6 +187,8 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			break;
 		case StaticData::FLOATING:
 			{
+				// Floats are stored as string to avoid problems with
+				// floating point binary standards.
 				index++;
 				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
@@ -205,8 +209,9 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		}
 	}
 
-
 	StackMachine* machine = new StackMachine(statics,instructions);
+
+	// Set the initial state of the machine.
 	machine->jumpAbsolute(header.entry_instruction);
 
 	return shared_ptr<StackMachine>(machine);

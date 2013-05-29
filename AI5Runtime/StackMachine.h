@@ -16,6 +16,8 @@ class Instruction;
 using std::shared_ptr;
 using std::vector;
 
+// This represents the virtual machine.
+// It controls program counter, stacks, tables, scopes and memory allocation.
 class StackMachine
 {
 public:
@@ -39,6 +41,7 @@ public:
 	{
 		if(callStack.size() > 0)
 			return callStack.top();
+		// No callStack. This means we are at top level global scope.
 		return nullptr;
 	}
 	__forceinline Variant* getNearest(NameIdentifier identifier);
