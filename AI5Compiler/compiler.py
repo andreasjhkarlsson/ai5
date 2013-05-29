@@ -63,6 +63,10 @@ class Instruction:
     def to_binary_with_double_arg(self,type,double):
         return struct.pack("=Bd",type,double)
 
+class IndexInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.INDEX)
+
 class PushIntegerInstruction(Instruction):
     def __init__(self,id):
         self.id = id
@@ -292,6 +296,7 @@ class Compiler:
     def __init__(self):
         self.static_table = StaticTable()  
         self.scope_lookup = ScopeLookup()
+
     def get_identifier(self,name):
         global_id, local_id = self.scope_lookup.get_identifier(name)
         static_id = self.static_table.get_name_id(name)
@@ -303,8 +308,7 @@ class Compiler:
             address = instruction.address
             if address.type == Address.UNRESOLVED_ABSOLUTE:
                 instruction.address = address.resolve(index)
-            
-    
+
     def compile_function(self,function):
         self.scope_lookup.push_scope()
         compiled_body = []
@@ -319,13 +323,14 @@ class Compiler:
         
         compiled_body += [PushNullInstruction(),RetInstruction()]
         
+        self.scope_lookup.pop_scope()
         
         code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(3)),
                 AssignNearestInstruction(self.get_identifier(function.nodes[Function.NODE_NAME].value)),
                 JumpInstruction(RelativeAddress(len(compiled_body)+1))]
         code += compiled_body
         
-        self.scope_lookup.pop_scope()
+        
 
         return code
     
@@ -466,19 +471,24 @@ class Compiler:
         if substatement.type == Rule.DO_UNTIL:
             return self.compile_dountil(substatement)
                 
+    def compile_list_indexing(self,indexing):
+        code = []
+        code += self.compile_expression(indexing.nodes[ListIndexing.NODE_INDEX])
+        code += [IndexInstruction()]
+        return code
+
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
             return self.compile_call(qualifier.nodes[Qualifier.NODE_SUBQUALIFIER])
+        if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.LIST_INDEXING:
+            return self.compile_list_indexing(qualifier.nodes[Qualifier.NODE_SUBQUALIFIER])
         
-    
     def compile_call(self,call):
         code = []
         for expression in call.nodes[Call.NODE_ARGUMENTS]:
             code += self.compile_expression(expression)
         code += [CallFunctionInstruction(len(call.nodes[Call.NODE_ARGUMENTS]))]
         return code
-    
-    
     
     def compile_name_assignment(self,assignment,name,assignment_instruction=AssignNearestInstruction):
         code = self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
@@ -542,8 +552,7 @@ class Compiler:
             return [AdditionInstruction()]
         elif token.value == OperatorToken.MULTIPLY:
             return [MultiplicationInstruction()]
-        
-        # throw or something    
+           
     def compile_unary_operator(self,unary):
         token = unary.nodes[UnaryOperator.NODE_OPERATOR]
         if token.value == OperatorToken.BOOLEAN_NOT:
@@ -551,7 +560,6 @@ class Compiler:
         if token.value == OperatorToken.SUBTRACT:
             return [NegationInstruction()]
 
-    
     def compile_terminal(self,terminal):
         token = terminal.nodes[Terminal.NODE_TYPE]
         

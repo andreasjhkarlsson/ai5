@@ -9,6 +9,10 @@ ListVariant::ListVariant(void): Variant(LIST)
 
 ListVariant::~ListVariant(void)
 {
+	for(int i=0;i<list->size();i++)
+	{
+		(*list)[i]->release();
+	}
 }
 
 
@@ -54,4 +58,9 @@ void ListVariant::addElement(Variant* var)
 {
 	var->addRef();
 	list->push_back(var);
+}
+
+Variant* ListVariant::getElement(int index)
+{
+	return (*list)[index];
 }

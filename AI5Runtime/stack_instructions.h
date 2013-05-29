@@ -102,3 +102,19 @@ __forceinline void addListElement(StackMachine* machine)
 	
 	machine->advanceCounter();
 }
+
+__forceinline void derefIndex(StackMachine* machine)
+{
+	Variant* index = machine->getDataStack()->pop();
+	ListVariant* list = static_cast<ListVariant*>(machine->getDataStack()->pop());
+
+	Variant* result = list->getElement(index->toInteger());
+
+	result->addRef();
+	index->release();
+	list->release();
+
+	machine->getDataStack()->push(result);
+
+	machine->advanceCounter();
+}

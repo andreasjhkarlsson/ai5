@@ -203,5 +203,8 @@ void Instruction::execute(StackMachine* machine)
 	case ADD_LIST_ELEMENT:
 		addListElement(machine);
 		break;
+	case INDEX:
+		derefIndex(machine);
+		break;
 	}
 }
