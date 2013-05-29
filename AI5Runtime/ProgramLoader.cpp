@@ -86,12 +86,11 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::ASSIGN_INDEX					:
 		case Instruction::POP_EXCEPTION_HANDLER			:
 		case Instruction::RAISE_EXCEPTION				:
-		case Instruction::PUSH_EMPTY_LIST:
-		case Instruction::ADD_LIST_ELEMENT:
 			instructions->push_back(Instruction::PTR(new Instruction(instructionBuffer[pos])));
 			pos++;
 			break;
 		// int argument
+		case Instruction::BUILD_LIST:
 		case Instruction::PUSH_STRING:
 		case Instruction::PUSH_FUNCTION:
 		case Instruction::PUSH_EXCEPTION_HANDLER		:
@@ -103,7 +102,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::JUMP_LONG_RELATIVE_IF_FALSE	:
 		case Instruction::PUSH_FLOATING:
 		case Instruction::PUSH_INTEGER:
-		case Instruction::PUSH_MULTIDIM_LIST:
+		case Instruction::CREATE_MULTIDIM_LIST:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);

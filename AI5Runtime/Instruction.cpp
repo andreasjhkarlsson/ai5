@@ -200,14 +200,12 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::TERMINATE:
 		stream << "TERMINATE";
 		break;
-	case Instruction::PUSH_EMPTY_LIST:
-		stream << "PUSH_EMPTY_LIST";
+	case Instruction::BUILD_LIST:
+		stream << "BUILD_LIST "<<arg.integer;
 		break;
-	case Instruction::ADD_LIST_ELEMENT:
-		stream << "ADD_LIST_ELEMENT";
-		break;
-	case Instruction::PUSH_MULTIDIM_LIST:
-		stream << "PUSH_MULTIDIM_LIST " << arg.byte;
+
+	case Instruction::CREATE_MULTIDIM_LIST:
+		stream << "CREATE_MULTIDIM_LIST " << arg.byte;
 		break;
 
 	}

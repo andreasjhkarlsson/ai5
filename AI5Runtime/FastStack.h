@@ -9,6 +9,7 @@ public:
 	~FastStack(void);
 	__forceinline void push(T element);
 	__forceinline T pop();
+	__forceinline void popMany(int count);
 	__forceinline T top();
 	__forceinline T get(int offset_from_top);
 	__forceinline size_t size();
@@ -28,6 +29,12 @@ template<typename T>
 T FastStack<T>::pop()
 {
 	return stack[position--];
+}
+
+template<typename T>
+void FastStack<T>::popMany(int count)
+{
+	position-=count;
 }
 
 template<typename T>

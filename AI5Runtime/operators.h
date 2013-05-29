@@ -72,10 +72,10 @@ __forceinline void mathOperation(StackMachine* machine,MATH_OPERATION type)
 			res = d1+d2;
 			break;
 		case SUBTRACTION:
-			res = d1+d2;
+			res = d1-d2;
 			break;
 		case MULTIPLICATION:
-			res = d1+d2;
+			res = d1*d2;
 			break;
 		case DIVISION:
 			res = d1/d2;

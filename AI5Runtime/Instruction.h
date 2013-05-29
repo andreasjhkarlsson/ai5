@@ -74,9 +74,8 @@ public:
 	static const INSTRUCTION_TYPE ASSIGN_GLOBAL_CONST			= 0x36;
 	static const INSTRUCTION_TYPE ASSIGN_LOCAL_CONST			= 0x37;
 	static const INSTRUCTION_TYPE ASSIGN_NEAREST_CONST			= 0x38;
-	static const INSTRUCTION_TYPE PUSH_EMPTY_LIST				= 0x39;
-	static const INSTRUCTION_TYPE ADD_LIST_ELEMENT				= 0x3A;
-	static const INSTRUCTION_TYPE PUSH_MULTIDIM_LIST			= 0x3B;
+	static const INSTRUCTION_TYPE BUILD_LIST					= 0x3A;
+	static const INSTRUCTION_TYPE CREATE_MULTIDIM_LIST			= 0x3B;
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -197,11 +196,8 @@ void Instruction::execute(StackMachine* machine)
 	case PUSH_BOOLEAN:
 		pushBoolean(machine,arg.byte);
 		break;
-	case PUSH_EMPTY_LIST:
-		pushEmptyList(machine);
-		break;
-	case ADD_LIST_ELEMENT:
-		addListElement(machine);
+	case BUILD_LIST:
+		buildList(machine,arg.integer);
 		break;
 	case INDEX:
 		derefIndex(machine);

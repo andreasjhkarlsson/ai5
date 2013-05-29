@@ -80,26 +80,24 @@ __forceinline void pushBoolean(StackMachine* machine,char arg)
 	machine->advanceCounter();
 }
 
-__forceinline void pushEmptyList(StackMachine* machine)
+
+
+__forceinline void buildList(StackMachine* machine,int count)
 {
-	machine->getDataStack()->push(new ListVariant());
-	machine->advanceCounter();
-}
 
-__forceinline void addListElement(StackMachine* machine)
-{
-	// No need to release element as we would have
-	// addRef'ed it anyway when adding it to the list.
-	Variant* element = machine->getDataStack()->pop();
+	ListVariant* list = new ListVariant();
 
-	// No need to pop list as it should be left on the stack when the instruction returns.
-	ListVariant* list = static_cast<ListVariant*>(machine->getDataStack()->top());
+	for(int i=count-1;i>=0;i--)
+	{
+		Variant* element = machine->getDataStack()->get(i);
+		list->addElement(element);
+		element->release();
+	}
 
-	list->addElement(element);
+	machine->getDataStack()->popMany(count);
 
-	element->release();
+	machine->getDataStack()->push(list);
 
-	
 	machine->advanceCounter();
 }
 

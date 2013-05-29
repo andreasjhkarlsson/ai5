@@ -122,13 +122,12 @@ class PushNullInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NULL)
 
-class PushEmptyListInstruction(Instruction):
-    def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.PUSH_EMPTY_LIST)
 
-class AddListElementInstruction(Instruction):
+class BuildListInstruction(Instruction):
+    def __init__(self,count):
+        self.count = count
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.ADD_LIST_ELEMENT)
+        return self.to_binary_with_int_arg(InstructionType.BUILD_LIST,self.count)
 
 class PushBooleanInstruction(Instruction):
     def __init__(self,value):
@@ -575,10 +574,11 @@ class Compiler:
             return [PushBooleanInstruction(token.value)]
 
     def compile_inline_list(self,inline_list):
-        code = [PushEmptyListInstruction()]
-        for element in inline_list.nodes[InlineList.NODE_ELEMENTS]:
+        code = []
+        elements = inline_list.nodes[InlineList.NODE_ELEMENTS]
+        for element in elements:
             code += self.compile_expression(element)
-            code += [AddListElementInstruction()]
+        code += [BuildListInstruction(len(elements))]
         return code
         
     def compile_factor(self,factor):
