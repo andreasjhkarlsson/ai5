@@ -3,7 +3,10 @@
 
 std::wstring utf8_to_utf16(const char* utf8data,int length)
 {
-
+	if(length == 0)
+	{
+		return std::wstring(L"");
+	}
 	// Allocate temporary buffer (and make sure NULLCHAR fits).
 	wchar_t* buff = new wchar_t[length+1];
 
