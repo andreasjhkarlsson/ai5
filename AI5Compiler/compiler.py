@@ -117,6 +117,12 @@ class PopInstruction(Instruction):
 class PushNullInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NULL)
+
+class PushBooleanInstruction(Instruction):
+    def __init__(self,value):
+        self.value=value
+    def to_binary(self):
+        return self.to_binary_with_char_arg(InstructionType.PUSH_BOOLEAN,self.value)
     
 class RetInstruction(Instruction):
     def to_binary(self):
@@ -531,8 +537,12 @@ class Compiler:
         
         # throw or something    
     def compile_unary_operator(self,unary):
-        return [{OperatorToken.SUBTRACT:NegationInstruction,
-                 OperatorToken.BOOLEAN_NOT: BooleanNotInstruction}[unary.nodes[0].value]()]
+        token = unary.nodes[UnaryOperator.NODE_OPERATOR]
+        if token.value == OperatorToken.BOOLEAN_NOT:
+            return [BooleanNotInstruction()]
+        if token.value == OperatorToken.SUBTRACT:
+            return [NegationInstruction()]
+
     
     def compile_terminal(self,terminal):
         token = terminal.nodes[Terminal.NODE_TYPE]
@@ -545,6 +555,8 @@ class Compiler:
             return [PushStringInstruction(self.static_table.get_string_id(token.value))]   
         if token.type == Token.FLOATING:
             return [PushFloatingInstruction(self.static_table.get_floating_id(token.value))]     
+        if token.type == Token.BOOLEAN:
+            return [PushBooleanInstruction(token.value)]
         
     def compile_factor(self,factor):
         rule = factor.nodes[Factor.NODE_SUBNODE]
@@ -556,6 +568,10 @@ class Compiler:
             code = self.compile_expression(rule)
             
         code += self.compile_qualifiers(factor.nodes[Factor.NODE_QUALIFIERS])
+
+        if Factor.NODE_UNARIES in factor.nodes:
+            for unary in reversed(factor.nodes[Factor.NODE_UNARIES]):
+                code += self.compile_unary_operator(unary)
         
         return code
     

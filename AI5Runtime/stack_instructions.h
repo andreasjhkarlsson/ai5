@@ -65,3 +65,17 @@ __forceinline void pushNull(StackMachine* machine)
 	machine->getDataStack()->pushNull();
 	machine->advanceCounter();
 }
+
+__forceinline void pushBoolean(StackMachine* machine,char arg)
+{
+	Variant* var = nullptr;
+
+	if(arg)
+		var = &BooleanVariant::True;
+	else
+		var = &BooleanVariant::False;
+
+	var->addRef();
+	machine->getDataStack()->push(var);
+	machine->advanceCounter();
+}

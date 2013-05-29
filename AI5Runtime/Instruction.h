@@ -188,5 +188,11 @@ void Instruction::execute(StackMachine* machine)
 	case PUSH_STRING:
 		pushString(machine,arg.integer);
 		break;
+	case BOOLEAN_NOT:
+		booleanNot(machine);
+		break;
+	case PUSH_BOOLEAN:
+		pushBoolean(machine,arg.byte);
+		break;
 	}
 }
