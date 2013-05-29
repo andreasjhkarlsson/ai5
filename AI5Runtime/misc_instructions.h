@@ -40,3 +40,33 @@ __forceinline void assignNearest(StackMachine* machine,NameIdentifier arg)
 	var->release();
 	machine->advanceCounter();
 }
+
+__forceinline void assignNearestConst(StackMachine* machine,NameIdentifier arg)
+{
+	Variant* var = machine->getDataStack()->pop();
+	
+	machine->setNearest(arg,var,true);
+
+	var->release();
+	machine->advanceCounter();
+}
+
+__forceinline void assignLocalConst(StackMachine* machine,NameIdentifier arg)
+{
+	Variant* var = machine->getDataStack()->pop();
+	
+	machine->setLocal(arg,var,true);
+
+	var->release();
+	machine->advanceCounter();
+}
+
+__forceinline void assignGlobalConst(StackMachine* machine,NameIdentifier arg)
+{
+	Variant* var = machine->getDataStack()->pop();
+	
+	machine->setGlobal(arg,var,true);
+
+	var->release();
+	machine->advanceCounter();
+}

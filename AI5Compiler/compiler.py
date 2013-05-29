@@ -69,7 +69,22 @@ class PushIntegerInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_INTEGER, self.id)
 
+class AssignGlobalConstInstruction(Instruction):
+    def __init__(self,identifier):
+        self.identifier = identifier
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ASSIGN_GLOBAL_CONST) + self.identifier.to_binary()
 
+class AssignLocalConstInstruction(Instruction):
+    def __init__(self,identifier):
+        self.identifier = identifier
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL_CONST) + self.identifier.to_binary()
+class AssignNearestConstInstruction(Instruction):
+    def __init__(self,identifier):
+        self.identifier = identifier
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ASSIGN_NEAREST_CONST) + self.identifier.to_binary()
 class PushFunctionInstruction(Instruction):
     def __init__(self,address):
         self.address = address
@@ -304,13 +319,26 @@ class Compiler:
         code = []
         
         scope_token = declaration.nodes[Declaration.NODE_SCOPE]
+
+        is_const = Declaration.NODE_CONST in declaration.nodes
         
         if scope_token.value == KeywordToken.DIM:
-            assignment_instruction = AssignNearestInstruction
+            if is_const:
+                assignment_instruction = AssignNearestConstInstruction
+            else:
+                assignment_instruction = AssignNearestInstruction
         elif scope_token.value == KeywordToken.GLOBAL:
-            assignment_instruction = AssignGlobalInstruction
+            if is_const:
+                assignment_instruction = AssignGlobalConstInstruction
+            else:
+                assignment_instruction = AssignGlobalInstruction
         elif scope_token.value == KeywordToken.LOCAL:
-            assignment_instruction = AssignLocalInstruction
+            if is_const:
+                assignment_instruction = AssignLocalConstInstruction
+            else:
+                assignment_instruction = AssignLocalInstruction
+
+
             
         if Declaration.NODE_STATEMENTS in declaration.nodes:
             for stmt in declaration.nodes[Declaration.NODE_STATEMENTS]:
@@ -463,7 +491,7 @@ class Compiler:
             # remove last push_name instruction
             code.pop(0)
             assignment = nodes[LineStatement.NODE_ASSIGNMENT]
-            code += self.compile_name_assignment(assignment, self.get_identifier(ident.value),assignment_instruction)     
+            code += self.compile_name_assignment(assignment, self.get_identifier(ident.value),assignment_instruction)  
         else:
             code += [PopInstruction()]       
         

@@ -71,6 +71,9 @@ public:
 	static const INSTRUCTION_TYPE CONCAT						= 0x33;
 	static const INSTRUCTION_TYPE POW							= 0x34;
 	static const INSTRUCTION_TYPE TERMINATE						= 0x35;
+	static const INSTRUCTION_TYPE ASSIGN_GLOBAL_CONST			= 0x36;
+	static const INSTRUCTION_TYPE ASSIGN_LOCAL_CONST			= 0x37;
+	static const INSTRUCTION_TYPE ASSIGN_NEAREST_CONST			= 0x38;
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -149,8 +152,14 @@ void Instruction::execute(StackMachine* machine)
 	case ASSIGN_GLOBAL:
 		assignGlobal(machine,arg.identifier);
 		break;
+	case ASSIGN_GLOBAL_CONST:
+		assignGlobalConst(machine,arg.identifier);
+		break;
 	case ASSIGN_LOCAL:
 		assignLocal(machine,arg.identifier);
+		break;
+	case ASSIGN_LOCAL_CONST:
+		assignLocalConst(machine,arg.identifier);
 		break;
 	case PUSH_NAME:
 		pushName(machine,arg.identifier);
@@ -160,6 +169,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case ASSIGN_NEAREST:
 		assignNearest(machine,arg.identifier);
+		break;
+	case ASSIGN_NEAREST_CONST:
+		assignNearestConst(machine,arg.identifier);
 		break;
 	case CALL_FUNCTION:
 		callFunction(machine,arg.byte);

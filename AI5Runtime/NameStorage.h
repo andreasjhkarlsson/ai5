@@ -11,7 +11,7 @@
 class Name
 {
 public:
-	Name(): variant(nullptr)
+	Name(): variant(nullptr), isConst(false)
 	{
 	}
 	virtual ~Name()
@@ -20,6 +20,11 @@ public:
 
 	__forceinline void set(Variant *newVariant)
 	{
+		if(isConst)
+		{
+			// Throw error!!!
+			return;
+		}
 		newVariant->addRef();
 		if(variant != nullptr)
 			variant->release();
@@ -35,10 +40,22 @@ public:
 	{
 		variant->release();
 		variant = nullptr;
+		isConst = false;
+	}
+
+	void markAsConst()
+	{
+		// Cannot set name as const several times.
+		if(isConst)
+		{
+			// Throw error!
+		}
+		isConst = true;
 	}
 
 private:
 	Variant* variant;
+	bool isConst;
 };
 
 

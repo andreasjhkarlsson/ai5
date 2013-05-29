@@ -42,9 +42,9 @@ public:
 		return nullptr;
 	}
 	__forceinline Variant* getNearest(NameIdentifier identifier);
-	__forceinline void setNearest(NameIdentifier identifier,Variant* variant);
-	__forceinline void setLocal(NameIdentifier identifier,Variant* variant);
-	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant); 
+	__forceinline void setNearest(NameIdentifier identifier,Variant* variant,bool asConst=false);
+	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
+	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
 	__forceinline int popCallFrame();
 	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
 private:
@@ -140,7 +140,7 @@ Variant* StackMachine::getNearest(NameIdentifier identifier)
 
 // This function sets the value for a name in the nearest scope where it's found.
 // If it isn't found it is added to the local scope, and if there is no local scope, to the global scope.
-void StackMachine::setNearest(NameIdentifier identifier,Variant* variant)
+void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	// Search for name in local and global scope.
 	Name* foundName = nullptr;
@@ -166,10 +166,15 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant)
 
 
 	foundName->set(variant);
+
+	if(asConst)
+	{
+		foundName->markAsConst();
+	}
 }
 
 
-void StackMachine::setLocal(NameIdentifier identifier,Variant* variant)
+void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	Scope* targetScope = &globalScope;
 	if(!callStack.empty())
@@ -185,9 +190,13 @@ void StackMachine::setLocal(NameIdentifier identifier,Variant* variant)
 
 	name->set(variant);
 
+	if(asConst)
+	{
+		name->markAsConst();
+	}
 
 }
-void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant)
+void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	Name* foundName = globalScope.getNameFromIndex(identifier.globalId);
 	if(foundName == nullptr)
@@ -196,4 +205,9 @@ void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant)
 		foundName = globalScope.createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 	foundName->set(variant);
+
+	if(asConst)
+	{
+		foundName->markAsConst();
+	}
 }

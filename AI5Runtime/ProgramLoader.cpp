@@ -122,6 +122,9 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_NAME:
 		case Instruction::ASSIGN_PROPERTY				:
 		case Instruction::PROPERTY						:
+		case Instruction::ASSIGN_GLOBAL_CONST:
+		case Instruction::ASSIGN_LOCAL_CONST:
+		case Instruction::ASSIGN_NEAREST_CONST:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.identifier = *(NameIdentifier*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);

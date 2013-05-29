@@ -20,7 +20,7 @@
 <argument> = [["byref"], <identifier>, ["=",<terminal>]]
 <statement> = <if>|<enum>|<return>|<exit>|<continueloop>|<exitloop>|<while>|<for>|<switch>|<select>|<function>|<declaration>|<line statement>
 <line statement> = <identifier>,{<qualifier>}, [<assignment>]
-<declaration> = ("local"|"dim"|"global"),(<enum>|(["const"],<line statement>,{",",<line statement>})
+<declaration> = (("local",["const"])|("dim",["const"])|("global",["const"])|"const"),(<enum>|(<line statement>,{",",<line statement>})
 <assignment> = <assignment operator>, <expression>
 <list indexing> = '[',<expression>,']'
 <call> = '(',[<expression>,[",",<expression>]]')'

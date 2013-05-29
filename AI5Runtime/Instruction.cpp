@@ -65,6 +65,15 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::POP:
 		stream << "POP";
 		break;
+	case Instruction::ASSIGN_GLOBAL_CONST:
+		stream << "ASSIGN_GLOBAL_CONST" << " " << *getName(machine,this->arg.identifier);
+		break;
+	case Instruction::ASSIGN_LOCAL_CONST:
+		stream << "ASSIGN_LOCAL_CONST" << " " << *getName(machine,this->arg.identifier);
+		break;
+	case Instruction::ASSIGN_NEAREST_CONST:
+		stream << "ASSIGN_NEAREST_CONST" << " " << *getName(machine,this->arg.identifier);
+		break;
 	case Instruction::ASSIGN_GLOBAL:
 		stream << "ASSIGN_GLOBAL" << " " << *getName(machine,this->arg.identifier);
 		break;

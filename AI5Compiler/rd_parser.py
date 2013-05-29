@@ -168,17 +168,22 @@ class Declaration(Rule):
     NODE_STATEMENTS = "statements"
     @staticmethod
     def match(parser): 
-        if not (parser.accept(Token.KEYWORD,KeywordToken.DIM) or 
+        if (parser.accept(Token.KEYWORD,KeywordToken.DIM) or 
                 parser.accept(Token.KEYWORD,KeywordToken.LOCAL) or
                 parser.accept(Token.KEYWORD,KeywordToken.GLOBAL)):
-            return None
-        nodes = {Declaration.NODE_SCOPE:parser.current}
+            nodes = {Declaration.NODE_SCOPE:parser.current}
+            if parser.accept(Token.KEYWORD,KeywordToken.CONST):
+                nodes[Declaration.NODE_CONST] = parser.current    
+        elif parser.accept(Token.KEYWORD,KeywordToken.CONST):
+            nodes = {Declaration.NODE_SCOPE:KeywordToken(KeywordToken.DIM)}
+            nodes[Declaration.NODE_CONST] = parser.current 
+        else:
+            return None 
+
         if parser.acceptRule(Enum):
             nodes[Declaration.NODE_ENUM] = parser.matched_rule
             return Declaration(nodes)
-        
-        if parser.accept(Token.KEYWORD,KeywordToken.CONST):
-            nodes[Declaration.NODE_CONST] = parser.current
+
         
         statements = []
         statements.append(parser.expectRule(LineStatement))

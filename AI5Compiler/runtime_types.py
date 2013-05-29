@@ -53,6 +53,9 @@ class InstructionType:
     CONCAT                              = 0x33;
     POW                                 = 0x34;
     TERMINATE                           = 0x35;
+    ASSIGN_GLOBAL_CONST                 = 0x36;
+    ASSIGN_LOCAL_CONST                  = 0x37;
+    ASSIGN_NEAREST_CONST                = 0x38;
     
     
 class StaticType:
