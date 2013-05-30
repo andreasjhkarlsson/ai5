@@ -197,6 +197,12 @@ void Instruction::execute(StackMachine* machine)
 	case BOOLEAN_NOT:
 		booleanNot(machine);
 		break;
+	case BOOLEAN_AND:
+		booleanAnd(machine);
+		break;
+	case BOOLEAN_OR:
+		booleanOr(machine);
+		break;
 	case PUSH_BOOLEAN:
 		pushBoolean(machine,arg.byte);
 		break;

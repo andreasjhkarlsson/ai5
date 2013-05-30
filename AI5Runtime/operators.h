@@ -108,6 +108,48 @@ __forceinline void booleanNot(StackMachine* machine)
 	machine->advanceCounter();
 }
 
+__forceinline void booleanAnd(StackMachine* machine)
+{
+	Variant *argument2 = machine->getDataStack()->pop();
+	Variant *argument1 = machine->getDataStack()->pop();
+	Variant* result = nullptr;
+
+	if(argument1->toBoolean() && argument2->toBoolean())
+		result = &BooleanVariant::True;
+	else 
+		result = &BooleanVariant::False;
+	
+	argument1->release();
+	argument2->release();
+
+	result->addRef();
+
+	machine->getDataStack()->push(result);
+
+	machine->advanceCounter();
+}
+
+__forceinline void booleanOr(StackMachine* machine)
+{
+	Variant *argument2 = machine->getDataStack()->pop();
+	Variant *argument1 = machine->getDataStack()->pop();
+	Variant* result = nullptr;
+
+	if(argument1->toBoolean() || argument2->toBoolean())
+		result = &BooleanVariant::True;
+	else 
+		result = &BooleanVariant::False;
+	
+	argument1->release();
+	argument2->release();
+
+	result->addRef();
+
+	machine->getDataStack()->push(result);
+
+	machine->advanceCounter();
+}
+
 __forceinline void greater(StackMachine* machine)
 {
 	Variant *v2 = machine->getDataStack()->pop();

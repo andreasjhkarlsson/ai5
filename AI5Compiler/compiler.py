@@ -193,6 +193,14 @@ class NegationInstruction(Instruction):
 class BooleanNotInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.BOOLEAN_NOT)
+
+class BooleanAndInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.BOOLEAN_AND)
+
+class BooleanOrInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.BOOLEAN_OR)
     
 class JumpInstruction(Instruction):
     def __init__(self,address):
@@ -553,7 +561,9 @@ class Compiler:
                  OperatorToken.MULTIPLY: MultiplicationInstruction,
                  OperatorToken.DIVIDE: DivisionInstruction,
                  OperatorToken.POW: PowInstruction,
-                 OperatorToken.GREATER: GreaterInstruction
+                 OperatorToken.GREATER: GreaterInstruction,
+                 OperatorToken.BOOLEAN_AND: BooleanAndInstruction,
+                 OperatorToken.BOOLEAN_OR: BooleanOrInstruction
                  }[token.value]()]
         
         
