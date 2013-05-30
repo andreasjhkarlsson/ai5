@@ -165,6 +165,9 @@ void Instruction::execute(StackMachine* machine)
 	case EQUAL:
 		comparisonInstruction(machine,COMPARISON_TYPE::EQUAL);
 		break;
+	case CONCAT:
+		concatStrings(machine);
+		break;
 	case DOUBLE_TOP:
 		doubleTop(machine);
 		break;

@@ -166,6 +166,10 @@ class AdditionInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ADDITION)
 
+class ConcatInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.CONCAT)
+
 class GreaterInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.GREATER)
@@ -539,7 +543,9 @@ class Compiler:
         if assignment_op.value == OperatorToken.DIVIDE_ASSIGN:
             pre_expr_code += [PushNameInstruction(name)]
             post_expr_code += [DivisionInstruction()]
-
+        if assignment_op.value == OperatorToken.CONCAT_ASSIGN:
+            pre_expr_code += [PushNameInstruction(name)]
+            post_expr_code += [ConcatInstruction()]
         # Compile expression
         expr_code += self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
 
@@ -603,7 +609,8 @@ class Compiler:
                  OperatorToken.LESSER_EQUAL: LesserEqualInstruction,
                  OperatorToken.EQUAL: EqualInstruction,
                  OperatorToken.BOOLEAN_AND: BooleanAndInstruction,
-                 OperatorToken.BOOLEAN_OR: BooleanOrInstruction
+                 OperatorToken.BOOLEAN_OR: BooleanOrInstruction,
+                 OperatorToken.CONCAT: ConcatInstruction
                  }[token.value]()]
         
         
