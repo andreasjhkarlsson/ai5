@@ -54,7 +54,11 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "PUSH_FLOATING" << " " << getFloating(machine, this->arg.integer);
 		break;
 	case Instruction::PUSH_BOOLEAN:
-		stream << "PUSH_BOOLEAN" << " " <<  (int)this->arg.byte;
+		stream << "PUSH_BOOLEAN" << " ";
+		if(this->arg.byte)
+			stream << "true";
+		else
+			stream << "false";
 		break;
 	case Instruction::PUSH_STRING:
 		stream << "PUSH_STRING" << " " << *getString(machine,this->arg.integer);
