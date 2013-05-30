@@ -12,6 +12,12 @@ public:
 	virtual int toInteger32();
 	virtual bool toBoolean();
 	virtual shared_string toString();
+	friend class VariantFactory;
+	static Integer32Variant* createFromFactory(VariantFactory* factory,int value);
+	int getValue()
+	{
+		return value;
+	}
 private:
 	int value;
 };

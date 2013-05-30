@@ -135,19 +135,19 @@ void Instruction::execute(StackMachine* machine)
 		terminate(machine);
 		break;
 	case ADDITION:
-		mathOperation(machine,MATH_OPERATION::ADDITION);
+		mathOperationInstruction(machine,MATH_OPERATION::ADDITION);
 		break;
 	case MULTIPLICATION:
-		mathOperation(machine,MATH_OPERATION::MULTIPLICATION);
+		mathOperationInstruction(machine,MATH_OPERATION::MULTIPLICATION);
 		break;
 	case DIVISION:
-		mathOperation(machine,MATH_OPERATION::DIVISION);
+		mathOperationInstruction(machine,MATH_OPERATION::DIVISION);
 		break;
 	case SUBTRACTION:
-		mathOperation(machine,MATH_OPERATION::SUBTRACTION);
+		mathOperationInstruction(machine,MATH_OPERATION::SUBTRACTION);
 		break;
 	case POW:
-		mathOperation(machine,MATH_OPERATION::POW);
+		mathOperationInstruction(machine,MATH_OPERATION::POW);
 		break;
 	case GREATER:
 		greater(machine);

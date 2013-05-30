@@ -34,6 +34,20 @@ public:
 	__forceinline void release();
 	__forceinline VARIANT_TYPE getType();
 	__forceinline void scheduleRecycling(VariantFactory* factory);
+
+	inline bool isIntegerType();
+	inline bool isInteger32Type();
+	inline bool isInteger64Type();
+	inline bool isFloatingType();
+	inline bool isBooleanType();
+	inline bool isNullType();
+	inline bool isFunctionType();
+	inline bool isNativeFunctionType();
+	inline bool isUserFunctionType();
+	inline bool isStringType();
+	inline bool isListType();
+	inline bool isReferenceType();
+
 private:
 	const VARIANT_TYPE type;
 	int refCount;
@@ -126,3 +140,52 @@ VARIANT_TYPE Variant::getType()
 	return type;
 }
 
+bool Variant::isIntegerType()
+{
+	return type == INTEGER32 || type == INTEGER64;
+}
+
+bool Variant::isInteger32Type()
+{
+	return type == INTEGER32;
+}
+bool Variant::isInteger64Type()
+{
+	return type == INTEGER64;
+}
+bool Variant::isFloatingType()
+{
+	return type == FLOATING;
+}
+bool Variant::isBooleanType()
+{
+	return type == BOOLEAN;
+}
+bool Variant::isNullType()
+{
+	return type == NULL_VAR;
+}
+bool Variant::isFunctionType()
+{
+	return type == NATIVE_FUNCTION || type == USER_FUNCTION;
+}
+bool Variant::isNativeFunctionType()
+{
+	return type == NATIVE_FUNCTION;
+}
+bool Variant::isUserFunctionType()
+{
+	return type == USER_FUNCTION;
+}
+bool Variant::isStringType()
+{
+	return type == STRING;
+}
+bool Variant::isListType()
+{
+	return type == LIST;
+}
+bool Variant::isReferenceType()
+{
+	return type == REFERENCE;
+}
