@@ -25,7 +25,11 @@ double ListVariant::toFloating()
 {
 	return 0.0;
 }
-__int64 ListVariant::toInteger()
+__int64 ListVariant::toInteger64()
+{
+	return 0;
+}
+int ListVariant::toInteger32()
 {
 	return 0;
 }

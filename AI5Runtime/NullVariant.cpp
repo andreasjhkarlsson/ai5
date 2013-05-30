@@ -10,8 +10,6 @@ NullVariant::~NullVariant(void)
 {
 }
 
-
-
 void NullVariant::print()
 {
 	std::wcout << "NullVariant: Null" << std::endl;
@@ -23,10 +21,16 @@ double NullVariant::toFloating()
 	return 0.0;
 }
 
-__int64 NullVariant::toInteger()
+__int64 NullVariant::toInteger64()
 {
 	return 0;
 }
+
+int NullVariant::toInteger32()
+{
+	return 0;
+}
+
 bool NullVariant::toBoolean()
 {
 	return false;

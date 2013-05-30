@@ -10,7 +10,8 @@ public:
 	void unlink();
 	virtual void print();
 	virtual double toFloating();
-	virtual __int64 toInteger();
+	virtual __int64 toInteger64();
+	virtual int toInteger32();
 	virtual bool toBoolean();
 	virtual shared_string toString();
 	__forceinline Variant* deref();

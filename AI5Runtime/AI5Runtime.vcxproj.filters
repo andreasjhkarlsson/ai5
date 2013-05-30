@@ -75,6 +75,9 @@
     <ClCompile Include="Integer64Variant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="Integer32Variant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -153,6 +156,9 @@
       <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="Integer64Variant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="Integer32Variant.h">
       <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>

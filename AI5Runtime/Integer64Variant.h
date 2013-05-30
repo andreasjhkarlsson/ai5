@@ -8,7 +8,8 @@ class Integer64Variant: public Variant
 public:
 	Integer64Variant(const __int64 integer);
 	virtual double toFloating();
-	virtual __int64 toInteger();
+	virtual __int64 toInteger64();
+	virtual int toInteger32();
 	virtual bool toBoolean();
 	virtual void print();
 	virtual shared_string toString();

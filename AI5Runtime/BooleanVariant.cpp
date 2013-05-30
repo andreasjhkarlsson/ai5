@@ -21,12 +21,21 @@ double BooleanVariant::toFloating()
 		return 1.0;
 	return 0.0;
 }
-__int64 BooleanVariant::toInteger()
+
+__int64 BooleanVariant::toInteger64()
 {
 	if(value)
 		return 1;
 	return 0;
 }
+
+int BooleanVariant::toInteger32()
+{
+	if(value)
+		return 1;
+	return 0;
+}
+
 bool BooleanVariant::toBoolean()
 {
 	return value;

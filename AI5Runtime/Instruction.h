@@ -21,6 +21,7 @@ public:
 	static const INSTRUCTION_TYPE NOOP							= 0x00;
 	static const INSTRUCTION_TYPE PUSH_NAME						= 0x01;
 	static const INSTRUCTION_TYPE PUSH_INTEGER64				= 0x02;
+	static const INSTRUCTION_TYPE PUSH_INTEGER32				= 0x03;
 	static const INSTRUCTION_TYPE PUSH_FLOATING					= 0x04;
 	static const INSTRUCTION_TYPE PUSH_BOOLEAN					= 0x05;
 	static const INSTRUCTION_TYPE PUSH_STRING					= 0x06;
@@ -123,6 +124,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case PUSH_INTEGER64:
 		pushInteger64(machine,arg.integer);
+		break;
+	case PUSH_INTEGER32:
+		pushInteger32(machine,arg.integer);
 		break;
 	case POP:
 		pop(machine);

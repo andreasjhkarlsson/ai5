@@ -19,7 +19,7 @@ void sleep(StackMachine* machine)
 	Variant* var = machine->getDataStack()->pop();
 	machine->getDataStack()->pop(); // <-- self
 
-	int sleepDelay = var->toInteger();
+	int sleepDelay = var->toInteger32();
 	var->release();
 	Sleep(sleepDelay);
 	machine->getDataStack()->pushNull();
@@ -41,12 +41,10 @@ void getint(StackMachine* machine)
 {
 	machine->getDataStack()->pop();
 
-
 	__int64 res;
 	std::cin >> res;
 
 	machine->getDataStack()->push(new Integer64Variant(res));
-
 }
 
 void stringlen(StackMachine* machine)

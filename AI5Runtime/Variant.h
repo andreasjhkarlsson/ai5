@@ -20,12 +20,14 @@ public:
 	static const VARIANT_TYPE USER_FUNCTION = 6;
 	static const VARIANT_TYPE STRING = 7;
 	static const VARIANT_TYPE LIST = 8;
-	static const int NUMBER_OF_VARIANT_TYPES = 9;
+	static const VARIANT_TYPE INTEGER32 = 9;
+	static const int NUMBER_OF_VARIANT_TYPES = 10;
 	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
 	virtual void print()=0;
 	virtual double toFloating()=0;
-	virtual __int64 toInteger()=0;
+	virtual __int64 toInteger64()=0;
+	virtual int toInteger32()=0;
 	virtual bool toBoolean()=0;
 	virtual shared_string toString()=0;
 	__forceinline void addRef();

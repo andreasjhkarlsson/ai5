@@ -3,6 +3,7 @@ class InstructionType:
     NOOP                                = 0x00;
     PUSH_NAME                           = 0x01;
     PUSH_INTEGER64                      = 0x02;
+    PUSH_INTEGER32                      = 0x03;
     PUSH_FLOATING                       = 0x04;
     PUSH_BOOLEAN                        = 0x05;
     PUSH_STRING                         = 0x06;
@@ -66,5 +67,6 @@ class StaticType:
     NAME        = 0x2
     FLOATING    = 0x3
     INTEGER64   = 0x4
+    INTEGER32   = 0x5
     
     

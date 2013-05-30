@@ -16,10 +16,16 @@ double FloatingVariant::toFloating()
 {
 	return value;
 }
-__int64 FloatingVariant::toInteger()
+__int64 FloatingVariant::toInteger64()
 {
 	return (__int64)value;
 }
+
+int FloatingVariant::toInteger32()
+{
+	return (int)value;
+}
+
 bool FloatingVariant::toBoolean()
 {
 	return value != 0.0;

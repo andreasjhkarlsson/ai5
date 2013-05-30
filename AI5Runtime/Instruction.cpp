@@ -27,6 +27,12 @@ __int64 getInteger64(StackMachine* machine,int index)
 	return static_cast<StaticInteger64*>(staticData)->getVariant()->getValue();
 }
 
+int getInteger32(StackMachine* machine,int index)
+{
+	StaticData* staticData = machine->getStaticData(index);
+	return static_cast<StaticInteger32*>(staticData)->getVariant()->toInteger32();
+}
+
 
 std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 {
@@ -39,7 +45,10 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::PUSH_INTEGER64:
-		stream << "PUSH_INTEGER" << " " << getInteger64(machine, this->arg.integer);
+		stream << "PUSH_INTEGER64" << " " << getInteger64(machine, this->arg.integer);
+		break;
+	case Instruction::PUSH_INTEGER32:
+		stream << "PUSH_INTEGER32" << " " << getInteger32(machine, this->arg.integer);
 		break;
 	case Instruction::PUSH_FLOATING:
 		stream << "PUSH_FLOATING" << " " << getFloating(machine, this->arg.integer);

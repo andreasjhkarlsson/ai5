@@ -13,6 +13,14 @@ __forceinline void pushInteger64(StackMachine* machine,int arg)
 	machine->advanceCounter();
 }
 
+__forceinline void pushInteger32(StackMachine* machine,int arg)
+{
+	Integer32Variant* variant = static_cast<StaticInteger32*>(machine->getStaticData(arg))->getVariant();
+	variant->addRef();
+	machine->getDataStack()->push(variant);
+	machine->advanceCounter();
+}
+
 __forceinline void pushFloating(StackMachine* machine,int arg)
 {
 	FloatingVariant* variant = static_cast<StaticFloating*>(machine->getStaticData(arg))->getVariant();
@@ -106,7 +114,7 @@ __forceinline void derefIndex(StackMachine* machine)
 	Variant* index = machine->getDataStack()->pop();
 	ListVariant* list = static_cast<ListVariant*>(machine->getDataStack()->pop());
 
-	Variant* result = list->getElement(index->toInteger());
+	Variant* result = list->getElement(index->toInteger32());
 
 	result->addRef();
 	index->release();

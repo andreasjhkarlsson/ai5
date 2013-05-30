@@ -12,12 +12,18 @@ Integer64Variant::Integer64Variant(const __int64 integer): Variant(INTEGER64), v
 
 void Integer64Variant::print()
 {
-	std::wcout << "IntegerVariant: " << *toString() << std::endl;
+	std::wcout << "IntegerVariant64: " << *toString() << std::endl;
 }
 
-__int64 Integer64Variant::toInteger()
+__int64 Integer64Variant::toInteger64()
 {
 	return value;
+}
+
+int Integer64Variant::toInteger32()
+{
+	// LOSS OF DATA!!
+	return (int)value;
 }
 
 bool Integer64Variant::toBoolean()

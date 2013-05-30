@@ -150,6 +150,7 @@
     <ClCompile Include="FloatingVariant.cpp" />
     <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="Instruction.cpp" />
+    <ClCompile Include="Integer32Variant.cpp" />
     <ClCompile Include="Integer64Variant.cpp" />
     <ClCompile Include="ListVariant.cpp" />
     <ClCompile Include="main.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />
     <ClInclude Include="FunctionVariant.h" />
+    <ClInclude Include="Integer32Variant.h" />
     <ClInclude Include="Integer64Variant.h" />
     <ClInclude Include="jump_instructions.h" />
     <ClInclude Include="ListVariant.h" />

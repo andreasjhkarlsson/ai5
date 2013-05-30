@@ -21,7 +21,13 @@ double StringVariant::toFloating()
 {
 	return _wtof(str->c_str());
 }
-__int64 StringVariant::toInteger()
+__int64 StringVariant::toInteger64()
+{
+	return _wtoi64(str->c_str());
+}
+
+
+int StringVariant::toInteger32()
 {
 	return _wtoi64(str->c_str());
 }
@@ -35,3 +41,4 @@ shared_string StringVariant::toString()
 {
 	return str;
 }
+

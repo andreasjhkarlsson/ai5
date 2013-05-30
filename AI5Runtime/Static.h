@@ -5,6 +5,7 @@
 #include "StringVariant.h"
 #include "FloatingVariant.h"
 #include "Integer64Variant.h"
+#include "Integer32Variant.h"
 
 typedef unsigned char STATIC_TYPE;
 
@@ -18,6 +19,7 @@ public:
 	const static STATIC_TYPE NAME = 2;
 	const static STATIC_TYPE FLOATING = 3;
 	const static STATIC_TYPE INTEGER64 = 4;
+	const static STATIC_TYPE INTEGER32 = 5;
 	StaticData(STATIC_TYPE type): type(type)
 	{
 	}
@@ -75,6 +77,23 @@ public:
 	}
 private:
 	Integer64Variant variant;
+};
+
+
+class StaticInteger32: public StaticData
+{
+public:
+	StaticInteger32(int value): StaticData(INTEGER32),variant(value)
+	{
+
+	}
+
+	__forceinline Integer32Variant* getVariant()
+	{
+		return &variant;
+	}
+private:
+	Integer32Variant variant;
 };
 
 

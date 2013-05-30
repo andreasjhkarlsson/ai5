@@ -45,11 +45,19 @@ double ReferenceVariant::toFloating()
 	return 0.0;
 
 }
-__int64 ReferenceVariant::toInteger()
+
+__int64 ReferenceVariant::toInteger64()
 {
 	// raise error
 	return 0;
 }
+
+int ReferenceVariant::toInteger32()
+{
+	// raise error
+	return 0;
+}
+
 bool ReferenceVariant::toBoolean()
 {
 	return this->var != nullptr;

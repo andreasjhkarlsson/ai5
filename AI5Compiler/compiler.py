@@ -67,7 +67,13 @@ class IndexInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.INDEX)
 
-class PushIntegerInstruction(Instruction):
+class PushInteger32Instruction(Instruction):
+    def __init__(self,id):
+        self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_INTEGER32, self.id)
+
+class PushInteger64Instruction(Instruction):
     def __init__(self,id):
         self.id = id
     def to_binary(self):
@@ -244,8 +250,12 @@ class StaticTable:
         return self.get_static_id(StaticType.NAME, name)
     def get_floating_id(self,floating):
         return self.get_static_id(StaticType.FLOATING, floating)
+    def get_integer32_id(self,integer):
+        return self.get_static_id(StaticType.INTEGER32, integer)
     def get_integer64_id(self,integer):
         return self.get_static_id(StaticType.INTEGER64, integer)
+
+        
     
     def to_binary(self):
         keys = list(self.statics.keys())
@@ -264,6 +274,8 @@ class StaticTable:
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
             elif type == StaticType.INTEGER64:
                 binary += struct.pack("=Bq",type,value)
+            elif type == StaticType.INTEGER32:
+                binary += struct.pack("=Bi",type,value)
         return binary
         
         
@@ -561,7 +573,9 @@ class Compiler:
         token = terminal.nodes[Terminal.NODE_TYPE]
         
         if token.type == Token.INTEGER:
-            return [PushIntegerInstruction(self.static_table.get_integer64_id(token.value))]
+            if token.value >= -(2**31) and token.value < 2**31:
+                return [PushInteger32Instruction(self.static_table.get_integer32_id(token.value))]
+            return [PushInteger64Instruction(self.static_table.get_integer64_id(token.value))]
         if token.type == Token.IDENTIFIER:
             return [PushNameInstruction(self.get_identifier(token.value))]
         if token.type == Token.STRING:
