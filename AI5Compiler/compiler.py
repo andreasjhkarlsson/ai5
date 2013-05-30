@@ -169,6 +169,18 @@ class AdditionInstruction(Instruction):
 class GreaterInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.GREATER)
+class GreaterEqualInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.GREATER_EQUAL)
+class LesserInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.LESSER)
+class LesserEqualInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.LESSER_EQUAL)
+class EqualInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.EQUAL)
 
 class MultiplicationInstruction(Instruction):
     def to_binary(self):
@@ -562,6 +574,10 @@ class Compiler:
                  OperatorToken.DIVIDE: DivisionInstruction,
                  OperatorToken.POW: PowInstruction,
                  OperatorToken.GREATER: GreaterInstruction,
+                 OperatorToken.GREATER_EQUAL: GreaterEqualInstruction,
+                 OperatorToken.LESSER: LesserInstruction,
+                 OperatorToken.LESSER_EQUAL: LesserEqualInstruction,
+                 OperatorToken.EQUAL: EqualInstruction,
                  OperatorToken.BOOLEAN_AND: BooleanAndInstruction,
                  OperatorToken.BOOLEAN_OR: BooleanOrInstruction
                  }[token.value]()]

@@ -52,3 +52,10 @@ shared_string BooleanVariant::toString()
 	else
 		return create_shared_string(L"false");
 }
+
+BooleanVariant* BooleanVariant::Get(bool value)
+{
+	if(value)
+		return &True;
+	return &False;
+}

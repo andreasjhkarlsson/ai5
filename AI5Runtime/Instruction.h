@@ -7,6 +7,7 @@
 #include "stack_instructions.h"
 #include "misc_instructions.h"
 #include "jump_instructions.h"
+#include "comparison_instructions.h"
 
 typedef unsigned char INSTRUCTION_TYPE;
 
@@ -150,7 +151,19 @@ void Instruction::execute(StackMachine* machine)
 		mathOperationInstruction(machine,MATH_OPERATION::POW);
 		break;
 	case GREATER:
-		greater(machine);
+		comparisonInstruction(machine,COMPARISON_TYPE::GREATER);
+		break;
+	case GREATER_EQUAL:
+		comparisonInstruction(machine,COMPARISON_TYPE::GREATER_EQUAL);
+		break;
+	case LESSER:
+		comparisonInstruction(machine,COMPARISON_TYPE::LESSER);
+		break;
+	case LESSER_EQUAL:
+		comparisonInstruction(machine,COMPARISON_TYPE::LESSER_EQUAL);
+		break;
+	case EQUAL:
+		comparisonInstruction(machine,COMPARISON_TYPE::EQUAL);
 		break;
 	case DOUBLE_TOP:
 		doubleTop(machine);

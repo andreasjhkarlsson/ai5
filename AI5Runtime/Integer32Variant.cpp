@@ -19,7 +19,7 @@ void Integer32Variant::print()
 
 Integer32Variant* Integer32Variant::createFromFactory(VariantFactory* factory,int value)
 {
-	return factory->create<Integer32Variant,__int64>(Variant::INTEGER32,value);
+	return factory->create<Integer32Variant,int>(Variant::INTEGER32,value);
 }
 
 double Integer32Variant::toFloating()

@@ -161,5 +161,8 @@
     <ClInclude Include="Integer32Variant.h">
       <Filter>variants</Filter>
     </ClInclude>
+    <ClInclude Include="comparison_instructions.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

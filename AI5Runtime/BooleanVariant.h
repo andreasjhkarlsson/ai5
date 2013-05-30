@@ -11,6 +11,7 @@ public:
 	virtual void print();
 	static BooleanVariant True;
 	static BooleanVariant False;
+	static BooleanVariant* Get(bool value);
 	const bool value;
 	virtual shared_string toString();
 private:

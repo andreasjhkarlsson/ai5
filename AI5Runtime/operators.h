@@ -5,7 +5,6 @@
 #include "FloatingVariant.h"
 #include <cmath>
 
-
 enum MATH_OPERATION
 {
 	ADDITION,
@@ -14,7 +13,6 @@ enum MATH_OPERATION
 	DIVISION,
 	POW
 };
-
 
 template<typename T>
 __forceinline T mathOperation(MATH_OPERATION type,T v1,T v2)
@@ -88,7 +86,6 @@ __forceinline void mathOperationInstruction(StackMachine* machine,MATH_OPERATION
 	machine->advanceCounter();	
 }
 
-
 __forceinline void booleanNot(StackMachine* machine)
 {
 	Variant *argument = machine->getDataStack()->pop();
@@ -150,35 +147,3 @@ __forceinline void booleanOr(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void greater(StackMachine* machine)
-{
-	Variant *v2 = machine->getDataStack()->pop();
-	Variant *v1 = machine->getDataStack()->pop();
-
-	if(v1->getType() == Variant::INTEGER64 && v2->getType() == Variant::INTEGER64)
-	{
-		BooleanVariant *result;
-		if (((Integer64Variant*)v1)->getValue()>((Integer64Variant*)v2)->getValue())
-			result = &BooleanVariant::True;
-		else
-			result = &BooleanVariant::False;
-		result->addRef();
-		machine->getDataStack()->push(result);
-	}
-
-	if(v1->getType() == Variant::INTEGER32 && v2->getType() == Variant::INTEGER32)
-	{
-		BooleanVariant *result;
-		if (((Integer32Variant*)v1)->getValue()>((Integer32Variant*)v2)->getValue())
-			result = &BooleanVariant::True;
-		else
-			result = &BooleanVariant::False;
-		result->addRef();
-		machine->getDataStack()->push(result);
-	}
-
-	v1->release();
-	v2->release();
-
-	machine->advanceCounter();
-}

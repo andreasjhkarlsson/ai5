@@ -167,6 +167,7 @@
     <ClInclude Include="BooleanVariant.h" />
     <ClInclude Include="BuiltinFunctionVariant.h" />
     <ClInclude Include="CallFrame.h" />
+    <ClInclude Include="comparison_instructions.h" />
     <ClInclude Include="DataStack.h" />
     <ClInclude Include="encode.h" />
     <ClInclude Include="FastList.h" />

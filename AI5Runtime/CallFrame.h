@@ -17,7 +17,6 @@ public:
 		return returnAddress;
 	}
 
-
 	void setReturnAddress(int address)
 	{
 		this->returnAddress = address;
