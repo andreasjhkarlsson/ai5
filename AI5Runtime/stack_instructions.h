@@ -1,13 +1,13 @@
 #include "StackMachine.h"
-#include "IntegerVariant.h"
+#include "Integer64Variant.h"
 #include "UserFunctionVariant.h"
 #include "ListVariant.h"
 
 
 
-__forceinline void pushInteger(StackMachine* machine,int arg)
+__forceinline void pushInteger64(StackMachine* machine,int arg)
 {
-	IntegerVariant* variant = static_cast<StaticInteger*>(machine->getStaticData(arg))->getVariant();
+	Integer64Variant* variant = static_cast<StaticInteger64*>(machine->getStaticData(arg))->getVariant();
 	variant->addRef();
 	machine->getDataStack()->push(variant);
 	machine->advanceCounter();

@@ -12,7 +12,7 @@ class Variant
 {
 public:
 	static const VARIANT_TYPE REFERENCE = 0;
-	static const VARIANT_TYPE INTEGER = 1;
+	static const VARIANT_TYPE INTEGER64 = 1;
 	static const VARIANT_TYPE BOOLEAN = 2;
 	static const VARIANT_TYPE FLOATING = 3;
 	static const VARIANT_TYPE NULL_VAR = 4;

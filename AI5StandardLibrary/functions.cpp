@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include "..\AI5Runtime\StackMachine.h"
 #include "functions.h"
-#include "..\AI5Runtime\IntegerVariant.h"
+#include "..\AI5Runtime\Integer64Variant.h"
 
 namespace AI5StandardLibrary
 {
@@ -45,7 +45,7 @@ void getint(StackMachine* machine)
 	__int64 res;
 	std::cin >> res;
 
-	machine->getDataStack()->push(new IntegerVariant(res));
+	machine->getDataStack()->push(new Integer64Variant(res));
 
 }
 
@@ -58,7 +58,7 @@ void stringlen(StackMachine* machine)
 
 	var->release();
 
-	machine->getDataStack()->push(new IntegerVariant(result));
+	machine->getDataStack()->push(new Integer64Variant(result));
 
 }
 

@@ -20,7 +20,7 @@ public:
 	typedef std::shared_ptr<Instruction> PTR;
 	static const INSTRUCTION_TYPE NOOP							= 0x00;
 	static const INSTRUCTION_TYPE PUSH_NAME						= 0x01;
-	static const INSTRUCTION_TYPE PUSH_INTEGER					= 0x02;
+	static const INSTRUCTION_TYPE PUSH_INTEGER64				= 0x02;
 	static const INSTRUCTION_TYPE PUSH_FLOATING					= 0x04;
 	static const INSTRUCTION_TYPE PUSH_BOOLEAN					= 0x05;
 	static const INSTRUCTION_TYPE PUSH_STRING					= 0x06;
@@ -121,8 +121,8 @@ void Instruction::execute(StackMachine* machine)
 	case JUMP_SHORT_RELATIVE:
 		jumpShortRelative(machine,arg.byte);
 		break;
-	case PUSH_INTEGER:
-		pushInteger(machine,arg.integer);
+	case PUSH_INTEGER64:
+		pushInteger64(machine,arg.integer);
 		break;
 	case POP:
 		pop(machine);

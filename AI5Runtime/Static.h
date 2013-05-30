@@ -4,7 +4,7 @@
 #include <memory>
 #include "StringVariant.h"
 #include "FloatingVariant.h"
-#include "IntegerVariant.h"
+#include "Integer64Variant.h"
 
 typedef unsigned char STATIC_TYPE;
 
@@ -17,7 +17,7 @@ public:
 	const static STATIC_TYPE BINARY = 1;
 	const static STATIC_TYPE NAME = 2;
 	const static STATIC_TYPE FLOATING = 3;
-	const static STATIC_TYPE INTEGER = 4;
+	const static STATIC_TYPE INTEGER64 = 4;
 	StaticData(STATIC_TYPE type): type(type)
 	{
 	}
@@ -61,20 +61,20 @@ private:
 	shared_string name;
 };
 
-class StaticInteger: public StaticData
+class StaticInteger64: public StaticData
 {
 public:
-	StaticInteger(__int64 value): StaticData(INTEGER),variant(value)
+	StaticInteger64(__int64 value): StaticData(INTEGER64),variant(value)
 	{
 
 	}
 
-	__forceinline IntegerVariant* getVariant()
+	__forceinline Integer64Variant* getVariant()
 	{
 		return &variant;
 	}
 private:
-	IntegerVariant variant;
+	Integer64Variant variant;
 };
 
 

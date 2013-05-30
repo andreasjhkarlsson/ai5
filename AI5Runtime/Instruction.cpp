@@ -21,10 +21,10 @@ double getFloating(StackMachine* machine,int index)
 	return static_cast<StaticFloating*>(staticData)->getVariant()->getValue();
 }
 
-__int64 getInteger(StackMachine* machine,int index)
+__int64 getInteger64(StackMachine* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
-	return static_cast<StaticInteger*>(staticData)->getVariant()->getValue();
+	return static_cast<StaticInteger64*>(staticData)->getVariant()->getValue();
 }
 
 
@@ -38,8 +38,8 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::PUSH_NAME:
 		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.identifier);
 		break;
-	case Instruction::PUSH_INTEGER:
-		stream << "PUSH_INTEGER" << " " << getInteger(machine, this->arg.integer);
+	case Instruction::PUSH_INTEGER64:
+		stream << "PUSH_INTEGER" << " " << getInteger64(machine, this->arg.integer);
 		break;
 	case Instruction::PUSH_FLOATING:
 		stream << "PUSH_FLOATING" << " " << getFloating(machine, this->arg.integer);

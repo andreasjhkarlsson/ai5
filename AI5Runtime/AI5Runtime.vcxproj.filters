@@ -30,9 +30,6 @@
     <ClCompile Include="Instruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
-    <ClCompile Include="IntegerVariant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
     <ClCompile Include="ReferenceVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
@@ -75,6 +72,9 @@
     <ClCompile Include="ListVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="Integer64Variant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -91,9 +91,6 @@
     </ClInclude>
     <ClInclude Include="Instruction.h">
       <Filter>instructions</Filter>
-    </ClInclude>
-    <ClInclude Include="IntegerVariant.h">
-      <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="ReferenceVariant.h">
       <Filter>variants</Filter>
@@ -153,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ListVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="Integer64Variant.h">
       <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,7 +2,7 @@
 class InstructionType:
     NOOP                                = 0x00;
     PUSH_NAME                           = 0x01;
-    PUSH_INTEGER                        = 0x02;
+    PUSH_INTEGER64                      = 0x02;
     PUSH_FLOATING                       = 0x04;
     PUSH_BOOLEAN                        = 0x05;
     PUSH_STRING                         = 0x06;
@@ -65,6 +65,6 @@ class StaticType:
     BINARY      = 0x1
     NAME        = 0x2
     FLOATING    = 0x3
-    INTEGER     = 0x4
+    INTEGER64   = 0x4
     
     

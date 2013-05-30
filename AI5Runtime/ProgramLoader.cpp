@@ -101,7 +101,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::JUMP_LONG_RELATIVE			:
 		case Instruction::JUMP_LONG_RELATIVE_IF_FALSE	:
 		case Instruction::PUSH_FLOATING:
-		case Instruction::PUSH_INTEGER:
+		case Instruction::PUSH_INTEGER64:
 		case Instruction::CREATE_MULTIDIM_LIST:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
@@ -201,13 +201,13 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 				statics->push_back(StaticData::PTR(new StaticFloating(value)));
 			}
 			break;
-		case StaticData::INTEGER:
+		case StaticData::INTEGER64:
 			{
 				index++;
 				__int64 value = *(__int64*)&staticsBuffer[index];
 				index += sizeof(__int64);
 
-				statics->push_back(StaticData::PTR(new StaticInteger(value)));
+				statics->push_back(StaticData::PTR(new StaticInteger64(value)));
 			}
 			break;
 		}

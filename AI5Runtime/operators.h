@@ -1,5 +1,5 @@
 #include "Variant.h"
-#include "IntegerVariant.h"
+#include "Integer64Variant.h"
 #include "StackMachine.h"
 #include "BooleanVariant.h"
 #include "FloatingVariant.h"
@@ -26,12 +26,12 @@ __forceinline void mathOperation(StackMachine* machine,MATH_OPERATION type)
 
 	// If the arguments is two integers and the operation is not a division or a pow
 	// the result should be an int as well!!
-	if(v1->getType() == Variant::INTEGER && v2->getType() == Variant::INTEGER && type != MATH_OPERATION::DIVISION && type != MATH_OPERATION::POW)
+	if(v1->getType() == Variant::INTEGER64 && v2->getType() == Variant::INTEGER64 && type != MATH_OPERATION::DIVISION && type != MATH_OPERATION::POW)
 	{
 		// Cast to correct variant instead of using toInteger method. This saves a virtual call.
 		__int64 res = 0;
-		__int64 i1 = ((IntegerVariant*)v1)->getValue();
-		__int64 i2 = ((IntegerVariant*)v2)->getValue();
+		__int64 i1 = ((Integer64Variant*)v1)->getValue();
+		__int64 i2 = ((Integer64Variant*)v2)->getValue();
 
 		switch(type)
 		{
@@ -47,7 +47,7 @@ __forceinline void mathOperation(StackMachine* machine,MATH_OPERATION type)
 
 		}
 
-		returnValue = IntegerVariant::createFromFactory(machine->getVariantFactory(),res);
+		returnValue = Integer64Variant::createFromFactory(machine->getVariantFactory(),res);
 	}
 	// Else the result is a double.
 	else
@@ -126,10 +126,10 @@ __forceinline void greater(StackMachine* machine)
 	Variant *v2 = machine->getDataStack()->pop();
 	Variant *v1 = machine->getDataStack()->pop();
 
-	if(v1->getType() == Variant::INTEGER && v2->getType() == Variant::INTEGER)
+	if(v1->getType() == Variant::INTEGER64 && v2->getType() == Variant::INTEGER64)
 	{
 		BooleanVariant *result;
-		if (((IntegerVariant*)v1)->getValue()>((IntegerVariant*)v2)->getValue())
+		if (((Integer64Variant*)v1)->getValue()>((Integer64Variant*)v2)->getValue())
 			result = &BooleanVariant::True;
 		else
 			result = &BooleanVariant::False;

@@ -71,7 +71,7 @@ class PushIntegerInstruction(Instruction):
     def __init__(self,id):
         self.id = id
     def to_binary(self):
-        return self.to_binary_with_int_arg(InstructionType.PUSH_INTEGER, self.id)
+        return self.to_binary_with_int_arg(InstructionType.PUSH_INTEGER64, self.id)
 
 class AssignGlobalConstInstruction(Instruction):
     def __init__(self,identifier):
@@ -122,7 +122,6 @@ class PushNullInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NULL)
 
-
 class BuildListInstruction(Instruction):
     def __init__(self,count):
         self.count = count
@@ -157,7 +156,6 @@ class AssignLocalInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL) + self.identifier.to_binary()
     
-
 class AdditionInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ADDITION)
@@ -246,8 +244,8 @@ class StaticTable:
         return self.get_static_id(StaticType.NAME, name)
     def get_floating_id(self,floating):
         return self.get_static_id(StaticType.FLOATING, floating)
-    def get_integer_id(self,integer):
-        return self.get_static_id(StaticType.INTEGER, integer)
+    def get_integer64_id(self,integer):
+        return self.get_static_id(StaticType.INTEGER64, integer)
     
     def to_binary(self):
         keys = list(self.statics.keys())
@@ -264,7 +262,7 @@ class StaticTable:
             elif type == StaticType.FLOATING:
                 s = str(value)
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
-            elif type == StaticType.INTEGER:
+            elif type == StaticType.INTEGER64:
                 binary += struct.pack("=Bq",type,value)
         return binary
         
@@ -563,7 +561,7 @@ class Compiler:
         token = terminal.nodes[Terminal.NODE_TYPE]
         
         if token.type == Token.INTEGER:
-            return [PushIntegerInstruction(self.static_table.get_integer_id(token.value))]
+            return [PushIntegerInstruction(self.static_table.get_integer64_id(token.value))]
         if token.type == Token.IDENTIFIER:
             return [PushNameInstruction(self.get_identifier(token.value))]
         if token.type == Token.STRING:
