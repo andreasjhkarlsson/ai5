@@ -520,9 +520,32 @@ class Compiler:
         return code
     
     def compile_name_assignment(self,assignment,name,assignment_instruction=AssignNearestInstruction):
-        code = self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
-        code += [assignment_instruction(name)]
-        return code
+
+        pre_expr_code = []
+        expr_code = []
+        post_expr_code = []
+
+        assignment_op = assignment.nodes[Assignment.NODE_ASSIGNMENT_OPERATOR]
+
+        if assignment_op.value == OperatorToken.ADD_ASSIGN:
+            pre_expr_code += [PushNameInstruction(name)]
+            post_expr_code += [AdditionInstruction()]
+        if assignment_op.value == OperatorToken.SUBTRACT_ASSIGN:
+            pre_expr_code += [PushNameInstruction(name)]
+            post_expr_code += [SubtractionInstruction()]
+        if assignment_op.value == OperatorToken.MULTIPLY_ASSIGN:
+            pre_expr_code += [PushNameInstruction(name)]
+            post_expr_code += [MultiplicationInstruction()]
+        if assignment_op.value == OperatorToken.DIVIDE_ASSIGN:
+            pre_expr_code += [PushNameInstruction(name)]
+            post_expr_code += [DivisionInstruction()]
+
+        # Compile expression
+        expr_code += self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
+
+        post_expr_code += [assignment_instruction(name)]
+
+        return pre_expr_code + expr_code + post_expr_code
     
     def compile_qualifiers(self,qualifiers):
         code = []
@@ -541,9 +564,10 @@ class Compiler:
         code += self.compile_qualifiers(qualifiers)
         
         if LineStatement.NODE_ASSIGNMENT in nodes:
+            assignment = nodes[LineStatement.NODE_ASSIGNMENT]
             # remove last push_name instruction
             code.pop(0)
-            assignment = nodes[LineStatement.NODE_ASSIGNMENT]
+            
             code += self.compile_name_assignment(assignment, self.get_identifier(ident.value),assignment_instruction)  
         else:
             code += [PopInstruction()]       

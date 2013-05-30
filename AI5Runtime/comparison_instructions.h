@@ -117,6 +117,8 @@ public:
 			{Variant::STRING,		Variant::FLOATING,		&FloatingComparator},
 			{Variant::STRING,		Variant::INTEGER32,		&FloatingComparator},
 			{Variant::STRING,		Variant::INTEGER64,		&FloatingComparator},
+			{Variant::INTEGER32,	Variant::STRING,		&FloatingComparator},
+			{Variant::INTEGER64,	Variant::STRING,		&FloatingComparator},
 		};
 
 
