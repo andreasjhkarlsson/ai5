@@ -486,6 +486,51 @@ class Compiler:
         code += [JumpIfFalseInstruction(RelativeAddress(-len(code)))]
         return code
 
+    def compile_for(self,for_stmt):
+        loop_var = for_stmt.nodes[For.NODE_LOOP_VARIABLE]
+
+        loop_var_id = self.get_identifier(loop_var.value)
+
+        compiled_body = []
+        if For.NODE_BODY in for_stmt.nodes:
+            compiled_body = self.compile_block(for_stmt.nodes[For.NODE_BODY])
+
+        if For.NODE_FOR_TO in for_stmt.nodes:
+            forto = for_stmt.nodes[For.NODE_FOR_TO]
+            compiled_init = self.compile_expression(forto.nodes[ForTo.NODE_INIT_EXPRESSION])
+            compiled_init += [AssignLocalInstruction(loop_var_id)]
+
+            step_value = 1
+            if ForTo.NODE_STEP_VALUE in forto.nodes:
+                number_terminal = forto.nodes[ForTo.NODE_STEP_VALUE]
+                if NumberTerminal.NODE_NEGATIVE in number_terminal.nodes:
+                    step_value = -number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
+                else:
+                    step_value = number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
+
+            compiled_check=[]
+            compiled_check += [PushNameInstruction(loop_var_id)]
+            compiled_check += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])
+            if step_value > 0:
+                compiled_check += [LesserEqualInstruction()]
+            elif step_value <0:
+                compiled_check += [GreaterEqualInstruction()]
+            else:
+                raise Exception("Invalid step value!")
+            compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
+
+            compiled_increment = [PushNameInstruction(loop_var_id)]
+            compiled_increment += [PushInteger32Instruction(self.static_table.get_integer32_id(step_value))]
+            compiled_increment += [AdditionInstruction()]
+            compiled_increment += [AssignLocalInstruction(loop_var_id)]
+            compiled_increment += [JumpInstruction(RelativeAddress(None))]
+
+            compiled_check[-1].address.value = len(compiled_body)+len(compiled_increment)+1
+            compiled_increment[-1].address.value = -(len(compiled_increment)+len(compiled_body)+len(compiled_check)-1)
+
+            return compiled_init + compiled_check + compiled_body + compiled_increment
+
+
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
         
@@ -503,6 +548,8 @@ class Compiler:
             return self.compile_if(substatement)
         if substatement.type == Rule.DO_UNTIL:
             return self.compile_dountil(substatement)
+        if substatement.type == Rule.FOR:
+            return self.compile_for(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []

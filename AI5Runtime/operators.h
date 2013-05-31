@@ -56,12 +56,12 @@ __forceinline void mathOperationInstruction(StackMachine* machine,MATH_OPERATION
 		if(useInt64)
 		{
 			returnValue = Integer64Variant::createFromFactory(machine->getVariantFactory(),mathOperation<__int64>(type,
-							static_cast<Integer64Variant*>(v1)->getValue(),static_cast<Integer64Variant*>(v2)->getValue()));
+				v1->toInteger64(),v2->toInteger64()));
 		}
 		else
 		{
 			returnValue = Integer32Variant::createFromFactory(machine->getVariantFactory(),mathOperation<int>(type,
-							static_cast<Integer32Variant*>(v1)->getValue(),static_cast<Integer32Variant*>(v2)->getValue()));
+				v1->toInteger32(),v2->toInteger32()));
 		}
 	}
 	// Else the result is a double.

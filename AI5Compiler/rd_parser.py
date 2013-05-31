@@ -122,7 +122,7 @@ class Rule:
     BINARY_OPERATOR = "rule_binary_operator"
     EXPRESSION = "rule_expression"
     PROGRAM = "rule_program"
-    
+    NUMBER_TERMINAL = "rule_number_terminal"
     
     def __init__(self,nodes):
         self.nodes = nodes
@@ -381,12 +381,23 @@ class For(Rule):
         parser.expect(Token.KEYWORD,KeywordToken.NEXT)
         return For(nodes)
             
-        
+class NumberTerminal(Rule):
+    type = Rule.NUMBER_TERMINAL
+    NODE_NUMBER = "terminal"
+    NODE_NEGATIVE = "negative"
+    @staticmethod
+    def match(parser):
+        if parser.accept(Token.OPERATOR,OperatorToken.SUBTRACT):
+            return NumberTerminal({NumberTerminal.NODE_NEGATIVE:True,
+                                   NumberTerminal.NODE_NUMBER: parser.expect(Token.INTEGER)})
+        if parser.accept(Token.INTEGER):
+            return NumberTerminal({NumberTerminal.NODE_NUMBER:parser.current})
+
 class ForTo(Rule):
     type = Rule.FOR_TO
     NODE_INIT_EXPRESSION = "init expression"
     NODE_END_EXPRESSION = "end expression"
-    NODE_STEP_EXPRESSION = "step expression"
+    NODE_STEP_VALUE = "step value"
     @staticmethod
     def match(parser):
         if not parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
@@ -395,7 +406,7 @@ class ForTo(Rule):
         parser.expect(Token.KEYWORD,KeywordToken.TO)
         nodes[ForTo.NODE_END_EXPRESSION]=parser.expectRule(Expression)
         if parser.accept(Token.KEYWORD,KeywordToken.STEP):
-            nodes[ForTo.NODE_STEP_EXPRESSION]=parser.expectRule(Expression)
+            nodes[ForTo.NODE_STEP_VALUE]=parser.expectRule(NumberTerminal)
         return ForTo(nodes)    
         
         
