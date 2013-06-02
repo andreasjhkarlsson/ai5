@@ -121,6 +121,13 @@ class PushFloatingInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_FLOATING,self.id)
 
+
+class PushMacroInstruction(Instruction):
+    def __init__(self,id):
+        self.id = id
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_MACRO,self.id)
+
 class PopInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.POP)
@@ -292,7 +299,8 @@ class StaticTable:
         return self.get_static_id(StaticType.INTEGER32, integer)
     def get_integer64_id(self,integer):
         return self.get_static_id(StaticType.INTEGER64, integer)
-
+    def get_macro_id(self,integer):
+        return self.get_static_id(StaticType.MACRO, integer)
         
     
     def to_binary(self):
@@ -314,6 +322,9 @@ class StaticTable:
                 binary += struct.pack("=Bq",type,value)
             elif type == StaticType.INTEGER32:
                 binary += struct.pack("=Bi",type,value)
+            elif type == StaticType.MACRO:
+                s = value.encode("utf-8")
+                binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
         return binary
         
         
@@ -710,6 +721,8 @@ class Compiler:
             return [PushFloatingInstruction(self.static_table.get_floating_id(token.value))]     
         if token.type == Token.BOOLEAN:
             return [PushBooleanInstruction(token.value)]
+        if token.type == Token.MACRO:
+            return [PushMacroInstruction(self.static_table.get_macro_id(token.value))]
 
     def compile_inline_list(self,inline_list):
         code = []

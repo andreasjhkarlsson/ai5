@@ -20,6 +20,7 @@ public:
 	const static STATIC_TYPE FLOATING = 3;
 	const static STATIC_TYPE INTEGER64 = 4;
 	const static STATIC_TYPE INTEGER32 = 5;
+	const static STATIC_TYPE MACRO = 6;
 	StaticData(STATIC_TYPE type): type(type)
 	{
 	}
@@ -62,6 +63,24 @@ public:
 private:
 	shared_string name;
 };
+
+
+class StaticMacro: public StaticData
+{
+public:
+	StaticMacro(const std::wstring& str): StaticData(MACRO),name(create_shared_string(str))
+	{
+
+	}
+
+	__forceinline shared_string getName()
+	{
+		return name;
+	}
+private:
+	shared_string name;
+};
+
 
 class StaticInteger64: public StaticData
 {

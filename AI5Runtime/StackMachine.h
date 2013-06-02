@@ -4,12 +4,14 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <iostream>
 #include "Static.h"
 #include "DataStack.h"
 #include "Scope.h"
 #include "CallFrame.h"
 #include "BuiltinFunctionVariant.h"
+#include "macro.h"
 
 class Instruction;
 
@@ -51,12 +53,15 @@ public:
 	__forceinline void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
 	__forceinline int popCallFrame();
 	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
+	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
+	MACRO_FUNCTION getMacro(int staticIndex);
 private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
 	FastStack<CallFrame*> callFramePool;
 	FastStack<Scope*> scopePool;
+	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;

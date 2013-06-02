@@ -61,6 +61,7 @@ class InstructionType:
     CREATE_MULTIDIM_LIST		        = 0x3B;
     LOAD_ARGUMENT                       = 0x3C;
     LOAD_BYREF_ARGUMENT                 = 0x3D;
+    PUSH_MACRO                          = 0x3E;
 
 
 class StaticType:
@@ -70,5 +71,5 @@ class StaticType:
     FLOATING    = 0x3
     INTEGER64   = 0x4
     INTEGER32   = 0x5
-    
+    MACRO       = 0x6
     

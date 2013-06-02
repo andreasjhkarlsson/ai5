@@ -57,3 +57,13 @@ void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunctionPo
 {
 	globalScope.createName(this,name)->setValue(new BuiltinFunctionVariant(name,function));
 }
+
+void StackMachine::addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc)
+{
+	macros[name] = macroFunc;
+}
+
+MACRO_FUNCTION StackMachine::getMacro(int staticIndex)
+{
+	return macros[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
+}

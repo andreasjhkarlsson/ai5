@@ -11,5 +11,9 @@ namespace AI5StandardLibrary
 		machine->addBuiltInFunction(L"printline",printline);
 		machine->addBuiltInFunction(L"getint",getint);
 		machine->addBuiltInFunction(L"stringlen",stringlen);
+
+
+
+		machine->addMacro(L"autoitpid",Macros::MyPID);
 	}
 }

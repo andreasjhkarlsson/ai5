@@ -104,6 +104,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_INTEGER32:
 		case Instruction::PUSH_INTEGER64:
 		case Instruction::CREATE_MULTIDIM_LIST:
+		case Instruction::PUSH_MACRO:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
@@ -189,6 +190,20 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 					str = utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
 				index += strsize;
 				statics->push_back(StaticData::PTR(new StaticString(str)));
+				
+			}
+			break;
+		case StaticData::MACRO:
+			{
+				// Bad DRY from NAME here.. :P
+				index++;
+				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
+				index += sizeof(unsigned int);
+				std::wstring str = L"";
+				if(strsize > 0)
+					str = utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
+				index += strsize;
+				statics->push_back(StaticData::PTR(new StaticMacro(str)));
 				
 			}
 			break;

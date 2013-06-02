@@ -183,6 +183,7 @@
     <ClInclude Include="Integer64Variant.h" />
     <ClInclude Include="jump_instructions.h" />
     <ClInclude Include="ListVariant.h" />
+    <ClInclude Include="macro.h" />
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="Scope.h" />
     <ClInclude Include="NameVariant.h" />

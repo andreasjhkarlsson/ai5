@@ -60,4 +60,11 @@ void stringlen(StackMachine* machine)
 
 }
 
+
+
+Variant* Macros::MyPID()
+{
+	return new Integer64Variant(GetCurrentProcessId());
+}
+
 }

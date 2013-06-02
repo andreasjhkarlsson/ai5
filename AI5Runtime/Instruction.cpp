@@ -15,6 +15,12 @@ shared_string getString(StackMachine* machine,int index)
 	return static_cast<StaticString*>(staticData)->getVariant()->toString();
 }
 
+shared_string getMacro(StackMachine* machine,int index)
+{
+	StaticData* staticData = machine->getStaticData(index);
+	return static_cast<StaticMacro*>(staticData)->getName();
+}
+
 double getFloating(StackMachine* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
@@ -226,6 +232,8 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::LOAD_BYREF_ARGUMENT:
 		stream << "LOAD_BYREF_ARGUMENT " << *getName(machine,arg.identifier);
 		break;
+	case Instruction::PUSH_MACRO:
+		stream << "PUSH_MACRO " << *getMacro(machine,arg.integer) << std::endl;
 	}
 	return stream;
 }

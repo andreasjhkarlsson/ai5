@@ -80,6 +80,7 @@ public:
 	static const INSTRUCTION_TYPE CREATE_MULTIDIM_LIST			= 0x3B;
 	static const INSTRUCTION_TYPE LOAD_ARGUMENT					= 0x3C;
 	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x3D;
+	static const INSTRUCTION_TYPE PUSH_MACRO					= 0x3E;
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -235,6 +236,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case LOAD_BYREF_ARGUMENT:
 		loadByRefArgument(machine,arg.identifier);
+		break;
+	case PUSH_MACRO:
+		pushMacro(machine,arg.integer);
 		break;
 	}
 }
