@@ -78,8 +78,8 @@ public:
 	static const INSTRUCTION_TYPE ASSIGN_NEAREST_CONST			= 0x38;
 	static const INSTRUCTION_TYPE BUILD_LIST					= 0x3A;
 	static const INSTRUCTION_TYPE CREATE_MULTIDIM_LIST			= 0x3B;
-	static const INSTRUCTION_TYPE PUSH_NAME_REFERENCE			= 0x3C;
-	static const INSTRUCTION_TYPE DEREFERENCE_NAME_REFERENCE	= 0x3D;
+	static const INSTRUCTION_TYPE LOAD_ARGUMENT					= 0x3C;
+	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x3D;
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -229,6 +229,12 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case INDEX:
 		derefIndex(machine);
+		break;
+	case LOAD_ARGUMENT:
+		loadArgument(machine,arg.identifier);
+		break;
+	case LOAD_BYREF_ARGUMENT:
+		loadByRefArgument(machine,arg.identifier);
 		break;
 	}
 }

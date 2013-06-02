@@ -220,7 +220,12 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::CREATE_MULTIDIM_LIST:
 		stream << "CREATE_MULTIDIM_LIST " << arg.byte;
 		break;
-
+	case Instruction::LOAD_ARGUMENT:
+		stream << "LOAD_ARGUMENT " << *getName(machine,arg.identifier);
+		break;
+	case Instruction::LOAD_BYREF_ARGUMENT:
+		stream << "LOAD_BYREF_ARGUMENT " << *getName(machine,arg.identifier);
+		break;
 	}
 	return stream;
 }

@@ -114,6 +114,7 @@ class PushNameValueInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NAME_VALUE) + self.identifier.to_binary()
 
+
 class PushFloatingInstruction(Instruction):
     def __init__(self,id):
         self.id = id
@@ -161,6 +162,19 @@ class AssignLocalInstruction(Instruction):
         self.identifier = identifier
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL) + self.identifier.to_binary()
+
+class LoadArgumentInstruction(Instruction):
+    def __init__(self,identifier):
+        self.identifier = identifier
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.LOAD_ARGUMENT) + self.identifier.to_binary()
+
+class LoadByRefArgumentInstruction(Instruction):
+    def __init__(self,identifier):
+        self.identifier = identifier
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.LOAD_BYREF_ARGUMENT) + self.identifier.to_binary()
+
     
 class AdditionInstruction(Instruction):
     def to_binary(self):
@@ -347,7 +361,14 @@ class Compiler:
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in reversed(arguments):
-            compiled_body += [AssignNearestInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+            is_byref = Argument.NODE_BYREF in argument.nodes
+
+
+            if is_byref:
+                compiled_body += [LoadByRefArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+            else:
+                compiled_body += [LoadArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+
         
         # Pop of 'this'
         compiled_body += [PopInstruction()]

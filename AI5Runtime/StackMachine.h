@@ -48,6 +48,7 @@ public:
 	__forceinline void setNearest(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
+	__forceinline void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
 	__forceinline int popCallFrame();
 	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
 private:
@@ -213,4 +214,15 @@ void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asC
 	{
 		foundName->markAsConst();
 	}
+}
+
+void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
+{
+	Scope* targetScope = &globalScope;
+	if(!callStack.empty())
+		targetScope = callStack.top()->getScope();
+
+	std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
+	const std::wstring& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();
+	targetScope->insertName(strName,identifier.localId,name);
 }

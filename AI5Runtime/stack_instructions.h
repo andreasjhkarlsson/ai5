@@ -60,7 +60,6 @@ __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 	machine->advanceCounter();
 }
 
-
 __forceinline void pushFunction(StackMachine* machine,int address)
 {
 	machine->getDataStack()->push(new UserFunctionVariant(address));
@@ -87,8 +86,6 @@ __forceinline void pushBoolean(StackMachine* machine,char arg)
 	machine->getDataStack()->push(var);
 	machine->advanceCounter();
 }
-
-
 
 __forceinline void buildList(StackMachine* machine,int count)
 {

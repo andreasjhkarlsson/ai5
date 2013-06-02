@@ -5,6 +5,7 @@
 #include "types.h"
 
 class VariantFactory;
+class NameVariant;
 
 typedef int VARIANT_TYPE;
 
@@ -55,6 +56,14 @@ private:
 	const VARIANT_TYPE type;
 	int refCount;
 	VariantFactory* recycler;
+
+	// This is an optional field set by certain instructions to
+	// be able to track which Name this variant last belonged to.
+	NameVariant* lastName;
+
+public:
+	void setLastName(NameVariant* name);
+	NameVariant* getLastName();
 };
 
 class VariantFactory

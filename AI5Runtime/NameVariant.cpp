@@ -8,6 +8,7 @@ NameVariant::NameVariant(Variant* value): Variant(NAME), isConst(false)
 
 NameVariant::~NameVariant(void)
 {
+	cleanup();
 }
 
 void NameVariant::print()
@@ -39,6 +40,7 @@ void NameVariant::cleanup()
 {
 	if(value != nullptr)
 	{
+		clearLastName();
 		value->release();
 		value = nullptr;
 		isConst = false;
@@ -61,7 +63,11 @@ void NameVariant::setValue(Variant* newVariant)
 		// Throw error!!!
 		return;
 	}
+
+	clearLastName();
+
 	newVariant->addRef();
+	newVariant->setLastName(this);
 	if(value != nullptr)
 		value->release();
 	value = newVariant;	
@@ -80,4 +86,13 @@ void NameVariant::markAsConst()
 NameVariant* NameVariant::createFromFactory(VariantFactory* factory)
 {
 	return factory->create<NameVariant,Variant*>(Variant::NAME,nullptr);
+}
+
+void NameVariant::clearLastName()
+{
+	if(value != nullptr && value->getLastName() == this)
+	{
+		value->setLastName(nullptr);
+	}
+
 }

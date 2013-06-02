@@ -59,8 +59,8 @@ class InstructionType:
     ASSIGN_NEAREST_CONST                = 0x38;
     BUILD_LIST      				    = 0x3A;
     CREATE_MULTIDIM_LIST		        = 0x3B;
-    PUSH_NAME_REFERENCE                 = 0x3C;
-    DEREFERENCE_NAME_REFERENCE          = 0x3D;
+    LOAD_ARGUMENT                       = 0x3C;
+    LOAD_BYREF_ARGUMENT                 = 0x3D;
 
 
 class StaticType:

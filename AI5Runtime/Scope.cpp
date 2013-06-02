@@ -15,16 +15,9 @@ NameVariant* Scope::createIndexForName(StackMachine* machine,const std::wstring 
 		lookup[name] = NameVariant::createFromFactory(machine->getVariantFactory());
 	}
 
-	if((index) >= indexTable.size())
-	{
-		indexTable.resize(index+1);
-	}
-
 	NameVariant* nameObj = lookup[name];
 
-	indexTable[index] = nameObj;
-
-	usedIndexes.push_back(index);
+	addNameToIndex(index,nameObj);
 
 	return nameObj;
 }
@@ -45,4 +38,25 @@ void Scope::reset()
 
 	lookup.clear();
 	usedIndexes.clear();
+}
+
+void Scope::insertName(const std::wstring& name,int index,NameVariant* nameVariant)
+{
+	nameVariant->addRef();
+	lookup[name] = nameVariant;
+
+	addNameToIndex(index,nameVariant);
+
+}
+
+void Scope::addNameToIndex(int index,NameVariant* nameVariant)
+{
+	if((index) >= indexTable.size())
+	{
+		indexTable.resize(index+1);
+	}
+	indexTable[index] = nameVariant;
+
+	usedIndexes.push_back(index);
+
 }

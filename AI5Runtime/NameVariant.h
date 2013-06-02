@@ -18,6 +18,9 @@ public:
 	Variant* getValue();
 	void setValue(Variant* variant);
 	static NameVariant* createFromFactory(VariantFactory* factory);
+
+	// If value has this instance as last name, clear it!
+	void clearLastName();
 private:
 	Variant* value;
 	bool isConst;

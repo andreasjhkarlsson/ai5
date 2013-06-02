@@ -27,6 +27,8 @@ public:
 	NameVariant* createName(StackMachine* machine,const std::wstring &name);
 	NameVariant* createIndexForName(StackMachine* machine,const std::wstring &name,int index);
 
+	void insertName(const std::wstring& name,int index,NameVariant* nameVariant);
+
 	// Make the scope ready for reusing.
 	void reset();
 private:
@@ -41,4 +43,6 @@ private:
 	// List of used index in this table.
 	// Used to avoid clearing the entire indexTable whenever a scope object is reused.
 	std::vector<int> usedIndexes;
+
+	void addNameToIndex(int index,NameVariant* nameVariant);
 };
