@@ -74,5 +74,22 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 __forceinline void ret(StackMachine* machine)
 {
 	int returnAddress = machine->popCallFrame();
+
+	// This fixes funky behaviour with byref. 
+	// For example, the following code:
+	//--------------
+	// Global a = 10
+	// Func foo()
+	//   return a
+	// EndFunc
+	// Func bar(ByRef b)
+	//   b *= 2
+	// EndFunc
+	// bar(foo())
+	// printline(a)
+	// --------------
+	// Will print '20' instead of the more sensible '10'.
+	machine->getDataStack()->top()->setLastName(nullptr);
+
 	machine->jumpAbsolute(returnAddress);
 }
