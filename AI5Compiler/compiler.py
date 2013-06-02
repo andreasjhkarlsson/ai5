@@ -411,12 +411,13 @@ class Compiler:
             else:
                 assignment_instruction = AssignLocalInstruction
 
+        for variable in declaration.nodes[Declaration.NODE_VARIABLES]:
+            if DeclarationAssignment.NODE_VALUE_EXPRESSION in variable.nodes:
+                code += self.compile_expression(variable.nodes[DeclarationAssignment.NODE_VALUE_EXPRESSION])
+            else:
+                code += [PushNullInstruction()]
+            code += [assignment_instruction(self.get_identifier(variable.nodes[DeclarationAssignment.NODE_IDENTIFIER].value))]
 
-            
-        if Declaration.NODE_STATEMENTS in declaration.nodes:
-            for stmt in declaration.nodes[Declaration.NODE_STATEMENTS]:
-                code += self.compile_line_statement(stmt, assignment_instruction)        
-        
         return code
     
     def compile_return(self,statement):

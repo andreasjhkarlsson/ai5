@@ -160,12 +160,26 @@ class ContinueLoop(Rule):
             return ContinueLoop(nodes)
         return None
 
+class DeclarationAssignment(Rule):
+    type = Rule.ASSIGNMENT
+    NODE_IDENTIFIER = "identifier"
+    NODE_VALUE_EXPRESSION = "value expression"
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.IDENTIFIER):
+            return None
+        nodes = {DeclarationAssignment.NODE_IDENTIFIER: parser.current}
+        if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
+            nodes[DeclarationAssignment.NODE_VALUE_EXPRESSION] = parser.expectRule(Expression)
+        return DeclarationAssignment(nodes)
+
+
 class Declaration(Rule):
     type = Rule.DECLARATION
     NODE_SCOPE = "scope"
     NODE_ENUM = "enum"
     NODE_CONST = "const"
-    NODE_STATEMENTS = "statements"
+    NODE_VARIABLES = "variables"
     @staticmethod
     def match(parser): 
         if (parser.accept(Token.KEYWORD,KeywordToken.DIM) or 
@@ -185,12 +199,12 @@ class Declaration(Rule):
             return Declaration(nodes)
 
         
-        statements = []
-        statements.append(parser.expectRule(LineStatement))
+        variables = []
+        variables.append(parser.expectRule(DeclarationAssignment))
         
         while parser.accept(Token.COMMA):
-            statements.append(parser.expectRule(LineStatement))
-        nodes[Declaration.NODE_STATEMENTS] = statements
+            variables.append(parser.expectRule(DeclarationAssignment))
+        nodes[Declaration.NODE_VARIABLES] = variables
         
         return Declaration(nodes)
 
@@ -263,6 +277,8 @@ class Assignment(Rule):
                 nodes[Assignment.NODE_VALUE_EXPRESSION]=parser.expectRule(Expression)
                 return Assignment(nodes)
         return None
+
+
  
  
 class ReDim(Rule):
