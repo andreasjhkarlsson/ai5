@@ -158,7 +158,7 @@
     <ClCompile Include="Integer64Variant.cpp" />
     <ClCompile Include="ListVariant.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="NameStorage.cpp" />
+    <ClCompile Include="Scope.cpp" />
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
@@ -184,7 +184,7 @@
     <ClInclude Include="jump_instructions.h" />
     <ClInclude Include="ListVariant.h" />
     <ClInclude Include="misc_instructions.h" />
-    <ClInclude Include="NameStorage.h" />
+    <ClInclude Include="Scope.h" />
     <ClInclude Include="NameVariant.h" />
     <ClInclude Include="NullVariant.h" />
     <ClInclude Include="operators.h" />

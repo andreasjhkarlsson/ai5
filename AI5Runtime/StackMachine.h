@@ -7,7 +7,7 @@
 #include <iostream>
 #include "Static.h"
 #include "DataStack.h"
-#include "NameStorage.h"
+#include "Scope.h"
 #include "CallFrame.h"
 #include "BuiltinFunctionVariant.h"
 

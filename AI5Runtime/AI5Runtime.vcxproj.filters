@@ -48,9 +48,6 @@
     <ClCompile Include="NullVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
-    <ClCompile Include="NameStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FunctionVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
@@ -80,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="NameVariant.cpp">
       <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="Scope.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,9 +128,6 @@
     <ClInclude Include="NullVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
-    <ClInclude Include="NameStorage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FunctionVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
@@ -169,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="NameVariant.h">
       <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="Scope.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

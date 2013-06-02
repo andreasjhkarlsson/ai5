@@ -1,8 +1,6 @@
 #pragma once
-
 #include "FastStack.h"
-#include "NameStorage.h"
-
+#include "Scope.h"
 
 class StackMachine;
 
