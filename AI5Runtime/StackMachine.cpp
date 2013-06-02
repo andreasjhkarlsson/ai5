@@ -55,5 +55,5 @@ StackMachine* StackMachine::LoadFromStructuredData(const std::wstring& filename)
 
 void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function)
 {
-	globalScope.createName(name)->set(new BuiltinFunctionVariant(name,function));
+	globalScope.createName(this,name)->setValue(new BuiltinFunctionVariant(name,function));
 }

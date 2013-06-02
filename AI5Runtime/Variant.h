@@ -21,7 +21,8 @@ public:
 	static const VARIANT_TYPE STRING = 7;
 	static const VARIANT_TYPE LIST = 8;
 	static const VARIANT_TYPE INTEGER32 = 9;
-	static const int NUMBER_OF_VARIANT_TYPES = 10;
+	static const VARIANT_TYPE NAME = 10;
+	static const int NUMBER_OF_VARIANT_TYPES = 11;
 	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
 	virtual void print()=0;
@@ -30,6 +31,7 @@ public:
 	virtual int toInteger32()=0;
 	virtual bool toBoolean()=0;
 	virtual shared_string toString()=0;
+	virtual void cleanup();
 	__forceinline void addRef();
 	__forceinline void release();
 	__forceinline VARIANT_TYPE getType();
@@ -47,6 +49,7 @@ public:
 	inline bool isStringType();
 	inline bool isListType();
 	inline bool isReferenceType();
+	inline bool isNameType();
 
 private:
 	const VARIANT_TYPE type;
@@ -95,7 +98,8 @@ OUTER* VariantFactory::create(VARIANT_TYPE type,INNER data)
 		OUTER* var = static_cast<OUTER*>(recycleBins[type]->pop());
 
 		// Prepare the recycled value for use.
-		var->value = data;
+		//var->value = data;
+		var->setValue(data);
 		var->addRef();
 
 		return var;
@@ -123,6 +127,7 @@ void Variant::release()
 {
 	if (!(--refCount))
 	{
+		this->cleanup();
 		// Is this object used for recycling?
 		if (recycler != nullptr)
 		{
@@ -188,4 +193,9 @@ bool Variant::isListType()
 bool Variant::isReferenceType()
 {
 	return type == REFERENCE;
+}
+
+bool Variant::isNameType()
+{
+	return type == NAME;
 }

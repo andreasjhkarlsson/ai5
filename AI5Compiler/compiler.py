@@ -108,11 +108,11 @@ class PushStringInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_STRING, self.id)
     
-class PushNameInstruction(Instruction):
+class PushNameValueInstruction(Instruction):
     def __init__(self,identifier):
         self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.PUSH_NAME) + self.identifier.to_binary()
+        return self.to_binary_without_arg(InstructionType.PUSH_NAME_VALUE) + self.identifier.to_binary()
 
 class PushFloatingInstruction(Instruction):
     def __init__(self,id):
@@ -509,7 +509,7 @@ class Compiler:
                     step_value = number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
 
             compiled_check=[]
-            compiled_check += [PushNameInstruction(loop_var_id)]
+            compiled_check += [PushNameValueInstruction(loop_var_id)]
             compiled_check += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])
             if step_value > 0:
                 compiled_check += [LesserEqualInstruction()]
@@ -519,7 +519,7 @@ class Compiler:
                 raise Exception("Invalid step value!")
             compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
 
-            compiled_increment = [PushNameInstruction(loop_var_id)]
+            compiled_increment = [PushNameValueInstruction(loop_var_id)]
             compiled_increment += [PushInteger32Instruction(self.static_table.get_integer32_id(step_value))]
             compiled_increment += [AdditionInstruction()]
             compiled_increment += [AssignLocalInstruction(loop_var_id)]
@@ -579,19 +579,19 @@ class Compiler:
         assignment_op = assignment.nodes[Assignment.NODE_ASSIGNMENT_OPERATOR]
 
         if assignment_op.value == OperatorToken.ADD_ASSIGN:
-            pre_expr_code += [PushNameInstruction(name)]
+            pre_expr_code += [PushNameValueInstruction(name)]
             post_expr_code += [AdditionInstruction()]
         if assignment_op.value == OperatorToken.SUBTRACT_ASSIGN:
-            pre_expr_code += [PushNameInstruction(name)]
+            pre_expr_code += [PushNameValueInstruction(name)]
             post_expr_code += [SubtractionInstruction()]
         if assignment_op.value == OperatorToken.MULTIPLY_ASSIGN:
-            pre_expr_code += [PushNameInstruction(name)]
+            pre_expr_code += [PushNameValueInstruction(name)]
             post_expr_code += [MultiplicationInstruction()]
         if assignment_op.value == OperatorToken.DIVIDE_ASSIGN:
-            pre_expr_code += [PushNameInstruction(name)]
+            pre_expr_code += [PushNameValueInstruction(name)]
             post_expr_code += [DivisionInstruction()]
         if assignment_op.value == OperatorToken.CONCAT_ASSIGN:
-            pre_expr_code += [PushNameInstruction(name)]
+            pre_expr_code += [PushNameValueInstruction(name)]
             post_expr_code += [ConcatInstruction()]
         # Compile expression
         expr_code += self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
@@ -611,7 +611,7 @@ class Compiler:
         code = []
         
         ident = nodes[LineStatement.NODE_START]
-        code.append(PushNameInstruction(self.get_identifier(ident.value)))
+        code.append(PushNameValueInstruction(self.get_identifier(ident.value)))
         
         qualifiers = nodes[LineStatement.NODE_QUALIFIERS]
         code += self.compile_qualifiers(qualifiers)
@@ -681,7 +681,7 @@ class Compiler:
                 return [PushInteger32Instruction(self.static_table.get_integer32_id(token.value))]
             return [PushInteger64Instruction(self.static_table.get_integer64_id(token.value))]
         if token.type == Token.IDENTIFIER:
-            return [PushNameInstruction(self.get_identifier(token.value))]
+            return [PushNameValueInstruction(self.get_identifier(token.value))]
         if token.type == Token.STRING:
             return [PushStringInstruction(self.static_table.get_string_id(token.value))]   
         if token.type == Token.FLOATING:

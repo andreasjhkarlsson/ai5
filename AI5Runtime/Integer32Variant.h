@@ -18,6 +18,10 @@ public:
 	{
 		return value;
 	}
+	void setValue(int value)
+	{
+		this->value = value;
+	}
 private:
 	int value;
 };

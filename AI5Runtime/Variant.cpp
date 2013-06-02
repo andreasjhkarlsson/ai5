@@ -25,3 +25,7 @@ VariantFactory::~VariantFactory(void)
 {
 
 }
+
+void Variant::cleanup()
+{
+}

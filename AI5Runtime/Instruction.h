@@ -20,7 +20,7 @@ class Instruction
 public:
 	typedef std::shared_ptr<Instruction> PTR;
 	static const INSTRUCTION_TYPE NOOP							= 0x00;
-	static const INSTRUCTION_TYPE PUSH_NAME						= 0x01;
+	static const INSTRUCTION_TYPE PUSH_NAME_VALUE				= 0x01;
 	static const INSTRUCTION_TYPE PUSH_INTEGER64				= 0x02;
 	static const INSTRUCTION_TYPE PUSH_INTEGER32				= 0x03;
 	static const INSTRUCTION_TYPE PUSH_FLOATING					= 0x04;
@@ -78,6 +78,8 @@ public:
 	static const INSTRUCTION_TYPE ASSIGN_NEAREST_CONST			= 0x38;
 	static const INSTRUCTION_TYPE BUILD_LIST					= 0x3A;
 	static const INSTRUCTION_TYPE CREATE_MULTIDIM_LIST			= 0x3B;
+	static const INSTRUCTION_TYPE PUSH_NAME_REFERENCE			= 0x3C;
+	static const INSTRUCTION_TYPE DEREFERENCE_NAME_REFERENCE	= 0x3D;
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -183,8 +185,8 @@ void Instruction::execute(StackMachine* machine)
 	case ASSIGN_LOCAL_CONST:
 		assignLocalConst(machine,arg.identifier);
 		break;
-	case PUSH_NAME:
-		pushName(machine,arg.identifier);
+	case PUSH_NAME_VALUE:
+		pushNameValue(machine,arg.identifier);
 		break;
 	case PUSH_FUNCTION:
 		pushFunction(machine,arg.integer);

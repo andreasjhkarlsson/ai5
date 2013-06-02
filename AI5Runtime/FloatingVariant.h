@@ -17,7 +17,10 @@ public:
 	{
 		return value;
 	}
-	friend class VariantFactory;
+	void setValue(double value)
+	{
+		this->value = value;
+	}
 	static FloatingVariant* createFromFactory(VariantFactory* factory,double value);
 
 private:

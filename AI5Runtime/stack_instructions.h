@@ -52,9 +52,9 @@ __forceinline void doubleTop(StackMachine* machine)
 }
 
 
-__forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
+__forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 {
-	Variant* var = machine->getNearest(nameId);
+	Variant* var = machine->getNearestName(nameId)->getValue();
 	var->addRef();
 	machine->getDataStack()->push(var);
 	machine->advanceCounter();

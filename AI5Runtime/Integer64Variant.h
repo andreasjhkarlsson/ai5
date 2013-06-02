@@ -15,6 +15,10 @@ public:
 	virtual shared_string toString();
 	friend class VariantFactory;
 	__forceinline __int64 getValue();
+	void setValue(__int64 value)
+	{
+		this->value = value;
+	}
 	static Integer64Variant* createFromFactory(VariantFactory* factory,__int64 value);
 private:
 	__int64 value;

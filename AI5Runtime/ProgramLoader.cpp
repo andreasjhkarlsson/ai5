@@ -86,6 +86,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::ASSIGN_INDEX					:
 		case Instruction::POP_EXCEPTION_HANDLER			:
 		case Instruction::RAISE_EXCEPTION				:
+		case Instruction::DEREFERENCE_NAME_REFERENCE	:
 			instructions->push_back(Instruction::PTR(new Instruction(instructionBuffer[pos])));
 			pos++;
 			break;
@@ -113,7 +114,8 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::ASSIGN_GLOBAL					:
 		case Instruction::ASSIGN_LOCAL					:
 		case Instruction::ASSIGN_NEAREST				:			
-		case Instruction::PUSH_NAME:
+		case Instruction::PUSH_NAME_VALUE				:
+		case Instruction::PUSH_NAME_REFERENCE			:
 		case Instruction::ASSIGN_PROPERTY				:
 		case Instruction::PROPERTY						:
 		case Instruction::ASSIGN_GLOBAL_CONST:

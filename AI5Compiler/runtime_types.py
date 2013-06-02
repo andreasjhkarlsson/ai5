@@ -1,7 +1,7 @@
 
 class InstructionType:
     NOOP                                = 0x00;
-    PUSH_NAME                           = 0x01;
+    PUSH_NAME_VALUE                     = 0x01;
     PUSH_INTEGER64                      = 0x02;
     PUSH_INTEGER32                      = 0x03;
     PUSH_FLOATING                       = 0x04;
@@ -59,6 +59,8 @@ class InstructionType:
     ASSIGN_NEAREST_CONST                = 0x38;
     BUILD_LIST      				    = 0x3A;
     CREATE_MULTIDIM_LIST		        = 0x3B;
+    PUSH_NAME_REFERENCE                 = 0x3C;
+    DEREFERENCE_NAME_REFERENCE          = 0x3D;
 
 
 class StaticType:

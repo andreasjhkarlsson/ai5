@@ -98,6 +98,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,6 +141,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -155,6 +159,7 @@
     <ClCompile Include="ListVariant.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NameStorage.cpp" />
+    <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
     <ClCompile Include="ReferenceVariant.cpp" />
@@ -180,6 +185,7 @@
     <ClInclude Include="ListVariant.h" />
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="NameStorage.h" />
+    <ClInclude Include="NameVariant.h" />
     <ClInclude Include="NullVariant.h" />
     <ClInclude Include="operators.h" />
     <ClInclude Include="ProgramLoader.h" />

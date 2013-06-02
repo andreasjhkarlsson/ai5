@@ -78,6 +78,9 @@
     <ClCompile Include="Integer32Variant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="NameVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -163,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="comparison_instructions.h">
       <Filter>instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="NameVariant.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

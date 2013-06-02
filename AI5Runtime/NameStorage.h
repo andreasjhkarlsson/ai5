@@ -6,57 +6,9 @@
 #include "Variant.h"
 #include "FastStack.h"
 #include <algorithm>
+#include "NameVariant.h"
 
-// Represents a name.
-class Name
-{
-public:
-	Name(): variant(nullptr), isConst(false)
-	{
-	}
-	virtual ~Name()
-	{
-	}
-
-	__forceinline void set(Variant *newVariant)
-	{
-		if(isConst)
-		{
-			// Throw error!!!
-			return;
-		}
-		newVariant->addRef();
-		if(variant != nullptr)
-			variant->release();
-		variant = newVariant;
-	}
-
-	__forceinline Variant* get()
-	{
-		return variant;
-	}
-
-	__forceinline void clear()
-	{
-		variant->release();
-		variant = nullptr;
-		isConst = false;
-	}
-
-	void markAsConst()
-	{
-		// Cannot set name as const several times.
-		if(isConst)
-		{
-			// Throw error!
-		}
-		isConst = true;
-	}
-
-private:
-	Variant* variant;
-	bool isConst;
-};
+class StackMachine;
 
 
 // Keeping this class optimized is VERY important.
@@ -65,48 +17,20 @@ class Scope
 private:
 	static const int POOL_SIZE = 64;
 public:
-	Scope(): indexTable(128,0),usedIndexes(), namePool(POOL_SIZE)
+	Scope(): indexTable(128,0),usedIndexes()
 	{
 		usedIndexes.reserve(16);
 	}
-	__forceinline Name* getNameFromString(const std::wstring &name)
+	__forceinline NameVariant* getNameFromString(const std::wstring &name)
 	{
 		return lookup[name];
 	}
-	__forceinline Name* getNameFromIndex(int index)
+	__forceinline NameVariant* getNameFromIndex(int index)
 	{
 		return indexTable[index];
 	}
-	__forceinline Name* createName(const std::wstring &name)
-	{
-		Name* n = new Name();
-		lookup[name] = n;
-		return n;
-
-	}
-	__forceinline Name* createIndexForName(const std::wstring &name,int index)
-	{
-		if (lookup.find(name) == lookup.end())
-		{
-			if(!namePool.empty())
-				lookup[name] = namePool.pop();
-			else
-				lookup[name] = new Name();
-		}
-
-		if((index) >= indexTable.size())
-		{
-			indexTable.resize(index+1);
-		}
-
-		Name* nameObj = lookup[name];
-
-		indexTable[index] = nameObj;
-
-		usedIndexes.push_back(index);
-
-		return nameObj;
-	}
+	NameVariant* createName(StackMachine* machine,const std::wstring &name);
+	NameVariant* createIndexForName(StackMachine* machine,const std::wstring &name,int index);
 
 	// Make the scope ready for reusing.
 	void reset()
@@ -114,18 +38,8 @@ public:
 		// Clear all names in the lookup. Will release variants. 
 		for(auto it=lookup.begin();it!=lookup.end();it++)
 		{
-			it->second->clear();
+			it->second->release();
 
-			// Is there room left in the name pool?
-			// If it is, add released name into it.
-			if(namePool.size() < POOL_SIZE)
-			{
-				namePool.push(it->second);
-			}
-			else
-			{
-				delete it->second;
-			}
 		}
 
 		// Make sure the indexTable is all null's.
@@ -140,16 +54,13 @@ public:
 private:
 	// The string->name lookup.
 	// All names in the scope NEEDS to be in this map.
-	std::map<std::wstring,Name*> lookup;
+	std::map<std::wstring,NameVariant*> lookup;
 
 	// Used to provide super fast lookup of names in this scope.
 	// Not all names are necessarily in this table. 
-	std::vector<Name*> indexTable;
+	std::vector<NameVariant*> indexTable;
 
 	// List of used index in this table.
 	// Used to avoid clearing the entire indexTable whenever a scope object is reused.
 	std::vector<int> usedIndexes;
-
-	// Keep a pool of names to avoid extensive heap alloc.
-	FastStack<Name*> namePool;
 };
