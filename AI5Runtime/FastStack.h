@@ -17,6 +17,7 @@ public:
 private:
 	T* stack;
 	int position;
+	const int limit;
 };
 
 template<typename T>
@@ -62,7 +63,7 @@ bool FastStack<T>::empty()
 }
 
 template<typename T>
-FastStack<T>::FastStack(const int limit): position(-1)
+FastStack<T>::FastStack(const int limit): position(-1), limit(limit)
 {
 	stack = new T[limit];
 }

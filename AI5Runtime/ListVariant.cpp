@@ -1,5 +1,5 @@
 #include "ListVariant.h"
-
+#include "RuntimeError.h"
 
 ListVariant::ListVariant(void): Variant(LIST)
 {
@@ -66,11 +66,15 @@ void ListVariant::addElement(Variant* var)
 
 Variant* ListVariant::getElement(int index)
 {
+	if(index >= list->size())
+		throw RuntimeError(L"List index out of bounds!");
 	return (*list)[index];
 }
 
 void ListVariant::setElement(int index,Variant* var)
 {
+	if(index >= list->size())
+		throw RuntimeError(L"List index out of bounds!");
 	var->addRef();
 	(*list)[index]->release();
 	(*list)[index] = var;

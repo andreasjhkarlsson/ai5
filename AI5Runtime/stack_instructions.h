@@ -2,7 +2,7 @@
 #include "Integer64Variant.h"
 #include "UserFunctionVariant.h"
 #include "ListVariant.h"
-
+#include "RuntimeError.h"
 
 
 __forceinline void pushInteger64(StackMachine* machine,int arg)
@@ -70,7 +70,16 @@ __forceinline void doubleTopTwo(StackMachine* machine)
 
 __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 {
-	Variant* var = machine->getNearestName(nameId)->getValue();
+	NameVariant* name = machine->getNearestName(nameId);
+
+	if (name == nullptr)
+	{
+		StaticName* staticString = (StaticName*)machine->getStaticData(nameId.staticId);
+		throw RuntimeError(std::wstring(L"Undeclared identifier ")+(*staticString->getName())+L"!");
+	}
+
+
+	Variant* var = name->getValue();
 	var->addRef();
 	machine->getDataStack()->push(var);
 	machine->advanceCounter();

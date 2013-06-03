@@ -12,6 +12,7 @@
 #include "CallFrame.h"
 #include "BuiltinFunctionVariant.h"
 #include "macro.h"
+#include "RuntimeError.h"
 
 class Instruction;
 
@@ -22,6 +23,13 @@ using std::vector;
 // It controls program counter, stacks, tables, scopes and memory allocation.
 class StackMachine
 {
+private:
+	static const int CALL_STACK_SIZE		= 1024;
+	static const int CALL_FRAME_POOL_SIZE	= 1024;
+	static const int DATA_STACK_SIZE		= 65536;
+	static const int SCOPE_POOL_SIZE		= 1024;
+
+
 public:
 	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program);
@@ -99,6 +107,12 @@ VariantFactory* StackMachine::getVariantFactory()
 
 void StackMachine::pushCallFrame(int returnAddress)
 {
+
+	if(callFramePool.size() == 0)
+	{
+		throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
+	}
+
 	CallFrame* frame = callFramePool.pop();
 	frame->setScope(scopePool.pop());
 	frame->setReturnAddress(returnAddress);

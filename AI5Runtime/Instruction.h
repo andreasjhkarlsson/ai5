@@ -250,5 +250,8 @@ void Instruction::execute(StackMachine* machine)
 	case DOUBLE_TOP_TWO:
 		doubleTopTwo(machine);
 		break;
+	default:
+		throw RuntimeError(L"Unknown instruction detected!");
+		break;
 	}
 }

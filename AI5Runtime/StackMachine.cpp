@@ -1,21 +1,23 @@
-#include "StackMachine.h"
 #include <map>
+#include "StackMachine.h"
+#include "RuntimeError.h"
 #include "NullVariant.h"
 #include "Instruction.h"
 #include "..\AI5StandardLibrary\StandardLibrary.h"
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(64*1024),staticsTable(statics),program(program), callStack(128), callFramePool(128),scopePool(128)
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), callStack(CALL_STACK_SIZE), 
+	callFramePool(CALL_FRAME_POOL_SIZE),scopePool(SCOPE_POOL_SIZE)
 {
 	AI5StandardLibrary::registerFunctions(this);
 
-	for(int i=0;i<128;i++)
+	for(int i=0;i<CALL_FRAME_POOL_SIZE;i++)
 	{
 		callFramePool.push(new CallFrame());
 	}
 
-	for(int i=0;i<128;i++)
+	for(int i=0;i<SCOPE_POOL_SIZE;i++)
 	{
 		scopePool.push(new Scope());
 	}
@@ -29,21 +31,26 @@ int StackMachine::start()
 {
 	terminated = false;
 
-	while (!terminated) 
+	try
 	{
-		#ifdef _DEBUG
-			std::wcout << "\t";
-			program->operator[](programCounter)->format(std::wcout,this);
-			std::wcout << std::endl;
-		#endif
+		while (!terminated) 
+		{
+			#ifdef _DEBUG
+				std::wcout << "\t";
+				program->operator[](programCounter)->format(std::wcout,this);
+				std::wcout << std::endl;
+			#endif
 			
-		program->operator[](programCounter)->execute(this);
+			program->operator[](programCounter)->execute(this);
 		
+		}
+		return dataStack.top()->toInteger32();
+	} catch(const RuntimeError& error)
+	{
+		std::wcout << L"Runtime error:" << std::endl << error.getMessage() <<
+			std::endl << "The program will now terminate." << std::endl;
+		return -1;
 	}
-
-
-	return dataStack.top()->toInteger32();
-
 }
 
 void StackMachine::terminate()

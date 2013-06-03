@@ -185,6 +185,7 @@
     <ClInclude Include="ListVariant.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="misc_instructions.h" />
+    <ClInclude Include="RuntimeError.h" />
     <ClInclude Include="Scope.h" />
     <ClInclude Include="NameVariant.h" />
     <ClInclude Include="NullVariant.h" />

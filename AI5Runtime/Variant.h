@@ -87,7 +87,6 @@ void VariantFactory::recycle(Variant* variant)
 	if(recycleBins[variant->getType()]->size() < RECYCLE_BIN_LIMIT)
 	{
 		// Store the variant for future use.
-		// TODO: Make sure inner data is released here.
 		recycleBins[variant->getType()]->push(variant);
 	}
 	else
