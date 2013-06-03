@@ -209,11 +209,14 @@ class OperatorToken(Token):
     
 class StringToken(Token):
     #expr = re.compile("""(?:^\"([^\"]*)\")|(?:^'([^']*)')""")
-    expr = re.compile(r'''('(?:\\.|[^'])*')|("(?:\\.|[^"])*")''')
+    expr = re.compile(r'''("(?:[^"]|"")*")|('(?:[^']|'')*')''')
     type = Token.STRING
     @classmethod
     def value_transform(cls,value):
-        return value[1:-1].replace(r'\"','"').replace(r"\'","'")   
+        if value[0]=='"':
+            return value[1:-1].replace(r'""','"')
+        else:
+            return value[1:-1].replace(r"''","'") 
 
 
 class LeftParenToken(Token):
