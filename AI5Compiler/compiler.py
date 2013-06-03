@@ -22,30 +22,46 @@ class Address:
     RELATIVE = "relative"
     ABSOLUTE = "absolute"
     UNRESOLVED_ABSOLUTE = "unresolved absolute"
+    UNRESOLVED_LOOP_JUMP = "unresolved loop jump"
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.__dict__)
 
-class RelativeAddress:
+class RelativeAddress(Address):
     type = Address.RELATIVE
     def __init__(self,offset):
         self.value = offset
-    def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
-class AbsoluteAddress:
+
+class AbsoluteAddress(Address):
     type = Address.ABSOLUTE
     def __init__(self,position):
         self.value = position
-    def __repr__(self):
-        return "%s(%r)" % (self.__class__.__name__, self.__dict__)
+
 
 # Can be used as a placeholder when absolute address is needed but absolute address
 # needs to be calculated later.
-class UnresolvedAbsoluteAddress:
+class UnresolvedAbsoluteAddress(Address):
     type = Address.UNRESOLVED_ABSOLUTE
     def __init__(self,offset):
         self.offset = offset
     def resolve(self,position):
         return AbsoluteAddress(position + self.offset)
+
+
+class UnresolvedLoopJumpAddress(Address):
+    type = Address.UNRESOLVED_LOOP_JUMP
+    TARGET_START = "start"
+    TARGET_END  = "end"
+    def __init__(self,target,level):
+        self.target = target
+        self.level = level
+    def pop_level(self):
+        self.level -= 1
+        return self.level
+    def resolve(self,position,start_pos,end_pos):
+        if self.target == UnresolvedLoopJumpAddress.TARGET_START:
+            return RelativeAddress((-position)+start_pos)
+        if self.target == UnresolvedLoopJumpAddress.TARGET_END:
+            return RelativeAddress((-position)+end_pos)
 
 
 
@@ -367,6 +383,14 @@ class Compiler:
             if address.type == Address.UNRESOLVED_ABSOLUTE:
                 instruction.address = address.resolve(index)
 
+    def resolve_loop_jump_address(self,code,start_pos,end_pos):
+        for index,instruction in enumerate(code):
+            if not hasattr(instruction,"address"): continue
+            address = instruction.address
+            if address.type == Address.UNRESOLVED_LOOP_JUMP:
+                if address.pop_level() == 0:
+                    instruction.address = address.resolve(index,start_pos,end_pos)
+
     def compile_function(self,function):
         self.scope_lookup.push_scope()
         compiled_body = []
@@ -513,10 +537,15 @@ class Compiler:
         return output_instructions
 
     def compile_dountil(self,statement):
+        compiled_body = self.compile_block(statement.nodes[DoUntil.NODE_BODY])
+        compiled_condition = self.compile_expression(statement.nodes[DoUntil.NODE_CONDITION])
         code = []
-        code += self.compile_block(statement.nodes[DoUntil.NODE_BODY])
-        code += self.compile_expression(statement.nodes[DoUntil.NODE_CONDITION])
+        code += compiled_body
+        code += compiled_condition
         code += [JumpIfFalseInstruction(RelativeAddress(-len(code)))]
+
+        self.resolve_loop_jump_address(code,len(compiled_body),len(code))
+
         return code
 
     def compile_for(self,for_stmt):
@@ -561,7 +590,11 @@ class Compiler:
             compiled_check[-1].address.value = len(compiled_body)+len(compiled_increment)+1
             compiled_increment[-1].address.value = -(len(compiled_increment)+len(compiled_body)+len(compiled_check)-1)
 
-            return compiled_init + compiled_check + compiled_body + compiled_increment
+            code = compiled_init + compiled_check + compiled_body + compiled_increment
+
+            self.resolve_loop_jump_address(code,len(code)-len(compiled_increment),len(code))
+
+            return code
 
     def compile_exit(self,exit_statement):
         code = []
@@ -571,6 +604,17 @@ class Compiler:
             code += [PushInteger32Instruction(self.static_table.get_integer32_id(0))]
         code += [TerminateInstruction()]
         return code
+
+    def compile_continueloop(self,continue_statement):
+        if ContinueLoop.NODE_LEVEL in continue_statement.nodes:
+            level = continue_statement.nodes[ContinueLoop.NODE_LEVEL].value
+        else:
+            level = 1
+        return [JumpInstruction(UnresolvedLoopJumpAddress(UnresolvedLoopJumpAddress.TARGET_START,level))]
+
+    
+    def compile_exitloop(self,exitloop_statement):
+        return [JumpInstruction(UnresolvedLoopJumpAddress(UnresolvedLoopJumpAddress.TARGET_END,1))]
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
@@ -593,6 +637,10 @@ class Compiler:
             return self.compile_for(substatement)
         if substatement.type == Rule.EXIT:
             return self.compile_exit(substatement)
+        if substatement.type == Rule.CONTINUELOOP:
+            return self.compile_continueloop(substatement)
+        if substatement.type == Rule.EXITLOOP:
+            return self.compile_exitloop(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []
@@ -683,6 +731,9 @@ class Compiler:
         code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+2))]
         code += compiled_body
         code += [JumpInstruction(RelativeAddress(-(len(compiled_body)+len(compiled_condition)+1)))]
+
+        self.resolve_loop_jump_address(code,0,len(code))
+
         return code
     
     def compile_operator(self,operator):
