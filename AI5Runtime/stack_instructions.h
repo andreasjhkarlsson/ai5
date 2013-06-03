@@ -51,6 +51,22 @@ __forceinline void doubleTop(StackMachine* machine)
 	machine->advanceCounter();
 }
 
+__forceinline void doubleTopTwo(StackMachine* machine)
+{
+	DataStack *stack = machine->getDataStack();
+	
+
+	Variant* v1 = stack->get(0); // Same as top.
+	Variant* v2 = stack->get(1);
+
+	v2->addRef();
+	v1->addRef();
+	stack->push(v2);
+	stack->push(v1);
+
+	machine->advanceCounter();
+}
+
 
 __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 {

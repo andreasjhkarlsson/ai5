@@ -95,6 +95,22 @@ __forceinline void assignGlobalConst(StackMachine* machine,NameIdentifier arg)
 }
 
 
+__forceinline void assignIndex(StackMachine* machine)
+{
+	Variant* value = machine->getDataStack()->pop();
+	Variant* index = machine->getDataStack()->pop();
+	Variant* list = machine->getDataStack()->pop();
+
+	static_cast<ListVariant*>(list)->setElement(index->toInteger32(),value);
+	
+	value->release();
+	index->release();
+	list->release();
+
+	machine->advanceCounter();
+}
+
+
 __forceinline void concatStrings(StackMachine* machine)
 {
 

@@ -15,6 +15,7 @@ public:
 	virtual shared_string toString();
 	void addElement(Variant* var);
 	Variant* getElement(int index);
+	void setElement(int index,Variant* var);
 private:
 	shared_var_list list;
 };

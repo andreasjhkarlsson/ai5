@@ -233,7 +233,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "LOAD_BYREF_ARGUMENT " << *getName(machine,arg.identifier);
 		break;
 	case Instruction::PUSH_MACRO:
-		stream << "PUSH_MACRO " << *getMacro(machine,arg.integer) << std::endl;
+		stream << "PUSH_MACRO " << *getMacro(machine,arg.integer);
+	case Instruction::DOUBLE_TOP_TWO:
+		stream << "DOUBLE_TOP_TWO";
 	}
 	return stream;
 }

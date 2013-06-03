@@ -117,6 +117,13 @@ class PushFunctionInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_FUNCTION, self.address.value)    
 
+class DoubleTopTwoInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.DOUBLE_TOP_TWO)
+
+class AssignIndexInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ASSIGN_INDEX)
 
 class PushStringInstruction(Instruction):
     def __init__(self,id):
@@ -661,7 +668,7 @@ class Compiler:
         code += [CallFunctionInstruction(len(call.nodes[Call.NODE_ARGUMENTS]))]
         return code
     
-    def compile_name_assignment(self,assignment,name,assignment_instruction=AssignNearestInstruction):
+    def compile_assignment(self,assignment,value_code,assignment_instruction):
 
         pre_expr_code = []
         expr_code = []
@@ -670,24 +677,24 @@ class Compiler:
         assignment_op = assignment.nodes[Assignment.NODE_ASSIGNMENT_OPERATOR]
 
         if assignment_op.value == OperatorToken.ADD_ASSIGN:
-            pre_expr_code += [PushNameValueInstruction(name)]
+            pre_expr_code += value_code
             post_expr_code += [AdditionInstruction()]
         if assignment_op.value == OperatorToken.SUBTRACT_ASSIGN:
-            pre_expr_code += [PushNameValueInstruction(name)]
+            pre_expr_code += value_code
             post_expr_code += [SubtractionInstruction()]
         if assignment_op.value == OperatorToken.MULTIPLY_ASSIGN:
-            pre_expr_code += [PushNameValueInstruction(name)]
+            pre_expr_code += value_code
             post_expr_code += [MultiplicationInstruction()]
         if assignment_op.value == OperatorToken.DIVIDE_ASSIGN:
-            pre_expr_code += [PushNameValueInstruction(name)]
+            pre_expr_code += value_code
             post_expr_code += [DivisionInstruction()]
         if assignment_op.value == OperatorToken.CONCAT_ASSIGN:
-            pre_expr_code += [PushNameValueInstruction(name)]
+            pre_expr_code += value_code
             post_expr_code += [ConcatInstruction()]
         # Compile expression
         expr_code += self.compile_expression(assignment.nodes[Assignment.NODE_VALUE_EXPRESSION])
 
-        post_expr_code += [assignment_instruction(name)]
+        post_expr_code += [assignment_instruction]
 
         return pre_expr_code + expr_code + post_expr_code
     
@@ -697,7 +704,7 @@ class Compiler:
             code += self.compile_qualifier(qualifiers.pop(0))
         return code
     
-    def compile_line_statement(self,line_statement,assignment_instruction=AssignNearestInstruction):
+    def compile_line_statement(self,line_statement):
         nodes = line_statement.nodes
         code = []
         
@@ -706,13 +713,18 @@ class Compiler:
         
         qualifiers = nodes[LineStatement.NODE_QUALIFIERS]
         code += self.compile_qualifiers(qualifiers)
-        
+
         if LineStatement.NODE_ASSIGNMENT in nodes:
             assignment = nodes[LineStatement.NODE_ASSIGNMENT]
-            # remove last push_name instruction
-            code.pop(0)
+
+            # remove last instruction
+            last_instruction = code.pop()
             
-            code += self.compile_name_assignment(assignment, self.get_identifier(ident.value),assignment_instruction)  
+            if isinstance(last_instruction,PushNameValueInstruction):
+                code += self.compile_assignment(assignment,[last_instruction],AssignNearestInstruction(last_instruction.identifier))  
+            if isinstance(last_instruction,IndexInstruction):
+                code += self.compile_assignment(assignment,[DoubleTopTwoInstruction(),last_instruction],AssignIndexInstruction())  
+
         else:
             code += [PopInstruction()]       
         

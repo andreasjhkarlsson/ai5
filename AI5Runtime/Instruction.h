@@ -81,6 +81,7 @@ public:
 	static const INSTRUCTION_TYPE LOAD_ARGUMENT					= 0x3C;
 	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x3D;
 	static const INSTRUCTION_TYPE PUSH_MACRO					= 0x3E;
+	static const INSTRUCTION_TYPE DOUBLE_TOP_TWO				= 0x3F;
 	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -239,6 +240,12 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case PUSH_MACRO:
 		pushMacro(machine,arg.integer);
+		break;
+	case ASSIGN_INDEX:
+		assignIndex(machine);
+		break;
+	case DOUBLE_TOP_TWO:
+		doubleTopTwo(machine);
 		break;
 	}
 }

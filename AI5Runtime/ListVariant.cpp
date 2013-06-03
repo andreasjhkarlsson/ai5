@@ -68,3 +68,10 @@ Variant* ListVariant::getElement(int index)
 {
 	return (*list)[index];
 }
+
+void ListVariant::setElement(int index,Variant* var)
+{
+	var->addRef();
+	(*list)[index]->release();
+	(*list)[index] = var;
+}

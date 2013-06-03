@@ -82,6 +82,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::NEGATION						:
 		case Instruction::SWAP_TOP						:
 		case Instruction::DOUBLE_TOP					:
+		case Instruction::DOUBLE_TOP_TWO				:
 		case Instruction::RET							:
 		case Instruction::ASSIGN_INDEX					:
 		case Instruction::POP_EXCEPTION_HANDLER			:

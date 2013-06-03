@@ -62,6 +62,7 @@ class InstructionType:
     LOAD_ARGUMENT                       = 0x3C;
     LOAD_BYREF_ARGUMENT                 = 0x3D;
     PUSH_MACRO                          = 0x3E;
+    DOUBLE_TOP_TWO                      = 0x3F;
 
 
 class StaticType:
