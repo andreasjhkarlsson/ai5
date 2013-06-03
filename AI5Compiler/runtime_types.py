@@ -49,7 +49,7 @@ class InstructionType:
     LESSER                              = 0x2E;
     LESSER_EQUAL                        = 0x2F;
     EQUAL                               = 0x30;
-    STRONG_EQUAL                        = 0x31;
+    STRONG_STRING_EQUAL                 = 0x31;
     NOT_EQUAL                           = 0x32;
     CONCAT                              = 0x33;
     POW                                 = 0x34;

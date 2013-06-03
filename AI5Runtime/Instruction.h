@@ -68,7 +68,7 @@ public:
 	static const INSTRUCTION_TYPE LESSER						= 0x2E;
 	static const INSTRUCTION_TYPE LESSER_EQUAL					= 0x2F;
 	static const INSTRUCTION_TYPE EQUAL							= 0x30;
-	static const INSTRUCTION_TYPE STRONG_EQUAL					= 0x31;
+	static const INSTRUCTION_TYPE STRONG_STRING_EQUAL			= 0x31;
 	static const INSTRUCTION_TYPE NOT_EQUAL						= 0x32;
 	static const INSTRUCTION_TYPE CONCAT						= 0x33;
 	static const INSTRUCTION_TYPE POW							= 0x34;
@@ -168,6 +168,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case EQUAL:
 		comparisonInstruction(machine,COMPARISON_TYPE::EQUAL);
+		break;
+	case STRONG_STRING_EQUAL:
+		comparisonInstruction(machine,COMPARISON_TYPE::STRONG_STRING_EQUAL);
 		break;
 	case CONCAT:
 		concatStrings(machine);

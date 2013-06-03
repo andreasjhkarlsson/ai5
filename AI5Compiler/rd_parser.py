@@ -818,7 +818,7 @@ class BinaryOperator(Rule):
     PRECEDENCE_LEVELS = [[OperatorToken.BOOLEAN_AND,OperatorToken.BOOLEAN_OR],
               [OperatorToken.GREATER,OperatorToken.LESSER,OperatorToken.GREATER_EQUAL,
                                     OperatorToken.LESSER_EQUAL,OperatorToken.EQUAL,
-                                    OperatorToken.NOT_EQUAL,OperatorToken.STRONG_EQUAL],
+                                    OperatorToken.NOT_EQUAL,OperatorToken.STRONG_STRING_EQUAL],
               [OperatorToken.CONCAT],
               [OperatorToken.ADD,OperatorToken.SUBTRACT],
               [OperatorToken.MULTIPLY,OperatorToken.DIVIDE],

@@ -204,8 +204,8 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::EQUAL:
 		stream << "EQUAL";
 		break;
-	case Instruction::STRONG_EQUAL:
-		stream << "STRONG_EQUAL";
+	case Instruction::STRONG_STRING_EQUAL:
+		stream << "STRONG_STRING_EQUAL";
 		break;
 	case Instruction::NOT_EQUAL:
 		stream << "NOT_EQUAL";

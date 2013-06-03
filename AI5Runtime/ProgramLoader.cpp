@@ -74,7 +74,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::LESSER						:
 		case Instruction::LESSER_EQUAL					:
 		case Instruction::EQUAL							:
-		case Instruction::STRONG_EQUAL					:
+		case Instruction::STRONG_STRING_EQUAL			:
 		case Instruction::NOT_EQUAL						:
 		case Instruction::CONCAT						:
 		case Instruction::POW							:

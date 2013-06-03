@@ -230,6 +230,10 @@ class EqualInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.EQUAL)
 
+class StrongStringEqualInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.STRONG_STRING_EQUAL)
+
 class MultiplicationInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.MULTIPLICATION)
@@ -763,7 +767,8 @@ class Compiler:
                  OperatorToken.EQUAL: EqualInstruction,
                  OperatorToken.BOOLEAN_AND: BooleanAndInstruction,
                  OperatorToken.BOOLEAN_OR: BooleanOrInstruction,
-                 OperatorToken.CONCAT: ConcatInstruction
+                 OperatorToken.CONCAT: ConcatInstruction,
+                 OperatorToken.STRONG_STRING_EQUAL: StrongStringEqualInstruction
                  }[token.value]()]
         
         

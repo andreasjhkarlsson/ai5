@@ -1,4 +1,5 @@
 #pragma once
+#include <wchar.h>
 #include "Variant.h"
 #include "BooleanVariant.h"
 #include "StackMachine.h"
@@ -13,7 +14,7 @@ public:
 	virtual bool equal(Variant* var1,Variant* var2)=0;
 };
 
-class TInt32Comparator: public Comparator
+class Int32Comparator: public Comparator
 {
 public:
 	virtual bool greater(Variant* var1,Variant* var2)
@@ -38,7 +39,7 @@ public:
 	}
 };
 
-class TInt64Comparator: public Comparator
+class Int64Comparator: public Comparator
 {
 public:
 	virtual bool greater(Variant* var1,Variant* var2)
@@ -63,9 +64,7 @@ public:
 	}
 };
 
-
-
-class TFloatingComparator: public Comparator
+class FloatingComparator: public Comparator
 {
 public:
 	virtual bool greater(Variant* var1,Variant* var2)
@@ -90,6 +89,46 @@ public:
 	} 
 };
 
+class StringComparator: public Comparator
+{
+public:
+	virtual bool greater(Variant* var1,Variant* var2)
+	{
+		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) > 0;
+	}
+	virtual bool lesser(Variant* var1,Variant* var2)
+	{
+		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) < 0;
+	}
+	virtual bool greaterEqual(Variant* var1,Variant* var2)
+	{
+		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) >= 0;
+	}
+	virtual bool lesserEqual(Variant* var1,Variant* var2)
+	{
+		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) <= 0;
+	}
+	virtual bool equal(Variant* var1,Variant* var2)
+	{
+		shared_string str1 = var1->toString();
+		shared_string str2 = var2->toString();
+
+		if(str1->length() != str2->length()) return false;
+
+		return _wcsicmp(str1->c_str(),str2->c_str()) == 0;
+	} 
+
+	virtual bool strongEqual(Variant* var1,Variant* var2)
+	{
+		shared_string str1 = var1->toString();
+		shared_string str2 = var2->toString();
+
+		if(str1->length() != str2->length()) return false;
+
+		return wcscmp(str1->c_str(),str2->c_str()) == 0;
+	}
+};
+
 struct ComparisonPair
 {
 	VARIANT_TYPE type1, type2;
@@ -104,21 +143,22 @@ public:
 
 		// Table describing the rules for comparisons.
 		ComparisonPair RAW_TABLE[] = {
-			{Variant::INTEGER32,	Variant::INTEGER32,		&Int32Comparator},
-			{Variant::INTEGER64,	Variant::INTEGER64,		&Int64Comparator},
-			{Variant::INTEGER32,	Variant::INTEGER64,		&Int64Comparator},
-			{Variant::INTEGER64,	Variant::INTEGER32,		&Int64Comparator},
-			{Variant::FLOATING,		Variant::FLOATING,		&FloatingComparator},
-			{Variant::FLOATING,		Variant::INTEGER32,		&FloatingComparator},
-			{Variant::FLOATING,		Variant::INTEGER64,		&FloatingComparator},
-			{Variant::FLOATING,		Variant::STRING,		&FloatingComparator},
-			{Variant::INTEGER32,	Variant::FLOATING,		&FloatingComparator},
-			{Variant::INTEGER64,	Variant::FLOATING,		&FloatingComparator},
-			{Variant::STRING,		Variant::FLOATING,		&FloatingComparator},
-			{Variant::STRING,		Variant::INTEGER32,		&FloatingComparator},
-			{Variant::STRING,		Variant::INTEGER64,		&FloatingComparator},
-			{Variant::INTEGER32,	Variant::STRING,		&FloatingComparator},
-			{Variant::INTEGER64,	Variant::STRING,		&FloatingComparator},
+			{Variant::INTEGER32,	Variant::INTEGER32,		&int32Comparator},
+			{Variant::INTEGER64,	Variant::INTEGER64,		&int64Comparator},
+			{Variant::INTEGER32,	Variant::INTEGER64,		&int64Comparator},
+			{Variant::INTEGER64,	Variant::INTEGER32,		&int64Comparator},
+			{Variant::FLOATING,		Variant::FLOATING,		&floatingComparator},
+			{Variant::FLOATING,		Variant::INTEGER32,		&floatingComparator},
+			{Variant::FLOATING,		Variant::INTEGER64,		&floatingComparator},
+			{Variant::FLOATING,		Variant::STRING,		&floatingComparator},
+			{Variant::INTEGER32,	Variant::FLOATING,		&floatingComparator},
+			{Variant::INTEGER64,	Variant::FLOATING,		&floatingComparator},
+			{Variant::STRING,		Variant::FLOATING,		&floatingComparator},
+			{Variant::STRING,		Variant::INTEGER32,		&floatingComparator},
+			{Variant::STRING,		Variant::INTEGER64,		&floatingComparator},
+			{Variant::INTEGER32,	Variant::STRING,		&floatingComparator},
+			{Variant::INTEGER64,	Variant::STRING,		&floatingComparator},
+			{Variant::STRING,		Variant::STRING,		&stringComparator},
 		};
 
 
@@ -137,9 +177,10 @@ public:
 	}
 
 private:
-	TInt32Comparator Int32Comparator;
-	TInt64Comparator Int64Comparator;
-	TFloatingComparator FloatingComparator;
+	Int32Comparator int32Comparator;
+	Int64Comparator int64Comparator;
+	FloatingComparator floatingComparator;
+	StringComparator stringComparator;
 	ComparisonPair* table;
 
 };
@@ -151,7 +192,8 @@ enum COMPARISON_TYPE
 	GREATER_EQUAL,
 	LESSER,
 	LESSER_EQUAL,
-	EQUAL
+	EQUAL,
+	STRONG_STRING_EQUAL
 };
 
 inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
@@ -161,6 +203,7 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 	Variant* operand1 = machine->getDataStack()->pop();
 	bool result;
 	Comparator* comp = table.lookup(operand1->getType(),operand2->getType());
+	static StringComparator stringComparator;
 
 	switch(type)
 	{
@@ -178,6 +221,9 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 		break;
 	case EQUAL:
 		result = comp->equal(operand1,operand2);
+		break;
+	case STRONG_STRING_EQUAL:
+		result = stringComparator.strongEqual(operand1,operand2);
 		break;
 	}
 
