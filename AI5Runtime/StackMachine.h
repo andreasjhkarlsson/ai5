@@ -36,7 +36,7 @@ public:
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
 	static StackMachine* LoadFromStructuredData(const std::wstring& filename);
-	void start();
+	int start();
 	void terminate();
 	__forceinline void pushCallFrame(int returnAddress);
 	__forceinline CallFrame* getCurrentCallFrame()

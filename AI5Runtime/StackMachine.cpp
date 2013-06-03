@@ -25,7 +25,7 @@ StackMachine::~StackMachine(void)
 {
 }
 
-void StackMachine::start()
+int StackMachine::start()
 {
 	terminated = false;
 
@@ -40,6 +40,10 @@ void StackMachine::start()
 		program->operator[](programCounter)->execute(this);
 		
 	}
+
+
+	return dataStack.top()->toInteger32();
+
 }
 
 void StackMachine::terminate()

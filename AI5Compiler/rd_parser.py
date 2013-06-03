@@ -131,11 +131,15 @@ class Rule:
     
 class Exit(Rule):
     type = Rule.EXIT
+    NODE_EXPRESSION = "expression"
     @staticmethod
     def match(parser):
         if parser.accept(Token.KEYWORD,KeywordToken.EXIT):
+            if parser.acceptRule(Expression):
+                return Exit({Exit.NODE_EXPRESSION:parser.matched_rule})
             return Exit({})
         return None
+
 class ExitLoop(Rule):
     type = Rule.EXITLOOP
     NODE_LEVEL = "level"

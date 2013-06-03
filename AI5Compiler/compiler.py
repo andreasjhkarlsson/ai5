@@ -563,6 +563,14 @@ class Compiler:
 
             return compiled_init + compiled_check + compiled_body + compiled_increment
 
+    def compile_exit(self,exit_statement):
+        code = []
+        if Exit.NODE_EXPRESSION in exit_statement.nodes:
+            code += self.compile_expression(exit_statement.nodes[Exit.NODE_EXPRESSION])
+        else:
+            code += [PushInteger32Instruction(self.static_table.get_integer32_id(0))]
+        code += [TerminateInstruction()]
+        return code
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
@@ -583,6 +591,8 @@ class Compiler:
             return self.compile_dountil(substatement)
         if substatement.type == Rule.FOR:
             return self.compile_for(substatement)
+        if substatement.type == Rule.EXIT:
+            return self.compile_exit(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []
@@ -774,7 +784,7 @@ class Compiler:
     
     def compile_program(self,program):
         self.scope_lookup.push_scope()
-        code = self.compile_block(program.nodes[Program.NODE_BLOCK]) + [TerminateInstruction()]
+        code = self.compile_block(program.nodes[Program.NODE_BLOCK]) + [PushInteger32Instruction(self.static_table.get_integer32_id(0)),TerminateInstruction()]
         self.resolve_addresses(code)
         return code
     

@@ -17,7 +17,9 @@ int main()
 
 	clock_t begin = clock();
 
-	machine->start();
+	int returnCode=machine->start();
+
+	std::wcout << L"Program ended with code: " << returnCode << std::endl;
 
 	clock_t end = clock();
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
