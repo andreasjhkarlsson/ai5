@@ -3,13 +3,11 @@ import lexer
 from lexer import Token, KeywordToken, OperatorToken
 
 class ParseError(Exception):
-    def __init__(self,message):
+    def __init__(self,message,line_number):
         self.message = message;
+        self.line_number = line_number
 
 class Parser:
-    
-    def generate_parse_error(self,msg):
-        raise ParseError(msg)
     
     def __init__(self,tokens):
         self.tokens = deque(tokens)
@@ -54,9 +52,9 @@ class Parser:
     def expect(self,token_type,value=None):
         self.next()
         if self.current.type != token_type:
-            self.generate_parse_error("Expected "+token_type+" but found "+self.current.type+" with value "+str(self.current.value))
+            raise ParseError("Expected "+token_type+" but found "+self.current.type+" with value "+str(self.current.value),self.current.line_number)
         if value != None and self.current.value != value:
-            self.generate_parse_error("Expected: "+token_type+" with value: "+str(value))
+            raise ParseError("Expected: "+token_type+" with value: "+str(value),self.current.line_number)
         return self.current
     # Match a rule and return None if it doesn't match.
     def acceptRule(self,rule_class):
@@ -72,7 +70,7 @@ class Parser:
     def expectRule(self,rule_class):
         self.matched_rule = rule_class.match(self)
         if not self.matched_rule:
-            self.generate_parse_error("Expected "+rule_class.__name__+" but found "+str(self.peek().type))
+            raise ParseError("Expected "+rule_class.__name__+" but found "+str(self.peek().type),self.peek().line_number)
         return self.matched_rule
     # Expect token of newline type.
     def expectNewline(self):

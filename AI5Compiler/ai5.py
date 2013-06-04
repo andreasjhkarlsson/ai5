@@ -6,7 +6,9 @@ from compiled_file import CompiledFile
 
 input = """
 
-const a = 10
+
+if 234 then
+while 123
 
 
 """
@@ -20,5 +22,5 @@ try:
 
     CompiledFile(statics_table,instructions).write_to_file(open("test.aic","wb"))
 except (LexError,ParseError) as error:
-    print("Error compiling program:\n\t"+error.message)
+    print("Error compiling program:\n\tat line "+str(error.line_number)+": "+error.message)
     

@@ -2,8 +2,9 @@
 import re
 
 class LexError(Exception):
-    def __init__(self,message):
+    def __init__(self,message,line_number=-1):
         self.message = message
+        self.line_number
 
 def lex_string(string):
     
@@ -13,13 +14,17 @@ def lex_string(string):
     tokens = []
     
     offset = 0
+
+    line_number = 1
  
     while len(string) > offset:
         for token_class in token_classes:
             result = token_class.match(string,offset)
             if result:
                 new_token = result[0]
+                new_token.line_number = line_number
                 offset += result[1]
+                line_number += result[2]
                 
                 do_not_append = False
                 if new_token.type == Token.NEWLINE:
@@ -34,8 +39,10 @@ def lex_string(string):
                     tokens.append(new_token)
                 break
         else:
-            raise LexError("Could not scan string: "+string[offset:])
-    tokens.append(EOFToken())    
+            raise LexError("Could not scan string: "+string[offset:],line_number)
+    eof=EOFToken()
+    eof.line_number = line_number
+    tokens.append(eof)    
     
     return tokens
 
@@ -80,12 +87,21 @@ class Token(object):
     @classmethod
     def value_transform(cls,value):
         return value
-        
+    
+    @classmethod
+    def count_lines(cls,str):
+        crlfs = str.count("\r\n")
+        str = str.replace("\r\n","")
+        lfs = str.count("\n")
+        str = str.replace("\n","")
+        crs = str.count("\r")   
+        return crlfs+lfs+crs
+
     @classmethod
     def match(cls,string,offset=0):
         res = simple_regex_search(string, cls.expr,offset)
         if res:
-            return cls(cls.value_transform(res)), len(res)
+            return cls(cls.value_transform(res)), len(res), cls.count_lines(res)
         return None        
 
 class IncludeFileToken(Token):
