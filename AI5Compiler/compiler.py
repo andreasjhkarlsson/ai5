@@ -5,6 +5,9 @@ from runtime_types import StaticType
 from runtime_types import InstructionType
 import struct
 
+class CompileError(Exception):
+    def __init__(self,message):
+        self.message = message;
 
 def warn(str):
     print("Compiler warning: ",str)
@@ -608,7 +611,7 @@ class Compiler:
             elif step_value <0:
                 compiled_check += [GreaterEqualInstruction()]
             else:
-                raise Exception("Invalid step value!")
+                raise CompileError("Invalid step value!")
             compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
 
             compiled_increment = [PushNameValueInstruction(loop_var_id)]

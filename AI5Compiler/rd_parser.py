@@ -2,10 +2,14 @@ from collections import deque
 import lexer
 from lexer import Token, KeywordToken, OperatorToken
 
+class ParseError(Exception):
+    def __init__(self,message):
+        self.message = message;
+
 class Parser:
     
     def generate_parse_error(self,msg):
-        raise Exception(msg)
+        raise ParseError(msg)
     
     def __init__(self,tokens):
         self.tokens = deque(tokens)
@@ -15,6 +19,8 @@ class Parser:
     def next(self):
         self.discarded.append(self.current)
         self.current = self.tokens.popleft()
+    def peek(self):
+        return self.tokens[0]
     def back(self):
         self.tokens.appendleft(self.current)
         self.current = self.discarded.pop()
@@ -66,7 +72,7 @@ class Parser:
     def expectRule(self,rule_class):
         self.matched_rule = rule_class.match(self)
         if not self.matched_rule:
-            self.generate_parse_error("Expected "+rule_class.__name__+" but found "+str(self.current))
+            self.generate_parse_error("Expected "+rule_class.__name__+" but found "+str(self.peek().type))
         return self.matched_rule
     # Expect token of newline type.
     def expectNewline(self):

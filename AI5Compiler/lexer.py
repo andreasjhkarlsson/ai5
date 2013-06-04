@@ -1,6 +1,10 @@
 
 import re
 
+class LexError(Exception):
+    def __init__(self,message):
+        self.message = message
+
 def lex_string(string):
     
     token_classes = [IncludeFileToken,CommaToken,LeftParenToken,RightParenToken,LeftBracketToken,RightBracketToken, KeywordToken,
@@ -30,7 +34,7 @@ def lex_string(string):
                     tokens.append(new_token)
                 break
         else:
-            raise Exception("Could not scan string: "+string[offset:])
+            raise LexError("Could not scan string: "+string[offset:])
     tokens.append(EOFToken())    
     
     return tokens
@@ -45,26 +49,26 @@ def simple_regex_search(string,compiled_expression,offset):
 
 
 class Token(object):
-    INTEGER = "token_integer"
-    OPERATOR = "token_operator"
-    STRING = "token_string"
-    WHITESPACE = "token_whitespace"
-    NEWLINE = "token_newline"
-    IDENTIFIER = "token_identifier"
-    MACRO = "token_macro"
-    COMMENT = "token_comment"
-    DIRECTIVE = "token_directive"
-    KEYWORD = "token_keyword"
-    BOOLEAN = "token_boolean"
-    FLOATING = "token_floating"
-    LEFT_PAREN = "token_left parenthesis"
-    RIGHT_PAREN = "token_right parenthesis"
-    LEFT_BRACKET = "token_left bracket"
-    RIGHT_BRACKET = "token_right bracket"
-    DOT = "token_dot"
-    COMMA = "token_comma"
-    EOF = "token_eof"
-    INCLUDE_FILE = "token_include file"
+    INTEGER = "integer token"
+    OPERATOR = "operator token"
+    STRING = "string token"
+    WHITESPACE = "whitespace token"
+    NEWLINE = "newline token"
+    IDENTIFIER = "identifier token"
+    MACRO = "macro token"
+    COMMENT = "comment token"
+    DIRECTIVE = "directive token"
+    KEYWORD = "keyword token"
+    BOOLEAN = "boolean token"
+    FLOATING = "floating token"
+    LEFT_PAREN = "left parenthesis token"
+    RIGHT_PAREN = "right parenthesis token"
+    LEFT_BRACKET = "left bracket token"
+    RIGHT_BRACKET = "right bracket token"
+    DOT = "dot token"
+    COMMA = "comma token"
+    EOF = "eof token"
+    INCLUDE_FILE = "include file token"
     
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.__dict__)
