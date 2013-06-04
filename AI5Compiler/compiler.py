@@ -6,6 +6,9 @@ from runtime_types import InstructionType
 import struct
 
 
+def warn(str):
+    print("Compiler warning: ",str)
+
 def fits_in_char(integer):
     return integer >= -128 and integer <= 127
 
@@ -82,6 +85,12 @@ class Instruction:
 class IndexInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.INDEX)
+
+class CreateMultiDimListInstruction(Instruction):
+    def __init__(self,subscripts):
+        self.subscripts = subscripts
+    def to_binary(self):
+        return self.to_binary_with_char_arg(InstructionType.CREATE_MULTIDIM_LIST,self.subscripts)
 
 class PushInteger32Instruction(Instruction):
     def __init__(self,id):
@@ -458,8 +467,18 @@ class Compiler:
                 assignment_instruction = AssignLocalInstruction
 
         for variable in declaration.nodes[Declaration.NODE_VARIABLES]:
+            # If the variable has a right hand side, compile it with and use it as assignment.
             if DeclarationAssignment.NODE_VALUE_EXPRESSION in variable.nodes:
                 code += self.compile_expression(variable.nodes[DeclarationAssignment.NODE_VALUE_EXPRESSION])
+                if DeclarationAssignment.NODE_SUBSCRIPTS in variable.nodes:
+                    warn("Left hand array declaration ignored in favor for right hand expression.")
+            # Does the declaration declare an array such as: Dim a[10][2], compile it with
+            # special CreateMultiDimList instruction.
+            elif DeclarationAssignment.NODE_SUBSCRIPTS in variable.nodes:
+                for list_index in variable.nodes[DeclarationAssignment.NODE_SUBSCRIPTS]:
+                    code += self.compile_expression(list_index.nodes[ListIndexing.NODE_INDEX])
+                code += [CreateMultiDimListInstruction(len(variable.nodes[DeclarationAssignment.NODE_SUBSCRIPTS]))]
+            # Empty variable are assigned to Null.
             else:
                 code += [PushNullInstruction()]
             code += [assignment_instruction(self.get_identifier(variable.nodes[DeclarationAssignment.NODE_IDENTIFIER].value))]

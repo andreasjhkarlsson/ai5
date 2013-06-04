@@ -250,6 +250,9 @@ void Instruction::execute(StackMachine* machine)
 	case DOUBLE_TOP_TWO:
 		doubleTopTwo(machine);
 		break;
+	case CREATE_MULTIDIM_LIST:
+		createMultiDimList(machine,arg.byte);
+		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");
 		break;

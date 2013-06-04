@@ -168,11 +168,18 @@ class DeclarationAssignment(Rule):
     type = Rule.ASSIGNMENT
     NODE_IDENTIFIER = "identifier"
     NODE_VALUE_EXPRESSION = "value expression"
+    NODE_SUBSCRIPTS = "subscripts"
     @staticmethod
     def match(parser):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {DeclarationAssignment.NODE_IDENTIFIER: parser.current}
+
+        subscripts = []
+        while parser.acceptRule(ListIndexing):
+            subscripts.append(parser.matched_rule)
+        nodes[DeclarationAssignment.NODE_SUBSCRIPTS] = subscripts
+
         if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
             nodes[DeclarationAssignment.NODE_VALUE_EXPRESSION] = parser.expectRule(Expression)
         return DeclarationAssignment(nodes)

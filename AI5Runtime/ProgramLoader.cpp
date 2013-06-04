@@ -104,7 +104,6 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_FLOATING:
 		case Instruction::PUSH_INTEGER32:
 		case Instruction::PUSH_INTEGER64:
-		case Instruction::CREATE_MULTIDIM_LIST:
 		case Instruction::PUSH_MACRO:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
@@ -129,6 +128,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			pos += 13;
 			break;
 		// char argument.
+		case Instruction::CREATE_MULTIDIM_LIST:
 		case Instruction::JUMP_SHORT_RELATIVE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE	:

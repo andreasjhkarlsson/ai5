@@ -1,5 +1,7 @@
+#include <stack>
 #include "StackMachine.h"
 #include "NullVariant.h"
+
 
 __forceinline void noop(StackMachine* machine)
 {
@@ -125,4 +127,54 @@ __forceinline void concatStrings(StackMachine* machine)
 	machine->getDataStack()->push(new StringVariant(result));
 
 	machine->advanceCounter();
+}
+
+
+// Inlining recursive function?? Crazy shit!!
+__forceinline ListVariant* createList(std::stack<int> subscripts)
+{
+
+	int count = subscripts.top();
+	subscripts.pop();
+
+	ListVariant* list = new ListVariant();
+	if(subscripts.size() == 0)
+	{
+		for(int i=0;i<count;i++)
+			list->addElement(&NullVariant::Instance);
+		return list;
+	}
+
+	for(int i=0;i<count;i++)
+	{
+		list->addElement(createList(subscripts));
+	}
+
+	return list;
+
+}
+
+__forceinline void createMultiDimList(StackMachine* machine,int numberOfSubscripts)
+{
+
+	
+	std::stack<int> subscripts;
+
+
+	for(int i=0;i<numberOfSubscripts;i++)
+	{
+		subscripts.push(machine->getDataStack()->top()->toInteger32());
+		machine->getDataStack()->pop()->release();
+	}
+
+	// The subscript sizes where popped in reverse order.
+	//std::reverse(subscripts.begin(),subscripts.end());
+
+	ListVariant* resultList = createList(subscripts);
+
+	machine->getDataStack()->push(resultList);
+
+
+	machine->advanceCounter();
+
 }
