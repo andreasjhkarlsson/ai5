@@ -67,7 +67,7 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 	}
 	else
 	{
-		// Throw error!!
+		throw RuntimeError(L"Value not callable!");
 	}
 }
 

@@ -134,9 +134,14 @@ __forceinline void buildList(StackMachine* machine,int count)
 __forceinline void derefIndex(StackMachine* machine)
 {
 	Variant* index = machine->getDataStack()->pop();
-	ListVariant* list = static_cast<ListVariant*>(machine->getDataStack()->pop());
+	Variant* list = machine->getDataStack()->pop();
 
-	Variant* result = list->getElement(index->toInteger32());
+	if(!list->isListType())
+	{
+		throw RuntimeError(L"List indexing must have list type");
+	}
+
+	Variant* result = static_cast<ListVariant*>(list)->getElement(index->toInteger32());
 
 	result->addRef();
 	index->release();

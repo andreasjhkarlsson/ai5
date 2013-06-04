@@ -66,14 +66,14 @@ void ListVariant::addElement(Variant* var)
 
 Variant* ListVariant::getElement(int index)
 {
-	if(index >= list->size())
+	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
 	return (*list)[index];
 }
 
 void ListVariant::setElement(int index,Variant* var)
 {
-	if(index >= list->size())
+	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
 	var->addRef();
 	(*list)[index]->release();

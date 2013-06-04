@@ -203,6 +203,12 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 	Variant* operand1 = machine->getDataStack()->pop();
 	bool result;
 	Comparator* comp = table.lookup(operand1->getType(),operand2->getType());
+
+	if(comp == nullptr)
+	{
+		throw new RuntimeError(L"No suitable comparator found for values");
+	}
+
 	static StringComparator stringComparator;
 
 	switch(type)

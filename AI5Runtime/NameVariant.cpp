@@ -1,5 +1,6 @@
 #include "NameVariant.h"
 #include <iostream>
+#include "RuntimeError.h"
 
 NameVariant::NameVariant(Variant* value): Variant(NAME), isConst(false)
 {
@@ -60,8 +61,7 @@ void NameVariant::setValue(Variant* newVariant)
 	}
 	if(isConst)
 	{
-		// Throw error!!!
-		return;
+		throw RuntimeError(L"Cannot set value of const name!");
 	}
 
 	clearLastName();
@@ -78,7 +78,7 @@ void NameVariant::markAsConst()
 	// Cannot set name as const several times.
 	if(isConst)
 	{
-		// Throw error!
+		throw RuntimeError(L"Cannot set name as const multiple times!");
 	}
 	isConst = true;
 }

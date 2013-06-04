@@ -41,7 +41,6 @@ __forceinline void loadArgument(StackMachine* machine, NameIdentifier arg)
 
 __forceinline void loadByRefArgument(StackMachine* machine,NameIdentifier arg)
 {
-	
 
 	if(machine->getDataStack()->top()->getLastName() != nullptr)
 	{
@@ -102,6 +101,11 @@ __forceinline void assignIndex(StackMachine* machine)
 	Variant* value = machine->getDataStack()->pop();
 	Variant* index = machine->getDataStack()->pop();
 	Variant* list = machine->getDataStack()->pop();
+
+	if(!list->isListType())
+	{
+		throw RuntimeError(L"List index assignment must have list type");
+	}
 
 	static_cast<ListVariant*>(list)->setElement(index->toInteger32(),value);
 	
