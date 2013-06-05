@@ -15,6 +15,7 @@ public:
 	virtual shared_string toString();
 	virtual void cleanup();
 	void markAsConst();
+	bool isConstName();
 	Variant* getValue();
 	void setValue(Variant* variant);
 	static NameVariant* createFromFactory(VariantFactory* factory);

@@ -207,16 +207,24 @@ class AssignLocalInstruction(Instruction):
         return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL) + self.identifier.to_binary()
 
 class LoadArgumentInstruction(Instruction):
-    def __init__(self,identifier):
+    def __init__(self,identifier,as_const):
         self.identifier = identifier
+        self.as_const = as_const
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.LOAD_ARGUMENT) + self.identifier.to_binary()
+        if self.as_const:
+            return self.to_binary_without_arg(InstructionType.LOAD_CONST_ARGUMENT) + self.identifier.to_binary()
+        else:
+            return self.to_binary_without_arg(InstructionType.LOAD_ARGUMENT) + self.identifier.to_binary()
 
 class LoadByRefArgumentInstruction(Instruction):
-    def __init__(self,identifier):
+    def __init__(self,identifier,as_const):
         self.identifier = identifier
+        self.as_const = as_const
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.LOAD_BYREF_ARGUMENT) + self.identifier.to_binary()
+        if self.as_const:
+            return self.to_binary_without_arg(InstructionType.LOAD_CONST_BYREF_ARGUMENT) + self.identifier.to_binary()
+        else:
+            return self.to_binary_without_arg(InstructionType.LOAD_BYREF_ARGUMENT) + self.identifier.to_binary()
 
     
 class AdditionInstruction(Instruction):
@@ -421,12 +429,12 @@ class Compiler:
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in reversed(arguments):
             is_byref = Argument.NODE_BYREF in argument.nodes
-
+            as_const = Argument.NODE_CONST in argument.nodes
 
             if is_byref:
-                compiled_body += [LoadByRefArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+                compiled_body += [LoadByRefArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value),as_const)]
             else:
-                compiled_body += [LoadArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+                compiled_body += [LoadArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value),as_const)]
 
         
         # Pop of 'this'

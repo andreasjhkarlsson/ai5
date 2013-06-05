@@ -486,15 +486,23 @@ class Argument(Rule):
     NODE_BYREF = "byref"
     NODE_NAME = "name"
     NODE_DEFAULT_VALUE = "default value"
+    NODE_CONST = "const"
     @staticmethod
     def match(parser):
         nodes = {}
+
+        if parser.accept(Token.KEYWORD,KeywordToken.CONST):
+            nodes[Argument.NODE_CONST] = parser.current
+
+
         if parser.accept(Token.KEYWORD,KeywordToken.BYREF):
             nodes[Argument.NODE_BYREF] = parser.current
+        
+        if len(nodes) > 0:
             nodes[Argument.NODE_NAME] = parser.expect(Token.IDENTIFIER)
         elif parser.accept(Token.IDENTIFIER):
             nodes[Argument.NODE_NAME] = parser.current
-        else:
+        else: 
             return None
         if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
             nodes[Argument.NODE_DEFAULT_VALUE] = parser.expectRule(Terminal)

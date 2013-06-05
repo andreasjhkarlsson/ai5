@@ -52,6 +52,12 @@ Variant* NameVariant::getValue()
 {
 	return value;
 }
+
+bool NameVariant::isConstName()
+{
+	return isConst;
+}
+
 void NameVariant::setValue(Variant* newVariant)
 {
 	if(newVariant == nullptr)

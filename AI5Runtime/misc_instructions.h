@@ -33,27 +33,7 @@ __forceinline void assignLocal(StackMachine* machine, NameIdentifier arg)
 	machine->advanceCounter();
 }
 
-__forceinline void loadArgument(StackMachine* machine, NameIdentifier arg)
-{
-	// This is exactly the same thing.
-	assignLocal(machine,arg);
-}
 
-__forceinline void loadByRefArgument(StackMachine* machine,NameIdentifier arg)
-{
-
-	if(machine->getDataStack()->top()->getLastName() != nullptr)
-	{
-		Variant* var = machine->getDataStack()->pop();
-		machine->addNameToLocalScope(arg,var->getLastName());
-		machine->advanceCounter();
-	}
-	else
-	{
-		loadArgument(machine,arg);
-	}
-
-}
 
 __forceinline void assignNearest(StackMachine* machine,NameIdentifier arg)
 {
@@ -114,6 +94,42 @@ __forceinline void assignIndex(StackMachine* machine)
 	list->release();
 
 	machine->advanceCounter();
+}
+
+__forceinline void loadArgument(StackMachine* machine, NameIdentifier arg,bool asConst)
+{
+	// This is exactly the same thing.
+	if(asConst)
+		assignLocalConst(machine,arg);
+	else
+		assignLocal(machine,arg);
+}
+
+__forceinline void loadByRefArgument(StackMachine* machine,NameIdentifier arg,bool asConst)
+{
+
+	if(machine->getDataStack()->top()->getLastName() != nullptr)
+	{
+		Variant* var = machine->getDataStack()->pop();
+
+		if(asConst && var->getLastName()->isConstName())
+		{
+
+			// What to do with this situation??
+			// If we mark the name as const we will make the source name
+			// const as well... Maybe add nest the names?
+			
+
+		}
+
+		machine->addNameToLocalScope(arg,var->getLastName());
+		machine->advanceCounter();
+	}
+	else
+	{
+		loadArgument(machine,arg,asConst);
+	}
+
 }
 
 
