@@ -79,3 +79,9 @@ void ListVariant::setElement(int index,Variant* var)
 	(*list)[index]->release();
 	(*list)[index] = var;
 }
+
+
+int ListVariant::size()
+{
+	return list->size();
+}

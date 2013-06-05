@@ -16,6 +16,7 @@ public:
 	void addElement(Variant* var);
 	Variant* getElement(int index);
 	void setElement(int index,Variant* var);
+	int size();
 private:
 	shared_var_list list;
 };

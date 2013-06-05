@@ -117,7 +117,7 @@ __forceinline void loadByRefArgument(StackMachine* machine,NameIdentifier arg,bo
 
 			// What to do with this situation??
 			// If we mark the name as const we will make the source name
-			// const as well... Maybe add nest the names?
+			// const as well... Maybe nest the names?
 			
 
 		}

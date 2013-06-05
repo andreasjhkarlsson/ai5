@@ -3,6 +3,8 @@
 #include "..\AI5Runtime\StackMachine.h"
 #include "functions.h"
 #include "..\AI5Runtime\Integer64Variant.h"
+#include "..\AI5Runtime\NullVariant.h"
+#include "..\AI5Runtime\ListVariant.h"
 
 namespace AI5StandardLibrary
 {
@@ -57,6 +59,30 @@ void stringlen(StackMachine* machine)
 	var->release();
 
 	machine->getDataStack()->push(new Integer64Variant(result));
+
+}
+
+
+
+void ubound(StackMachine* machine)
+{
+	Variant* var = machine->getDataStack()->pop();
+	Variant* result;
+	machine->getDataStack()->pop();
+
+	if(var->isListType())
+	{
+		result = new Integer32Variant(static_cast<ListVariant*>(var)->size());
+	}
+	else
+	{
+		result = &NullVariant::Instance;
+		result->addRef();
+	}
+
+	var->release();
+
+	machine->getDataStack()->push(result);
 
 }
 

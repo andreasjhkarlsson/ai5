@@ -10,6 +10,7 @@ void sleep(StackMachine*);
 void printline(StackMachine*);
 void getint(StackMachine*);
 void stringlen(StackMachine*);
+void ubound(StackMachine*);
 
 class Macros
 {
