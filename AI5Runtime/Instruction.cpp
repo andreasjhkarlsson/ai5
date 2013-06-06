@@ -226,6 +226,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::CREATE_MULTIDIM_LIST:
 		stream << "CREATE_MULTIDIM_LIST " << (int)arg.byte;
 		break;
+	case Instruction::REDIM_MULTIDIM_LIST:
+		stream << "REDIM_MULTIDIM_LIST " << (int)arg.byte;
+		break;
 	case Instruction::LOAD_ARGUMENT:
 		stream << "LOAD_ARGUMENT " << *getName(machine,arg.identifier);
 		break;
@@ -234,8 +237,13 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		break;
 	case Instruction::PUSH_MACRO:
 		stream << "PUSH_MACRO " << *getMacro(machine,arg.integer);
+		break;
 	case Instruction::DOUBLE_TOP_TWO:
 		stream << "DOUBLE_TOP_TWO";
+		break;
+	default:
+		stream << "No pretty print available for instruction.";
+		break;
 	}
 	return stream;
 }

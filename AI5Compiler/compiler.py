@@ -95,6 +95,11 @@ class CreateMultiDimListInstruction(Instruction):
         self.subscripts = subscripts
     def to_binary(self):
         return self.to_binary_with_char_arg(InstructionType.CREATE_MULTIDIM_LIST,self.subscripts)
+class RedimMultiDimListInstruction(Instruction):
+    def __init__(self,subscripts):
+        self.subscripts = subscripts
+    def to_binary(self):
+        return self.to_binary_with_char_arg(InstructionType.REDIM_MULTIDIM_LIST,self.subscripts)
 
 class PushInteger32Instruction(Instruction):
     def __init__(self,id):
@@ -658,6 +663,14 @@ class Compiler:
     def compile_exitloop(self,exitloop_statement):
         return [JumpInstruction(UnresolvedLoopJumpAddress(UnresolvedLoopJumpAddress.TARGET_END,1))]
 
+    def compile_redim(self,redim):
+        code = []
+        code += [PushNameValueInstruction(self.get_identifier(redim.nodes[ReDim.NODE_NAME].value))]
+        for qualifier in redim.nodes[ReDim.NODE_QUALIFIERS]:
+            code += self.compile_expression(qualifier.nodes[ListIndexing.NODE_INDEX])
+        code += [RedimMultiDimListInstruction(len(redim.nodes[ReDim.NODE_QUALIFIERS]))]
+        return code
+
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
         
@@ -683,6 +696,8 @@ class Compiler:
             return self.compile_continueloop(substatement)
         if substatement.type == Rule.EXITLOOP:
             return self.compile_exitloop(substatement)
+        if substatement.type == ReDim.REDIM:
+            return self.compile_redim(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []

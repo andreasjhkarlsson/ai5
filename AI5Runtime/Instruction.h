@@ -78,12 +78,13 @@ public:
 	static const INSTRUCTION_TYPE ASSIGN_NEAREST_CONST			= 0x38;
 	static const INSTRUCTION_TYPE BUILD_LIST					= 0x3A;
 	static const INSTRUCTION_TYPE CREATE_MULTIDIM_LIST			= 0x3B;
-	static const INSTRUCTION_TYPE PUSH_MACRO					= 0x3C;
-	static const INSTRUCTION_TYPE DOUBLE_TOP_TWO				= 0x3D;
-	static const INSTRUCTION_TYPE LOAD_ARGUMENT					= 0x3E;
-	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x3F;
-	static const INSTRUCTION_TYPE LOAD_CONST_ARGUMENT           = 0x40;
-    static const INSTRUCTION_TYPE LOAD_CONST_BYREF_ARGUMENT     = 0x41;
+	static const INSTRUCTION_TYPE REDIM_MULTIDIM_LIST			= 0x3C;
+	static const INSTRUCTION_TYPE PUSH_MACRO					= 0x3D;
+	static const INSTRUCTION_TYPE DOUBLE_TOP_TWO				= 0x3E;
+	static const INSTRUCTION_TYPE LOAD_ARGUMENT					= 0x3F;
+	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x40;
+	static const INSTRUCTION_TYPE LOAD_CONST_ARGUMENT           = 0x41;
+    static const INSTRUCTION_TYPE LOAD_CONST_BYREF_ARGUMENT     = 0x42;
 
 	
 	Instruction(unsigned char type): type(type){}
@@ -261,6 +262,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case CREATE_MULTIDIM_LIST:
 		createMultiDimList(machine,arg.byte);
+		break;
+	case REDIM_MULTIDIM_LIST:
+		RedimMultiDimList(machine,arg.byte);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

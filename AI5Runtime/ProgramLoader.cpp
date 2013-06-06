@@ -131,6 +131,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			break;
 		// char argument.
 		case Instruction::CREATE_MULTIDIM_LIST:
+		case Instruction::REDIM_MULTIDIM_LIST:
 		case Instruction::JUMP_SHORT_RELATIVE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE	:

@@ -158,6 +158,7 @@
     <ClCompile Include="Integer64Variant.cpp" />
     <ClCompile Include="ListVariant.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="misc_instructions.cpp" />
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />

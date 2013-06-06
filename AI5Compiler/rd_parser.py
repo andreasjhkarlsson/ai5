@@ -304,9 +304,9 @@ class ReDim(Rule):
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.REDIM):
             return None
-        nodes = {ReDim.NODE_NAME:parser.expectRule(Terminal)}
+        nodes = {ReDim.NODE_NAME:parser.expect(Token.IDENTIFIER)}
         qualifiers = []
-        while parser.acceptAnyRule([Property,ListIndexing]):
+        while parser.acceptAnyRule([ListIndexing]):
             qualifiers.append(parser.matched_rule)
         nodes[ReDim.NODE_QUALIFIERS] = qualifiers
         return ReDim(nodes)

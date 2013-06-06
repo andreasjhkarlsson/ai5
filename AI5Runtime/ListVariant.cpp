@@ -9,12 +9,20 @@ ListVariant::ListVariant(void): Variant(LIST)
 
 ListVariant::~ListVariant(void)
 {
-	for(int i=0;i<list->size();i++)
-	{
-		(*list)[i]->release();
-	}
+	cleanup();
 }
 
+void ListVariant::cleanup()
+{
+	if(this->list != nullptr)
+	{
+		for(int i=0;i<list->size();i++)
+		{
+			(*list)[i]->release();
+		}
+		this->list = nullptr;
+	}
+}
 
 void ListVariant::print()
 {
@@ -75,8 +83,11 @@ void ListVariant::setElement(int index,Variant* var)
 {
 	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
+	// Add reference to new value.
 	var->addRef();
+	// Release old value!
 	(*list)[index]->release();
+	// Assign new value.
 	(*list)[index] = var;
 }
 
@@ -84,4 +95,9 @@ void ListVariant::setElement(int index,Variant* var)
 int ListVariant::size()
 {
 	return list->size();
+}
+
+void ListVariant::deleteAt(int index)
+{
+	list->erase(list->begin()+index);
 }

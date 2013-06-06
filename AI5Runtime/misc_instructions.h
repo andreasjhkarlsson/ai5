@@ -1,6 +1,7 @@
 #include <stack>
 #include "StackMachine.h"
 #include "NullVariant.h"
+#include "ListVariant.h"
 
 
 __forceinline void noop(StackMachine* machine)
@@ -150,51 +151,49 @@ __forceinline void concatStrings(StackMachine* machine)
 }
 
 
-// Inlining recursive function?? Crazy shit!!
-__forceinline ListVariant* createList(std::stack<int> subscripts)
-{
-
-	int count = subscripts.top();
-	subscripts.pop();
-
-	ListVariant* list = new ListVariant();
-	if(subscripts.size() == 0)
-	{
-		for(int i=0;i<count;i++)
-			list->addElement(&NullVariant::Instance);
-		return list;
-	}
-
-	for(int i=0;i<count;i++)
-	{
-		list->addElement(createList(subscripts));
-	}
-
-	return list;
-
-}
+ListVariant* createList(std::stack<int> subscripts);
+void redimList(Variant* list,std::stack<int> subscripts);
 
 __forceinline void createMultiDimList(StackMachine* machine,int numberOfSubscripts)
 {
-
-	
+	// Use std::stack instead of FastStack since we need the copying mechanism
+	// of std::stack which FastStack cannot handle (and shouldn't?).
 	std::stack<int> subscripts;
 
-
+	// Popping these arguments into another stack will reverse order (perfect!).
 	for(int i=0;i<numberOfSubscripts;i++)
 	{
 		subscripts.push(machine->getDataStack()->top()->toInteger32());
 		machine->getDataStack()->pop()->release();
 	}
 
-	// The subscript sizes where popped in reverse order.
-	//std::reverse(subscripts.begin(),subscripts.end());
-
 	ListVariant* resultList = createList(subscripts);
 
 	machine->getDataStack()->push(resultList);
 
+	machine->advanceCounter();
+}
+
+
+__forceinline void RedimMultiDimList(StackMachine* machine,int numberOfSubscripts)
+{
+	// Use std::stack instead of FastStack since we need the copying mechanism
+	// of std::stack which FastStack cannot handle (and shouldn't?).
+	std::stack<int> subscripts;
+
+	// Popping these arguments into another stack will reverse order (perfect!).
+	for(int i=0;i<numberOfSubscripts;i++)
+	{
+		subscripts.push(machine->getDataStack()->top()->toInteger32());
+		machine->getDataStack()->pop()->release();
+	}
+
+	Variant* listVar = machine->getDataStack()->pop();
+
+
+	redimList(listVar,subscripts);
+
+	listVar->release();
 
 	machine->advanceCounter();
-
 }
