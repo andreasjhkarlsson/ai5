@@ -11,7 +11,7 @@ class BuiltinFunctionVariant :
 public:
 	BuiltinFunctionVariant(const std::wstring &name,BuiltinFunctionPointer func);
 	~BuiltinFunctionVariant(void);
-	void call(StackMachine* machine);
+	void call(StackMachine* machine,int numberOfArguments);
 	void print();
 private:
 	BuiltinFunctionPointer func;

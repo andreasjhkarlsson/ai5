@@ -1,37 +1,21 @@
 #pragma once
 #include "FastStack.h"
 #include "Scope.h"
+#include "Block.h"
 
-class StackMachine;
 
-class CallFrame
+class CallFrame: Block
 {
 public:
-	CallFrame();
+	CallFrame(StackMachine* machine,int numberOfArguments);
 	~CallFrame(void);
 
-	int getReturnAddress()
-	{
-		return returnAddress;
-	}
-
-	void setReturnAddress(int address)
-	{
-		this->returnAddress = address;
-	}
-
-	void setScope(Scope* scope)
-	{
-		this->scope = scope;
-	}
-
-	Scope* getScope()
-	{
-		return scope;
-	}
+	Scope* getScope();
+	virtual void leave(StackMachine*);
 
 private:
 	int returnAddress;
-	Scope* scope;
+	Scope scope;
+	int numberOfArguments;
 };
 

@@ -10,4 +10,8 @@ public:
 	{
 	}
 	void pushNull();
+	size_t position()
+	{
+		return size();
+	}
 };

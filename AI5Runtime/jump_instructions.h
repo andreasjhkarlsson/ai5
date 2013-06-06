@@ -58,12 +58,12 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 
 	if(toCall->getType() == Variant::USER_FUNCTION)
 	{
-		((UserFunctionVariant*)toCall)->call(machine);
+		((UserFunctionVariant*)toCall)->call(machine,numberOfArgs);
 		
 	}
 	else if(toCall->getType() == Variant::NATIVE_FUNCTION)
 	{
-		((BuiltinFunctionVariant*)toCall)->call(machine);
+		((BuiltinFunctionVariant*)toCall)->call(machine,numberOfArgs);
 	}
 	else
 	{
@@ -73,7 +73,11 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 
 __forceinline void ret(StackMachine* machine)
 {
-	int returnAddress = machine->popCallFrame();
+	// Temporarily pop return value from stack.
+	// This is needed because popping callframe will unwind
+	// anything added to the stack during calling (so it will be clean during exceptions for example9.
+	// Don't worry, we'll add it back after the unwinding is done.
+	Variant* returnValue = machine->getDataStack()->pop();
 
 	// This fixes funky behaviour with byref. 
 	// For example, the following code:
@@ -89,7 +93,10 @@ __forceinline void ret(StackMachine* machine)
 	// printline(a)
 	// --------------
 	// Will print '20' instead of the more sensible '10'.
-	machine->getDataStack()->top()->setLastName(nullptr);
+	returnValue->setLastName(nullptr);
+	
+	machine->popCallFrame();
 
-	machine->jumpAbsolute(returnAddress);
+	// I told you I would return it to the stack.
+	machine->getDataStack()->push(returnValue);
 }

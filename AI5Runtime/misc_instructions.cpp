@@ -42,7 +42,7 @@ void redimList(Variant* listVar,std::stack<int> subscripts)
 		// SHould elements be added?
 		if(count > list->size())
 		{
-			for(int i=0;i<(count-list->size()+1);i++)
+			for(size_t i=0;i<(count-list->size()+1);i++)
 			{
 				list->addElement(&NullVariant::Instance);
 			}
@@ -51,7 +51,7 @@ void redimList(Variant* listVar,std::stack<int> subscripts)
 		else if(count < list->size())
 		{
 			size_t initialListSize = list->size();
-			for(int i=list->size()-1;i >= (initialListSize-count);i--)
+			for(size_t i=list->size()-1;i >= (initialListSize-count);i--)
 			{
 				list->deleteAt(i);
 			}
@@ -65,7 +65,7 @@ void redimList(Variant* listVar,std::stack<int> subscripts)
 		// Add new lists and recurse into them?
 		if(count >= list->size())
 		{
-			for(int i=0;i<count;i++)
+			for(size_t i=0;i<count;i++)
 			{
 				if(i >= list->size())
 				{
@@ -87,7 +87,7 @@ void redimList(Variant* listVar,std::stack<int> subscripts)
 		// in the structure (duh).
 		else if(count < list->size())
 		{
-			for(int i=list->size()-1;i>=0;i--)
+			for(size_t i=list->size()-1;i>=0;i--)
 			{
 				if(i>=count)
 				{

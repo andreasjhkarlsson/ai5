@@ -12,7 +12,7 @@ BuiltinFunctionVariant::~BuiltinFunctionVariant(void)
 }
 
 
-void BuiltinFunctionVariant::call(StackMachine* machine)
+void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
 {
 	func(machine);
 	machine->advanceCounter();

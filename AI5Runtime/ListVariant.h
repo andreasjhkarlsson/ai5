@@ -14,10 +14,10 @@ public:
 	virtual bool toBoolean();
 	virtual shared_string toString();
 	void addElement(Variant* var);
-	Variant* getElement(int index);
-	void setElement(int index,Variant* var);
-	void deleteAt(int index);
-	int size();
+	Variant* getElement(size_t index);
+	void setElement(size_t index,Variant* var);
+	void deleteAt(size_t index);
+	size_t size();
 	void cleanup();
 private:
 	shared_var_list list;

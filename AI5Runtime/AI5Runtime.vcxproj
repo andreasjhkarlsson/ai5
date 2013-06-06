@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="BooleanVariant.cpp" />
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
     <ClCompile Include="CallFrame.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="Variant.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="BooleanVariant.h" />
     <ClInclude Include="BuiltinFunctionVariant.h" />
     <ClInclude Include="CallFrame.h" />

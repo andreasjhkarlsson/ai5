@@ -25,9 +25,7 @@ class StackMachine
 {
 private:
 	static const int CALL_STACK_SIZE		= 1024;
-	static const int CALL_FRAME_POOL_SIZE	= 1024;
 	static const int DATA_STACK_SIZE		= 65536;
-	static const int SCOPE_POOL_SIZE		= 1024;
 
 
 public:
@@ -59,7 +57,7 @@ public:
 	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
 	__forceinline void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
-	__forceinline int popCallFrame();
+	__forceinline void popCallFrame();
 	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
 	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
@@ -67,8 +65,6 @@ private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
-	FastStack<CallFrame*> callFramePool;
-	FastStack<Scope*> scopePool;
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
@@ -105,30 +101,25 @@ VariantFactory* StackMachine::getVariantFactory()
 	return &variantFactory;
 }
 
-void StackMachine::pushCallFrame(int returnAddress)
+void StackMachine::pushCallFrame(int numberOfargument)
 {
 
-	if(callFramePool.size() == 0)
+	if(callStack.size() >= 1024)
 	{
 		throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
 	}
 
-	CallFrame* frame = callFramePool.pop();
-	frame->setScope(scopePool.pop());
-	frame->setReturnAddress(returnAddress);
+	CallFrame* frame = new CallFrame(this,numberOfargument);
 	callStack.push(frame);
 }
 
-int StackMachine::popCallFrame()
+void StackMachine::popCallFrame()
 {
 	CallFrame *frame = callStack.pop();
 	
-	frame->getScope()->reset();
-	scopePool.push(frame->getScope());
+	frame->leave(this);
 
-	int returnAddress = frame->getReturnAddress();
-	callFramePool.push(frame);
-	return returnAddress;
+	delete frame;
 }
 
 int StackMachine::getCurrentAddress()

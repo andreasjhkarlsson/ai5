@@ -7,20 +7,9 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), callStack(CALL_STACK_SIZE), 
-	callFramePool(CALL_FRAME_POOL_SIZE),scopePool(SCOPE_POOL_SIZE)
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), callStack(CALL_STACK_SIZE)
 {
 	AI5StandardLibrary::registerFunctions(this);
-
-	for(int i=0;i<CALL_FRAME_POOL_SIZE;i++)
-	{
-		callFramePool.push(new CallFrame());
-	}
-
-	for(int i=0;i<SCOPE_POOL_SIZE;i++)
-	{
-		scopePool.push(new Scope());
-	}
 }
 
 StackMachine::~StackMachine(void)

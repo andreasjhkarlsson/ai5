@@ -72,14 +72,14 @@ void ListVariant::addElement(Variant* var)
 	list->push_back(var);
 }
 
-Variant* ListVariant::getElement(int index)
+Variant* ListVariant::getElement(size_t index)
 {
 	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
 	return (*list)[index];
 }
 
-void ListVariant::setElement(int index,Variant* var)
+void ListVariant::setElement(size_t index,Variant* var)
 {
 	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
@@ -92,12 +92,12 @@ void ListVariant::setElement(int index,Variant* var)
 }
 
 
-int ListVariant::size()
+size_t ListVariant::size()
 {
 	return list->size();
 }
 
-void ListVariant::deleteAt(int index)
+void ListVariant::deleteAt(size_t index)
 {
 	list->erase(list->begin()+index);
 }

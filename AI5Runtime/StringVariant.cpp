@@ -29,7 +29,7 @@ __int64 StringVariant::toInteger64()
 
 int StringVariant::toInteger32()
 {
-	return _wtoi64(str->c_str());
+	return _wtoi(str->c_str());
 }
 
 bool StringVariant::toBoolean()

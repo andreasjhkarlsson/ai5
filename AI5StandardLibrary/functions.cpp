@@ -54,7 +54,7 @@ void stringlen(StackMachine* machine)
 	Variant* var = machine->getDataStack()->pop();
 	machine->getDataStack()->pop();
 
-	int result = var->toString()->length();
+	size_t result = var->toString()->length();
 
 	var->release();
 
