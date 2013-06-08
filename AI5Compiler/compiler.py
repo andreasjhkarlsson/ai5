@@ -290,6 +290,7 @@ class Compiler:
             forto = for_stmt.nodes[For.NODE_FOR_TO]
             compiled_init = self.compile_expression(forto.nodes[ForTo.NODE_INIT_EXPRESSION])
             compiled_init += [AssignLocalInstruction(loop_var_id)]
+            compiled_init += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])
 
             step_value = 1
             if ForTo.NODE_STEP_VALUE in forto.nodes:
@@ -299,13 +300,13 @@ class Compiler:
                 else:
                     step_value = number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
 
-            compiled_check=[]
+            compiled_check=[DoubleTopInstruction()]
             compiled_check += [PushNameValueInstruction(loop_var_id)]
-            compiled_check += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])
+            
             if step_value > 0:
-                compiled_check += [LesserEqualInstruction()]
+                compiled_check += [GreaterInstruction()]
             elif step_value <0:
-                compiled_check += [GreaterEqualInstruction()]
+                compiled_check += [LesserInstruction()]
             else:
                 raise CompileError("Invalid step value!")
             compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
@@ -322,6 +323,8 @@ class Compiler:
             code = compiled_init + compiled_check + compiled_body + compiled_increment
 
             self.resolve_loop_jump_address(code,len(code)-len(compiled_increment),len(code))
+
+            code += [PopInstruction()]
 
             return code
 

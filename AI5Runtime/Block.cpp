@@ -2,16 +2,19 @@
 #include "StackMachine.h"
 #include "RuntimeError.h"
 
-Block::Block(int stackRestorePosition):stackRestorePoint(stackRestorePosition)
+Block::Block(BLOCK_TYPE type):type(type)
 {
 	//this->stackRestorePoint = machine->getDataStack()->position();
 }
 
-void Block::leave(StackMachine* machine)
+
+
+
+void Block::unwindStack(StackMachine* machine,int stackPosition)
 {
 	DataStack* stack = machine->getDataStack();
 
-	if(stack->position() < stackRestorePoint)
+	if(stack->position() < stackPosition)
 	{
 		throw RuntimeError(L"Stack corruption detected!");
 	}
@@ -20,9 +23,8 @@ void Block::leave(StackMachine* machine)
 	// Note that this does not indicate that the block is
 	// errorous, but rather that it quit in the middle
 	// for some reason (perhaps exception or RET instruction).
-	while(stack->position() > stackRestorePoint)
+	while(stack->position() > stackPosition)
 	{
 		stack->pop()->release();
 	}
-
 }

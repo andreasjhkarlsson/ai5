@@ -45,7 +45,7 @@ public:
 	static StackMachine* LoadFromStructuredData(const std::wstring& filename);
 	int start();
 	void terminate();
-	__forceinline void pushCallFrame(int returnAddress);
+	__forceinline void pushCallFrame(int returnAddress, int numberOfArguments);
 	__forceinline CallFrame* getCurrentCallFrame()
 	{
 		if(callStack.size() > 0)
@@ -103,7 +103,7 @@ VariantFactory* StackMachine::getVariantFactory()
 	return &variantFactory;
 }
 
-void StackMachine::pushCallFrame(int numberOfarguments)
+void StackMachine::pushCallFrame(int returnAddress,int numberOfarguments)
 {
 
 	if(callStack.size() >= RECURSION_LIMIT)
@@ -112,7 +112,7 @@ void StackMachine::pushCallFrame(int numberOfarguments)
 	}
 
 	CallFrame* frame = CallFrame::getInstance();
-	frame->setup(this,numberOfarguments);
+	frame->setup(this,returnAddress,numberOfarguments);
 	callStack.push(frame);
 }
 

@@ -15,7 +15,8 @@ void ubound(StackMachine*);
 class Macros
 {
 public:
-	static Variant* MyPID();
+	static Variant* MyPID(StackMachine*);
+	static Variant* StackSize(StackMachine*);
 };
 
 }

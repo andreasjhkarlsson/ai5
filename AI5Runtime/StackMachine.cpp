@@ -30,8 +30,7 @@ int StackMachine::start()
 				std::wcout << std::endl;
 			#endif
 			
-			program->operator[](programCounter)->execute(this);
-		
+			program->operator[](programCounter)->execute(this);		
 		}
 		return dataStack.top()->toInteger32();
 	} catch(const RuntimeError& error)

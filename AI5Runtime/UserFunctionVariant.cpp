@@ -11,9 +11,9 @@ UserFunctionVariant::~UserFunctionVariant(void)
 }
 
 
-void UserFunctionVariant::call(StackMachine* machine,int numberOfArguments)
+void UserFunctionVariant::call(StackMachine* machine,int returnAddress,int numberOfArguments)
 {
-	machine->pushCallFrame(numberOfArguments);
+	machine->pushCallFrame(returnAddress,numberOfArguments);
 
 	machine->jumpAbsolute(address);
 

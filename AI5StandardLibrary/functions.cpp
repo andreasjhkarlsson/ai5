@@ -88,9 +88,15 @@ void ubound(StackMachine* machine)
 
 
 
-Variant* Macros::MyPID()
+Variant* Macros::MyPID(StackMachine*)
 {
 	return new Integer64Variant(GetCurrentProcessId());
+}
+
+
+Variant* Macros::StackSize(StackMachine* machine)
+{
+	return new Integer32Variant(machine->getDataStack()->size());
 }
 
 }

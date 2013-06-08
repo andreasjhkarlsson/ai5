@@ -127,6 +127,10 @@ class DoubleTopTwoInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.DOUBLE_TOP_TWO)
 
+class DoubleTopInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.DOUBLE_TOP)
+
 class AssignIndexInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ASSIGN_INDEX)

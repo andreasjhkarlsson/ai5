@@ -1,3 +1,4 @@
 #pragma once
 #include "Variant.h"
-typedef Variant*(*MACRO_FUNCTION)();
+class StackMachine;
+typedef Variant*(*MACRO_FUNCTION)(StackMachine*);

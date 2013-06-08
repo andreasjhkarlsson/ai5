@@ -58,7 +58,7 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 
 	if(toCall->getType() == Variant::USER_FUNCTION)
 	{
-		((UserFunctionVariant*)toCall)->call(machine,numberOfArgs);
+		((UserFunctionVariant*)toCall)->call(machine,machine->getCurrentAddress()+1,numberOfArgs);
 		
 	}
 	else if(toCall->getType() == Variant::NATIVE_FUNCTION)

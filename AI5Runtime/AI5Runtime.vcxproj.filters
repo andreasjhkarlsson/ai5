@@ -90,6 +90,9 @@
     <ClCompile Include="CallFrame.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
+    <ClCompile Include="LoopBlock.cpp">
+      <Filter>blocks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="PooledObject.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoopBlock.h">
+      <Filter>blocks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

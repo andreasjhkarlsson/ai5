@@ -16,5 +16,6 @@ namespace AI5StandardLibrary
 
 
 		machine->addMacro(L"autoitpid",Macros::MyPID);
+		machine->addMacro(L"stacksize",Macros::StackSize);
 	}
 }

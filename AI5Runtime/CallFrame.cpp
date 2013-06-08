@@ -1,7 +1,7 @@
 #include "CallFrame.h"
 #include "StackMachine.h"
 
-CallFrame::CallFrame(): Block(0)
+CallFrame::CallFrame(): Block(CALL_BLOCK)
 {
 }
 
@@ -10,15 +10,15 @@ CallFrame::~CallFrame(void)
 }
 
 
-void CallFrame::setup(StackMachine* machine,int numberOfArguments)
+void CallFrame::setup(StackMachine* machine,int returnAddress,int numberOfArguments)
 {
-	this->returnAddress = machine->getCurrentAddress()+1;
-	this->setStackReturnPoint(machine->getDataStack()->position()-(numberOfArguments+1));
+	this->returnAddress = returnAddress;
+	this->stackPosition = machine->getDataStack()->position()-(numberOfArguments+1);
 }
 
 void CallFrame::leave(StackMachine*machine)
 {
-	Block::leave(machine);
+	unwindStack(machine,stackPosition);
 
 	scope.reset();
 

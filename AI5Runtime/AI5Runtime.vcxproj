@@ -158,6 +158,7 @@
     <ClCompile Include="Integer32Variant.cpp" />
     <ClCompile Include="Integer64Variant.cpp" />
     <ClCompile Include="ListVariant.cpp" />
+    <ClCompile Include="LoopBlock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="misc_instructions.cpp" />
     <ClCompile Include="Scope.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Integer64Variant.h" />
     <ClInclude Include="jump_instructions.h" />
     <ClInclude Include="ListVariant.h" />
+    <ClInclude Include="LoopBlock.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="PooledObject.h" />
