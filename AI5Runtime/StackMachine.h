@@ -13,6 +13,7 @@
 #include "BuiltinFunctionVariant.h"
 #include "macro.h"
 #include "RuntimeError.h"
+#include "SimplePool.h"
 
 class Instruction;
 
@@ -65,12 +66,14 @@ private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
+	SimplePool<CallFrame> callFramePool;
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;
 	bool terminated;
 	int programCounter;
+	static const int RECURSION_LIMIT = 1024;
 };
 
 void StackMachine::jumpRelative(int offset)
@@ -101,15 +104,16 @@ VariantFactory* StackMachine::getVariantFactory()
 	return &variantFactory;
 }
 
-void StackMachine::pushCallFrame(int numberOfargument)
+void StackMachine::pushCallFrame(int numberOfarguments)
 {
 
-	if(callStack.size() >= 1024)
+	if(callStack.size() >= RECURSION_LIMIT)
 	{
 		throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
 	}
 
-	CallFrame* frame = new CallFrame(this,numberOfargument);
+	CallFrame* frame = callFramePool.getInstance();
+	frame->setup(this,numberOfarguments);
 	callStack.push(frame);
 }
 
@@ -119,7 +123,7 @@ void StackMachine::popCallFrame()
 	
 	frame->leave(this);
 
-	delete frame;
+	callFramePool.returnInstance(frame);
 }
 
 int StackMachine::getCurrentAddress()

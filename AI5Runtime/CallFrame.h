@@ -7,8 +7,9 @@
 class CallFrame: Block
 {
 public:
-	CallFrame(StackMachine* machine,int numberOfArguments);
+	CallFrame();
 	~CallFrame(void);
+	void setup(StackMachine* machine,int numberOfArguments);
 
 	Scope* getScope();
 	virtual void leave(StackMachine*);

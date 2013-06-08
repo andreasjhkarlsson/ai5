@@ -194,6 +194,7 @@
     <ClInclude Include="NullVariant.h" />
     <ClInclude Include="operators.h" />
     <ClInclude Include="ProgramLoader.h" />
+    <ClInclude Include="SimplePool.h" />
     <ClInclude Include="stack_instructions.h" />
     <ClInclude Include="ReferenceVariant.h" />
     <ClInclude Include="Static.h" />

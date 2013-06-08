@@ -1,13 +1,19 @@
 #include "CallFrame.h"
 #include "StackMachine.h"
 
-CallFrame::CallFrame(StackMachine* machine,int numberOfArguments): Block(machine->getDataStack()->position()-(numberOfArguments+1)),
-	returnAddress(machine->getCurrentAddress()+1),numberOfArguments(numberOfArguments)
+CallFrame::CallFrame(): Block(0)
 {
 }
 
 CallFrame::~CallFrame(void)
 {
+}
+
+
+void CallFrame::setup(StackMachine* machine,int numberOfArguments)
+{
+	this->returnAddress = machine->getCurrentAddress()+1;
+	this->setStackReturnPoint(machine->getDataStack()->position()-(numberOfArguments+1));
 }
 
 void CallFrame::leave(StackMachine*machine)
