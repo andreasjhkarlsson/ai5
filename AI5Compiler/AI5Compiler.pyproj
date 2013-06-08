@@ -12,7 +12,7 @@
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <InterpreterId>2af0f10d-7135-4994-9156-5d01c9c11b7e</InterpreterId>
-    <InterpreterVersion>3.1</InterpreterVersion>
+    <InterpreterVersion>3.3</InterpreterVersion>
     <Name>AI5Compiler</Name>
     <RootNamespace>AI5Compiler</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
@@ -29,6 +29,7 @@
     <Compile Include="ai5.py" />
     <Compile Include="compiled_file.py" />
     <Compile Include="compiler.py" />
+    <Compile Include="instructions.py" />
     <Compile Include="lexer.py" />
     <Compile Include="lexer_test.py" />
     <Compile Include="rd_parser.py" />
