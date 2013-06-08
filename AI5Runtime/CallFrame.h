@@ -2,9 +2,9 @@
 #include "FastStack.h"
 #include "Scope.h"
 #include "Block.h"
+#include "PooledObject.h"
 
-
-class CallFrame: Block
+class CallFrame: public Block, public PooledObject<CallFrame> 
 {
 public:
 	CallFrame();
@@ -13,7 +13,7 @@ public:
 
 	Scope* getScope();
 	virtual void leave(StackMachine*);
-
+	static const int POOL_SIZE = 1024;
 private:
 	int returnAddress;
 	Scope scope;

@@ -7,7 +7,7 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), callStack(CALL_STACK_SIZE), callFramePool(32,RECURSION_LIMIT)
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), callStack(CALL_STACK_SIZE)
 {
 	AI5StandardLibrary::registerFunctions(this);
 }

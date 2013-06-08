@@ -19,6 +19,9 @@
     <Filter Include="variants">
       <UniqueIdentifier>{ecc8cf5a-31fb-4d2e-b78e-642efaad2c18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="blocks">
+      <UniqueIdentifier>{67935067-c1bc-4155-8cd3-f4ec4dd44726}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,9 +44,6 @@
     </ClCompile>
     <ClCompile Include="BooleanVariant.cpp">
       <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="CallFrame.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NullVariant.cpp">
       <Filter>variants</Filter>
@@ -85,7 +85,10 @@
       <Filter>instructions</Filter>
     </ClCompile>
     <ClCompile Include="Block.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="CallFrame.cpp">
+      <Filter>blocks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,9 +129,6 @@
       <Filter>instructions</Filter>
     </ClInclude>
     <ClInclude Include="FastStack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CallFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NullVariant.h">
@@ -182,10 +182,16 @@
     <ClInclude Include="RuntimeError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Block.h">
+    <ClInclude Include="SimplePool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimplePool.h">
+    <ClInclude Include="Block.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="CallFrame.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="PooledObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

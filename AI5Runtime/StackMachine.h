@@ -66,7 +66,6 @@ private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
-	SimplePool<CallFrame> callFramePool;
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
@@ -112,7 +111,7 @@ void StackMachine::pushCallFrame(int numberOfarguments)
 		throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
 	}
 
-	CallFrame* frame = callFramePool.getInstance();
+	CallFrame* frame = CallFrame::getInstance();
 	frame->setup(this,numberOfarguments);
 	callStack.push(frame);
 }
@@ -123,7 +122,7 @@ void StackMachine::popCallFrame()
 	
 	frame->leave(this);
 
-	callFramePool.returnInstance(frame);
+	CallFrame::returnInstance(frame);
 }
 
 int StackMachine::getCurrentAddress()

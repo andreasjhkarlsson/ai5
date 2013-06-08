@@ -14,6 +14,7 @@ public:
 	__forceinline T get(int offset_from_top);
 	__forceinline size_t size();
 	__forceinline bool empty();
+	__forceinline bool full();
 private:
 	T* stack;
 	int position;
@@ -61,6 +62,14 @@ bool FastStack<T>::empty()
 {
 	return position == -1;
 }
+
+
+template<typename T>
+bool FastStack<T>::full()
+{
+	return (position-1) == limit;
+}
+
 
 template<typename T>
 FastStack<T>::FastStack(const int limit): position(-1), limit(limit)
