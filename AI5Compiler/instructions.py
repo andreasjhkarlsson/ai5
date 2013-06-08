@@ -73,6 +73,8 @@ class Instruction:
         return struct.pack("=Bq",type,int64)
     def to_binary_with_double_arg(self,type,double):
         return struct.pack("=Bd",type,double)
+    def to_binary_with_two_int_arg(self,type,i1,i2):
+        return struct.pack("=Bii",type,i1,i2)
 
 class IndexInstruction(Instruction):
     def to_binary(self):
@@ -321,3 +323,26 @@ class CallFunctionInstruction(Instruction):
         self.num_arguments = num_arguments
     def to_binary(self):
         return self.to_binary_with_char_arg(InstructionType.CALL_FUNCTION,self.num_arguments)   
+
+class PushLoopBlockInstruction(Instruction):
+    def __init__(self,continue_address,exit_address):
+        self.continue_address = continue_address
+        self.exit_address = exit_address
+    def to_binary(self):
+        return self.to_binary_with_two_int_arg(InstructionType.PUSH_LOOP_BLOCK,self.continue_address.value,self.exit_address.value) 
+
+class PopBlockInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.POP_BLOCK)
+
+class BreakLoopInstruction(Instruction):
+    def __init__(self,level):
+        self.level=level
+    def to_binary(self):
+        return self.to_binary_with_char_arg(InstructionType.BREAK_LOOP,self.level)
+
+class ContinueLoopInstruction(Instruction):
+    def __init__(self,level):
+        self.level=level
+    def to_binary(self):
+        return self.to_binary_with_char_arg(InstructionType.CONTINUE_LOOP,self.level)

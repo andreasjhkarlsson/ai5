@@ -66,7 +66,10 @@ class InstructionType:
     LOAD_BYREF_ARGUMENT                 = 0x40;
     LOAD_CONST_ARGUMENT                 = 0x41;
     LOAD_CONST_BYREF_ARGUMENT           = 0x42;
-
+    PUSH_LOOP_BLOCK                     = 0x43;
+    POP_BLOCK                           = 0x44;
+    CONTINUE_LOOP                       = 0x45;
+    BREAK_LOOP                          = 0x46;
 
 class StaticType:
     STRING      = 0x0

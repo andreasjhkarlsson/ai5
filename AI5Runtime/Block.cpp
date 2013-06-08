@@ -28,3 +28,14 @@ void Block::unwindStack(StackMachine* machine,int stackPosition)
 		stack->pop()->release();
 	}
 }
+
+
+bool Block::isCallBlock()
+{
+	return type == Block::CALL_BLOCK;
+}
+
+bool Block::isLoopBlock()
+{
+	return type == Block::LOOP_BLOCK;
+}

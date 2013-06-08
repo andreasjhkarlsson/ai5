@@ -58,8 +58,15 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 
 	if(toCall->getType() == Variant::USER_FUNCTION)
 	{
-		((UserFunctionVariant*)toCall)->call(machine,machine->getCurrentAddress()+1,numberOfArgs);
-		
+		int address = ((UserFunctionVariant*)toCall)->getAddress();
+
+		CallFrame* frame = CallFrame::getInstance();
+
+		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs);
+
+		machine->pushBlock(frame);
+
+		machine->jumpAbsolute(address);		
 	}
 	else if(toCall->getType() == Variant::NATIVE_FUNCTION)
 	{
@@ -94,9 +101,61 @@ __forceinline void ret(StackMachine* machine)
 	// --------------
 	// Will print '20' instead of the more sensible '10'.
 	returnValue->setLastName(nullptr);
-	
-	machine->popCallFrame();
+
+	while(!machine->topBlock()->isCallBlock())
+	{
+		machine->topBlock()->leave(machine);
+		machine->popBlock()->recycleInstance();
+	}
+
+	CallFrame* frame = static_cast<CallFrame*>(machine->popBlock());
+	frame->leave(machine);
+	int returnAddress = frame->getReturnAddress();
+	frame->recycleInstance();
 
 	// I told you I would return it to the stack.
 	machine->getDataStack()->push(returnValue);
+
+	machine->jumpAbsolute(returnAddress);
 }
+
+
+enum LOOP_JUMP_TYPE
+{
+	CONTINUE,
+	BREAK
+};
+
+inline void loopJump(LOOP_JUMP_TYPE type,StackMachine* machine,int level)
+{
+	while(true)
+	{
+		Block* block = machine->topBlock();
+
+		// Some other block. skip it!
+		if(!block->isLoopBlock() || --level > 0)
+		{
+			block->leave(machine);
+			block->recycleInstance();
+			machine->popBlock();
+			continue;
+		}
+
+		if(type == CONTINUE)
+		{
+			machine->jumpAbsolute(static_cast<LoopBlock*>(block)->getContinueAddress());
+		}
+		else if( type == BREAK)
+		{
+			machine->popBlock();
+			block->leave(machine);
+			block->recycleInstance();
+			machine->jumpAbsolute(static_cast<LoopBlock*>(block)->getExitAddress());
+		}
+
+		break;
+	}
+}
+
+
+

@@ -18,7 +18,9 @@ class ProgramLoader;
 class Instruction
 {
 public:
+
 	typedef std::shared_ptr<Instruction> PTR;
+
 	static const INSTRUCTION_TYPE NOOP							= 0x00;
 	static const INSTRUCTION_TYPE PUSH_NAME_VALUE				= 0x01;
 	static const INSTRUCTION_TYPE PUSH_INTEGER64				= 0x02;
@@ -85,8 +87,11 @@ public:
 	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x40;
 	static const INSTRUCTION_TYPE LOAD_CONST_ARGUMENT           = 0x41;
     static const INSTRUCTION_TYPE LOAD_CONST_BYREF_ARGUMENT     = 0x42;
+	static const INSTRUCTION_TYPE PUSH_LOOP_BLOCK				= 0x43;
+	static const INSTRUCTION_TYPE POP_BLOCK						= 0x44;
+	static const INSTRUCTION_TYPE CONTINUE_LOOP					= 0x45;
+	static const INSTRUCTION_TYPE BREAK_LOOP					= 0x46;
 
-	
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
 	std::wostream& format(std::wostream& stream,StackMachine* machine);
@@ -100,7 +105,10 @@ private:
 		double floating;
 		__int64 int64;
 		NameIdentifier identifier;
-
+		struct
+		{
+			int i1, i2;
+		} integerPair;
 	} arg;
 };
 
@@ -265,6 +273,18 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case REDIM_MULTIDIM_LIST:
 		RedimMultiDimList(machine,arg.byte);
+		break;
+	case PUSH_LOOP_BLOCK:
+		pushLoopBlock(machine,arg.integerPair.i1,arg.integerPair.i2);
+		break;
+	case POP_BLOCK:
+		popBlock(machine);
+		break;
+	case BREAK_LOOP:
+		loopJump(LOOP_JUMP_TYPE::BREAK,machine,arg.byte);
+		break;
+	case CONTINUE_LOOP:
+		loopJump(LOOP_JUMP_TYPE::CONTINUE,machine,arg.byte);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

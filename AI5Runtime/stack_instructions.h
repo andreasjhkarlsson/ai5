@@ -3,7 +3,7 @@
 #include "UserFunctionVariant.h"
 #include "ListVariant.h"
 #include "RuntimeError.h"
-
+#include "LoopBlock.h"
 
 __forceinline void pushInteger64(StackMachine* machine,int arg)
 {
@@ -156,5 +156,25 @@ __forceinline void derefIndex(StackMachine* machine)
 __forceinline void pushMacro(StackMachine* machine,int arg)
 {
 	machine->getDataStack()->push(machine->getMacro(arg)(machine));
+	machine->advanceCounter();
+}
+
+
+__forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int exitAddress)
+{
+	LoopBlock *lBlock = LoopBlock::getInstance();
+
+	lBlock->setup(machine,continueAddress,exitAddress);
+
+	machine->pushBlock(lBlock);
+
+	machine->advanceCounter();
+
+}
+
+__forceinline void popBlock(StackMachine* machine)
+{
+	machine->topBlock()->leave(machine);
+	machine->popBlock()->recycleInstance();
 	machine->advanceCounter();
 }

@@ -241,6 +241,18 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::DOUBLE_TOP_TWO:
 		stream << "DOUBLE_TOP_TWO";
 		break;
+	case Instruction::PUSH_LOOP_BLOCK:
+		stream << "PUSH_LOOP_BLOCK " << arg.integerPair.i1 << " " << arg.integerPair.i2;
+		break;
+	case Instruction::POP_BLOCK:
+		stream << "POP_LOOP_BLOCK";
+		break;
+	case Instruction::CONTINUE_LOOP:
+		stream << "CONTINUE_LOOP " << (int)arg.byte;
+		break;
+	case Instruction::BREAK_LOOP:
+		stream << "BREAK_LOOP " << (int)arg.byte;
+		break;
 	default:
 		stream << "No pretty print available for instruction.";
 		break;

@@ -13,6 +13,8 @@ public:
 
 	Scope* getScope();
 	virtual void leave(StackMachine*);
+	void recycleInstance();
+	int getReturnAddress();
 	
 	friend class PooledObject<CallFrame>;
 private:

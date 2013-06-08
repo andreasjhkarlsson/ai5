@@ -42,10 +42,12 @@ public:
 	__forceinline StaticData* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
+	__forceinline void pushBlock(Block* block);
+	__forceinline Block* popBlock();
+	__forceinline Block* topBlock();
 	static StackMachine* LoadFromStructuredData(const std::wstring& filename);
 	int start();
 	void terminate();
-	__forceinline void pushCallFrame(int returnAddress, int numberOfArguments);
 	__forceinline CallFrame* getCurrentCallFrame()
 	{
 		if(callStack.size() > 0)
@@ -58,7 +60,6 @@ public:
 	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
 	__forceinline void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
-	__forceinline void popCallFrame();
 	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
 	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
@@ -66,6 +67,7 @@ private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	FastStack<CallFrame*> callStack;
+	FastStack<Block*> blockStack; 
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
@@ -101,28 +103,6 @@ void StackMachine::advanceCounter()
 VariantFactory* StackMachine::getVariantFactory()
 {
 	return &variantFactory;
-}
-
-void StackMachine::pushCallFrame(int returnAddress,int numberOfarguments)
-{
-
-	if(callStack.size() >= RECURSION_LIMIT)
-	{
-		throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
-	}
-
-	CallFrame* frame = CallFrame::getInstance();
-	frame->setup(this,returnAddress,numberOfarguments);
-	callStack.push(frame);
-}
-
-void StackMachine::popCallFrame()
-{
-	CallFrame *frame = callStack.pop();
-	
-	frame->leave(this);
-
-	CallFrame::returnInstance(frame);
 }
 
 int StackMachine::getCurrentAddress()
@@ -238,4 +218,39 @@ void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* na
 	std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 	const std::wstring& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();
 	targetScope->insertName(strName,identifier.localId,name);
+}
+
+
+void StackMachine::pushBlock(Block* block)
+{
+	if(block->isCallBlock())
+	{
+		if(callStack.size() >= RECURSION_LIMIT)
+		{
+			throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
+		}
+
+		callStack.push(static_cast<CallFrame*>(block));
+	}
+
+	blockStack.push(block);
+		
+
+}
+
+Block* StackMachine::popBlock()
+{
+	Block* block = blockStack.pop();
+
+	if(block->isCallBlock())
+		callStack.pop(); // Maybe do check to see that block really did reside at the top of callstack?
+
+	return block;
+
+
+}
+
+Block* StackMachine::topBlock()
+{
+	return blockStack.top();
 }

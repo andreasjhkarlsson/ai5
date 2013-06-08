@@ -6,9 +6,9 @@ class UserFunctionVariant :
 public:
 	UserFunctionVariant(int address);
 	~UserFunctionVariant(void);
-	void call(StackMachine* machine,int returnAddress,int numberOfArguments);
 	void print();
+	int getAddress();
 private:
 	int address;
 };
-
+			

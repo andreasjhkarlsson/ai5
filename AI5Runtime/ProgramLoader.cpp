@@ -87,13 +87,14 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::ASSIGN_INDEX					:
 		case Instruction::POP_EXCEPTION_HANDLER			:
 		case Instruction::RAISE_EXCEPTION				:
+		case Instruction::POP_BLOCK						:
 			instructions->push_back(Instruction::PTR(new Instruction(instructionBuffer[pos])));
 			pos++;
 			break;
 		// int argument
-		case Instruction::BUILD_LIST:
-		case Instruction::PUSH_STRING:
-		case Instruction::PUSH_FUNCTION:
+		case Instruction::BUILD_LIST					:
+		case Instruction::PUSH_STRING					:
+		case Instruction::PUSH_FUNCTION					:
 		case Instruction::PUSH_EXCEPTION_HANDLER		:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_TRUE	:
@@ -101,10 +102,10 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::JUMP_LONG_RELATIVE_IF_TRUE	:
 		case Instruction::JUMP_LONG_RELATIVE			:
 		case Instruction::JUMP_LONG_RELATIVE_IF_FALSE	:
-		case Instruction::PUSH_FLOATING:
-		case Instruction::PUSH_INTEGER32:
-		case Instruction::PUSH_INTEGER64:
-		case Instruction::PUSH_MACRO:
+		case Instruction::PUSH_FLOATING					:
+		case Instruction::PUSH_INTEGER32				:
+		case Instruction::PUSH_INTEGER64				:
+		case Instruction::PUSH_MACRO					:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
@@ -117,33 +118,41 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_NAME_VALUE				:
 		case Instruction::ASSIGN_PROPERTY				:
 		case Instruction::PROPERTY						:
-		case Instruction::ASSIGN_GLOBAL_CONST:
-		case Instruction::ASSIGN_LOCAL_CONST:
-		case Instruction::ASSIGN_NEAREST_CONST:
-		case Instruction::LOAD_ARGUMENT:
-		case Instruction::LOAD_BYREF_ARGUMENT:
-		case Instruction::LOAD_CONST_ARGUMENT:
-		case Instruction::LOAD_CONST_BYREF_ARGUMENT:
+		case Instruction::ASSIGN_GLOBAL_CONST			:
+		case Instruction::ASSIGN_LOCAL_CONST			:
+		case Instruction::ASSIGN_NEAREST_CONST			:
+		case Instruction::LOAD_ARGUMENT					:
+		case Instruction::LOAD_BYREF_ARGUMENT			:
+		case Instruction::LOAD_CONST_ARGUMENT			:
+		case Instruction::LOAD_CONST_BYREF_ARGUMENT		:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.identifier = *(NameIdentifier*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
 			pos += 13;
 			break;
 		// char argument.
-		case Instruction::CREATE_MULTIDIM_LIST:
-		case Instruction::REDIM_MULTIDIM_LIST:
+		case Instruction::CREATE_MULTIDIM_LIST			:
+		case Instruction::REDIM_MULTIDIM_LIST			:
 		case Instruction::JUMP_SHORT_RELATIVE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE			:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_TRUE	:
 		case Instruction::JUMP_SHORT_RELATIVE_IF_TRUE	:
 		case Instruction::JUMP_SHORT_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_SHORT_RELATIVE_IF_FALSE	:
-		case Instruction::PUSH_BOOLEAN:
-		case Instruction::CALL_FUNCTION:
+		case Instruction::PUSH_BOOLEAN					:
+		case Instruction::CALL_FUNCTION					:
+		case Instruction::CONTINUE_LOOP					:
+		case Instruction::BREAK_LOOP					:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.byte = *(char*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
 			pos += 2;
+			break;
+		case Instruction::PUSH_LOOP_BLOCK				:
+			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
+			memcpy(&inst->arg.integerPair,&instructionBuffer[pos+1],sizeof(int)*2);
+			instructions->push_back(inst);
+			pos += 9;
 			break;
 		}
 	}

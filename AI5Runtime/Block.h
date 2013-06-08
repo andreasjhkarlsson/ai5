@@ -8,9 +8,12 @@ typedef unsigned char BLOCK_TYPE;
 class Block
 {
 public:
-	Block(BLOCK_TYPE type);
 	virtual void leave(StackMachine*)=0;
+	virtual void recycleInstance()=0;
+	bool isCallBlock();
+	bool isLoopBlock();
 protected:
+	Block(BLOCK_TYPE type);
 	void unwindStack(StackMachine*,int stackPosition);
 private:
 	BLOCK_TYPE type;

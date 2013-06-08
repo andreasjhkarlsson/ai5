@@ -51,7 +51,7 @@ class StaticTable:
                 s = value.encode("utf-8")
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
             elif type == StaticType.FLOATING:
-                s = str(value)
+                s = str(value).encode("utf-8")
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
             elif type == StaticType.INTEGER64:
                 binary += struct.pack("=Bq",type,value)
@@ -96,11 +96,23 @@ class Compiler:
         return Identifier(global_id,local_id,static_id)
     
     def resolve_addresses(self,code):
-        for index,instruction in enumerate(code):
-            if not hasattr(instruction,"address"): continue
-            address = instruction.address
+
+
+        def resolve_address(address):
             if address.type == Address.UNRESOLVED_ABSOLUTE:
-                instruction.address = address.resolve(index)
+                return address.resolve(index)
+            else:
+                return address
+
+        for index,instruction in enumerate(code):
+            address = None
+            if hasattr(instruction,"address"):
+                instruction.address = resolve_address(instruction.address)
+            if hasattr(instruction,"continue_address"):
+                instruction.continue_address = resolve_address(instruction.continue_address)
+            if hasattr(instruction,"exit_address"):
+                instruction.exit_address = resolve_address(instruction.exit_address)
+
 
     def resolve_loop_jump_address(self,code,start_pos,end_pos):
         for index,instruction in enumerate(code):
@@ -268,12 +280,14 @@ class Compiler:
     def compile_dountil(self,statement):
         compiled_body = self.compile_block(statement.nodes[DoUntil.NODE_BODY])
         compiled_condition = self.compile_expression(statement.nodes[DoUntil.NODE_CONDITION])
-        code = []
+        code = [PushLoopBlockInstruction(None,None)]
         code += compiled_body
         code += compiled_condition
-        code += [JumpIfFalseInstruction(RelativeAddress(-len(code)))]
+        code += [JumpIfFalseInstruction(RelativeAddress(-len(code)+1))]
 
-        self.resolve_loop_jump_address(code,len(compiled_body),len(code))
+        code[0].continue_address = UnresolvedAbsoluteAddress(len(code)-len(compiled_condition)-1)
+        code[0].exit_address = UnresolvedAbsoluteAddress(len(code))
+
 
         return code
 
@@ -322,7 +336,10 @@ class Compiler:
 
             code = compiled_init + compiled_check + compiled_body + compiled_increment
 
-            self.resolve_loop_jump_address(code,len(code)-len(compiled_increment),len(code))
+            code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(code)-len(compiled_increment)+1),
+                                             UnresolvedAbsoluteAddress(len(code)+2))] + code
+
+            #self.resolve_loop_jump_address(code,len(code)-len(compiled_increment),len(code))
 
             code += [PopInstruction()]
 
@@ -342,11 +359,15 @@ class Compiler:
             level = continue_statement.nodes[ContinueLoop.NODE_LEVEL].value
         else:
             level = 1
-        return [JumpInstruction(UnresolvedLoopJumpAddress(UnresolvedLoopJumpAddress.TARGET_START,level))]
+        return [ContinueLoopInstruction(level)]
 
     
     def compile_exitloop(self,exitloop_statement):
-        return [JumpInstruction(UnresolvedLoopJumpAddress(UnresolvedLoopJumpAddress.TARGET_END,1))]
+        if ExitLoop.NODE_LEVEL in exitloop_statement.nodes:
+            level = exitloop_statement.nodes[ExitLoop.NODE_LEVEL].value
+        else:
+            level = 1
+        return [BreakLoopInstruction(level)]
 
     def compile_redim(self,redim):
         code = []
@@ -473,11 +494,14 @@ class Compiler:
         if While.NODE_BODY in while_statement.nodes:
             compiled_body = self.compile_block(while_statement.nodes[While.NODE_BODY])
         
-        code = []
+        code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(1),None)]
         code += compiled_condition
         code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+2))]
         code += compiled_body
         code += [JumpInstruction(RelativeAddress(-(len(compiled_body)+len(compiled_condition)+1)))]
+        code += [PopBlockInstruction()]
+
+        code[0].exit_address = UnresolvedAbsoluteAddress(len(code))
 
         self.resolve_loop_jump_address(code,0,len(code))
 

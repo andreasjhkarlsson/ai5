@@ -14,6 +14,7 @@ void CallFrame::setup(StackMachine* machine,int returnAddress,int numberOfArgume
 {
 	this->returnAddress = returnAddress;
 	this->stackPosition = machine->getDataStack()->position()-(numberOfArguments+1);
+	this->numberOfArguments = numberOfArguments;
 }
 
 void CallFrame::leave(StackMachine*machine)
@@ -21,11 +22,21 @@ void CallFrame::leave(StackMachine*machine)
 	unwindStack(machine,stackPosition);
 
 	scope.reset();
-
-	machine->jumpAbsolute(returnAddress);
 }
 
 Scope* CallFrame::getScope()
 {
 	return &scope;
+}
+
+
+void CallFrame::recycleInstance()
+{
+	CallFrame::returnInstance(this);
+}
+
+int CallFrame::getReturnAddress()
+{
+	return returnAddress;
+
 }
