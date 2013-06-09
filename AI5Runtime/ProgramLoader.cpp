@@ -16,6 +16,19 @@ ProgramLoader::~ProgramLoader(void)
 {
 }
 
+// Header structure of a binary file.
+struct ProgramHeader
+{
+	unsigned int magic; // Something that identifies this file.
+	unsigned short compiler;
+	unsigned short target;
+	unsigned int entry_instruction; // Which instruction should execution start at.
+	unsigned int instructions_start; // Where in the file the first instruction can be found.
+	unsigned int instructions_size; // How many instructions there are.
+	unsigned int statics_start; // Where in the file is the statics stored?
+	unsigned int statics_size; // How many statics are there.
+};
+
 
 // This method creates a fully prepared StackMachine from a file.
 // This involves decoding all instructions, statics, headers and 

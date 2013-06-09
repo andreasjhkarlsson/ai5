@@ -26,7 +26,7 @@ public:
 	static const int NUMBER_OF_VARIANT_TYPES = 11;
 	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
-	virtual void print()=0;
+	virtual std::wostream& format(std::wostream& stream)=0;
 	virtual double toFloating()=0;
 	virtual __int64 toInteger64()=0;
 	virtual int toInteger32()=0;

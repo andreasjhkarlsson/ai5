@@ -6,7 +6,7 @@ class UserFunctionVariant :
 public:
 	UserFunctionVariant(int address);
 	~UserFunctionVariant(void);
-	void print();
+	std::wostream& format(std::wostream& stream);
 	int getAddress();
 private:
 	int address;

@@ -10,9 +10,10 @@ Integer64Variant::Integer64Variant(const __int64 integer): Variant(INTEGER64), v
 
 
 
-void Integer64Variant::print()
+std::wostream& Integer64Variant::format(std::wostream& stream)
 {
-	std::wcout << "IntegerVariant64: " << *toString() << std::endl;
+	stream << "IntegerVariant64: " << *toString();
+	return stream;
 }
 
 __int64 Integer64Variant::toInteger64()

@@ -165,7 +165,6 @@
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
-    <ClCompile Include="ReferenceVariant.cpp" />
     <ClCompile Include="StackMachine.cpp" />
     <ClCompile Include="StringVariant.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />
@@ -180,7 +179,6 @@
     <ClInclude Include="comparison_instructions.h" />
     <ClInclude Include="DataStack.h" />
     <ClInclude Include="encode.h" />
-    <ClInclude Include="FastList.h" />
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />
     <ClInclude Include="FunctionVariant.h" />
@@ -200,7 +198,6 @@
     <ClInclude Include="ProgramLoader.h" />
     <ClInclude Include="SimplePool.h" />
     <ClInclude Include="stack_instructions.h" />
-    <ClInclude Include="ReferenceVariant.h" />
     <ClInclude Include="Static.h" />
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="StackMachine.h" />

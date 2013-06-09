@@ -6,7 +6,7 @@ class Integer32Variant :
 public:
 	Integer32Variant(int value);
 	~Integer32Variant(void);
-	virtual void print();
+	std::wostream& format(std::wostream& stream);
 	virtual double toFloating();
 	virtual __int64 toInteger64();
 	virtual int toInteger32();

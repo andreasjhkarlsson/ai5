@@ -10,9 +10,10 @@ NullVariant::~NullVariant(void)
 {
 }
 
-void NullVariant::print()
+std::wostream& NullVariant::format(std::wostream& stream)
 {
-	std::wcout << "NullVariant: Null" << std::endl;
+	stream << "NullVariant: Null";
+	return stream;
 }
 
 double NullVariant::toFloating()

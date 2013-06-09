@@ -12,9 +12,11 @@ StringVariant::~StringVariant(void)
 {
 
 }
-void StringVariant::print()
+
+std::wostream& StringVariant::format(std::wostream& stream)
 {
-	std::wcout << "StringVariant: " << *str << "\r\n";
+	stream << "StringVariant: " << *str;
+	return stream;
 
 }
 double StringVariant::toFloating()

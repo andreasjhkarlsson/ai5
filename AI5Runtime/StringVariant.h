@@ -7,7 +7,7 @@ class StringVariant :
 public:
 	StringVariant(shared_string str);
 	~StringVariant(void);
-	virtual void print();
+	std::wostream& format(std::wostream& stream);
 	virtual double toFloating();
 	virtual __int64 toInteger64();
 	virtual int toInteger32();

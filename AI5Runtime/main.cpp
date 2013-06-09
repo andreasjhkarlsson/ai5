@@ -11,13 +11,14 @@
 
 int main() 
 {
+	// Make console UTF-16 aware.
 	 _setmode(_fileno(stdout), _O_U16TEXT);
 
 	std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile("..\\AI5Compiler\\test.aic");
 
 	clock_t begin = clock();
 
-	int returnCode=machine->start();
+	int returnCode = machine->start();
 
 	std::wcout << L"Program ended with code: " << returnCode << std::endl;
 

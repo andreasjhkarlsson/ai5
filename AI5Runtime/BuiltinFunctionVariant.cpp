@@ -18,7 +18,8 @@ void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
 	machine->advanceCounter();
 }
 
-void BuiltinFunctionVariant::print()
+std::wostream& BuiltinFunctionVariant::format(std::wostream& stream)
 {
-	std::wcout << "Builtin function: " << name.c_str() << std::endl;
+	stream << "Builtin function: " << name.c_str();
+	return stream;
 }

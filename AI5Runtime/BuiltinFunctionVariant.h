@@ -12,7 +12,7 @@ public:
 	BuiltinFunctionVariant(const std::wstring &name,BuiltinFunctionPointer func);
 	~BuiltinFunctionVariant(void);
 	void call(StackMachine* machine,int numberOfArguments);
-	void print();
+	std::wostream& format(std::wostream& stream);
 private:
 	BuiltinFunctionPointer func;
 	std::wstring name;

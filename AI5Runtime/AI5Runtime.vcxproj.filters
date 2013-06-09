@@ -36,9 +36,6 @@
     <ClCompile Include="Instruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
-    <ClCompile Include="ReferenceVariant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
     <ClCompile Include="Variant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
@@ -110,9 +107,6 @@
     <ClInclude Include="Instruction.h">
       <Filter>instructions</Filter>
     </ClInclude>
-    <ClInclude Include="ReferenceVariant.h">
-      <Filter>variants</Filter>
-    </ClInclude>
     <ClInclude Include="Variant.h">
       <Filter>variants</Filter>
     </ClInclude>
@@ -144,9 +138,6 @@
       <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="ProgramLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FastList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StringVariant.h">

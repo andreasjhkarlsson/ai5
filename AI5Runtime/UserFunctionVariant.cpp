@@ -10,9 +10,10 @@ UserFunctionVariant::~UserFunctionVariant(void)
 {
 }
 
-void UserFunctionVariant::print()
+std::wostream& UserFunctionVariant::format(std::wostream& stream)
 {
-	std::wcout << "UserFunction @" << address << std::endl;
+	stream << "UserFunction @" << address;
+	return stream;
 }
 
 

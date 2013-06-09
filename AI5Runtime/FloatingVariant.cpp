@@ -30,9 +30,11 @@ bool FloatingVariant::toBoolean()
 {
 	return value != 0.0;
 }
-void FloatingVariant::print()
+
+std::wostream& FloatingVariant::format(std::wostream& stream)
 {
-	std::wcout << "FloatingVariant: " << *toString() << std::endl;
+	stream << "FloatingVariant: " << *toString();
+	return stream;
 }
 
 

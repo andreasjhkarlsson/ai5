@@ -11,9 +11,10 @@ Integer32Variant::~Integer32Variant(void)
 {
 }
 
-void Integer32Variant::print()
+std::wostream& Integer32Variant::format(std::wostream& stream)
 {
-	std::wcout << "Integer32: " << value << std::endl;
+	stream << "Integer32: " << value;
+	return stream;
 
 }
 

@@ -7,7 +7,7 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(CALL_STACK_SIZE*32), currentCallFrame(nullptr)
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), currentCallFrame(nullptr)
 {
 	AI5StandardLibrary::registerFunctions(this);
 }
@@ -33,7 +33,8 @@ int StackMachine::start()
 			program->operator[](programCounter)->execute(this);		
 		}
 		return dataStack.top()->toInteger32();
-	} catch(const RuntimeError& error)
+	}
+	catch(const RuntimeError& error)
 	{
 		std::wcout << L"Runtime error:" << std::endl << error.getMessage() <<
 			std::endl << "The program will now terminate." << std::endl;
@@ -45,12 +46,6 @@ void StackMachine::terminate()
 {
 	terminated = true;
 }
-
-StackMachine* StackMachine::LoadFromStructuredData(const std::wstring& filename)
-{
-	return nullptr;
-}
-
 
 void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function)
 {

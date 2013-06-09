@@ -40,9 +40,11 @@ bool BooleanVariant::toBoolean()
 {
 	return value;
 }
-void BooleanVariant::print()
+
+std::wostream& BooleanVariant::format(std::wostream& stream)
 {
-	std::wcout << "BooleanVariant: " << *toString() << std::endl;
+	stream << "BooleanVariant: " << *toString();
+	return stream;
 }
 
 shared_string BooleanVariant::toString()

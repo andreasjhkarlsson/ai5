@@ -24,9 +24,10 @@ void ListVariant::cleanup()
 	}
 }
 
-void ListVariant::print()
+std::wostream& ListVariant::format(std::wostream& stream)
 {
-	std::wcout << L"ListVariant: " << *toString() << std::endl;
+	stream << L"ListVariant: " << *toString();
+	return stream;
 }
 
 double ListVariant::toFloating()

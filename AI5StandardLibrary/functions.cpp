@@ -32,7 +32,8 @@ void printline(StackMachine* machine)
 	Variant* var = machine->getDataStack()->pop();
 	machine->getDataStack()->pop();
 
-	var->print();
+	var->format(std::wcout);
+	std::wcout << std::endl;
 
 	var->release();
 	machine->getDataStack()->pushNull();
@@ -72,7 +73,7 @@ void ubound(StackMachine* machine)
 
 	if(var->isListType())
 	{
-		result = new Integer32Variant(static_cast<ListVariant*>(var)->size());
+		result = new Integer32Variant((int)static_cast<ListVariant*>(var)->size());
 	}
 	else
 	{
@@ -96,7 +97,7 @@ Variant* Macros::MyPID(StackMachine*)
 
 Variant* Macros::StackSize(StackMachine* machine)
 {
-	return new Integer32Variant(machine->getDataStack()->size());
+	return new Integer32Variant((int)machine->getDataStack()->size());
 }
 
 }

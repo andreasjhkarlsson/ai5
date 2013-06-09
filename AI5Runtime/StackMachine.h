@@ -26,28 +26,36 @@ using std::vector;
 class StackMachine
 {
 private:
-	static const int CALL_STACK_SIZE		= 1024;
-	static const int DATA_STACK_SIZE		= 65536;
+	static const int BLOCK_STACK_SIZE		= 8192;
+	static const int DATA_STACK_SIZE		= 32768;
 public:
 	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program);
 	~StackMachine(void);
+
 	// These methods are called by instructions, so they need
 	// to be inlined for maximum speed.
+
+	// Increment program counter by one.
 	__forceinline void advanceCounter();
+	// Increments or decrements program counter by specified amount.
 	__forceinline void jumpRelative(int offset);
+	// Set the program counter to specific address.
 	__forceinline void jumpAbsolute(int position);
+	// Returns program counter.
 	__forceinline int getCurrentAddress();
+	// Gets static data from index.
 	__forceinline StaticData* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
 	__forceinline BlockStack* getBlockStack();
 	inline void setCurrentCallFrame(CallFrame* frame);
 	inline CallFrame* getCurrentCallFrame();
-	static StackMachine* LoadFromStructuredData(const std::wstring& filename);
 	int start();
 	void terminate();
 	__forceinline NameVariant* getNearestName(NameIdentifier identifier);
+	// Set the nearest name value (that means local name, then global). If no name is found
+	// a name is created in the local scope (if available, otherwise global).
 	__forceinline void setNearest(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
@@ -56,17 +64,25 @@ public:
 	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
 private:
+	// Code and static data.
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
+	// Stores active blocks. Blocks can be loops, function calls, exception handler etc.
 	BlockStack blockStack; 
+	// Represents the current call frame.
+	// Is not automatically set, so should be set by instructions
+	// manipulating the block stack.
 	CallFrame* currentCallFrame;
+	// Macros are stored with a simple string as lookup.
+	// TODO: Lookup macros with index as well.
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;
+	// When set, the machine stops executing after next instruction.
 	bool terminated;
+	// Classic program counter.
 	int programCounter;
-	static const int RECURSION_LIMIT = 1024;
 };
 
 void StackMachine::jumpRelative(int offset)

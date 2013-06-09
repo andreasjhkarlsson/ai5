@@ -12,9 +12,10 @@ NameVariant::~NameVariant(void)
 	cleanup();
 }
 
-void NameVariant::print()
+std::wostream& NameVariant::format(std::wostream& stream)
 {
-	std::wcout << L"NameVariant" << std::endl;
+	stream << L"NameVariant";
+	return stream;
 }
 double NameVariant::toFloating()
 {
