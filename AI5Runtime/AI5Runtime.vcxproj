@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockStack.h" />
     <ClInclude Include="BooleanVariant.h" />
     <ClInclude Include="BuiltinFunctionVariant.h" />
     <ClInclude Include="CallFrame.h" />

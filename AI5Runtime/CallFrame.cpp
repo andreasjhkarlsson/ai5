@@ -10,11 +10,12 @@ CallFrame::~CallFrame(void)
 }
 
 
-void CallFrame::setup(StackMachine* machine,int returnAddress,int numberOfArguments)
+void CallFrame::setup(StackMachine* machine,int returnAddress,int numberOfArguments,CallFrame* parentFrame)
 {
 	this->returnAddress = returnAddress;
 	this->stackPosition = machine->getDataStack()->position()-(numberOfArguments+1);
 	this->numberOfArguments = numberOfArguments;
+	this->parentFrame = parentFrame;
 }
 
 void CallFrame::leave(StackMachine*machine)
@@ -39,4 +40,9 @@ int CallFrame::getReturnAddress()
 {
 	return returnAddress;
 
+}
+
+CallFrame* CallFrame::getParentFrame()
+{
+	return this->parentFrame;
 }

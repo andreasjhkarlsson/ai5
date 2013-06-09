@@ -62,10 +62,12 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 
 		CallFrame* frame = CallFrame::getInstance();
 
-		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs);
+		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs,machine->getCurrentCallFrame());
 
-		machine->pushBlock(frame);
+		machine->getBlockStack()->push(frame);
 
+
+		machine->setCurrentCallFrame(frame);
 		machine->jumpAbsolute(address);		
 	}
 	else if(toCall->getType() == Variant::NATIVE_FUNCTION)
@@ -102,21 +104,25 @@ __forceinline void ret(StackMachine* machine)
 	// Will print '20' instead of the more sensible '10'.
 	returnValue->setLastName(nullptr);
 
-	while(!machine->topBlock()->isCallBlock())
+	BlockStack* blockStack = machine->getBlockStack();
+
+	while(!blockStack->top()->isCallBlock())
 	{
-		machine->topBlock()->leave(machine);
-		machine->popBlock()->recycleInstance();
+		blockStack->top()->leave(machine);
+		blockStack->pop()->recycleInstance();
 	}
 
-	CallFrame* frame = static_cast<CallFrame*>(machine->popBlock());
+	CallFrame* frame = static_cast<CallFrame*>(blockStack->pop());
+
+	// Make sure stack is balanced (maybe throw corruption error here
+	// since the stack should always be balanced when RET is executed).
 	frame->leave(machine);
-	int returnAddress = frame->getReturnAddress();
+	machine->jumpAbsolute(frame->getReturnAddress());
+	machine->setCurrentCallFrame(frame->getParentFrame());
 	frame->recycleInstance();
 
 	// I told you I would return it to the stack.
 	machine->getDataStack()->push(returnValue);
-
-	machine->jumpAbsolute(returnAddress);
 }
 
 
@@ -128,16 +134,20 @@ enum LOOP_JUMP_TYPE
 
 inline void loopJump(LOOP_JUMP_TYPE type,StackMachine* machine,int level)
 {
+
+	BlockStack* stack = machine->getBlockStack();
+
+	// Pop all the blocks until encountering loop block at the correct level.
 	while(true)
 	{
-		Block* block = machine->topBlock();
+		Block* block = stack->top();
 
 		// Some other block. leave it!
 		if(!block->isLoopBlock() || --level > 0)
 		{
 			block->leave(machine);
 			block->recycleInstance();
-			machine->popBlock();
+			stack->pop();
 			continue;
 		}
 
@@ -147,7 +157,7 @@ inline void loopJump(LOOP_JUMP_TYPE type,StackMachine* machine,int level)
 		}
 		else if( type == BREAK)
 		{
-			machine->popBlock();
+			stack->pop();
 			block->leave(machine);
 			block->recycleInstance();
 			machine->jumpAbsolute(static_cast<LoopBlock*>(block)->getExitAddress());

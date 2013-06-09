@@ -12,6 +12,7 @@ public:
 	virtual void recycleInstance()=0;
 	bool isCallBlock();
 	bool isLoopBlock();
+	BLOCK_TYPE getType();
 protected:
 	Block(BLOCK_TYPE type);
 	void unwindStack(StackMachine*,int stackPosition);

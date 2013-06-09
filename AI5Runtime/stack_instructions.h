@@ -166,7 +166,7 @@ __forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int e
 
 	lBlock->setup(machine,continueAddress,exitAddress);
 
-	machine->pushBlock(lBlock);
+	machine->getBlockStack()->push(lBlock);
 
 	machine->advanceCounter();
 
@@ -174,7 +174,7 @@ __forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int e
 
 __forceinline void popBlock(StackMachine* machine)
 {
-	machine->topBlock()->leave(machine);
-	machine->popBlock()->recycleInstance();
+	machine->getBlockStack()->top()->leave(machine);
+	machine->getBlockStack()->pop()->recycleInstance();
 	machine->advanceCounter();
 }

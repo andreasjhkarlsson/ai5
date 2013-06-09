@@ -14,6 +14,7 @@
 #include "macro.h"
 #include "RuntimeError.h"
 #include "SimplePool.h"
+#include "BlockStack.h"
 
 class Instruction;
 
@@ -27,8 +28,6 @@ class StackMachine
 private:
 	static const int CALL_STACK_SIZE		= 1024;
 	static const int DATA_STACK_SIZE		= 65536;
-
-
 public:
 	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program);
@@ -42,19 +41,12 @@ public:
 	__forceinline StaticData* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
-	__forceinline void pushBlock(Block* block);
-	__forceinline Block* popBlock();
-	__forceinline Block* topBlock();
+	__forceinline BlockStack* getBlockStack();
+	inline void setCurrentCallFrame(CallFrame* frame);
+	inline CallFrame* getCurrentCallFrame();
 	static StackMachine* LoadFromStructuredData(const std::wstring& filename);
 	int start();
 	void terminate();
-	__forceinline CallFrame* getCurrentCallFrame()
-	{
-		if(callStack.size() > 0)
-			return callStack.top();
-		// No callStack. This means we are at top level global scope.
-		return nullptr;
-	}
 	__forceinline NameVariant* getNearestName(NameIdentifier identifier);
 	__forceinline void setNearest(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
@@ -66,8 +58,8 @@ public:
 private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
-	FastStack<CallFrame*> callStack;
-	FastStack<Block*> blockStack; 
+	BlockStack blockStack; 
+	CallFrame* currentCallFrame;
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
 	Scope globalScope;
 	DataStack dataStack;
@@ -95,6 +87,11 @@ DataStack* StackMachine::getDataStack()
 	return &dataStack;
 }
 
+BlockStack* StackMachine::getBlockStack()
+{
+	return &blockStack;
+}
+
 void StackMachine::advanceCounter()
 {
 	programCounter++;
@@ -110,12 +107,22 @@ int StackMachine::getCurrentAddress()
 	return programCounter;
 }
 
+void StackMachine::setCurrentCallFrame(CallFrame* frame)
+{
+	this->currentCallFrame = frame;
+}
+
+CallFrame* StackMachine::getCurrentCallFrame()
+{
+	return this->currentCallFrame;
+}
+
 
 NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 {
-	if(!callStack.empty())
+	if(currentCallFrame != nullptr)
 	{
-		NameVariant* name = callStack.top()->getScope()->getNameFromIndex(identifier.localId);
+		NameVariant* name = currentCallFrame->getScope()->getNameFromIndex(identifier.localId);
 		if(name != nullptr)
 			return name;
 	}
@@ -141,8 +148,8 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 {
 	// Search for name in local and global scope.
 	NameVariant* foundName = nullptr;
-	if(!callStack.empty())
-		foundName = callStack.top()->getScope()->getNameFromIndex(identifier.localId);
+	if(currentCallFrame != nullptr)
+		foundName = currentCallFrame->getScope()->getNameFromIndex(identifier.localId);
 	if(foundName == nullptr)
 		foundName = globalScope.getNameFromIndex(identifier.globalId);
 
@@ -150,8 +157,8 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 	if(foundName == nullptr)
 	{
 		Scope* targetScope = nullptr;
-		if(!callStack.empty())
-			targetScope = callStack.top()->getScope();
+		if(currentCallFrame != nullptr)
+			targetScope = currentCallFrame->getScope();
 		else
 			targetScope = &globalScope;
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
@@ -174,8 +181,8 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	Scope* targetScope = &globalScope;
-	if(!callStack.empty())
-		targetScope = callStack.top()->getScope();
+	if(currentCallFrame != nullptr)
+		targetScope = currentCallFrame->getScope();
 
 	NameVariant* name = targetScope->getNameFromIndex(identifier.localId);
 
@@ -212,45 +219,10 @@ void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asC
 void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
 {
 	Scope* targetScope = &globalScope;
-	if(!callStack.empty())
-		targetScope = callStack.top()->getScope();
+	if(currentCallFrame != nullptr)
+		targetScope = currentCallFrame->getScope();
 
 	std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 	const std::wstring& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();
 	targetScope->insertName(strName,identifier.localId,name);
-}
-
-
-void StackMachine::pushBlock(Block* block)
-{
-	if(block->isCallBlock())
-	{
-		if(callStack.size() >= RECURSION_LIMIT)
-		{
-			throw RuntimeError(L"Stack overflow! Maximum recursion depth achieved.");
-		}
-
-		callStack.push(static_cast<CallFrame*>(block));
-	}
-
-	blockStack.push(block);
-		
-
-}
-
-Block* StackMachine::popBlock()
-{
-	Block* block = blockStack.pop();
-
-	if(block->isCallBlock())
-		callStack.pop(); // Maybe do check to see that block really did reside at the top of callstack?
-
-	return block;
-
-
-}
-
-Block* StackMachine::topBlock()
-{
-	return blockStack.top();
 }

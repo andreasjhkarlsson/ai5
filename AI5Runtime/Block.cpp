@@ -39,3 +39,8 @@ bool Block::isLoopBlock()
 {
 	return type == Block::LOOP_BLOCK;
 }
+
+BLOCK_TYPE Block::getType()
+{
+	return type;
+}
