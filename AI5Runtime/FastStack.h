@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RuntimeError.h"
+
 // Very simple stack designed to be as fast as possible.
 template<typename T>
 class FastStack
@@ -24,6 +26,8 @@ private:
 template<typename T>
 void FastStack<T>::push(T element)
 {
+	if(full())
+		throw RuntimeError(L"Stack overflow!");
 	stack[++position] = element;
 }
 
@@ -67,7 +71,7 @@ bool FastStack<T>::empty()
 template<typename T>
 bool FastStack<T>::full()
 {
-	return (position-1) == limit;
+	return (position+1) == limit;
 }
 
 
