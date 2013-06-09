@@ -34,6 +34,8 @@ void FastStack<T>::push(T element)
 template<typename T>
 T FastStack<T>::pop()
 {
+	if(position == -1)
+		throw new RuntimeError(L"Stack underflow!");
 	return stack[position--];
 }
 
