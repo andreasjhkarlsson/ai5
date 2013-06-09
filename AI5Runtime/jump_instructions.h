@@ -142,6 +142,11 @@ inline void loopJump(LOOP_JUMP_TYPE type,StackMachine* machine,int level)
 	{
 		Block* block = stack->top();
 
+		if(block->isCallBlock())
+		{
+			throw RuntimeError(L"Invalid use of continue/exitloop");
+		}
+
 		// Some other block. leave it!
 		if(!block->isLoopBlock() || --level > 0)
 		{

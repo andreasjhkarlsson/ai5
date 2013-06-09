@@ -87,8 +87,6 @@ void ubound(StackMachine* machine)
 
 }
 
-
-
 Variant* Macros::MyPID(StackMachine*)
 {
 	return new Integer64Variant(GetCurrentProcessId());

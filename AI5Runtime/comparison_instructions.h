@@ -199,6 +199,7 @@ enum COMPARISON_TYPE
 inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 {
 	static ComparisonTable table;
+	static StringComparator stringComparator;
 	Variant* operand2 = machine->getDataStack()->pop();
 	Variant* operand1 = machine->getDataStack()->pop();
 	bool result;
@@ -209,7 +210,7 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 		throw new RuntimeError(L"No suitable comparator found for values");
 	}
 
-	static StringComparator stringComparator;
+	
 
 	switch(type)
 	{
