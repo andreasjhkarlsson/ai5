@@ -84,14 +84,14 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::POP:
 		stream << "POP";
 		break;
-	case Instruction::ASSIGN_GLOBAL_CONST:
-		stream << "ASSIGN_GLOBAL_CONST" << " " << *getName(machine,this->arg.identifier);
+	case Instruction::MAKE_GLOBAL_CONST:
+		stream << "MAKE_GLOBAL_CONST" << " " << *getName(machine,this->arg.identifier);
 		break;
-	case Instruction::ASSIGN_LOCAL_CONST:
-		stream << "ASSIGN_LOCAL_CONST" << " " << *getName(machine,this->arg.identifier);
+	case Instruction::MAKE_LOCAL_CONST:
+		stream << "MAKE_LOCAL_CONST" << " " << *getName(machine,this->arg.identifier);
 		break;
-	case Instruction::ASSIGN_NEAREST_CONST:
-		stream << "ASSIGN_NEAREST_CONST" << " " << *getName(machine,this->arg.identifier);
+	case Instruction::MAKE_NEAREST_CONST:
+		stream << "MAKE_NEAREST_CONST" << " " << *getName(machine,this->arg.identifier);
 		break;
 	case Instruction::ASSIGN_GLOBAL:
 		stream << "ASSIGN_GLOBAL" << " " << *getName(machine,this->arg.identifier);
@@ -222,18 +222,11 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::BUILD_LIST:
 		stream << "BUILD_LIST "<<arg.integer;
 		break;
-
 	case Instruction::CREATE_MULTIDIM_LIST:
 		stream << "CREATE_MULTIDIM_LIST " << (int)arg.byte;
 		break;
 	case Instruction::REDIM_MULTIDIM_LIST:
 		stream << "REDIM_MULTIDIM_LIST " << (int)arg.byte;
-		break;
-	case Instruction::LOAD_ARGUMENT:
-		stream << "LOAD_ARGUMENT " << *getName(machine,arg.identifier);
-		break;
-	case Instruction::LOAD_BYREF_ARGUMENT:
-		stream << "LOAD_BYREF_ARGUMENT " << *getName(machine,arg.identifier);
 		break;
 	case Instruction::PUSH_MACRO:
 		stream << "PUSH_MACRO " << *getMacro(machine,arg.integer);
@@ -252,6 +245,15 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		break;
 	case Instruction::BREAK_LOOP:
 		stream << "BREAK_LOOP " << (int)arg.byte;
+		break;
+	case Instruction::CREATE_ARGUMENT:
+		stream << "CREATE_ARGUMENT " << *getName(machine,arg.identifier);
+		break;
+	case Instruction::CREATE_BYREF_ARGUMENT:
+		stream << "CREATE_BYREF_ARGUMENT " << *getName(machine,arg.identifier);
+		break;
+	case Instruction::LOAD_ARGUMENTS:
+		stream << "LOAD_ARGUMENTS " << (int)arg.bytePair.b1 << " " << (int)arg.bytePair.b2;
 		break;
 	default:
 		stream << "No pretty print available for instruction.";

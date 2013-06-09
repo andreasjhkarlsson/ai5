@@ -54,6 +54,8 @@ public:
 	int start();
 	void terminate();
 	__forceinline NameVariant* getNearestName(NameIdentifier identifier);
+	__forceinline NameVariant* getGlobalName(NameIdentifier identifier);
+	__forceinline NameVariant* getLocalName(NameIdentifier identifier);
 	// Set the nearest name value (that means local name, then global). If no name is found
 	// a name is created in the local scope (if available, otherwise global).
 	__forceinline void setNearest(NameIdentifier identifier,Variant* variant,bool asConst=false);
@@ -156,6 +158,20 @@ NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 	}
 
 	return name;
+}
+
+NameVariant* StackMachine::getLocalName(NameIdentifier identifier)
+{
+	Scope* scope = &globalScope;
+	if(currentCallFrame != nullptr)
+		scope = currentCallFrame->getScope();
+	return scope->getNameFromIndex(identifier.localId);
+}
+
+NameVariant* StackMachine::getGlobalName(NameIdentifier identifier)
+{
+	Scope* scope = &globalScope;
+	return scope->getNameFromIndex(identifier.globalId);
 }
 
 // This function sets the value for a name in the nearest scope where it's found.

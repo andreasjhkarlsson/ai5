@@ -1,8 +1,15 @@
 #pragma once
+#include <vector>
 #include "FastStack.h"
 #include "Scope.h"
 #include "Block.h"
 #include "PooledObject.h"
+
+struct Argument
+{
+	NameIdentifier identifier;
+	bool isByref;
+};
 
 class CallFrame: public Block, public PooledObject<CallFrame> 
 {
@@ -16,6 +23,8 @@ public:
 	void recycleInstance();
 	int getReturnAddress();
 	CallFrame* getParentFrame();
+	void addArgument(const Argument& argument);
+	void loadArguments(StackMachine* machine,int total,int required);
 	
 	friend class PooledObject<CallFrame>;
 private:
@@ -26,6 +35,7 @@ private:
 	Scope scope;
 	CallFrame();
 	static const int POOL_SIZE = 1024;
+	std::vector<Argument> arguments;
 	
 };
 

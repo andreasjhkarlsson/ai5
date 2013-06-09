@@ -131,13 +131,11 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_NAME_VALUE				:
 		case Instruction::ASSIGN_PROPERTY				:
 		case Instruction::PROPERTY						:
-		case Instruction::ASSIGN_GLOBAL_CONST			:
-		case Instruction::ASSIGN_LOCAL_CONST			:
-		case Instruction::ASSIGN_NEAREST_CONST			:
-		case Instruction::LOAD_ARGUMENT					:
-		case Instruction::LOAD_BYREF_ARGUMENT			:
-		case Instruction::LOAD_CONST_ARGUMENT			:
-		case Instruction::LOAD_CONST_BYREF_ARGUMENT		:
+		case Instruction::MAKE_GLOBAL_CONST				:
+		case Instruction::MAKE_LOCAL_CONST				:
+		case Instruction::MAKE_NEAREST_CONST			:
+		case Instruction::CREATE_ARGUMENT				:
+		case Instruction::CREATE_BYREF_ARGUMENT			:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.identifier = *(NameIdentifier*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);
@@ -161,11 +159,19 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 			instructions->push_back(inst);
 			pos += 2;
 			break;
+		// Two int arg.
 		case Instruction::PUSH_LOOP_BLOCK				:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			memcpy(&inst->arg.integerPair,&instructionBuffer[pos+1],sizeof(int)*2);
 			instructions->push_back(inst);
 			pos += 9;
+			break;
+		// Two byte arg.
+		case Instruction::LOAD_ARGUMENTS				:
+			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
+			memcpy(&inst->arg.bytePair,&instructionBuffer[pos+1],sizeof(char)*2);
+			instructions->push_back(inst);
+			pos += 3;
 			break;
 		}
 	}

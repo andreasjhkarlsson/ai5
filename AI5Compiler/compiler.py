@@ -130,18 +130,20 @@ class Compiler:
         self.scope_lookup.push_scope()
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
-        for argument in reversed(arguments):
+        for argument in arguments:
             is_byref = Argument.NODE_BYREF in argument.nodes
-            as_const = Argument.NODE_CONST in argument.nodes
-
             if is_byref:
-                compiled_body += [LoadByRefArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value),as_const)]
+                compiled_body += [CreateByRefArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
             else:
-                compiled_body += [LoadArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value),as_const)]
+                compiled_body += [CreateArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
 
         
-        # Pop of 'this'
-        compiled_body += [PopInstruction()]
+        compiled_body += [LoadArgumentsInstruction(len(arguments),len(arguments))]
+
+        for argument in arguments:
+            if Argument.NODE_CONST in argument.nodes:
+                compiled_body += [MakeLocalConstInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+
         
         compiled_body += self.compile_block(function.nodes[Function.NODE_BODY])
         
@@ -166,20 +168,18 @@ class Compiler:
         is_const = Declaration.NODE_CONST in declaration.nodes
         
         if scope_token.value == KeywordToken.DIM:
+            assignment_instruction = AssignNearestInstruction
             if is_const:
-                assignment_instruction = AssignNearestConstInstruction
-            else:
-                assignment_instruction = AssignNearestInstruction
+                const_instruction = MakeNearestConstInstruction
         elif scope_token.value == KeywordToken.GLOBAL:
+            assignment_instruction = AssignGlobalInstruction
             if is_const:
-                assignment_instruction = AssignGlobalConstInstruction
-            else:
-                assignment_instruction = AssignGlobalInstruction
+                const_instruction = MakeGlobalConstInstruction
         elif scope_token.value == KeywordToken.LOCAL:
+            assignment_instruction = AssignLocalInstruction
             if is_const:
-                assignment_instruction = AssignLocalConstInstruction
-            else:
-                assignment_instruction = AssignLocalInstruction
+                const_instruction = MakeLocalConstInstruction
+
 
         for variable in declaration.nodes[Declaration.NODE_VARIABLES]:
             # If the variable has a right hand side, compile it with and use it as assignment.
@@ -196,7 +196,10 @@ class Compiler:
             # Empty variable are assigned to Null.
             else:
                 code += [PushNullInstruction()]
-            code += [assignment_instruction(self.get_identifier(variable.nodes[DeclarationAssignment.NODE_IDENTIFIER].value))]
+            ident = self.get_identifier(variable.nodes[DeclarationAssignment.NODE_IDENTIFIER].value)
+            code += [assignment_instruction(ident)]
+            if is_const:
+                code += [const_instruction(ident)]
 
         return code
     

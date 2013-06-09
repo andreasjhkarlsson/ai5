@@ -182,6 +182,7 @@
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />
     <ClInclude Include="FunctionVariant.h" />
+    <ClInclude Include="function_instructions.h" />
     <ClInclude Include="Integer32Variant.h" />
     <ClInclude Include="Integer64Variant.h" />
     <ClInclude Include="jump_instructions.h" />

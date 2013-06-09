@@ -75,6 +75,8 @@ class Instruction:
         return struct.pack("=Bd",type,double)
     def to_binary_with_two_int_arg(self,type,i1,i2):
         return struct.pack("=Bii",type,i1,i2)
+    def to_binary_with_two_char_args(self,type,c1,c2):
+        return struct.pack("=Bbb",type,c1,c2)
 
 class IndexInstruction(Instruction):
     def to_binary(self):
@@ -103,22 +105,22 @@ class PushInteger64Instruction(Instruction):
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.PUSH_INTEGER64, self.id)
 
-class AssignGlobalConstInstruction(Instruction):
+class MakeGlobalConstInstruction(Instruction):
     def __init__(self,identifier):
         self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.ASSIGN_GLOBAL_CONST) + self.identifier.to_binary()
+        return self.to_binary_without_arg(InstructionType.MAKE_GLOBAL_CONST) + self.identifier.to_binary()
 
-class AssignLocalConstInstruction(Instruction):
+class MakeLocalConstInstruction(Instruction):
     def __init__(self,identifier):
         self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL_CONST) + self.identifier.to_binary()
-class AssignNearestConstInstruction(Instruction):
+        return self.to_binary_without_arg(InstructionType.MAKE_LOCAL_CONST) + self.identifier.to_binary()
+class MakeNearestConstInstruction(Instruction):
     def __init__(self,identifier):
         self.identifier = identifier
     def to_binary(self):
-        return self.to_binary_without_arg(InstructionType.ASSIGN_NEAREST_CONST) + self.identifier.to_binary()
+        return self.to_binary_without_arg(InstructionType.MAKE_NEAREST_CONST) + self.identifier.to_binary()
 class PushFunctionInstruction(Instruction):
     def __init__(self,address):
         self.address = address
@@ -204,26 +206,25 @@ class AssignLocalInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ASSIGN_LOCAL) + self.identifier.to_binary()
 
-class LoadArgumentInstruction(Instruction):
-    def __init__(self,identifier,as_const):
+class CreateArgumentInstruction(Instruction):
+    def __init__(self,identifier):
         self.identifier = identifier
-        self.as_const = as_const
     def to_binary(self):
-        if self.as_const:
-            return self.to_binary_without_arg(InstructionType.LOAD_CONST_ARGUMENT) + self.identifier.to_binary()
-        else:
-            return self.to_binary_without_arg(InstructionType.LOAD_ARGUMENT) + self.identifier.to_binary()
+        return self.to_binary_without_arg(InstructionType.CREATE_ARGUMENT) + self.identifier.to_binary()
 
-class LoadByRefArgumentInstruction(Instruction):
-    def __init__(self,identifier,as_const):
+class CreateByRefArgumentInstruction(Instruction):
+    def __init__(self,identifier):
         self.identifier = identifier
-        self.as_const = as_const
     def to_binary(self):
-        if self.as_const:
-            return self.to_binary_without_arg(InstructionType.LOAD_CONST_BYREF_ARGUMENT) + self.identifier.to_binary()
-        else:
-            return self.to_binary_without_arg(InstructionType.LOAD_BYREF_ARGUMENT) + self.identifier.to_binary()
+        return self.to_binary_without_arg(InstructionType.CREATE_BYREF_ARGUMENT) + self.identifier.to_binary()
     
+class LoadArgumentsInstruction(Instruction):
+    def __init__(self,total,required):
+        self.total = total
+        self.required = required
+    def to_binary(self):
+        return self.to_binary_with_two_char_args(InstructionType.LOAD_ARGUMENTS,self.total,self.required)
+
 class AdditionInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ADDITION)

@@ -197,5 +197,8 @@
     <ClInclude Include="BlockStack.h">
       <Filter>stacks</Filter>
     </ClInclude>
+    <ClInclude Include="function_instructions.h">
+      <Filter>instructions</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -46,33 +46,21 @@ __forceinline void assignNearest(StackMachine* machine,NameIdentifier arg)
 	machine->advanceCounter();
 }
 
-__forceinline void assignNearestConst(StackMachine* machine,NameIdentifier arg)
+__forceinline void makeGlobalConst(StackMachine* machine,NameIdentifier arg)
 {
-	Variant* var = machine->getDataStack()->pop();
-	
-	machine->setNearest(arg,var,true);
-
-	var->release();
+	machine->getGlobalName(arg)->markAsConst();
 	machine->advanceCounter();
 }
 
-__forceinline void assignLocalConst(StackMachine* machine,NameIdentifier arg)
+__forceinline void makeLocalConst(StackMachine* machine,NameIdentifier arg)
 {
-	Variant* var = machine->getDataStack()->pop();
-	
-	machine->setLocal(arg,var,true);
-
-	var->release();
+	machine->getLocalName(arg)->markAsConst();
 	machine->advanceCounter();
 }
 
-__forceinline void assignGlobalConst(StackMachine* machine,NameIdentifier arg)
+__forceinline void makeNearestConst(StackMachine* machine,NameIdentifier arg)
 {
-	Variant* var = machine->getDataStack()->pop();
-	
-	machine->setGlobal(arg,var,true);
-
-	var->release();
+	machine->getNearestName(arg)->markAsConst();
 	machine->advanceCounter();
 }
 
@@ -95,42 +83,6 @@ __forceinline void assignIndex(StackMachine* machine)
 	list->release();
 
 	machine->advanceCounter();
-}
-
-__forceinline void loadArgument(StackMachine* machine, NameIdentifier arg,bool asConst)
-{
-	// This is exactly the same thing.
-	if(asConst)
-		assignLocalConst(machine,arg);
-	else
-		assignLocal(machine,arg);
-}
-
-__forceinline void loadByRefArgument(StackMachine* machine,NameIdentifier arg,bool asConst)
-{
-
-	if(machine->getDataStack()->top()->getLastName() != nullptr)
-	{
-		Variant* var = machine->getDataStack()->pop();
-
-		if(asConst && var->getLastName()->isConstName())
-		{
-
-			// What to do with this situation??
-			// If we mark the name as const we will make the source name
-			// const as well... Maybe nest the names?
-			
-
-		}
-
-		machine->addNameToLocalScope(arg,var->getLastName());
-		machine->advanceCounter();
-	}
-	else
-	{
-		loadArgument(machine,arg,asConst);
-	}
-
 }
 
 

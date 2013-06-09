@@ -8,6 +8,7 @@
 #include "misc_instructions.h"
 #include "jump_instructions.h"
 #include "comparison_instructions.h"
+#include "function_instructions.h"
 
 typedef unsigned char INSTRUCTION_TYPE;
 
@@ -75,22 +76,21 @@ public:
 	static const INSTRUCTION_TYPE CONCAT						= 0x33;
 	static const INSTRUCTION_TYPE POW							= 0x34;
 	static const INSTRUCTION_TYPE TERMINATE						= 0x35;
-	static const INSTRUCTION_TYPE ASSIGN_GLOBAL_CONST			= 0x36;
-	static const INSTRUCTION_TYPE ASSIGN_LOCAL_CONST			= 0x37;
-	static const INSTRUCTION_TYPE ASSIGN_NEAREST_CONST			= 0x38;
+	static const INSTRUCTION_TYPE MAKE_GLOBAL_CONST				= 0x36;
+	static const INSTRUCTION_TYPE MAKE_LOCAL_CONST				= 0x37;
+	static const INSTRUCTION_TYPE MAKE_NEAREST_CONST			= 0x38;
 	static const INSTRUCTION_TYPE BUILD_LIST					= 0x3A;
 	static const INSTRUCTION_TYPE CREATE_MULTIDIM_LIST			= 0x3B;
 	static const INSTRUCTION_TYPE REDIM_MULTIDIM_LIST			= 0x3C;
 	static const INSTRUCTION_TYPE PUSH_MACRO					= 0x3D;
 	static const INSTRUCTION_TYPE DOUBLE_TOP_TWO				= 0x3E;
-	static const INSTRUCTION_TYPE LOAD_ARGUMENT					= 0x3F;
-	static const INSTRUCTION_TYPE LOAD_BYREF_ARGUMENT			= 0x40;
-	static const INSTRUCTION_TYPE LOAD_CONST_ARGUMENT           = 0x41;
-    static const INSTRUCTION_TYPE LOAD_CONST_BYREF_ARGUMENT     = 0x42;
 	static const INSTRUCTION_TYPE PUSH_LOOP_BLOCK				= 0x43;
 	static const INSTRUCTION_TYPE POP_BLOCK						= 0x44;
 	static const INSTRUCTION_TYPE CONTINUE_LOOP					= 0x45;
 	static const INSTRUCTION_TYPE BREAK_LOOP					= 0x46;
+    static const INSTRUCTION_TYPE CREATE_ARGUMENT               = 0x47;
+    static const INSTRUCTION_TYPE CREATE_BYREF_ARGUMENT         = 0x48;
+    static const INSTRUCTION_TYPE LOAD_ARGUMENTS                = 0x49;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -109,6 +109,10 @@ private:
 		{
 			int i1, i2;
 		} integerPair;
+		struct
+		{
+			char b1, b2;
+		} bytePair;
 	} arg;
 };
 
@@ -193,14 +197,14 @@ void Instruction::execute(StackMachine* machine)
 	case ASSIGN_GLOBAL:
 		assignGlobal(machine,arg.identifier);
 		break;
-	case ASSIGN_GLOBAL_CONST:
-		assignGlobalConst(machine,arg.identifier);
+	case MAKE_GLOBAL_CONST:
+		makeGlobalConst(machine,arg.identifier);
 		break;
 	case ASSIGN_LOCAL:
 		assignLocal(machine,arg.identifier);
 		break;
-	case ASSIGN_LOCAL_CONST:
-		assignLocalConst(machine,arg.identifier);
+	case MAKE_LOCAL_CONST:
+		makeLocalConst(machine,arg.identifier);
 		break;
 	case PUSH_NAME_VALUE:
 		pushNameValue(machine,arg.identifier);
@@ -211,8 +215,8 @@ void Instruction::execute(StackMachine* machine)
 	case ASSIGN_NEAREST:
 		assignNearest(machine,arg.identifier);
 		break;
-	case ASSIGN_NEAREST_CONST:
-		assignNearestConst(machine,arg.identifier);
+	case MAKE_NEAREST_CONST:
+		makeNearestConst(machine,arg.identifier);
 		break;
 	case CALL_FUNCTION:
 		callFunction(machine,arg.byte);
@@ -247,18 +251,6 @@ void Instruction::execute(StackMachine* machine)
 	case INDEX:
 		derefIndex(machine);
 		break;
-	case LOAD_ARGUMENT:
-		loadArgument(machine,arg.identifier,false);
-		break;
-	case LOAD_BYREF_ARGUMENT:
-		loadByRefArgument(machine,arg.identifier,false);
-		break;
-	case LOAD_CONST_ARGUMENT:
-		loadArgument(machine,arg.identifier,true);
-		break;
-	case LOAD_CONST_BYREF_ARGUMENT:
-		loadByRefArgument(machine,arg.identifier,true);
-		break;
 	case PUSH_MACRO:
 		pushMacro(machine,arg.integer);
 		break;
@@ -285,6 +277,15 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case CONTINUE_LOOP:
 		loopJump(LOOP_JUMP_TYPE::CONTINUE,machine,arg.byte);
+		break;
+	case CREATE_ARGUMENT:
+		createArgument(machine,arg.identifier,false);
+		break;
+	case CREATE_BYREF_ARGUMENT:
+		createArgument(machine,arg.identifier,true);
+		break;
+	case LOAD_ARGUMENTS:
+		loadArguments(machine,arg.bytePair.b1,arg.bytePair.b2);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

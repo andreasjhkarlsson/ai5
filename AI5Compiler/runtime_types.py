@@ -54,22 +54,22 @@ class InstructionType:
     CONCAT                              = 0x33;
     POW                                 = 0x34;
     TERMINATE                           = 0x35;
-    ASSIGN_GLOBAL_CONST                 = 0x36;
-    ASSIGN_LOCAL_CONST                  = 0x37;
-    ASSIGN_NEAREST_CONST                = 0x38;
+    MAKE_GLOBAL_CONST                   = 0x36;
+    MAKE_LOCAL_CONST                    = 0x37;
+    MAKE_NEAREST_CONST                  = 0x38;
     BUILD_LIST      				    = 0x3A;
     CREATE_MULTIDIM_LIST		        = 0x3B;
     REDIM_MULTIDIM_LIST		            = 0x3C;
     PUSH_MACRO                          = 0x3D;
     DOUBLE_TOP_TWO                      = 0x3E;
-    LOAD_ARGUMENT                       = 0x3F;
-    LOAD_BYREF_ARGUMENT                 = 0x40;
-    LOAD_CONST_ARGUMENT                 = 0x41;
-    LOAD_CONST_BYREF_ARGUMENT           = 0x42;
     PUSH_LOOP_BLOCK                     = 0x43;
     POP_BLOCK                           = 0x44;
     CONTINUE_LOOP                       = 0x45;
     BREAK_LOOP                          = 0x46;
+    CREATE_ARGUMENT                     = 0x47;
+    CREATE_BYREF_ARGUMENT               = 0x48;
+    LOAD_ARGUMENTS                      = 0x49;
+
 
 class StaticType:
     STRING      = 0x0
