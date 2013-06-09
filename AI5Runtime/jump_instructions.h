@@ -132,7 +132,7 @@ inline void loopJump(LOOP_JUMP_TYPE type,StackMachine* machine,int level)
 	{
 		Block* block = machine->topBlock();
 
-		// Some other block. skip it!
+		// Some other block. leave it!
 		if(!block->isLoopBlock() || --level > 0)
 		{
 			block->leave(machine);

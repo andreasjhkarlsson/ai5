@@ -43,7 +43,6 @@ class StaticTable:
         keys.sort(key=lambda x:self.statics[x])
         binary = b""
         for type,value in keys:
-            print(self.statics[(type,value)],value,type)
             if type == StaticType.NAME:
                 s = value.encode("utf-8")
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
@@ -61,6 +60,11 @@ class StaticTable:
                 s = value.encode("utf-8")
                 binary += struct.pack("=BI"+str(len(s))+"s",type,len(s),s)
         return binary
+    def dump(self):
+        keys = list(self.statics.keys())
+        keys.sort(key=lambda x:self.statics[x])
+        for type,value in keys:
+            print(self.statics[(type,value)],value,type)
         
         
     def length(self):
@@ -284,8 +288,9 @@ class Compiler:
         code += compiled_body
         code += compiled_condition
         code += [JumpIfFalseInstruction(RelativeAddress(-len(code)+1))]
+        code +=[PopBlockInstruction()]
 
-        code[0].continue_address = UnresolvedAbsoluteAddress(len(code)-len(compiled_condition)-1)
+        code[0].continue_address = UnresolvedAbsoluteAddress(len(code)-len(compiled_condition)-2)
         code[0].exit_address = UnresolvedAbsoluteAddress(len(code))
 
 
@@ -334,14 +339,14 @@ class Compiler:
             compiled_check[-1].address.value = len(compiled_body)+len(compiled_increment)+1
             compiled_increment[-1].address.value = -(len(compiled_increment)+len(compiled_body)+len(compiled_check)-1)
 
-            code = compiled_init + compiled_check + compiled_body + compiled_increment
+            code = compiled_init + compiled_check + compiled_body + compiled_increment + [PopInstruction(),PopBlockInstruction()]
 
-            code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(code)-len(compiled_increment)+1),
-                                             UnresolvedAbsoluteAddress(len(code)+2))] + code
+            code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(code)-len(compiled_increment)-1),
+                                             UnresolvedAbsoluteAddress(len(code)+1))] + code
 
             #self.resolve_loop_jump_address(code,len(code)-len(compiled_increment),len(code))
 
-            code += [PopInstruction()]
+
 
             return code
 
