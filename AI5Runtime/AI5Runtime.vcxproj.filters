@@ -93,6 +93,9 @@
     <ClCompile Include="DataStack.cpp">
       <Filter>stacks</Filter>
     </ClCompile>
+    <ClCompile Include="DefaultVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -199,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="function_instructions.h">
       <Filter>instructions</Filter>
+    </ClInclude>
+    <ClInclude Include="DefaultVariant.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -74,6 +74,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::POP							:
 		case Instruction::NOOP							:
 		case Instruction::PUSH_NULL						:
+		case Instruction::PUSH_DEFAULT					:
 		case Instruction::INDEX							:
 		case Instruction::BOOLEAN_NOT					:
 		case Instruction::BOOLEAN_OR					:

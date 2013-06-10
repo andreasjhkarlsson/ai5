@@ -70,6 +70,7 @@ class InstructionType:
     CREATE_BYREF_ARGUMENT               = 0x48;
     LOAD_ARGUMENTS                      = 0x49;
     EXACTLY_EQUAL                       = 0x50;
+    PUSH_DEFAULT                        = 0x51;
 
 
 class StaticType:

@@ -75,6 +75,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::PUSH_NULL:
 		stream << "PUSH_NULL";
 		break;
+	case Instruction::PUSH_DEFAULT:
+		stream << "PUSH_DEFAULT";
+		break;
 	case Instruction::INDEX:
 		stream << "INDEX";
 		break;

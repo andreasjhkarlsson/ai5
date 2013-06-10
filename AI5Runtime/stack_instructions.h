@@ -4,6 +4,7 @@
 #include "ListVariant.h"
 #include "RuntimeError.h"
 #include "LoopBlock.h"
+#include "DefaultVariant.h"
 
 __forceinline void pushInteger64(StackMachine* machine,int arg)
 {
@@ -97,6 +98,16 @@ __forceinline void pushNull(StackMachine* machine)
 	machine->getDataStack()->pushNull();
 	machine->advanceCounter();
 }
+
+
+__forceinline void pushDefault(StackMachine* machine)
+{
+	DefaultVariant* variant = &DefaultVariant::Instance;
+	variant->addRef();
+	machine->getDataStack()->push(variant);
+	machine->advanceCounter();
+}
+
 
 __forceinline void pushBoolean(StackMachine* machine,char arg)
 {

@@ -605,6 +605,8 @@ class Compiler:
             return [PushBooleanInstruction(token.value)]
         if token.type == Token.MACRO:
             return [PushMacroInstruction(self.static_table.get_macro_id(token.value))]
+        if token.type == Token.KEYWORD and token.value == KeywordToken.DEFAULT:
+            return [PushDefaultInstruction()]
 
     def compile_inline_list(self,inline_list):
         code = []

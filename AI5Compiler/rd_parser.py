@@ -827,6 +827,8 @@ class Terminal(Rule):
         for token_type in accepted:
             if parser.accept(token_type):
                 return Terminal({Terminal.NODE_TYPE:parser.current})
+        if parser.accept(Token.KEYWORD,KeywordToken.DEFAULT):
+            return Terminal({Terminal.NODE_TYPE:parser.current})
         return None
 
 

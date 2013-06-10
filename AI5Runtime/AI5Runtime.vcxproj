@@ -152,6 +152,7 @@
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
     <ClCompile Include="CallFrame.cpp" />
     <ClCompile Include="DataStack.cpp" />
+    <ClCompile Include="DefaultVariant.cpp" />
     <ClCompile Include="FloatingVariant.cpp" />
     <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="Instruction.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="CallFrame.h" />
     <ClInclude Include="comparison_instructions.h" />
     <ClInclude Include="DataStack.h" />
+    <ClInclude Include="DefaultVariant.h" />
     <ClInclude Include="encode.h" />
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />

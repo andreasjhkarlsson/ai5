@@ -12,18 +12,19 @@ typedef int VARIANT_TYPE;
 class Variant
 {
 public:
-	static const VARIANT_TYPE REFERENCE = 0;
-	static const VARIANT_TYPE INTEGER64 = 1;
-	static const VARIANT_TYPE BOOLEAN = 2;
-	static const VARIANT_TYPE FLOATING = 3;
-	static const VARIANT_TYPE NULL_VAR = 4;
-	static const VARIANT_TYPE NATIVE_FUNCTION = 5;
-	static const VARIANT_TYPE USER_FUNCTION = 6;
-	static const VARIANT_TYPE STRING = 7;
-	static const VARIANT_TYPE LIST = 8;
-	static const VARIANT_TYPE INTEGER32 = 9;
-	static const VARIANT_TYPE NAME = 10;
-	static const int NUMBER_OF_VARIANT_TYPES = 11;
+	static const VARIANT_TYPE REFERENCE			= 0;
+	static const VARIANT_TYPE INTEGER64			= 1;
+	static const VARIANT_TYPE BOOLEAN			= 2;
+	static const VARIANT_TYPE FLOATING			= 3;
+	static const VARIANT_TYPE NULL_VAR			= 4;
+	static const VARIANT_TYPE NATIVE_FUNCTION	= 5;
+	static const VARIANT_TYPE USER_FUNCTION		= 6;
+	static const VARIANT_TYPE STRING			= 7;
+	static const VARIANT_TYPE LIST				= 8;
+	static const VARIANT_TYPE INTEGER32			= 9;
+	static const VARIANT_TYPE NAME				= 10;
+	static const VARIANT_TYPE DEFAULT			= 11;
+	static const int NUMBER_OF_VARIANT_TYPES	= 12;
 	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream)=0;
@@ -52,6 +53,7 @@ public:
 	inline bool isListType();
 	inline bool isReferenceType();
 	inline bool isNameType();
+	inline bool isDefaultType();
 
 private:
 	const VARIANT_TYPE type;
@@ -207,4 +209,9 @@ bool Variant::isReferenceType()
 bool Variant::isNameType()
 {
 	return type == NAME;
+}
+
+bool Variant::isDefaultType()
+{
+	return type == DEFAULT;
 }

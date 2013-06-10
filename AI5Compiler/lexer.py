@@ -309,7 +309,7 @@ class KeywordToken(Token):
         if len(regex) > 1:
             regex += "|"
         regex += keyword
-    regex += ")(?=\s|$)"
+    regex += ")(?=[^\w]|$)"
     
      
     expr = re.compile(regex,re.IGNORECASE)

@@ -46,5 +46,5 @@ shared_string NullVariant::toString()
 
 bool NullVariant::equal(Variant* other)
 {
-	return getType() == other->getType();
+	return other->isNullType();
 }

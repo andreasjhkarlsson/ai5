@@ -172,6 +172,10 @@ class PushNullInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NULL)
 
+class PushDefaultInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.PUSH_DEFAULT)
+
 class BuildListInstruction(Instruction):
     def __init__(self,count):
         self.count = count

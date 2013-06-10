@@ -92,6 +92,7 @@ public:
     static const INSTRUCTION_TYPE CREATE_BYREF_ARGUMENT         = 0x48;
     static const INSTRUCTION_TYPE LOAD_ARGUMENTS                = 0x49;
 	static const INSTRUCTION_TYPE EXACTLY_EQUAL					= 0x50;
+	static const INSTRUCTION_TYPE PUSH_DEFAULT					= 0x51;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -230,6 +231,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case PUSH_NULL:
 		pushNull(machine);
+		break;
+	case PUSH_DEFAULT:
+		pushDefault(machine);
 		break;
 	case PUSH_STRING:
 		pushString(machine,arg.integer);
