@@ -1,5 +1,6 @@
 #include "CallFrame.h"
 #include "StackMachine.h"
+#include "DefaultVariant.h"
 
 CallFrame::CallFrame(): Block(CALL_BLOCK)
 {
@@ -9,11 +10,11 @@ CallFrame::~CallFrame(void)
 {
 }
 
-void CallFrame::setup(StackMachine* machine,int returnAddress,int numberOfArguments,CallFrame* parentFrame)
+void CallFrame::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallFrame* parentFrame)
 {
 	this->returnAddress = returnAddress;
-	this->stackPosition = machine->getDataStack()->position()-(numberOfArguments+1);
-	this->numberOfArguments = numberOfArguments;
+	this->stackPosition = machine->getDataStack()->position()-(calledNumberOfArguments+1);
+	this->calledNumberOfArguments = calledNumberOfArguments;
 	this->parentFrame = parentFrame;
 	this->arguments.clear();
 }
@@ -52,15 +53,28 @@ void CallFrame::addArgument(const Argument& arg)
 
 void CallFrame::loadArguments(StackMachine* machine,int total,int required)
 {
-	if(numberOfArguments > total)
+	if(calledNumberOfArguments > total)
 		throw RuntimeError(L"Too many arguments in function call");
-	if(numberOfArguments < required)
+	if(calledNumberOfArguments < required)
 		throw RuntimeError(L"Too few arguments in function call");
 
 	for(int argIndex=arguments.size()-1;argIndex>=0;argIndex--)
 	{
 		Argument arg = arguments[argIndex];
-		Variant* varArg = machine->getDataStack()->pop();
+
+		Variant* varArg;
+
+		// Set arguments with missing value with Default.
+		// The real default value is then set by the function body.
+		if(argIndex >= calledNumberOfArguments)
+		{
+			varArg = &DefaultVariant::Instance;
+			varArg->addRef();
+		}
+		else
+		{
+			varArg = machine->getDataStack()->pop();
+		}
 
 		if(arg.isByref && varArg->getLastName() != nullptr)
 		{

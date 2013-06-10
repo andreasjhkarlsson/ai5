@@ -506,7 +506,7 @@ class Argument(Rule):
         else: 
             return None
         if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
-            nodes[Argument.NODE_DEFAULT_VALUE] = parser.expectRule(Terminal)
+            nodes[Argument.NODE_DEFAULT_VALUE] = parser.expectRule(Expression)
         return Argument(nodes)
             
 

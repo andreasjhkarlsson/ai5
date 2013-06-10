@@ -138,11 +138,28 @@ class Compiler:
                 compiled_body += [CreateArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
 
         
-        compiled_body += [LoadArgumentsInstruction(len(arguments),len(arguments))]
+        
 
+        default_value_found = False
+        without_default = 0
+        compiled_arguments_init = []
         for argument in arguments:
+            ident = self.get_identifier(argument.nodes[Argument.NODE_NAME].value)
             if Argument.NODE_CONST in argument.nodes:
-                compiled_body += [MakeLocalConstInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
+                
+                compiled_arguments_init += [MakeLocalConstInstruction(ident)]
+            if Argument.NODE_DEFAULT_VALUE in argument.nodes:
+                compiled_arguments_init += [PushNameValueInstruction(ident),PushDefaultInstruction(),ExactlyEqualInstruction()]
+                compiled_default_value = self.compile_expression(argument.nodes[Argument.NODE_DEFAULT_VALUE])
+                compiled_default_value += [AssignLocalInstruction(ident)]
+                compiled_arguments_init += [JumpIfFalseInstruction(RelativeAddress(len(compiled_default_value)+1))] + compiled_default_value
+                default_value_found = True
+            else:
+                without_default += 1
+                if default_value_found:
+                    raise CompileError("Function definition error!")
+
+        compiled_body += [LoadArgumentsInstruction(len(arguments),without_default)]   + compiled_arguments_init        
 
         
         compiled_body += self.compile_block(function.nodes[Function.NODE_BODY])

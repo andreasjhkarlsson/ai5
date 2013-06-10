@@ -16,7 +16,7 @@ class CallFrame: public Block, public PooledObject<CallFrame>
 public:
 	
 	~CallFrame(void);
-	void setup(StackMachine* machine,int returnAddress,int numberOfArguments,CallFrame* parentFrame);
+	void setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallFrame* parentFrame);
 
 	Scope* getScope();
 	virtual void leave(StackMachine*);
@@ -29,7 +29,7 @@ public:
 	friend class PooledObject<CallFrame>;
 private:
 	int returnAddress;
-	int numberOfArguments;
+	int calledNumberOfArguments;
 	int stackPosition;
 	CallFrame* parentFrame;
 	Scope scope;
