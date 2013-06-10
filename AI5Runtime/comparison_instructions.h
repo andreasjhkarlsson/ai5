@@ -193,7 +193,8 @@ enum COMPARISON_TYPE
 	LESSER,
 	LESSER_EQUAL,
 	EQUAL,
-	STRONG_STRING_EQUAL
+	STRONG_STRING_EQUAL,
+	EXACTLY_EQUAL
 };
 
 inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
@@ -231,6 +232,9 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 		break;
 	case STRONG_STRING_EQUAL:
 		result = stringComparator.strongEqual(operand1,operand2);
+		break;
+	case EXACTLY_EQUAL:
+		result = operand1->equal(operand2);
 		break;
 	}
 

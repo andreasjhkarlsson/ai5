@@ -32,6 +32,7 @@ public:
 	virtual int toInteger32()=0;
 	virtual bool toBoolean()=0;
 	virtual shared_string toString()=0;
+	virtual bool equal(Variant*)=0;
 	virtual void cleanup();
 	__forceinline void addRef();
 	__forceinline void release();

@@ -43,3 +43,8 @@ shared_string NullVariant::toString()
 {
 	return create_shared_string(L"Null");
 }
+
+bool NullVariant::equal(Variant* other)
+{
+	return getType() == other->getType();
+}

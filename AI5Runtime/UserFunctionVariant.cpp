@@ -21,3 +21,10 @@ int UserFunctionVariant::getAddress()
 {
 	return address;
 }
+
+
+bool UserFunctionVariant::equal(Variant* other)
+{
+	return (getType() != other->getType()) &&
+		(address == static_cast<UserFunctionVariant*>(other)->address);
+}

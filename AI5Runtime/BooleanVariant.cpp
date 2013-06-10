@@ -61,3 +61,9 @@ BooleanVariant* BooleanVariant::Get(bool value)
 		return &True;
 	return &False;
 }
+
+bool BooleanVariant::equal(Variant* other)
+{
+	return getType() == other->getType() &&
+			(value == static_cast<BooleanVariant*>(other)->value);
+}

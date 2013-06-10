@@ -23,3 +23,10 @@ std::wostream& BuiltinFunctionVariant::format(std::wostream& stream)
 	stream << "Builtin function: " << name.c_str();
 	return stream;
 }
+
+
+bool BuiltinFunctionVariant::equal(Variant* other)
+{
+	return getType() == other->getType() &&
+			(func == static_cast<BuiltinFunctionVariant*>(other)->func);
+}

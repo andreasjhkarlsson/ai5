@@ -8,6 +8,7 @@ public:
 	~UserFunctionVariant(void);
 	std::wostream& format(std::wostream& stream);
 	int getAddress();
+	virtual bool equal(Variant*);
 private:
 	int address;
 };

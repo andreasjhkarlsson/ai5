@@ -103,3 +103,10 @@ void NameVariant::clearLastName()
 	}
 
 }
+
+
+bool NameVariant::equal(Variant* other)
+{
+	// Only compare equal for exactly the same instance.
+	return this == other;
+}

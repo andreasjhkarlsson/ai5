@@ -13,6 +13,7 @@ public:
 	virtual int toInteger32();
 	virtual bool toBoolean();
 	virtual shared_string toString();
+	virtual bool equal(Variant*);
 private:
 	shared_string str;
 };

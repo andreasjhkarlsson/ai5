@@ -571,7 +571,8 @@ class Compiler:
                  OperatorToken.BOOLEAN_AND: BooleanAndInstruction,
                  OperatorToken.BOOLEAN_OR: BooleanOrInstruction,
                  OperatorToken.CONCAT: ConcatInstruction,
-                 OperatorToken.STRONG_STRING_EQUAL: StrongStringEqualInstruction
+                 OperatorToken.STRONG_STRING_EQUAL: StrongStringEqualInstruction,
+                 OperatorToken.EXACTLY_EQUAL: ExactlyEqualInstruction
                  }[token.value]()]
         
         

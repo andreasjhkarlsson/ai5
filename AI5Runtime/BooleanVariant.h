@@ -8,6 +8,7 @@ public:
 	virtual __int64 toInteger64();
 	virtual int toInteger32();
 	virtual bool toBoolean();
+	virtual bool equal(Variant*);
 	std::wostream& format(std::wostream& stream);
 	static BooleanVariant True;
 	static BooleanVariant False;

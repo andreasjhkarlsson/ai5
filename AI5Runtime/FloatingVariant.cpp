@@ -50,3 +50,10 @@ FloatingVariant* FloatingVariant::createFromFactory(VariantFactory* factory,doub
 {
 	return factory->create<FloatingVariant,double>(Variant::FLOATING,value);
 }
+
+
+bool FloatingVariant::equal(Variant* other)
+{
+	return getType() == other->getType() &&
+			(value == static_cast<FloatingVariant*>(other)->value);
+}

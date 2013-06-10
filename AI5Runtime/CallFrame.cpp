@@ -9,7 +9,6 @@ CallFrame::~CallFrame(void)
 {
 }
 
-
 void CallFrame::setup(StackMachine* machine,int returnAddress,int numberOfArguments,CallFrame* parentFrame)
 {
 	this->returnAddress = returnAddress;
@@ -31,7 +30,6 @@ Scope* CallFrame::getScope()
 	return &scope;
 }
 
-
 void CallFrame::recycleInstance()
 {
 	CallFrame::returnInstance(this);
@@ -40,14 +38,12 @@ void CallFrame::recycleInstance()
 int CallFrame::getReturnAddress()
 {
 	return returnAddress;
-
 }
 
 CallFrame* CallFrame::getParentFrame()
 {
 	return this->parentFrame;
 }
-
 
 void CallFrame::addArgument(const Argument& arg)
 {
@@ -60,7 +56,6 @@ void CallFrame::loadArguments(StackMachine* machine,int total,int required)
 		throw RuntimeError(L"Too many arguments in function call");
 	if(numberOfArguments < required)
 		throw RuntimeError(L"Too few arguments in function call");
-
 
 	for(int argIndex=arguments.size()-1;argIndex>=0;argIndex--)
 	{
@@ -78,5 +73,4 @@ void CallFrame::loadArguments(StackMachine* machine,int total,int required)
 
 		varArg->release();
 	}
-
 }

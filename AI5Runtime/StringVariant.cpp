@@ -44,3 +44,8 @@ shared_string StringVariant::toString()
 	return str;
 }
 
+bool StringVariant::equal(Variant* other)
+{
+	return (getType() != other->getType()) &&
+		(wcscmp(str->c_str(),static_cast<StringVariant*>(other)->str->c_str()) == 0);
+}

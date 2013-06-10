@@ -48,3 +48,10 @@ shared_string Integer64Variant::toString()
 	stream << value;
 	return create_shared_string(stream.str());
 }
+
+
+bool Integer64Variant::equal(Variant* other)
+{
+	return getType() == other->getType() &&
+			(value == static_cast<Integer64Variant*>(other)->value);
+}

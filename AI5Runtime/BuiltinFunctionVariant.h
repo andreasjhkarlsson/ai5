@@ -13,6 +13,7 @@ public:
 	~BuiltinFunctionVariant(void);
 	void call(StackMachine* machine,int numberOfArguments);
 	std::wostream& format(std::wostream& stream);
+	virtual bool equal(Variant*);
 private:
 	BuiltinFunctionPointer func;
 	std::wstring name;

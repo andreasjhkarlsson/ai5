@@ -11,6 +11,7 @@ public:
 	virtual __int64 toInteger64();
 	virtual int toInteger32();
 	virtual bool toBoolean();
+	virtual bool equal(Variant*);
 	std::wostream& format(std::wostream& stream);
 	virtual shared_string toString();
 	double getValue()

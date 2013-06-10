@@ -91,6 +91,7 @@ public:
     static const INSTRUCTION_TYPE CREATE_ARGUMENT               = 0x47;
     static const INSTRUCTION_TYPE CREATE_BYREF_ARGUMENT         = 0x48;
     static const INSTRUCTION_TYPE LOAD_ARGUMENTS                = 0x49;
+	static const INSTRUCTION_TYPE EXACTLY_EQUAL					= 0x50;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -286,6 +287,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case LOAD_ARGUMENTS:
 		loadArguments(machine,arg.bytePair.b1,arg.bytePair.b2);
+		break;
+	case EXACTLY_EQUAL:
+		comparisonInstruction(machine,COMPARISON_TYPE::EXACTLY_EQUAL);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

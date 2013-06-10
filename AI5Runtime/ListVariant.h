@@ -12,6 +12,7 @@ public:
 	virtual __int64 toInteger64();
 	virtual int toInteger32();
 	virtual bool toBoolean();
+	virtual bool equal(Variant*);
 	virtual shared_string toString();
 	void addElement(Variant* var);
 	Variant* getElement(size_t index);

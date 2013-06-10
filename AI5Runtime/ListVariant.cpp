@@ -102,3 +102,23 @@ void ListVariant::deleteAt(size_t index)
 {
 	list->erase(list->begin()+index);
 }
+
+bool ListVariant::equal(Variant* other)
+{
+	if(getType() != other->getType())
+		return false;
+
+	ListVariant* otherList = static_cast<ListVariant*>(other);
+
+	if(list->size() != otherList->list->size())
+		return false;
+
+	for(size_t index = 0; index < list->size(); index++)
+	{
+		if(!(*list)[index]->equal((*otherList->list)[index]))
+			return false;
+	}
+
+	return true;
+
+}

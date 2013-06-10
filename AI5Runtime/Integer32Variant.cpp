@@ -45,3 +45,10 @@ shared_string Integer32Variant::toString()
 	stream << value;
 	return create_shared_string(stream.str());
 }
+
+
+bool Integer32Variant::equal(Variant* other)
+{
+	return getType() == other->getType() &&
+			(value == static_cast<Integer32Variant*>(other)->value);
+}
