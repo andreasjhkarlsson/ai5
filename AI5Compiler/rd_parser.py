@@ -240,6 +240,7 @@ class Enum(Rule):
 
 class EnumList(Rule):
     type = Rule.ENUMLIST
+    NODE_CONSTANTS = "constants"
     @staticmethod
     def match(parser):
         if not parser.acceptRule(EnumConstant):
@@ -247,36 +248,36 @@ class EnumList(Rule):
         nodes = [parser.matched_rule]
         while parser.accept(Token.COMMA):
             nodes.append(parser.expectRule(EnumConstant))
-        return EnumList(nodes)
+        return EnumList({EnumList.NODE_CONSTANTS:nodes})
 
 
 class EnumConstant(Rule):
     type = Rule.ENUM_CONSTANT
     NODE_IDENTIFIER = "identifier"
-    NODE_ASSIGNMENT = "assignment"
+    NODE_VALUE = "value"
     @staticmethod
     def match(parser):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {EnumConstant.NODE_IDENTIFIER:parser.current}
-        if parser.acceptRule(Assignment):
-            nodes[EnumConstant.ASSIGNMENT]=parser.matched_rule
+        if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
+            nodes[EnumConstant.NODE_VALUE]=parser.expect(Token.INTEGER)
         return EnumConstant(nodes)
 
         
         
 class EnumStep(Rule):
     type = Rule.ENUM_STEP
-    NODE_INTERVAL = "interval"
-    NODE_STEP = "step"
+    NODE_OPERATOR = "operator"
+    NODE_VALUE = "step"
     @staticmethod
     def match(parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.STEP):
             return None
         nodes = {}
         if parser.accept(Token.OPERATOR,OperatorToken.ADD) or parser.accept(Token.OPERATOR,OperatorToken.SUBTRACT) or parser.accept(Token.OPERATOR,OperatorToken.MULTIPLY):
-            nodes[EnumStep.NODE_INTERVAL]=parser.current
-        nodes[EnumStep.NODE_STEP]=parser.expect(Token.INTEGER)
+            nodes[EnumStep.NODE_OPERATOR]=parser.current
+        nodes[EnumStep.NODE_VALUE]=parser.expect(Token.INTEGER)
         return EnumStep(nodes)
             
 

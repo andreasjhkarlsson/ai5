@@ -166,7 +166,7 @@ class Compiler:
         scope_token = declaration.nodes[Declaration.NODE_SCOPE]
 
         is_const = Declaration.NODE_CONST in declaration.nodes
-        
+        const_instruction = None
         if scope_token.value == KeywordToken.DIM:
             assignment_instruction = AssignNearestInstruction
             if is_const:
@@ -179,6 +179,11 @@ class Compiler:
             assignment_instruction = AssignLocalInstruction
             if is_const:
                 const_instruction = MakeLocalConstInstruction
+
+        if Declaration.NODE_ENUM in declaration.nodes:
+            code += self.compile_enum(declaration.nodes[Declaration.NODE_ENUM],assignment_instruction,const_instruction)
+            return code
+
 
 
         for variable in declaration.nodes[Declaration.NODE_VARIABLES]:
@@ -385,6 +390,39 @@ class Compiler:
         code += [RedimMultiDimListInstruction(len(redim.nodes[ReDim.NODE_QUALIFIERS]))]
         return code
 
+    def compile_enum(self,enum,assignment_instruction=AssignNearestInstruction,const_instruction=None):
+        code = []
+        value = 0
+        if Enum.NODE_STEP in enum.nodes:
+            
+            step = enum.nodes[Enum.NODE_STEP]
+            step_value = step.nodes[EnumStep.NODE_VALUE].value
+            if EnumStep.NODE_OPERATOR in step.nodes:
+                op = step.nodes[EnumStep.NODE_OPERATOR]
+                if op.value == OperatorToken.ADD:
+                    step_function = lambda x:x+step_value
+                elif op.value == OperatorToken.SUBTRACT:
+                    step_function = lambda x:x-step_value
+                elif op.value == OperatorToken.MULTIPLY:
+                    step_function = lambda x:x*step_value
+                    value = 1
+            else:
+                step_function = lambda x:x+step_value
+        else:
+            step_function = lambda x:x+1
+
+        for constant in enum.nodes[Enum.NODE_ENUM_LIST].nodes[EnumList.NODE_CONSTANTS]:
+            if EnumConstant.NODE_VALUE in constant.nodes:
+                value = constant.nodes[EnumConstant.NODE_VALUE].value
+            code += [PushInteger32Instruction(self.static_table.get_integer32_id(value))]
+            ident = self.get_identifier(constant.nodes[EnumConstant.NODE_IDENTIFIER].value)
+            code += [assignment_instruction(ident)]
+            if const_instruction:
+                code += [const_instruction(ident)]
+            value = step_function(value)
+        return code
+            
+
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
         
@@ -412,6 +450,8 @@ class Compiler:
             return self.compile_exitloop(substatement)
         if substatement.type == ReDim.REDIM:
             return self.compile_redim(substatement)
+        if substatement.type == Enum.ENUM:
+            return self.compile_enum(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []

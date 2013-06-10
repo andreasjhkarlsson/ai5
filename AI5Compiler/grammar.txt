@@ -41,4 +41,4 @@
 <with> = "with", <expression>, "newline", {".", <line statement>, "newline"}, "endwith"
 <redim> = "redim",<terminal>,{<qualifier>}
 <enum> = "enum", ["step", ["+"|"-"|"*"], <integer>], <enum constant>{",",<enum constant>}
-<enum constant> = <identifier>,[<assignment>]
+<enum constant> = <identifier>,["=",<integer>]
