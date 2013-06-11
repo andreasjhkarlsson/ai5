@@ -1,50 +1,19 @@
-
 import re
+import os
+import codecs
 
-class LexError(Exception):
-    def __init__(self,message,line_number=-1):
-        self.message = message
+COMPILER_INCLUDE_DIRECTORY = "C:\\"
+
+class Source:
+    def __init__(self,filename,line_number):
+        self.filename = filename
         self.line_number = line_number
 
-def lex_string(string):
-    
-    token_classes = [IncludeFileToken,CommaToken,LeftParenToken,RightParenToken,LeftBracketToken,RightBracketToken, KeywordToken,
-                     FloatingToken,DotToken,MacroToken,CommentToken,DirectiveToken,NewlineToken,WhitespaceToken,
-                     OperatorToken,IntegerToken,StringToken,BooleanToken,IdentifierToken]
-    tokens = []
-    
-    offset = 0
+class LexError(Exception):
+    def __init__(self,message,source):
+        self.message = message
+        self.source = source
 
-    line_number = 1
- 
-    while len(string) > offset:
-        for token_class in token_classes:
-            result = token_class.match(string,offset)
-            if result:
-                new_token = result[0]
-                new_token.line_number = line_number
-                offset += result[1]
-                line_number += result[2]
-                
-                do_not_append = False
-                if new_token.type == Token.NEWLINE:
-                    if len(tokens) > 2:
-                        if tokens[-1].type == Token.IDENTIFIER and tokens[-1].value == "_":
-                            tokens = tokens[:-1]
-                            do_not_append = True
-                                
-                
-                
-                if new_token.type != Token.WHITESPACE and new_token.type != Token.COMMENT and not do_not_append:
-                    tokens.append(new_token)
-                break
-        else:
-            raise LexError("Could not scan string: "+string[offset:],line_number)
-    eof=EOFToken()
-    eof.line_number = line_number
-    tokens.append(eof)    
-    
-    return tokens
 
 #Match a regex on string starting at offset.
 # Returns the match as a string, if any or None.
@@ -104,15 +73,25 @@ class Token(object):
             return cls(cls.value_transform(res)), len(res), cls.count_lines(res)
         return None        
 
+
+class IncludeFile:
+    SCRIPT_RELATIVE = "script relative"
+    COMPILER_RELATIVE = "runtime relative"
+    def __init__(self,type,path):
+        self.type = type
+        self.path = path
+
 class IncludeFileToken(Token):
     type = Token.INCLUDE_FILE
     expr = re.compile(r'''#(\w|\-)+\s+((<[^>]+>)|"[^"]+")''')
     @classmethod
     def value_transform(cls,value):
         quote_char = value[-1]
+        type = IncludeFile.SCRIPT_RELATIVE
         if quote_char == ">":
             quote_char = "<"
-        return value[value.find(quote_char)+1:-1]
+            type = IncludeFile.COMPILER_RELATIVE
+        return IncludeFile(type,value[value.find(quote_char)+1:-1])
     
 class EOFToken(Token):
     type = Token.EOF
@@ -320,3 +299,78 @@ class KeywordToken(Token):
         return value.lower().rstrip()
 
 
+class Lexer:
+    TOKEN_CLASSES = [IncludeFileToken,CommaToken,LeftParenToken,RightParenToken,LeftBracketToken,RightBracketToken, KeywordToken,
+                     FloatingToken,DotToken,MacroToken,CommentToken,DirectiveToken,NewlineToken,WhitespaceToken,
+                     OperatorToken,IntegerToken,StringToken,BooleanToken,IdentifierToken]
+    def __init__(self):
+        self.file_skip_filter = set()
+
+    def get_script_directory(self,filename):
+        dir = os.path.dirname(filename)
+        if dir == "":
+            dir = os.getcwd()
+        return dir+"\\"
+
+    def get_included_file(self,source_file,include_file):
+        if include_file.type == IncludeFile.COMPILER_RELATIVE:
+            full_path = COMPILER_INCLUDE_DIRECTORY + include_file.path
+        else:
+            full_path = self.get_script_directory(source_file) + include_file.path
+        include_file_handle = codecs.open(full_path,"r","utf-8")
+        include_file_string = include_file_handle.read()
+        include_file_handle.close()
+        tokens = self.lex_string(include_file_string,full_path)  
+        if len(tokens) > 0: tokens.pop(-1)   # Pop EOF token as this is just an include :)
+        return tokens
+
+    def lex_string(self,string,source_file):
+
+        tokens = []
+
+        # This file has been specified to be included only once (include-once)
+        if source_file in self.file_skip_filter:
+            return tokens
+    
+        offset = 0
+
+        line_number = 1
+ 
+        while len(string) > offset:
+            for token_class in Lexer.TOKEN_CLASSES:
+                result = token_class.match(string,offset)
+                if result:
+                    new_token = result[0]
+                    new_token.source = Source(source_file,line_number)
+                    offset += result[1]
+                    line_number += result[2]
+                
+                    do_not_append = False
+                    if new_token.type == Token.NEWLINE:
+                        if len(tokens) > 2:
+                            if tokens[-1].type == Token.IDENTIFIER and tokens[-1].value == "_":
+                                tokens = tokens[:-1]
+                                do_not_append = True
+                                
+                    if new_token.type == Token.INCLUDE_FILE:
+                        tokens += self.get_included_file(source_file,new_token.value)
+                        do_not_append = True     
+                        
+                    if new_token.type == Token.DIRECTIVE:
+                        if new_token.value == "include-once":
+                            self.file_skip_filter.add(source_file)  
+                            do_not_append = True       
+                
+                    if new_token.type != Token.WHITESPACE and new_token.type != Token.COMMENT and not do_not_append:
+                        tokens.append(new_token)
+
+
+
+                    break
+            else:
+                raise LexError("Could not scan string: "+string[offset:],Source(source_file,line_number))
+        eof=EOFToken()
+        eof.source = Source(source_file,line_number)
+        tokens.append(eof)    
+    
+        return tokens

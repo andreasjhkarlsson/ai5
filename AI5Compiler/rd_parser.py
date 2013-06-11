@@ -3,9 +3,9 @@ import lexer
 from lexer import Token, KeywordToken, OperatorToken
 
 class ParseError(Exception):
-    def __init__(self,message,line_number):
+    def __init__(self,message,source):
         self.message = message;
-        self.line_number = line_number
+        self.source = source
 
 class Parser:
     
@@ -52,9 +52,9 @@ class Parser:
     def expect(self,token_type,value=None):
         self.next()
         if self.current.type != token_type:
-            raise ParseError("Expected "+token_type+" but found "+self.current.type+" with value "+str(self.current.value),self.current.line_number)
+            raise ParseError("Expected "+token_type+" but found "+self.current.type+" with value "+str(self.current.value),self.current.source)
         if value != None and self.current.value != value:
-            raise ParseError("Expected: "+token_type+" with value: "+str(value),self.current.line_number)
+            raise ParseError("Expected: "+token_type+" with value: "+str(value),self.current.source)
         return self.current
     # Match a rule and return None if it doesn't match.
     def acceptRule(self,rule_class):
@@ -70,7 +70,7 @@ class Parser:
     def expectRule(self,rule_class):
         self.matched_rule = rule_class.match(self)
         if not self.matched_rule:
-            raise ParseError("Expected "+rule_class.__name__+" but found "+str(self.peek().type),self.peek().line_number)
+            raise ParseError("Expected "+rule_class.__name__+" but found "+str(self.peek().type),self.peek().source)
         return self.matched_rule
     # Expect token of newline type.
     def expectNewline(self):
@@ -115,7 +115,6 @@ class Rule:
     ELSEIF = "rule_elseif"
     ELSE = "rule_else"
     DIRECTIVE = "rule_directive"
-    INCLUDE = "rule_include"
     UNARY_OPERATOR = "rule_unary_operator"
     FACTOR = "rule_factor"
     INLINE_LIST = "rule_inline_list"
@@ -338,7 +337,7 @@ class Statement(Rule):
     NODE_SUBSTATEMENT = "substatement"
     @staticmethod
     def match(parser):
-        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Include,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
+        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
             return Statement({Statement.NODE_SUBSTATEMENT:parser.matched_rule})
         #if parser.acceptRule(Expression):
         #    return Statement([parser.matched_rule])
@@ -705,17 +704,7 @@ class Directive(Rule):
             parser.skip_to_newline()
             return Directive({Directive.NODE_TYPE:token})
         
-        return None
-    
-class Include(Rule):
-    type = Rule.INCLUDE
-    NODE_TOKEN = "token"
-    @staticmethod
-    def match(parser):
-        if parser.accept(Token.INCLUDE_FILE):
-            token = parser.current
-            return Include({Include.NODE_TOKEN:token})
-        
+        return None        
         
 class UnaryOperator(Rule):
     type = Rule.UNARY_OPERATOR

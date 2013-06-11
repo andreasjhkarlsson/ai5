@@ -6,9 +6,9 @@ from runtime_types import StaticType
 import struct
 
 class CompileError(Exception):
-    def __init__(self,message,line_number=-1):
+    def __init__(self,message,source):
         self.message = message;
-        self.line_number = line_number
+        self.source = source
 
 def warn(str):
     print("Compiler warning: ",str)
