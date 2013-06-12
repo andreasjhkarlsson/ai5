@@ -11,6 +11,8 @@ struct Argument
 	bool isByref;
 };
 
+// Stores all information about a function call to a user defined function.
+// Call setup function each time an instance is to be used.
 class CallFrame: public Block, public PooledObject<CallFrame> 
 {
 public:

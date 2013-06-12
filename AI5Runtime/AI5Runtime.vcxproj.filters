@@ -96,6 +96,9 @@
     <ClCompile Include="DefaultVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="GeneralBlock.cpp">
+      <Filter>blocks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StackMachine.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="DefaultVariant.h">
       <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralBlock.h">
+      <Filter>blocks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
