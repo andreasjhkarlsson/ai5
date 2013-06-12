@@ -257,6 +257,10 @@ class EqualInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.EQUAL)
 
+class NotEqualInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.NOT_EQUAL)
+
 class StrongStringEqualInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.STRONG_STRING_EQUAL)

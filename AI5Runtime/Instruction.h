@@ -186,6 +186,9 @@ void Instruction::execute(StackMachine* machine)
 	case EQUAL:
 		comparisonInstruction(machine,COMPARISON_TYPE::EQUAL);
 		break;
+	case NOT_EQUAL:
+		comparisonInstruction(machine,COMPARISON_TYPE::NOT_EQUAL);
+		break;
 	case STRONG_STRING_EQUAL:
 		comparisonInstruction(machine,COMPARISON_TYPE::STRONG_STRING_EQUAL);
 		break;
