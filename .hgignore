@@ -1,3 +1,9 @@
 syntax: glob
 *.pyc
 *.vsp
+AI5Runtime/x64*
+AI5StandardLibrary/x64/*
+AI5Compiler/AI5Compiler.v11.suo
+AI5Runtime/AI5Runtime.v11.suo
+AI5Runtime/AI5Runtime.sdf
+AI5Runtime/AI5Runtime.opensdf

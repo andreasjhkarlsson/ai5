@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
@@ -25,14 +17,11 @@
     <Filter Include="stacks">
       <UniqueIdentifier>{bbe8336a-5967-4f3b-a680-d924af5cdf74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="general">
+      <UniqueIdentifier>{5eac65d7-3c21-4c35-9b96-b5e2edc72c49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StackMachine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Instruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
@@ -57,9 +46,6 @@
     <ClCompile Include="BuiltinFunctionVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
-    <ClCompile Include="ProgramLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StringVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
@@ -74,9 +60,6 @@
     </ClCompile>
     <ClCompile Include="NameVariant.cpp">
       <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="Scope.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="misc_instructions.cpp">
       <Filter>instructions</Filter>
@@ -99,14 +82,20 @@
     <ClCompile Include="GeneralBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgramLoader.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="Scope.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="StackMachine.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StackMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Static.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="operators.h">
       <Filter>instructions</Filter>
     </ClInclude>
@@ -143,17 +132,8 @@
     <ClInclude Include="UserFunctionVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
-    <ClInclude Include="ProgramLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StringVariant.h">
       <Filter>variants</Filter>
-    </ClInclude>
-    <ClInclude Include="encode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="types.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ListVariant.h">
       <Filter>variants</Filter>
@@ -170,26 +150,11 @@
     <ClInclude Include="NameVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
-    <ClInclude Include="Scope.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="macro.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RuntimeError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimplePool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Block.h">
       <Filter>blocks</Filter>
     </ClInclude>
     <ClInclude Include="CallFrame.h">
       <Filter>blocks</Filter>
-    </ClInclude>
-    <ClInclude Include="PooledObject.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LoopBlock.h">
       <Filter>blocks</Filter>
@@ -211,6 +176,36 @@
     </ClInclude>
     <ClInclude Include="GeneralBlock.h">
       <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="encode.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="macro.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="PooledObject.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgramLoader.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="RuntimeError.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="Scope.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="SimplePool.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="StackMachine.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="Static.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="types.h">
+      <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
