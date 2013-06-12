@@ -12,7 +12,7 @@ namespace AI5StandardLibrary
 		machine->addBuiltInFunction(L"getint",getint);
 		machine->addBuiltInFunction(L"stringlen",stringlen);
 		machine->addBuiltInFunction(L"ubound",ubound);
-
+		machine->addBuiltInFunction(L"arrayadd",arrayadd);
 
 
 		machine->addMacro(L"autoitpid",Macros::MyPID);

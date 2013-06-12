@@ -14,7 +14,26 @@ BuiltinFunctionVariant::~BuiltinFunctionVariant(void)
 
 void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
 {
-	func(machine);
+	// TODO: Make this thread safe!
+	static Variant* passedArgs[MAX_ARGS];
+
+	// Get the arguments for the function.
+	for(int i=0;i<numberOfArguments;i++)
+	{
+		passedArgs[i] = machine->getDataStack()->get(numberOfArguments-(i+1));
+	}
+
+	// Pop of the arguments + the function object (this), which resides below the arguments.
+	machine->getDataStack()->popMany(numberOfArguments+1);
+
+	// Call the function!!1!
+	Variant* result = func(passedArgs,numberOfArguments);
+
+	// Release arguments.
+	for(int i=0;i<numberOfArguments;i++)
+		passedArgs[i]->release();
+
+	machine->getDataStack()->push(result);
 	machine->advanceCounter();
 }
 

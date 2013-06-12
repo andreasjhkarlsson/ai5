@@ -9,67 +9,59 @@
 namespace AI5StandardLibrary
 {
 
-void hello(StackMachine* machine)
+Variant* hello(Variant** args,int argsSize)
 {
-	machine->getDataStack()->pop(); // <-- self
 	std::cout << "Hello there!" << std::endl;
-	machine->getDataStack()->pushNull();
+	NullVariant::Instance.addRef();
+	return &NullVariant::Instance;
 }
 
-void sleep(StackMachine* machine)
+Variant* sleep(Variant** args,int argsSize)
 {
-	Variant* var = machine->getDataStack()->pop();
-	machine->getDataStack()->pop(); // <-- self
+	Variant* var = args[0];
 
 	int sleepDelay = var->toInteger32();
-	var->release();
+
 	Sleep(sleepDelay);
-	machine->getDataStack()->pushNull();
+	NullVariant::Instance.addRef();
+	return &NullVariant::Instance;
 }
 
-void printline(StackMachine* machine)
+Variant* printline(Variant** args,int argsSize)
 {
-	Variant* var = machine->getDataStack()->pop();
-	machine->getDataStack()->pop();
+	Variant* var = args[0];
 
 	var->format(std::wcout);
 	std::wcout << std::endl;
 
-	var->release();
-	machine->getDataStack()->pushNull();
+	NullVariant::Instance.addRef();
+	return &NullVariant::Instance;
 }
 
 
-void getint(StackMachine* machine)
+Variant* getint(Variant** args,int argsSize)
 {
-	machine->getDataStack()->pop();
-
 	__int64 res;
 	std::cin >> res;
-
-	machine->getDataStack()->push(new Integer64Variant(res));
+	return new Integer64Variant(res);
 }
 
-void stringlen(StackMachine* machine)
+Variant* stringlen(Variant** args,int argsSize)
 {
-	Variant* var = machine->getDataStack()->pop();
-	machine->getDataStack()->pop();
+	Variant* var = args[0];
 
 	size_t result = var->toString()->length();
 
-	var->release();
-
-	machine->getDataStack()->push(new Integer64Variant(result));
-
+	return new Integer64Variant(result);
 }
 
 
 
-void ubound(StackMachine* machine)
+Variant* ubound(Variant** args,int argsSize)
 {
-	Variant* var = machine->getDataStack()->pop();
+	Variant* var = args[0];
 	Variant* result;
-	machine->getDataStack()->pop();
+
 
 	if(var->isListType())
 	{
@@ -81,10 +73,24 @@ void ubound(StackMachine* machine)
 		result->addRef();
 	}
 
-	var->release();
 
-	machine->getDataStack()->push(result);
+	return result;
 
+}
+
+
+Variant* arrayadd(Variant** args,int argsSize)
+{
+	Variant* listArg = args[0];
+	Variant* elementArg = args[1];
+
+	if(!listArg->isListType())
+		throw RuntimeError(L"Can only add element to list type.");
+
+	static_cast<ListVariant*>(listArg)->addElement(elementArg);
+
+	NullVariant::Instance.addRef();
+	return &NullVariant::Instance;
 }
 
 Variant* Macros::MyPID(StackMachine*)

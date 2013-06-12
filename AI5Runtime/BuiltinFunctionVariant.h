@@ -1,9 +1,10 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "FunctionVariant.h"
 class StackMachine;
 
-typedef void (*BuiltinFunctionPointer)(StackMachine*);
+typedef Variant* (*BuiltinFunctionPointer)(Variant** args,int argsSize);
 
 class BuiltinFunctionVariant :
 	public FunctionVariant
@@ -17,5 +18,7 @@ public:
 private:
 	BuiltinFunctionPointer func;
 	std::wstring name;
+	std::vector<Variant*> passedArgs;
+	static const int MAX_ARGS = 128;
 };
 
