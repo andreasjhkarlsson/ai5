@@ -318,6 +318,25 @@ class Compiler:
         code[0].continue_address = UnresolvedAbsoluteAddress(len(code)-len(compiled_condition)-2)
         code[0].exit_address = UnresolvedAbsoluteAddress(len(code))
 
+        return code
+
+    def compile_select(self,select):
+        code = []
+
+        for index,case in enumerate(select.nodes[Select.NODE_CASE_LIST]):
+            compiled_body = self.compile_block(case.nodes[SelectCase.NODE_BODY])
+            compiled_body += [JumpInstruction("END")]
+            if SelectCase.NODE_ELSE in case.nodes:
+                if index != len(select.nodes[Select.NODE_CASE_LIST])-1:
+                    raise CompileError("else must be the last case statement in select statement",case.nodes[SelectCase.NODE_ELSE].source)
+            else:
+                code += self.compile_expression(case.nodes[SelectCase.NODE_CONDITION])
+                code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+1))]           
+            code += compiled_body
+
+        for pos,instruction in enumerate(code):
+            if hasattr(instruction,"address") and instruction.address == "END":
+                instruction.address = RelativeAddress(len(code)-pos)
 
         return code
 
@@ -465,10 +484,12 @@ class Compiler:
             return self.compile_continueloop(substatement)
         if substatement.type == Rule.EXITLOOP:
             return self.compile_exitloop(substatement)
-        if substatement.type == ReDim.REDIM:
+        if substatement.type == Rule.REDIM:
             return self.compile_redim(substatement)
-        if substatement.type == Enum.ENUM:
+        if substatement.type == Rule.ENUM:
             return self.compile_enum(substatement)
+        if substatement.type == Rule.SELECT:
+            return self.compile_select(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []

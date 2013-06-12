@@ -14,7 +14,7 @@
 <switchchase> = "case",<switchcondition>,{",",<switchcondition>},"newline",[<block>]
 <switchcondition> = <expression>,["to",<expression>]
 <select> = "select", "newline", {<selectcase>}, "endselect"
-<selectcase> = "case",<expression>,"newline",<block>
+<selectcase> = "case",("else"|<expression>),"newline",<block>
 <function> = "func",<identifier>,<argument list>,"newline",[<block>], "endfunc", "newline"
 <argument list> = "(",<argument>,{",",<argument>} ")"
 <argument> = [["byref"], <identifier>, ["=",<terminal>]]

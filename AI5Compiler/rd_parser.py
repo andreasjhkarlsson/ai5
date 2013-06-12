@@ -126,6 +126,8 @@ class Rule:
     EXPRESSION = "rule_expression"
     PROGRAM = "rule_program"
     NUMBER_TERMINAL = "rule_number_terminal"
+    SELECT = "rule_select"
+    SELECT_CASE = "rule_select_case"
     
     def __init__(self,nodes):
         self.nodes = nodes
@@ -332,12 +334,46 @@ class LineStatement(Rule):
             nodes[LineStatement.NODE_ASSIGNMENT] = parser.matched_rule
         return LineStatement(nodes)
 
+class Select(Rule):
+    type = Rule.SELECT
+    NODE_CASE_LIST = "case_list"
+    @staticmethod
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.SELECT):
+            return None
+        parser.expect(Token.NEWLINE)
+        case_list = []
+        case_list += [parser.expectRule(SelectCase)]
+        while parser.acceptRule(SelectCase):
+            case_list += [parser.matched_rule]
+        parser.expect(Token.KEYWORD,KeywordToken.ENDSELECT)
+        return Select({Select.NODE_CASE_LIST:case_list})
+
+class SelectCase(Rule):
+    type = Rule.SELECT_CASE
+    NODE_CONDITION = "condition"
+    NODE_BODY = "body"
+    NODE_ELSE = "else"
+    def match(parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.CASE):
+            return None
+        nodes = {}
+        if parser.accept(Token.KEYWORD,KeywordToken.ELSE):
+            nodes[SelectCase.NODE_ELSE] = parser.current
+        else:
+            nodes[SelectCase.NODE_CONDITION] = parser.expectRule(Expression)
+        parser.expect(Token.NEWLINE)
+        nodes[SelectCase.NODE_BODY] = parser.expectRule(Block)
+        return SelectCase(nodes)
+        
+
+
 class Statement(Rule):
     type = Rule.STATEMENT
     NODE_SUBSTATEMENT = "substatement"
     @staticmethod
     def match(parser):
-        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,LineStatement]):
+        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,Select,LineStatement]):
             return Statement({Statement.NODE_SUBSTATEMENT:parser.matched_rule})
         #if parser.acceptRule(Expression):
         #    return Statement([parser.matched_rule])
