@@ -161,8 +161,8 @@ class Compiler:
 
         compiled_body += [LoadArgumentsInstruction(len(arguments),without_default)]   + compiled_arguments_init        
 
-        
-        compiled_body += self.compile_block(function.nodes[Function.NODE_BODY])
+        if Function.NODE_BODY in function.nodes:
+            compiled_body += self.compile_block(function.nodes[Function.NODE_BODY])
         
         compiled_body += [PushNullInstruction(),RetInstruction()]
         
