@@ -296,7 +296,6 @@ class Compiler:
                 consumed_instructions += 1
 
             consumed_instructions += len(body)-1
-            print(number_of_instructions,consumed_instructions)
             body[-1].address = RelativeAddress(number_of_instructions - consumed_instructions)
             consumed_instructions += 1
 
@@ -608,6 +607,8 @@ class Compiler:
             return self.compile_select(substatement)
         if substatement.type == Rule.SWITCH:
             return self.compile_switch(substatement)
+        warn("No compiler found for statement: "+substatement.type)
+        return []
                 
     def compile_list_indexing(self,indexing):
         code = []

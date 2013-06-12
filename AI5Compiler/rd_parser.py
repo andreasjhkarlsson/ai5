@@ -183,7 +183,8 @@ class DeclarationAssignment(Rule):
         subscripts = []
         while parser.acceptRule(ListIndexing):
             subscripts.append(parser.matched_rule)
-        nodes[DeclarationAssignment.NODE_SUBSCRIPTS] = subscripts
+        if len(subscripts)>0:
+            nodes[DeclarationAssignment.NODE_SUBSCRIPTS] = subscripts
 
         if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
             nodes[DeclarationAssignment.NODE_VALUE_EXPRESSION] = parser.expectRule(Expression)
