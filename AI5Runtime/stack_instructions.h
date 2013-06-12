@@ -5,6 +5,7 @@
 #include "RuntimeError.h"
 #include "LoopBlock.h"
 #include "DefaultVariant.h"
+#include "GeneralBlock.h"
 
 __forceinline void pushInteger64(StackMachine* machine,int arg)
 {
@@ -187,5 +188,26 @@ __forceinline void popBlock(StackMachine* machine)
 {
 	machine->getBlockStack()->top()->leave(machine);
 	machine->getBlockStack()->pop()->recycleInstance();
+	machine->advanceCounter();
+}
+
+
+
+__forceinline void pushGeneralBlock(StackMachine* machine)
+{
+	GeneralBlock* block = GeneralBlock::getInstance();
+	block->setup(machine);
+	
+	machine->getBlockStack()->push(block);
+
+	machine->advanceCounter();
+}
+
+__forceinline void swapTop(StackMachine* machine)
+{
+	Variant* v1 = machine->getDataStack()->pop();
+	Variant* v2 = machine->getDataStack()->pop();
+	machine->getDataStack()->push(v1);
+	machine->getDataStack()->push(v2);
 	machine->advanceCounter();
 }

@@ -631,15 +631,20 @@ class Switch(Rule):
     
 class SwitchCondition(Rule):
     type = Rule.SWITCH_CONDITION
-    NODE_FIRST = "first"
-    NODE_SECOND = "second"
+    NODE_FROM = "from"
+    NODE_TO = "to"
+    NODE_ELSE = "else"
     @staticmethod
     def match(parser):
+
+        if parser.accept(Token.KEYWORD,KeywordToken.ELSE):
+            return SwitchCondition({SwitchCondition.NODE_ELSE:parser.current})
+
         if not parser.acceptRule(Expression):
             return None
-        nodes = {SwitchCondition.NODE_FIRST: parser.matched_rule}
+        nodes = {SwitchCondition.NODE_FROM: parser.matched_rule}
         if parser.accept(Token.KEYWORD,KeywordToken.TO):
-            nodes[SwitchCondition.NODE_SECOND]=parser.expectRule(Expression)
+            nodes[SwitchCondition.NODE_TO]=parser.expectRule(Expression)
         return SwitchCondition(nodes)
     
 class SwitchCase(Rule):  

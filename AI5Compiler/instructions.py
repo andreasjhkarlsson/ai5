@@ -135,6 +135,10 @@ class DoubleTopInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.DOUBLE_TOP)
 
+class SwapTopInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.SWAP_TOP)
+
 class AssignIndexInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ASSIGN_INDEX)
@@ -343,6 +347,10 @@ class PushLoopBlockInstruction(Instruction):
 class PopBlockInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.POP_BLOCK)
+
+class PushGeneralBlockInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.PUSH_GENERAL_BLOCK)
 
 class BreakLoopInstruction(Instruction):
     def __init__(self,level):

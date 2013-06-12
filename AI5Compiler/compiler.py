@@ -320,41 +320,153 @@ class Compiler:
 
         return code
 
+    # A select statement is very much alike an if-statement.
+    # The statement contains a list of expressions where the first
+    # to evaluate to true is executed and an optional else clause
+    # is executed if no other expression evaluates to true.
     def compile_select(self,select):
         code = []
 
+        # Loop through all the case blocks.
         for index,case in enumerate(select.nodes[Select.NODE_CASE_LIST]):
+            # Compile the body of the case first, as it doesn't depend on the conditions
+            # but the conditions depends on the length of this block.
             compiled_body = self.compile_block(case.nodes[SelectCase.NODE_BODY])
+            # After body is complete, jump to the end of the while select statement.
             compiled_body += [JumpInstruction("END")]
+
+            # Is this case statement a "case else" statement?
             if SelectCase.NODE_ELSE in case.nodes:
+                # Only the last one is valid!
                 if index != len(select.nodes[Select.NODE_CASE_LIST])-1:
                     raise CompileError("else must be the last case statement in select statement",case.nodes[SelectCase.NODE_ELSE].source)
+                # No need to compile anything here, just go straight to body.
             else:
+                # Compile condition with matching jumpiffalse instruction.
                 code += self.compile_expression(case.nodes[SelectCase.NODE_CONDITION])
                 code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+1))]           
             code += compiled_body
 
+        # There are now instructions that point to symbolic address "END".
+        # Fill them in.
         for pos,instruction in enumerate(code):
             if hasattr(instruction,"address") and instruction.address == "END":
                 instruction.address = RelativeAddress(len(code)-pos)
 
         return code
 
+    # Switch statements are very complex and powerful!
+    # They are therefore probably the hardest to compile
+    # and they generate a lot of code.
+    def compile_switch(self,switch):
+        # Switch statements keeps the value being switched on top of
+        # the stack during the execution.
+        # We therefore need to push a block so stack gets adjusted if for example
+        # a continueloop is executed.
+        code = [PushGeneralBlockInstruction()]
+
+        # Compile expression being switched on.
+        code += self.compile_expression(switch.nodes[Switch.NODE_VALUE])
+
+        for index,case in enumerate(switch.nodes[Switch.NODE_CASES]):
+
+            compiled_body = self.compile_block(case.nodes[SwitchCase.NODE_BODY])
+            compiled_conditions = []
+
+            # Every case can have multiple conditions *sigh*
+            conditions = case.nodes[SwitchCase.NODE_CONDITIONS]
+
+            # Loop through them all and compile them.
+            for cond_index,condition in enumerate(conditions):
+                if SwitchCondition.NODE_ELSE in condition.nodes:
+                    if index != len(switch.nodes[Switch.NODE_CASES])-1:
+                        raise CompileError("else must be the last case statement in switch statement",case.nodes[SwitchCondition.NODE_ELSE].source)
+                elif SwitchCondition.NODE_TO in condition.nodes:
+                    # Here we have a <expression> to <expression> syntax.
+                    # This means that we have to do TWO compares on the value being switched.
+                    # Create two copies of the value then.
+                    code += [DoubleTopInstruction()]
+                    code += [DoubleTopInstruction()]
+
+                    # Compile the conditions.
+                    compiled_first_condition = self.compile_expression(condition.nodes[SwitchCondition.NODE_FROM])
+                    compiled_second_condition = self.compile_expression(condition.nodes[SwitchCondition.NODE_TO])
+
+                    code += compiled_first_condition
+                    code += [GreaterEqualInstruction()]
+                    # We now have the result of the "from" expression on TOS.
+                    # However we now need to have the value on top as we need to do another comparison.
+                    # Since the value is just below the boolean on top, swap them!
+                    code += [SwapTopInstruction()]
+                    code += compiled_second_condition
+                    code += [LesserEqualInstruction()]
+                    # We now have the two results on TOS. Since they're both boolean they
+                    # fit perfectly for this next and instruction.
+                    code += [BooleanAndInstruction()]
+
+                    # This is important.
+                    # If this is the last condition in the case, we must jump
+                    # to the next case statement if it's false, but if it's not
+                    # we need to jump to the next condition.
+                    if cond_index == (len(conditions)-1):
+                        code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+2))]
+                    else:
+                        # Next instruction is jump the the beginning of the body.
+                        # At the instruction after that is the next condition, jump there!
+                        code += [JumpIfFalseInstruction(RelativeAddress(2))]
+                        code += [JumpInstruction("BODY_START")]
+
+                else:
+                    # This is a simplier version of the above where we only have to "from" value
+                    # and just need to do a single equal comparison.
+                    compiled_first_condition = self.compile_expression(condition.nodes[SwitchCondition.NODE_FROM])
+                    code += [DoubleTopInstruction()]
+                    code += compiled_first_condition + [EqualInstruction()]
+                    if cond_index == (len(conditions)-1):
+                        code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+2))]
+                    else:
+                        code += [JumpIfFalseInstruction(RelativeAddress(2))]
+                        code += [JumpInstruction("BODY_START")]
+            # Resolve the "BODY_START" symbolic addresses.
+            for pos,instruction in enumerate(code):
+                if hasattr(instruction,"address") and instruction.address == "BODY_START":
+                    instruction.address = RelativeAddress(len(code)-pos)
+
+            code += compiled_body
+            code += [JumpInstruction("END")]
+        # Resolve END symbolic adresses-
+        for pos,instruction in enumerate(code):
+            if hasattr(instruction,"address") and instruction.address == "END":
+                instruction.address = RelativeAddress(len(code)-pos)
+        # Finally we pop the value being switched on (poor bastard) and
+        # then pop the block. Puh. This statement is hard work!
+        code += [PopInstruction(),PopBlockInstruction()]
+        return code
+
     def compile_for(self,for_stmt):
+        # The loop variable.
         loop_var = for_stmt.nodes[For.NODE_LOOP_VARIABLE]
 
         loop_var_id = self.get_identifier(loop_var.value)
 
+        # Compile body.
         compiled_body = []
         if For.NODE_BODY in for_stmt.nodes:
             compiled_body = self.compile_block(for_stmt.nodes[For.NODE_BODY])
 
+        # There are two types of for loops.
+        # We only support for variable = init to end [step int] atm.
         if For.NODE_FOR_TO in for_stmt.nodes:
             forto = for_stmt.nodes[For.NODE_FOR_TO]
+            # Compile init value and assign it. This code is only executed once!
             compiled_init = self.compile_expression(forto.nodes[ForTo.NODE_INIT_EXPRESSION])
             compiled_init += [AssignLocalInstruction(loop_var_id)]
             compiled_init += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])
 
+            # Get the step value.
+            # Due to the difference in comparison operator
+            # for negative/positive values a constant int terminal
+            # is required as step value.
             step_value = 1
             if ForTo.NODE_STEP_VALUE in forto.nodes:
                 number_terminal = forto.nodes[ForTo.NODE_STEP_VALUE]
@@ -363,6 +475,7 @@ class Compiler:
                 else:
                     step_value = number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
 
+            # Compile check to see if loop should continue.
             compiled_check=[DoubleTopInstruction()]
             compiled_check += [PushNameValueInstruction(loop_var_id)]
             
@@ -374,28 +487,28 @@ class Compiler:
                 raise CompileError("Invalid step value!")
             compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
 
+            # Compilation of code to increment (or decrement) loop variable.
             compiled_increment = [PushNameValueInstruction(loop_var_id)]
             compiled_increment += [PushInteger32Instruction(self.static_table.get_integer32_id(step_value))]
             compiled_increment += [AdditionInstruction()]
             compiled_increment += [AssignLocalInstruction(loop_var_id)]
             compiled_increment += [JumpInstruction(RelativeAddress(None))]
 
+            # Calculate some addresses (sorry about this).
             compiled_check[-1].address.value = len(compiled_body)+len(compiled_increment)+1
             compiled_increment[-1].address.value = -(len(compiled_increment)+len(compiled_body)+len(compiled_check)-1)
 
+            # Glue it all together!
             code = compiled_init + compiled_check + compiled_body + compiled_increment + [PopInstruction(),PopBlockInstruction()]
-
             code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(code)-len(compiled_increment)-1),
                                              UnresolvedAbsoluteAddress(len(code)+1))] + code
-
-            #self.resolve_loop_jump_address(code,len(code)-len(compiled_increment),len(code))
-
-
 
             return code
 
     def compile_exit(self,exit_statement):
         code = []
+        # Providing an expresion to exit for return value is optional
+        # and results in Exit 0 if omitted.
         if Exit.NODE_EXPRESSION in exit_statement.nodes:
             code += self.compile_expression(exit_statement.nodes[Exit.NODE_EXPRESSION])
         else:
@@ -404,6 +517,7 @@ class Compiler:
         return code
 
     def compile_continueloop(self,continue_statement):
+        # The runtime takes care of the hard work. Pew!
         if ContinueLoop.NODE_LEVEL in continue_statement.nodes:
             level = continue_statement.nodes[ContinueLoop.NODE_LEVEL].value
         else:
@@ -412,12 +526,15 @@ class Compiler:
 
     
     def compile_exitloop(self,exitloop_statement):
+        # The runtime takes care of the hard work. Pew!
         if ExitLoop.NODE_LEVEL in exitloop_statement.nodes:
             level = exitloop_statement.nodes[ExitLoop.NODE_LEVEL].value
         else:
             level = 1
         return [BreakLoopInstruction(level)]
 
+    # This is a leftover from autoit3 where a array (list) could
+    # be resized in multiple dimensions. 
     def compile_redim(self,redim):
         code = []
         code += [PushNameValueInstruction(self.get_identifier(redim.nodes[ReDim.NODE_NAME].value))]
@@ -461,7 +578,6 @@ class Compiler:
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
-        
         if substatement.type == Rule.FUNCTION:
             return self.compile_function(substatement)
         if substatement.type == Rule.WHILE:
@@ -490,6 +606,8 @@ class Compiler:
             return self.compile_enum(substatement)
         if substatement.type == Rule.SELECT:
             return self.compile_select(substatement)
+        if substatement.type == Rule.SWITCH:
+            return self.compile_switch(substatement)
                 
     def compile_list_indexing(self,indexing):
         code = []

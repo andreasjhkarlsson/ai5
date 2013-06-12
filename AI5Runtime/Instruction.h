@@ -12,8 +12,6 @@
 
 typedef unsigned char INSTRUCTION_TYPE;
 
-
-
 class ProgramLoader;
 
 class Instruction
@@ -93,6 +91,7 @@ public:
     static const INSTRUCTION_TYPE LOAD_ARGUMENTS                = 0x49;
 	static const INSTRUCTION_TYPE EXACTLY_EQUAL					= 0x50;
 	static const INSTRUCTION_TYPE PUSH_DEFAULT					= 0x51;
+	static const INSTRUCTION_TYPE PUSH_GENERAL_BLOCK			= 0x52;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -294,6 +293,12 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case EXACTLY_EQUAL:
 		comparisonInstruction(machine,COMPARISON_TYPE::EXACTLY_EQUAL);
+		break;
+	case PUSH_GENERAL_BLOCK:
+		pushGeneralBlock(machine);
+		break;
+	case SWAP_TOP:
+		swapTop(machine);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

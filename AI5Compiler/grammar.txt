@@ -12,7 +12,7 @@
 <dountil> = "do", "newline",[<block>],"until", <expression>
 <switch> = "switch", <expression>,"newline",{<switchcase>}, "endswitch"
 <switchchase> = "case",<switchcondition>,{",",<switchcondition>},"newline",[<block>]
-<switchcondition> = <expression>,["to",<expression>]
+<switchcondition> = ("else"|<expression>,["to",<expression>])
 <select> = "select", "newline", {<selectcase>}, "endselect"
 <selectcase> = "case",("else"|<expression>),"newline",<block>
 <function> = "func",<identifier>,<argument list>,"newline",[<block>], "endfunc", "newline"

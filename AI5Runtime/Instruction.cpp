@@ -244,7 +244,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "PUSH_LOOP_BLOCK " << arg.integerPair.i1 << " " << arg.integerPair.i2;
 		break;
 	case Instruction::POP_BLOCK:
-		stream << "POP_LOOP_BLOCK";
+		stream << "POP_BLOCK";
 		break;
 	case Instruction::CONTINUE_LOOP:
 		stream << "CONTINUE_LOOP " << (int)arg.byte;
@@ -260,6 +260,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		break;
 	case Instruction::LOAD_ARGUMENTS:
 		stream << "LOAD_ARGUMENTS " << (int)arg.bytePair.b1 << " " << (int)arg.bytePair.b2;
+		break;
+	case Instruction::PUSH_GENERAL_BLOCK:
+		stream << "PUSH_GENERAL_BLOCK";
 		break;
 	default:
 		stream << "No pretty print available for instruction.";

@@ -103,6 +103,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::RAISE_EXCEPTION				:
 		case Instruction::POP_BLOCK						:
 		case Instruction::EXACTLY_EQUAL					:
+		case Instruction::PUSH_GENERAL_BLOCK			:
 			instructions->push_back(Instruction::PTR(new Instruction(instructionBuffer[pos])));
 			pos++;
 			break;
