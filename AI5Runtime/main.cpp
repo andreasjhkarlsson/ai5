@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 		clock_t begin = clock();
 
 		// Make console UTF-16 aware.
-		_setmode(_fileno(stdout), _O_U16TEXT);
+		_setmode(_fileno(stdout), _O_U8TEXT);
 		std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 
 		bool isVerbose = options[VERBOSE] != 0;

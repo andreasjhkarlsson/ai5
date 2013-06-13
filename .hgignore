@@ -8,3 +8,4 @@ AI5Runtime/AI5Runtime.v11.suo
 AI5Runtime/AI5Runtime.sdf
 AI5Runtime/AI5Runtime.opensdf
 AI5Runtime/AI5Runtime.vcxproj.user
+AI5Compiler/build/*
