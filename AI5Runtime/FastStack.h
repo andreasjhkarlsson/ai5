@@ -7,20 +7,20 @@ template<typename T>
 class FastStack
 {
 public:
-	FastStack(const int limit);
+	FastStack(const size_t limit);
 	~FastStack(void);
 	__forceinline void push(T element);
 	__forceinline T pop();
-	__forceinline void popMany(int count);
+	__forceinline void popMany(size_t count);
 	__forceinline T top();
-	__forceinline T get(int offset_from_top);
+	__forceinline T get(size_t offset_from_top);
 	__forceinline size_t size();
 	__forceinline bool empty();
 	__forceinline bool full();
 private:
 	T* stack;
-	int position;
-	const int limit;
+	size_t position;
+	const size_t limit;
 };
 
 template<typename T>
@@ -40,13 +40,13 @@ T FastStack<T>::pop()
 }
 
 template<typename T>
-void FastStack<T>::popMany(int count)
+void FastStack<T>::popMany(size_t count)
 {
 	position-=count;
 }
 
 template<typename T>
-T FastStack<T>::get(int offset_from_top)
+T FastStack<T>::get(size_t offset_from_top)
 {
 	return stack[position-offset_from_top];
 }
@@ -78,7 +78,7 @@ bool FastStack<T>::full()
 
 
 template<typename T>
-FastStack<T>::FastStack(const int limit): position(-1), limit(limit)
+FastStack<T>::FastStack(const size_t limit): position(-1), limit(limit)
 {
 	stack = new T[limit];
 }

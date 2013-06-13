@@ -87,7 +87,7 @@ void redimList(Variant* listVar,std::stack<int> subscripts)
 		// in the structure (duh).
 		else if(count < list->size())
 		{
-			for(size_t i=list->size()-1;i>=0;i--)
+			for(size_t i=list->size();i --> 0 ;)
 			{
 				if(i>=count)
 				{

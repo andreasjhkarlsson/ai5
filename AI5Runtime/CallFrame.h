@@ -32,7 +32,7 @@ public:
 private:
 	int returnAddress;
 	int calledNumberOfArguments;
-	int stackPosition;
+	size_t stackPosition;
 	CallFrame* parentFrame;
 	Scope scope;
 	CallFrame();

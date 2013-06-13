@@ -58,7 +58,7 @@ void CallFrame::loadArguments(StackMachine* machine,int total,int required)
 	if(calledNumberOfArguments < required)
 		throw RuntimeError(L"Too few arguments in function call");
 
-	for(int argIndex=arguments.size()-1;argIndex>=0;argIndex--)
+	for(size_t argIndex=arguments.size();argIndex --> 0 ;)
 	{
 		Argument arg = arguments[argIndex];
 

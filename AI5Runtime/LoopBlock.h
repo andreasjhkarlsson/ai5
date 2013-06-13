@@ -17,7 +17,7 @@ public:
 	int getContinueAddress();
 	int getExitAddress();
 private:
-	int stackPosition;
+	size_t stackPosition;
 	int continuePosition;
 	int exitPosition;
 	LoopBlock(void);

@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
 	option::Stats  stats(usage, argc, argv);
-	option::Option options[1024], buffer[1024];
+	option::Option options[128], buffer[129];
 	option::Parser parse(usage, argc, argv, options, buffer);
 
 	if (parse.error())
@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
 		_setmode(_fileno(stdout), _O_U16TEXT);
 		std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 
-		bool isVerbose = options[VERBOSE];
-		bool disassemble = options[DISASSEMBLE];
+		bool isVerbose = options[VERBOSE] != 0;
+		bool disassemble = options[DISASSEMBLE] != 0;
 		#if _DEBUG
 		isVerbose = true;
 		#endif

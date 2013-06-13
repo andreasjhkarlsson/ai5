@@ -10,7 +10,7 @@ Block::Block(BLOCK_TYPE type):type(type)
 
 
 
-void Block::unwindStack(StackMachine* machine,int stackPosition)
+void Block::unwindStack(StackMachine* machine,size_t stackPosition)
 {
 	DataStack* stack = machine->getDataStack();
 

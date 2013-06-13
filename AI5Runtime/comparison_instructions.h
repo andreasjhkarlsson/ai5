@@ -204,7 +204,7 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 	static StringComparator stringComparator;
 	Variant* operand2 = machine->getDataStack()->pop();
 	Variant* operand1 = machine->getDataStack()->pop();
-	bool result;
+	bool result = false;
 	Comparator* comp = table.lookup(operand1->getType(),operand2->getType());
 
 	if(comp == nullptr)

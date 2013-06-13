@@ -18,7 +18,7 @@ public:
 	BLOCK_TYPE getType();
 protected:
 	Block(BLOCK_TYPE type);
-	void unwindStack(StackMachine*,int stackPosition);
+	void unwindStack(StackMachine*,size_t stackPosition);
 private:
 	BLOCK_TYPE type;
 public:

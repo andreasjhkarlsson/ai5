@@ -12,7 +12,7 @@ public:
 	void recycleInstance();
 private:
 	GeneralBlock(void);
-	int stackPos;
+	size_t stackPos;
 	static const int POOL_SIZE = 1024;
 };
 
