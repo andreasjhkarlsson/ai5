@@ -1,4 +1,4 @@
-from lexer import Lexer, LexError
+﻿from lexer import Lexer, LexError
 from rd_parser import Parser, Program, ParseError
 from compiler import Compiler, CompileError
 from compiled_file import CompiledFile
@@ -46,9 +46,10 @@ try:
     #   print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
     
 
-    CompiledFile(statics_table,instructions).write_to_file(open("test.aic","wb"))
+    CompiledFile(statics_table,instructions).write_to_file(open(output_file,"wb"))
 
     print("Compiled program written to file "+output_file+" without problems.")
 except (LexError,ParseError,CompileError) as error:
     print("Error compiling program:\n\tin file: "+error.source.filename+" at line "+str(error.source.line_number)+": "+error.message)
+    sys.exit(1)
     
