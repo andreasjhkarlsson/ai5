@@ -257,8 +257,13 @@ class Compiler:
         # Else       (,body)
         #
         compiled_components = []
-    
-        compiled_components.append((compiled_condition+[JumpIfFalseInstruction(None)],self.compile_block(statement.nodes[If.NODE_BODY])+[JumpInstruction(None)]))
+        
+        compiled_body = []
+        if If.NODE_BODY in statement.nodes:
+            compiled_body = self.compile_block(statement.nodes[If.NODE_BODY])
+        else:
+            compiled_body = []
+        compiled_components.append((compiled_condition+[JumpIfFalseInstruction(None)],compiled_body+[JumpInstruction(None)]))
         
         if If.NODE_ELSEIFS in statement.nodes:
             for elseif in statement.nodes[If.NODE_ELSEIFS]:
@@ -266,14 +271,18 @@ class Compiler:
                 # Add dummy jump instruction to NEXT elseif/else/endif
                 elseif_compiled_condition += [JumpIfFalseInstruction(None)]
 
-                elseif_compiled_body = self.compile_block(elseif.nodes[ElseIf.NODE_BODY])
+                elseif_compiled_body = []
+                if ElseIf.NODE_BODY in elseif.nodes:
+                    elseif_compiled_body = self.compile_block(elseif.nodes[ElseIf.NODE_BODY])
                 # Add jump to endif
                 elseif_compiled_body += [JumpInstruction(None)]
 
                 compiled_components.append((elseif_compiled_condition,elseif_compiled_body))
 
         if If.NODE_ELSE in statement.nodes:
-            compiled_body = self.compile_block(statement.nodes[If.NODE_ELSE].nodes[Else.NODE_BODY])
+            compiled_body = []
+            if Else.NODE_BODY in statement.nodes:
+                compiled_body = self.compile_block(statement.nodes[If.NODE_ELSE].nodes[Else.NODE_BODY])
             compiled_body += [JumpInstruction(None)]
             compiled_components += [([],compiled_body)]
 

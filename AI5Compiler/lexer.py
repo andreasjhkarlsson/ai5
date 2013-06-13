@@ -2,7 +2,7 @@ import re
 import os
 import codecs
 
-COMPILER_INCLUDE_DIRECTORY = "C:\\"
+COMPILER_INCLUDE_DIRECTORY = "C:\\Program Files (x86)\\AutoIt3\\Include\\"
 
 class Source:
     def __init__(self,filename,line_number):
@@ -149,7 +149,7 @@ class NewlineToken(Token):
     type = Token.NEWLINE
 
 class IntegerToken(Token):
-    expr = re.compile(r"""(0x[A-Fa-f0-9]+)|(\d+)""")
+    expr = re.compile(r"""(0x[A-Fa-f0-9]+)|(\d+)""",re.IGNORECASE)
     type = Token.INTEGER
     @classmethod
     def value_transform(cls,value):
@@ -317,7 +317,7 @@ class Lexer:
             full_path = COMPILER_INCLUDE_DIRECTORY + include_file.path
         else:
             full_path = self.get_script_directory(source_file) + include_file.path
-        include_file_handle = codecs.open(full_path,"r","utf-8")
+        include_file_handle = codecs.open(full_path,"r","ISO-8859-1")
         include_file_string = include_file_handle.read()
         include_file_handle.close()
         tokens = self.lex_string(include_file_string,full_path)  
