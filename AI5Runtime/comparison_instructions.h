@@ -142,7 +142,7 @@ public:
 	{
 
 		// Table describing the rules for comparisons.
-		ComparisonPair RAW_TABLE[] = {
+		static ComparisonPair RAW_TABLE[] = {
 			{Variant::INTEGER32,	Variant::INTEGER32,		&int32Comparator},
 			{Variant::INTEGER64,	Variant::INTEGER64,		&int64Comparator},
 			{Variant::INTEGER32,	Variant::INTEGER64,		&int64Comparator},
@@ -163,17 +163,20 @@ public:
 
 
 		int num_variants = Variant::NUMBER_OF_VARIANT_TYPES;
-		table = new ComparisonPair[num_variants*num_variants];
-		memset(table,0,num_variants*num_variants);
+		table = new ComparisonPair*[num_variants*num_variants];
+		memset(table,0,sizeof(ComparisonPair*)*num_variants*num_variants);
 		for(int i=0;i<(sizeof(RAW_TABLE)/sizeof(ComparisonPair));i++)
 		{
-			table[RAW_TABLE[i].type1*num_variants+RAW_TABLE[i].type2] = RAW_TABLE[i];
+			table[RAW_TABLE[i].type1*num_variants+RAW_TABLE[i].type2] = &RAW_TABLE[i];
 		}
 	}
 
 	Comparator* lookup(VARIANT_TYPE type1,VARIANT_TYPE type2)
 	{
-		return table[type1*Variant::NUMBER_OF_VARIANT_TYPES+type2].comparator;
+		ComparisonPair* pair =  table[type1*Variant::NUMBER_OF_VARIANT_TYPES+type2];
+		if(pair == nullptr)
+			return nullptr;
+		return pair->comparator;
 	}
 
 private:
@@ -181,7 +184,7 @@ private:
 	Int64Comparator int64Comparator;
 	FloatingComparator floatingComparator;
 	StringComparator stringComparator;
-	ComparisonPair* table;
+	ComparisonPair** table;
 
 };
 
@@ -207,12 +210,11 @@ inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
 	bool result = false;
 	Comparator* comp = table.lookup(operand1->getType(),operand2->getType());
 
-	if(comp == nullptr)
+	if(comp == nullptr && type != EXACTLY_EQUAL)
 	{
 		throw new RuntimeError(L"No suitable comparator found for values");
 	}
 
-	
 
 	switch(type)
 	{
