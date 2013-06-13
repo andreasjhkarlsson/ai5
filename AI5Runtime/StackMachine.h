@@ -53,6 +53,8 @@ public:
 	inline CallFrame* getCurrentCallFrame();
 	int start();
 	void terminate();
+	void disassemble();
+	void setVerbose();
 	__forceinline NameVariant* getNearestName(NameIdentifier identifier);
 	__forceinline NameVariant* getGlobalName(NameIdentifier identifier);
 	__forceinline NameVariant* getLocalName(NameIdentifier identifier);
@@ -85,6 +87,8 @@ private:
 	bool terminated;
 	// Classic program counter.
 	int programCounter;
+
+	bool verbose;
 };
 
 void StackMachine::jumpRelative(int offset)

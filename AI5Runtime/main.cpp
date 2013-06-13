@@ -5,25 +5,74 @@
 #include <fcntl.h>
 #include "ProgramLoader.h"
 #include "StackMachine.h"
-#include "Instruction.h"
-#include "Variant.h"
+#include "3rdparty\optionparser.h"
 
+enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
 
-int main() 
+const option::Descriptor usage[] =
 {
-	// Make console UTF-16 aware.
-	 _setmode(_fileno(stdout), _O_U16TEXT);
+	{UNKNOWN, 0,"" , ""    ,option::Arg::None, "USAGE: ai5 file [options]\n\n"
+	"Options:" },
+	{HELP,    0,"" , "help",option::Arg::None, "  --help  \tPrint usage and exit." },
+	{VERBOSE,    0,"v", "verbose",option::Arg::None, "  --verbose, -v  \tWrite information about the current executing instruction and other info during execution." },
+	{DEBUG,    0,"d", "debug",option::Arg::None, "  --debug, -d  \tMake runtime accept connections from debuggers." },
+	{DISASSEMBLE,    0,"q", "disassemble",option::Arg::None, "  --disassamble, -q  \tDisassemble and write all instructions to stdout." },
+	{0,0,0,0,0,0}
+};
 
-	std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile("..\\AI5Compiler\\test.aic");
+int main(int argc, char* argv[]) 
+{
 
-	clock_t begin = clock();
+	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
+	option::Stats  stats(usage, argc, argv);
+	option::Option options[1024], buffer[1024];
+	option::Parser parse(usage, argc, argv, options, buffer);
 
-	int returnCode = machine->start();
+	if (parse.error())
+		return 1;
 
-	std::wcout << L"Program ended with code: " << returnCode << std::endl;
+	if (options[HELP] || argc == 0) {
+		option::printUsage(std::cout, usage);
+		return 0;
+	}
 
-	clock_t end = clock();
-	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	if(parse.nonOptionsCount() > 0)
+	{
+		clock_t begin = clock();
 
-	std::wcout << "Execution time: " << elapsed_secs << std::endl;
+		// Make console UTF-16 aware.
+		_setmode(_fileno(stdout), _O_U16TEXT);
+		std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
+
+		bool isVerbose = options[VERBOSE];
+		bool disassemble = options[DISASSEMBLE];
+		#if _DEBUG
+		isVerbose = true;
+		#endif
+
+		if(isVerbose)
+			machine->setVerbose();
+
+		int returnCode = 0;
+
+		if(disassemble)
+			machine->disassemble();
+		else
+			returnCode = machine->start();
+
+		if(isVerbose)
+			std::wcout << L"Program ended with code: " << returnCode << std::endl;
+
+		clock_t end = clock();
+		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+		if(isVerbose)
+			std::wcout << "Execution time: " << elapsed_secs << std::endl;
+
+		return returnCode;
+	}
+	else
+	{
+		option::printUsage(std::cout, usage);
+		return 0;
+	}
 }

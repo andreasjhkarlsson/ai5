@@ -7,7 +7,8 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), currentCallFrame(nullptr)
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), 
+	currentCallFrame(nullptr), verbose(false)
 {
 	AI5StandardLibrary::registerFunctions(this);
 }
@@ -24,13 +25,14 @@ int StackMachine::start()
 	{
 		while (!terminated) 
 		{
-			#ifdef _DEBUG
+			if(verbose)
+			{
 				std::wcout << "\t";
-				program->operator[](programCounter)->format(std::wcout,this);
+				(*program)[programCounter]->format(std::wcout,this);
 				std::wcout << std::endl;
-			#endif
+			}
 			
-			program->operator[](programCounter)->execute(this);		
+			(*program)[programCounter]->execute(this);		
 		}
 		return dataStack.top()->toInteger32();
 	}
@@ -60,4 +62,19 @@ void StackMachine::addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc)
 MACRO_FUNCTION StackMachine::getMacro(int staticIndex)
 {
 	return macros[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
+}
+
+
+void StackMachine::disassemble()
+{
+	for(int i=0;i<program->size();i++)
+	{
+		(*program)[i]->format(std::wcout,this);
+		std::wcout << std::endl;
+	}
+}
+
+void StackMachine::setVerbose()
+{
+	verbose = true;
 }
