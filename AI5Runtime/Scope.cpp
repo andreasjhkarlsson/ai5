@@ -24,6 +24,13 @@ NameVariant* Scope::createIndexForName(StackMachine* machine,const std::wstring 
 
 void Scope::reset()
 {
+
+	if(enclosingScope != nullptr)
+	{
+		enclosingScope->release();
+		enclosingScope = nullptr;
+	}
+
 	// Clear all names in the lookup. Will release variants. 
 	for(auto it=lookup.begin();it!=lookup.end();it++)
 	{
@@ -59,4 +66,20 @@ void Scope::addNameToIndex(int index,NameVariant* nameVariant)
 
 	usedIndexes.push_back(index);
 
+}
+
+
+void Scope::release()
+{
+	if(!(--refCount))
+	{
+		this->reset();
+		// Make sure ref count is one if the instance happens to be reused later.
+		this->addRef();
+		Scope::returnInstance(this);
+	}
+}
+void Scope::addRef()
+{
+	refCount++;
 }

@@ -5,14 +5,15 @@
 #include <algorithm>
 #include "Variant.h"
 #include "NameVariant.h"
+#include "PooledObject.h"
 
 class StackMachine;
 
 // Keeping this class optimized is VERY important.
-class Scope
+class Scope: public PooledObject<Scope>
 {
 public:
-	Scope(): indexTable(128,0),usedIndexes()
+	Scope(): indexTable(128,0),usedIndexes(),refCount(1),enclosingScope(nullptr)
 	{
 		usedIndexes.reserve(16);
 	}
@@ -22,16 +23,36 @@ public:
 	}
 	__forceinline NameVariant* getNameFromIndex(int index)
 	{
-		return indexTable[index];
+		NameVariant* result = indexTable[index];
+		if(result == nullptr && enclosingScope != nullptr)
+			result = enclosingScope->getNameFromIndex(index);
+		return result;
 	}
 	NameVariant* createName(StackMachine* machine,const std::wstring &name);
 	NameVariant* createIndexForName(StackMachine* machine,const std::wstring &name,int index);
 
 	void insertName(const std::wstring& name,int index,NameVariant* nameVariant);
 
+	void release();
+	void addRef();
+
+	void setEnclosingScope(Scope* scope)
+	{
+		if(scope != nullptr)
+			scope->addRef();
+		this->enclosingScope = scope;
+	}
+
+	static const int POOL_SIZE = 1024;
+private:
+	
+	Scope* enclosingScope;
+
+	int refCount;
+
 	// Make the scope ready for reusing.
 	void reset();
-private:
+
 	// The string->name lookup.
 	// All names in the scope NEEDS to be in this map.
 	std::map<std::wstring,NameVariant*> lookup;

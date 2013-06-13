@@ -89,7 +89,10 @@ __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 
 __forceinline void pushFunction(StackMachine* machine,int address)
 {
-	machine->getDataStack()->push(new UserFunctionVariant(address));
+	Scope *enclosingScope = nullptr;
+	if(machine->getCurrentCallFrame() != nullptr)
+		enclosingScope = machine->getCurrentCallFrame()->getScope();
+	machine->getDataStack()->push(new UserFunctionVariant(address,enclosingScope));
 	machine->advanceCounter();
 
 }

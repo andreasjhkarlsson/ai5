@@ -1,6 +1,7 @@
 #include "CallFrame.h"
 #include "StackMachine.h"
 #include "DefaultVariant.h"
+#include "UserFunctionVariant.h"
 
 CallFrame::CallFrame(): Block(CALL_BLOCK)
 {
@@ -12,6 +13,7 @@ CallFrame::~CallFrame(void)
 
 void CallFrame::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallFrame* parentFrame)
 {
+	this->scope = Scope::getInstance();
 	this->returnAddress = returnAddress;
 	this->stackPosition = machine->getDataStack()->position()-(calledNumberOfArguments+1);
 	this->calledNumberOfArguments = calledNumberOfArguments;
@@ -23,12 +25,12 @@ void CallFrame::leave(StackMachine*machine)
 {
 	unwindStack(machine,stackPosition);
 
-	scope.reset();
+	scope->release();
 }
 
 Scope* CallFrame::getScope()
 {
-	return &scope;
+	return scope;
 }
 
 void CallFrame::recycleInstance()
@@ -87,4 +89,11 @@ void CallFrame::loadArguments(StackMachine* machine,int total,int required)
 
 		varArg->release();
 	}
+
+	UserFunctionVariant* self = static_cast<UserFunctionVariant*>(machine->getDataStack()->pop());
+
+	this->getScope()->setEnclosingScope(self->getEnclosingScope());
+
+	self->release();
+
 }

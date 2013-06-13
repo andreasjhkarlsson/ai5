@@ -73,10 +73,19 @@ class StaticTable:
 class ScopeLookup:
     def __init__(self):
         self.stack = []
+        self.function_nesting = 0
     def push_scope(self):
         self.stack.append({})
     def pop_scope(self):
         self.stack.pop()
+    def enter_function(self):
+        self.function_nesting += 1
+        if self.function_nesting == 1:
+            self.push_scope()
+    def leave_function(self):
+        self.function_nesting -= 1
+        if self.function_nesting == 0:
+            self.pop_scope()
     def get_identifier(self,id):
         nearest_scope = self.stack[len(self.stack)-1]
         farest_scope = self.stack[0]
@@ -93,6 +102,7 @@ class Compiler:
     def __init__(self):
         self.static_table = StaticTable()  
         self.scope_lookup = ScopeLookup()
+        
 
     def get_identifier(self,name):
         global_id, local_id = self.scope_lookup.get_identifier(name)
@@ -127,7 +137,8 @@ class Compiler:
                     instruction.address = address.resolve(index,start_pos,end_pos)
 
     def compile_function(self,function):
-        self.scope_lookup.push_scope()
+
+        self.scope_lookup.enter_function()
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in arguments:
@@ -166,7 +177,7 @@ class Compiler:
         
         compiled_body += [PushNullInstruction(),RetInstruction()]
         
-        self.scope_lookup.pop_scope()
+        self.scope_lookup.leave_function()
         
         code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(3)),
                 AssignNearestInstruction(self.get_identifier(function.nodes[Function.NODE_NAME].value)),

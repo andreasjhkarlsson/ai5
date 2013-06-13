@@ -17,7 +17,7 @@
     <RootNamespace>AI5Compiler</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>test.ai5</CommandLineArguments>
+    <CommandLineArguments>test.ai5 ..\AI5Runtime\test.aic</CommandLineArguments>
     <InterpreterPath />
     <InterpreterArguments />
   </PropertyGroup>

@@ -34,7 +34,7 @@ private:
 	int calledNumberOfArguments;
 	size_t stackPosition;
 	CallFrame* parentFrame;
-	Scope scope;
+	Scope* scope;
 	CallFrame();
 	static const int POOL_SIZE = 1024;
 	std::vector<Argument> arguments;
