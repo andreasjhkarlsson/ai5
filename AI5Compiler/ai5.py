@@ -1,26 +1,54 @@
-from lexer import lex_string, LexError
+from lexer import Lexer, LexError
 from rd_parser import Parser, Program, ParseError
-from compiler import Compiler
+from compiler import Compiler, CompileError
 from compiled_file import CompiledFile
+import binascii
+import sys
+import os
+import codecs
+
+args = sys.argv[1:]
+
+if len(args) == 0:
+    print("Usage: ai5 <input_file> [<output_file>]")
+    sys.exit(0)
+
+if len(args) < 1 or len(args) > 2:
+    print("Wrong number of arguments to compiler")
+    sys.exit(1)
+
+input_file = args[0]
+if len(args) == 2:
+    output_file = args[1]
+else:
+    fileName, fileExtension = os.path.splitext(input_file)
+    output_file = fileName + ".aic"
 
 
-input = """
 
-
-if 234 then
-while 123
-
-
-"""
 try:
-    tokens = lex_string(input)
+
+
+    fhandle = codecs.open(input_file,"r","utf-8")
+    input = fhandle.read()
+    fhandle.close()
+
+    lexer = Lexer()
+    tokens = lexer.lex_string(input,"inline_buffer")
     ast = Parser(tokens).expectRule(Program)
     compiler = Compiler()
+
     instructions = compiler.compile_program(ast)
-    print(instructions)
+
     statics_table = compiler.static_table
+    #statics_table.dump()
+    #for index,instruction in enumerate(instructions):
+    #   print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
+    
 
     CompiledFile(statics_table,instructions).write_to_file(open("test.aic","wb"))
-except (LexError,ParseError) as error:
-    print("Error compiling program:\n\tat line "+str(error.line_number)+": "+error.message)
+
+    print("Compiled program written to file "+output_file+" without problems.")
+except (LexError,ParseError,CompileError) as error:
+    print("Error compiling program:\n\tin file: "+error.source.filename+" at line "+str(error.source.line_number)+": "+error.message)
     

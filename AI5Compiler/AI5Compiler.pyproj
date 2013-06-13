@@ -16,6 +16,10 @@
     <Name>AI5Compiler</Name>
     <RootNamespace>AI5Compiler</RootNamespace>
     <IsWindowsApplication>False</IsWindowsApplication>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>test.ai5</CommandLineArguments>
+    <InterpreterPath />
+    <InterpreterArguments />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,6 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ai5.py" />
+    <Compile Include="build_exe.py" />
     <Compile Include="compiled_file.py" />
     <Compile Include="compiler.py" />
     <Compile Include="instructions.py" />
