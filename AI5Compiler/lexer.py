@@ -317,7 +317,7 @@ class Lexer:
             full_path = COMPILER_INCLUDE_DIRECTORY + include_file.path
         else:
             full_path = self.get_script_directory(source_file) + include_file.path
-        include_file_handle = codecs.open(full_path,"r","ISO-8859-1")
+        include_file_handle = codecs.open(full_path,"r","utf-8")
         include_file_string = include_file_handle.read()
         include_file_handle.close()
         tokens = self.lex_string(include_file_string,full_path)  
