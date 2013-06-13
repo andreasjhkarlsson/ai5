@@ -488,9 +488,9 @@ class Compiler:
             compiled_check += [PushNameValueInstruction(loop_var_id)]
             
             if step_value > 0:
-                compiled_check += [GreaterInstruction()]
+                compiled_check += [GreaterEqualInstruction()]
             elif step_value <0:
-                compiled_check += [LesserInstruction()]
+                compiled_check += [LesserEqualInstruction()]
             else:
                 raise CompileError("Invalid step value!")
             compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
