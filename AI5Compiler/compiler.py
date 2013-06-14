@@ -178,10 +178,17 @@ class Compiler:
         compiled_body += [PushNullInstruction(),RetInstruction()]
         
         self.scope_lookup.leave_function()
+
+        function_offset = 2
+        if Function.NODE_NAME in function.nodes:
+            function_offset += 1
         
-        code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(3)),
-                AssignNearestInstruction(self.get_identifier(function.nodes[Function.NODE_NAME].value)),
-                JumpInstruction(RelativeAddress(len(compiled_body)+1))]
+        code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(function_offset))]
+
+        if Function.NODE_NAME in function.nodes:
+            code += [AssignNearestInstruction(self.get_identifier(function.nodes[Function.NODE_NAME].value))]
+
+        code += [JumpInstruction(RelativeAddress(len(compiled_body)+1))]
         code += compiled_body
         
         
@@ -772,24 +779,30 @@ class Compiler:
             return [NegationInstruction()]
 
     def compile_terminal(self,terminal):
-        token = terminal.nodes[Terminal.NODE_TYPE]
+        term = terminal.nodes[Terminal.NODE_TYPE]
+        if isinstance(term,Token):
+            token = term
+            if token.type == Token.INTEGER:
+                if token.value >= -(2**31) and token.value < 2**31:
+                    return [PushInteger32Instruction(self.static_table.get_integer32_id(token.value))]
+                return [PushInteger64Instruction(self.static_table.get_integer64_id(token.value))]
+            if token.type == Token.IDENTIFIER:
+                return [PushNameValueInstruction(self.get_identifier(token.value))]
+            if token.type == Token.STRING:
+                return [PushStringInstruction(self.static_table.get_string_id(token.value))]   
+            if token.type == Token.FLOATING:
+                return [PushFloatingInstruction(self.static_table.get_floating_id(token.value))]     
+            if token.type == Token.BOOLEAN:
+                return [PushBooleanInstruction(token.value)]
+            if token.type == Token.MACRO:
+                return [PushMacroInstruction(self.static_table.get_macro_id(token.value))]
+            if token.type == Token.KEYWORD and token.value == KeywordToken.DEFAULT:
+                return [PushDefaultInstruction()]
+        if isinstance(term,Rule):
+            rule = term
+            if rule.type == Rule.ANONYMOUS_FUNCTION:
+                return self.compile_function(rule)
         
-        if token.type == Token.INTEGER:
-            if token.value >= -(2**31) and token.value < 2**31:
-                return [PushInteger32Instruction(self.static_table.get_integer32_id(token.value))]
-            return [PushInteger64Instruction(self.static_table.get_integer64_id(token.value))]
-        if token.type == Token.IDENTIFIER:
-            return [PushNameValueInstruction(self.get_identifier(token.value))]
-        if token.type == Token.STRING:
-            return [PushStringInstruction(self.static_table.get_string_id(token.value))]   
-        if token.type == Token.FLOATING:
-            return [PushFloatingInstruction(self.static_table.get_floating_id(token.value))]     
-        if token.type == Token.BOOLEAN:
-            return [PushBooleanInstruction(token.value)]
-        if token.type == Token.MACRO:
-            return [PushMacroInstruction(self.static_table.get_macro_id(token.value))]
-        if token.type == Token.KEYWORD and token.value == KeywordToken.DEFAULT:
-            return [PushDefaultInstruction()]
 
     def compile_inline_list(self,inline_list):
         code = []

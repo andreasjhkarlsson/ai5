@@ -128,6 +128,7 @@ class Rule:
     NUMBER_TERMINAL = "rule_number_terminal"
     SELECT = "rule_select"
     SELECT_CASE = "rule_select_case"
+    ANONYMOUS_FUNCTION = "rule_anonymous_function"
     
     def __init__(self,nodes):
         self.nodes = nodes
@@ -137,8 +138,8 @@ class Rule:
 class Exit(Rule):
     type = Rule.EXIT
     NODE_EXPRESSION = "expression"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.accept(Token.KEYWORD,KeywordToken.EXIT):
             if parser.acceptRule(Expression):
                 return Exit({Exit.NODE_EXPRESSION:parser.matched_rule})
@@ -148,8 +149,8 @@ class Exit(Rule):
 class ExitLoop(Rule):
     type = Rule.EXITLOOP
     NODE_LEVEL = "level"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.accept(Token.KEYWORD,KeywordToken.EXITLOOP):
             nodes = {}
             if parser.accept(Token.INTEGER):
@@ -160,8 +161,8 @@ class ExitLoop(Rule):
 class ContinueLoop(Rule):
     type = Rule.CONTINUELOOP
     NODE_LEVEL = "level"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.accept(Token.KEYWORD,KeywordToken.CONTINUELOOP):
             nodes = {}
             if parser.accept(Token.INTEGER):
@@ -174,8 +175,8 @@ class DeclarationAssignment(Rule):
     NODE_IDENTIFIER = "identifier"
     NODE_VALUE_EXPRESSION = "value expression"
     NODE_SUBSCRIPTS = "subscripts"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {DeclarationAssignment.NODE_IDENTIFIER: parser.current}
@@ -197,8 +198,8 @@ class Declaration(Rule):
     NODE_ENUM = "enum"
     NODE_CONST = "const"
     NODE_VARIABLES = "variables"
-    @staticmethod
-    def match(parser): 
+    @classmethod
+    def match(cls,parser): 
         if (parser.accept(Token.KEYWORD,KeywordToken.DIM) or 
                 parser.accept(Token.KEYWORD,KeywordToken.LOCAL) or
                 parser.accept(Token.KEYWORD,KeywordToken.GLOBAL)):
@@ -230,8 +231,8 @@ class Enum(Rule):
     type = Rule.ENUM
     NODE_STEP = "step"
     NODE_ENUM_LIST = "enum list"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.ENUM):
             return None
         nodes = {}
@@ -243,8 +244,8 @@ class Enum(Rule):
 class EnumList(Rule):
     type = Rule.ENUMLIST
     NODE_CONSTANTS = "constants"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.acceptRule(EnumConstant):
             return None
         nodes = [parser.matched_rule]
@@ -257,8 +258,8 @@ class EnumConstant(Rule):
     type = Rule.ENUM_CONSTANT
     NODE_IDENTIFIER = "identifier"
     NODE_VALUE = "value"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {EnumConstant.NODE_IDENTIFIER:parser.current}
@@ -272,8 +273,8 @@ class EnumStep(Rule):
     type = Rule.ENUM_STEP
     NODE_OPERATOR = "operator"
     NODE_VALUE = "step"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.STEP):
             return None
         nodes = {}
@@ -287,8 +288,8 @@ class Assignment(Rule):
     type = Rule.ASSIGNMENT
     NODE_ASSIGNMENT_OPERATOR = "assignment operator"
     NODE_VALUE_EXPRESSION = "value expression"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         for operator in OperatorToken.ASSIGNMENT_OPERATORS:
             if parser.accept(Token.OPERATOR,operator):
                 nodes = {Assignment.NODE_ASSIGNMENT_OPERATOR:parser.current}
@@ -303,8 +304,8 @@ class ReDim(Rule):
     type = Rule.REDIM
     NODE_NAME = "name"
     NODE_QUALIFIERS = "qualifiers"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.REDIM):
             return None
         nodes = {ReDim.NODE_NAME:parser.expect(Token.IDENTIFIER)}
@@ -320,8 +321,8 @@ class LineStatement(Rule):
     NODE_START = "start"
     NODE_QUALIFIERS = "qualifiers"
     NODE_ASSIGNMENT = "assignment"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {LineStatement.NODE_START:parser.current}
@@ -338,8 +339,8 @@ class LineStatement(Rule):
 class Select(Rule):
     type = Rule.SELECT
     NODE_CASE_LIST = "case_list"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.SELECT):
             return None
         parser.expect(Token.NEWLINE)
@@ -355,7 +356,7 @@ class SelectCase(Rule):
     NODE_CONDITION = "condition"
     NODE_BODY = "body"
     NODE_ELSE = "else"
-    def match(parser):
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.CASE):
             return None
         nodes = {}
@@ -372,8 +373,8 @@ class SelectCase(Rule):
 class Statement(Rule):
     type = Rule.STATEMENT
     NODE_SUBSTATEMENT = "substatement"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,Select,LineStatement]):
             return Statement({Statement.NODE_SUBSTATEMENT:parser.matched_rule})
         #if parser.acceptRule(Expression):
@@ -386,8 +387,8 @@ class With(Rule):
     type = Rule.WITH
     NODE_OBJECT_EXPRESSION = "object_expression"
     NODE_STATEMENTS = "statements"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.WITH):
             return None
         nodes = {With.NODE_OBJECT_EXPRESSION: parser.expectRule(Expression)}
@@ -405,8 +406,8 @@ class With(Rule):
 class Return(Rule):
     type = Rule.RETURN
     NODE_EXPRESSION = "expression"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.RETURN):
             return None
         nodes = {}
@@ -418,8 +419,8 @@ class DoUntil(Rule):
     type = Rule.DO_UNTIL
     NODE_BODY = "body"
     NODE_CONDITION = "condition"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.DO):
             return None
         parser.expect(Token.NEWLINE)
@@ -434,8 +435,8 @@ class For(Rule):
     NODE_FOR_TO = "for to"
     NODE_FOR_IN = "for in"
     NODE_BODY = "body"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.FOR):
             return None
         nodes = {For.NODE_LOOP_VARIABLE: parser.expect(Token.IDENTIFIER)}
@@ -453,8 +454,8 @@ class NumberTerminal(Rule):
     type = Rule.NUMBER_TERMINAL
     NODE_NUMBER = "terminal"
     NODE_NEGATIVE = "negative"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.accept(Token.OPERATOR,OperatorToken.SUBTRACT):
             return NumberTerminal({NumberTerminal.NODE_NEGATIVE:True,
                                    NumberTerminal.NODE_NUMBER: parser.expect(Token.INTEGER)})
@@ -466,8 +467,8 @@ class ForTo(Rule):
     NODE_INIT_EXPRESSION = "init expression"
     NODE_END_EXPRESSION = "end expression"
     NODE_STEP_VALUE = "step value"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
             return None
         nodes = {ForTo.NODE_INIT_EXPRESSION: parser.expectRule(Expression)}
@@ -482,8 +483,8 @@ class ForTo(Rule):
 class ForIn(Rule):
     type = Rule.FOR_IN
     NODE_LIST_EXPRESSION = "list expression"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.IN):
             return None
         return ForIn({ForIn.NODE_LIST_EXPRESSION:parser.expectRule(Expression)})       
@@ -492,8 +493,8 @@ class ForIn(Rule):
 class Qualifier(Rule):
     type = Rule.QUALIFIER
     NODE_SUBQUALIFIER = "subqualifier"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.acceptAnyRule([Property,Call,ListIndexing]):
             return Qualifier({Qualifier.NODE_SUBQUALIFIER: parser.matched_rule})
         return None    
@@ -501,8 +502,8 @@ class Qualifier(Rule):
 class ArgumentList(Rule):
     type = Rule.ARGUMENT_LIST
     NODE_ARGUMENT_LIST = "argument list"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.LEFT_PAREN):
             return None
     
@@ -524,8 +525,8 @@ class Argument(Rule):
     NODE_NAME = "name"
     NODE_DEFAULT_VALUE = "default value"
     NODE_CONST = "const"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         nodes = {}
 
         if parser.accept(Token.KEYWORD,KeywordToken.CONST):
@@ -551,8 +552,8 @@ class Function(Rule):
     NODE_NAME = "name"
     NODE_ARGUMENTS = "arguments list"
     NODE_BODY = "body"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if parser.accept(Token.KEYWORD,KeywordToken.FUNC):
             nodes = {}
             nodes[Function.NODE_NAME]=parser.expect(Token.IDENTIFIER)
@@ -567,12 +568,25 @@ class Function(Rule):
             return Function(nodes)
         else:
             return None
+
+class AnonymousFunction(Function):
+    type = Rule.ANONYMOUS_FUNCTION
+    @classmethod
+    def match(cls,parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.FUNC):
+            return None
+        nodes = {}
+        nodes[Function.NODE_ARGUMENTS] = parser.expectRule(ArgumentList)
+        nodes[Function.NODE_BODY] = parser.acceptRule(InlineBlock)
+        parser.expect(Token.KEYWORD,KeywordToken.ENDFUNC)
+        return AnonymousFunction(nodes)
         
 class Block(Rule):
     type = Rule.BLOCK
     NODE_STATEMENTS = "statements"
-    @staticmethod
-    def match(parser):
+    require_newline = True
+    @classmethod
+    def match(cls,parser):
         nodes = {Block.NODE_STATEMENTS:[]}
         something_matched = False
         while True:
@@ -583,12 +597,17 @@ class Block(Rule):
                 something_matched = True
                 nodes[Block.NODE_STATEMENTS].append(parser.matched_rule)
                 if not parser.isNextEOF():
-                    parser.expect(Token.NEWLINE)
+                    if cls.require_newline:
+                        parser.expect(Token.NEWLINE)
+                    else:
+                        parser.accept(Token.NEWLINE)
                 continue
             break
         if something_matched: return Block(nodes)
         return None
-        
+
+class InlineBlock(Block):
+    require_newline = False
 
 class While(Rule):
     
@@ -596,8 +615,8 @@ class While(Rule):
     NODE_BODY = "body"
     
     type = Rule.WHILE
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.WHILE):
             return None
         nodes = {}
@@ -613,8 +632,8 @@ class Switch(Rule):
     type = Rule.SWITCH
     NODE_VALUE = "value"
     NODE_CASES = "cases"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.SWITCH):
             return None
         nodes = {}
@@ -635,8 +654,8 @@ class SwitchCondition(Rule):
     NODE_FROM = "from"
     NODE_TO = "to"
     NODE_ELSE = "else"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
 
         if parser.accept(Token.KEYWORD,KeywordToken.ELSE):
             return SwitchCondition({SwitchCondition.NODE_ELSE:parser.current})
@@ -652,8 +671,8 @@ class SwitchCase(Rule):
     type = Rule.SWITCH_CASE  
     NODE_CONDITIONS = "conditions"
     NODE_BODY = "body"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.CASE):
             return None
         
@@ -679,8 +698,8 @@ class If(Rule):
     NODE_ELSEIFS = "elseifs"
     NODE_ELSE = "else"
     NODE_INLINE_STATEMENT = "inline statement"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.IF):
             return None
         nodes = {If.NODE_CONDITION: parser.expectRule(Expression)}
@@ -703,8 +722,8 @@ class ElseIf(Rule):
     type = Rule.ELSEIF
     NODE_CONDITION = "condition"
     NODE_BODY = "body"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.ELSEIF):
             return None 
         nodes = {ElseIf.NODE_CONDITION:parser.expectRule(Expression)}
@@ -717,8 +736,8 @@ class ElseIf(Rule):
 class Else(Rule):
     type = Rule.ELSE
     NODE_BODY = "body"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.ELSE):
             return None 
         nodes = {}
@@ -731,8 +750,8 @@ class Directive(Rule):
     type = Rule.DIRECTIVE
     NODE_TYPE = "type"
     NODE_ARGUMENT = "arg"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         argument = None
         directive = None
         
@@ -751,8 +770,8 @@ class Directive(Rule):
 class UnaryOperator(Rule):
     type = Rule.UNARY_OPERATOR
     NODE_OPERATOR = "operator"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         for operator in OperatorToken.UNARY_OPERATORS:  
             if parser.accept(Token.OPERATOR,operator):
                 return UnaryOperator({UnaryOperator.NODE_OPERATOR:parser.current})
@@ -763,8 +782,8 @@ class Factor(Rule):
     NODE_UNARIES = "unaries"
     NODE_SUBNODE = "subnode"
     NODE_QUALIFIERS = "qualifiers"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         nodes = {}
         
         unaries = []
@@ -793,8 +812,8 @@ class Factor(Rule):
 class InlineList(Rule):
     type = Rule.INLINE_LIST
     NODE_ELEMENTS = "elements"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.LEFT_BRACKET):
             return None
         nodes = {}
@@ -813,8 +832,8 @@ class InlineList(Rule):
 class Call(Rule):
     type = Rule.CALL
     NODE_ARGUMENTS = "arguments"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.LEFT_PAREN):
             return None
         nodes = {}
@@ -831,8 +850,8 @@ class Call(Rule):
 class Property(Rule):
     type = Rule.PROPERTY
     NODE_NAME = "name"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.DOT):
             return None
         return Property({Property.NODE_NAME:parser.expect(Token.IDENTIFIER)})
@@ -841,8 +860,8 @@ class Property(Rule):
 class ListIndexing(Rule):
     type = Rule.LIST_INDEXING
     NODE_INDEX = "index"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         if not parser.accept(Token.LEFT_BRACKET):
             return None
         nodes = {ListIndexing.NODE_INDEX:parser.expectRule(Expression)}
@@ -852,14 +871,16 @@ class ListIndexing(Rule):
 class Terminal(Rule):
     type = Rule.TERMINAL
     NODE_TYPE = "type"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         accepted = [Token.BOOLEAN,Token.MACRO,Token.IDENTIFIER,Token.INTEGER,Token.STRING,Token.FLOATING]
         for token_type in accepted:
             if parser.accept(token_type):
                 return Terminal({Terminal.NODE_TYPE:parser.current})
         if parser.accept(Token.KEYWORD,KeywordToken.DEFAULT):
             return Terminal({Terminal.NODE_TYPE:parser.current})
+        if parser.acceptRule(AnonymousFunction):
+            return Terminal({Terminal.NODE_TYPE:parser.matched_rule})
         return None
 
 
@@ -877,8 +898,8 @@ class BinaryOperator(Rule):
               [OperatorToken.MULTIPLY,OperatorToken.DIVIDE],
               [OperatorToken.POW]
               ]
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         for operator in OperatorToken.BINARY_OPERATORS:
             if parser.accept(Token.OPERATOR,operator):
                 return BinaryOperator({BinaryOperator.NODE_OPERATOR:parser.current})
@@ -907,8 +928,8 @@ class Expression(Rule):
             self.operator = None
             self.second_factor = None
     
-    @staticmethod
-    def climb_precedence(nodes):
+    @classmethod
+    def climb_precedence(cls,nodes):
         nodes = deque(nodes)
         
         
@@ -950,8 +971,8 @@ class Expression(Rule):
         
         return get_tree().nodes
     
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         nodes = []
         
         if parser.acceptRule(Factor):
@@ -969,8 +990,8 @@ class Expression(Rule):
 class Program(Rule):
     type = Rule.PROGRAM
     NODE_BLOCK = "block"
-    @staticmethod
-    def match(parser):
+    @classmethod
+    def match(cls,parser):
         nodes = {}
         if parser.acceptRule(Block):
             nodes[Program.NODE_BLOCK] = parser.matched_rule
