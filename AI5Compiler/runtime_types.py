@@ -72,6 +72,7 @@ class InstructionType:
     EXACTLY_EQUAL                       = 0x50;
     PUSH_DEFAULT                        = 0x51;
     PUSH_GENERAL_BLOCK                  = 0x52;
+    PUSH_NAME                           = 0x53;
 
 
 class StaticType:

@@ -24,7 +24,8 @@ public:
 	static const VARIANT_TYPE INTEGER32			= 9;
 	static const VARIANT_TYPE NAME				= 10;
 	static const VARIANT_TYPE DEFAULT			= 11;
-	static const int NUMBER_OF_VARIANT_TYPES	= 12;
+	static const VARIANT_TYPE NAME_REFERENCE	= 12;
+	static const int NUMBER_OF_VARIANT_TYPES	= 13;
 	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream)=0;
@@ -54,19 +55,12 @@ public:
 	inline bool isReferenceType();
 	inline bool isNameType();
 	inline bool isDefaultType();
+	inline bool isNameReferenceType();
 
 private:
 	const VARIANT_TYPE type;
 	int refCount;
 	VariantFactory* recycler;
-
-	// This is an optional field set by certain instructions to
-	// be able to track which Name this variant last belonged to.
-	NameVariant* lastName;
-
-public:
-	void setLastName(NameVariant* name);
-	NameVariant* getLastName();
 };
 
 class VariantFactory
@@ -209,6 +203,11 @@ bool Variant::isReferenceType()
 bool Variant::isNameType()
 {
 	return type == NAME;
+}
+
+bool Variant::isNameReferenceType()
+{
+	return type == NAME_REFERENCE;
 }
 
 bool Variant::isDefaultType()

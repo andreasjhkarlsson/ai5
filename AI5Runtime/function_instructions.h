@@ -43,22 +43,6 @@ __forceinline void ret(StackMachine* machine)
 	// Don't worry, we'll add it back after the unwinding is done.
 	Variant* returnValue = machine->getDataStack()->pop();
 
-	// This fixes funky behaviour with byref. 
-	// For example, the following code:
-	//--------------
-	// Global a = 10
-	// Func foo()
-	//   return a
-	// EndFunc
-	// Func bar(ByRef b)
-	//   b *= 2
-	// EndFunc
-	// bar(foo())
-	// printline(a)
-	// --------------
-	// Will print '20' instead of the more sensible '10'.
-	returnValue->setLastName(nullptr);
-
 	BlockStack* blockStack = machine->getBlockStack();
 
 	while(!blockStack->top()->isCallBlock())

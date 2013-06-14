@@ -155,6 +155,11 @@ class PushNameValueInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_NAME_VALUE) + self.identifier.to_binary()
 
+class PushNameInstruction(Instruction):
+    def __init__(self,identifier):
+        self.identifier = identifier
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.PUSH_NAME) + self.identifier.to_binary()
 
 class PushFloatingInstruction(Instruction):
     def __init__(self,id):

@@ -6,6 +6,7 @@
 #include "LoopBlock.h"
 #include "DefaultVariant.h"
 #include "GeneralBlock.h"
+#include "NameReferenceVariant.h"
 
 __forceinline void pushInteger64(StackMachine* machine,int arg)
 {
@@ -84,6 +85,24 @@ __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 	Variant* var = name->getValue();
 	var->addRef();
 	machine->getDataStack()->push(var);
+	machine->advanceCounter();
+}
+
+
+
+__forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
+{
+	NameVariant* name = machine->getNearestName(nameId);
+
+	if (name == nullptr)
+	{
+		StaticName* staticString = (StaticName*)machine->getStaticData(nameId.staticId);
+		throw RuntimeError(std::wstring(L"Undeclared identifier ")+(*staticString->getName())+L"!");
+	}
+
+	name->addRef();
+
+	machine->getDataStack()->push(name);
 	machine->advanceCounter();
 }
 

@@ -2,7 +2,7 @@
 #include <iostream>
 #include "RuntimeError.h"
 
-NameVariant::NameVariant(Variant* value): Variant(NAME), isConst(false)
+NameVariant::NameVariant(Variant* value,VARIANT_TYPE type): Variant(type), isConst(false),value(value)
 {
 	this->setValue(value);
 }
@@ -42,7 +42,6 @@ void NameVariant::cleanup()
 {
 	if(value != nullptr)
 	{
-		clearLastName();
 		value->release();
 		value = nullptr;
 		isConst = false;
@@ -71,10 +70,7 @@ void NameVariant::setValue(Variant* newVariant)
 		throw RuntimeError(L"Cannot set value of const name!");
 	}
 
-	clearLastName();
-
 	newVariant->addRef();
-	newVariant->setLastName(this);
 	if(value != nullptr)
 		value->release();
 	value = newVariant;	
@@ -93,15 +89,6 @@ void NameVariant::markAsConst()
 NameVariant* NameVariant::createFromFactory(VariantFactory* factory)
 {
 	return factory->create<NameVariant,Variant*>(Variant::NAME,nullptr);
-}
-
-void NameVariant::clearLastName()
-{
-	if(value != nullptr && value->getLastName() == this)
-	{
-		value->setLastName(nullptr);
-	}
-
 }
 
 

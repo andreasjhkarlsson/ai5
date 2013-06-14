@@ -94,6 +94,9 @@
     <ClCompile Include="StackMachine.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="NameReferenceVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -206,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="types.h">
       <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="NameReferenceVariant.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

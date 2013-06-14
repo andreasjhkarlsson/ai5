@@ -645,7 +645,12 @@ class Compiler:
     def compile_call(self,call):
         code = []
         for expression in call.nodes[Call.NODE_ARGUMENTS]:
-            code += self.compile_expression(expression)
+            compiled_arg = self.compile_expression(expression)
+
+            if len(compiled_arg) == 1 and isinstance(compiled_arg[0],PushNameValueInstruction):
+                compiled_arg[0] = PushNameInstruction(compiled_arg[0].identifier)
+
+            code += compiled_arg
         code += [CallFunctionInstruction(len(call.nodes[Call.NODE_ARGUMENTS]))]
         return code
     

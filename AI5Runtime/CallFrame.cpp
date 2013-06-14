@@ -2,6 +2,7 @@
 #include "StackMachine.h"
 #include "DefaultVariant.h"
 #include "UserFunctionVariant.h"
+#include "NameReferenceVariant.h"
 
 CallFrame::CallFrame(): Block(CALL_BLOCK)
 {
@@ -78,9 +79,18 @@ void CallFrame::loadArguments(StackMachine* machine,int total,int required)
 			varArg = machine->getDataStack()->pop();
 		}
 
-		if(arg.isByref && varArg->getLastName() != nullptr)
+		if(varArg->isNameType() || varArg->isNameReferenceType())
 		{
-			machine->addNameToLocalScope(arg.identifier,varArg->getLastName());
+			if(arg.isByref)
+			{
+				NameReferenceVariant* ref = machine->getVariantFactory()->create<NameReferenceVariant,NameVariant*>(Variant::NAME_REFERENCE,static_cast<NameVariant*>(varArg));
+				machine->addNameToLocalScope(arg.identifier,ref);
+			}
+			else
+			{
+				machine->setLocal(arg.identifier,static_cast<NameVariant*>(varArg)->getValue());
+			}
+
 		}
 		else
 		{

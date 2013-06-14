@@ -50,6 +50,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::PUSH_NAME_VALUE:
 		stream << "PUSH_NAME_VALUE" << " " << *getName(machine,this->arg.identifier);
 		break;
+	case Instruction::PUSH_NAME:
+		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.identifier);
+		break;
 	case Instruction::PUSH_INTEGER64:
 		stream << "PUSH_INTEGER64" << " " << getInteger64(machine, this->arg.integer);
 		break;

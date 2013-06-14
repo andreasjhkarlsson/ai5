@@ -163,6 +163,7 @@
     <ClCompile Include="LoopBlock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="misc_instructions.cpp" />
+    <ClCompile Include="NameReferenceVariant.cpp" />
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="LoopBlock.h" />
     <ClInclude Include="macro.h" />
     <ClInclude Include="misc_instructions.h" />
+    <ClInclude Include="NameReferenceVariant.h" />
     <ClInclude Include="PooledObject.h" />
     <ClInclude Include="RuntimeError.h" />
     <ClInclude Include="Scope.h" />

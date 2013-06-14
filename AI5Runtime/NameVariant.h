@@ -5,7 +5,7 @@ class NameVariant :
 	public Variant
 {
 public:
-	NameVariant(Variant* value);
+	NameVariant(Variant* value,VARIANT_TYPE type = NAME);
 	~NameVariant(void);
 	std::wostream& format(std::wostream& stream);
 	virtual double toFloating();
@@ -17,14 +17,12 @@ public:
 	virtual void cleanup();
 	void markAsConst();
 	bool isConstName();
-	Variant* getValue();
-	void setValue(Variant* variant);
+	virtual Variant* getValue();
+	virtual void setValue(Variant* variant);
 	static NameVariant* createFromFactory(VariantFactory* factory);
-
-	// If value has this instance as last name, clear it!
-	void clearLastName();
-private:
+protected:
 	Variant* value;
+private:
 	bool isConst;
 };
 
