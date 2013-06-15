@@ -68,7 +68,6 @@ void Scope::addNameToIndex(int index,NameVariant* nameVariant)
 
 }
 
-
 void Scope::release()
 {
 	if(!(--refCount))
@@ -79,6 +78,7 @@ void Scope::release()
 		Scope::returnInstance(this);
 	}
 }
+
 void Scope::addRef()
 {
 	refCount++;

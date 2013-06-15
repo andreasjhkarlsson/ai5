@@ -8,6 +8,7 @@ Variant::Variant(const VARIANT_TYPE type): refCount(1), type(type), recycler(nul
 
 Variant::~Variant(void)
 {
+	
 }
 
 VariantFactory::VariantFactory(void)
@@ -23,4 +24,7 @@ VariantFactory::~VariantFactory(void)
 
 void Variant::cleanup()
 {
+//	std::wcout << "Cleaning up ";
+//	this->format(std::wcout);
+//	std::wcout << std::endl;
 }

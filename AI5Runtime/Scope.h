@@ -13,10 +13,9 @@ class StackMachine;
 class Scope: public PooledObject<Scope>
 {
 public:
-	Scope(): indexTable(128,0),usedIndexes(),refCount(1),enclosingScope(nullptr)
-	{
-		usedIndexes.reserve(16);
-	}
+
+	friend class PooledObject<Scope>;
+
 	__forceinline NameVariant* getNameFromString(const std::wstring &name)
 	{
 		return lookup[name];
@@ -45,7 +44,11 @@ public:
 
 	static const int POOL_SIZE = 1024;
 private:
-	
+	Scope(): indexTable(128,0),usedIndexes(),refCount(1),enclosingScope(nullptr)
+	{
+		usedIndexes.reserve(16);
+	}
+
 	Scope* enclosingScope;
 
 	int refCount;

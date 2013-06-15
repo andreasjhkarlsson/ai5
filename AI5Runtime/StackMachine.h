@@ -80,7 +80,7 @@ private:
 	// Macros are stored with a simple string as lookup.
 	// TODO: Lookup macros with index as well.
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
-	Scope globalScope;
+	Scope *globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;
 	// When set, the machine stops executing after next instruction.
@@ -149,16 +149,16 @@ NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 			return name;
 	}
 
-	NameVariant* name = globalScope.getNameFromIndex(identifier.globalId);
+	NameVariant* name = globalScope->getNameFromIndex(identifier.globalId);
 
 	// If name not found from index, do a "hard" search with the name
 	// Add it as an index afterwords so next lookup is FAST.
 	if(name == nullptr)
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-		name = globalScope.getNameFromString(*std::static_pointer_cast<StaticName>(staticData)->getName());
+		name = globalScope->getNameFromString(*std::static_pointer_cast<StaticName>(staticData)->getName());
 		// If name is still nullptr, throw error!
-		globalScope.createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
+		globalScope->createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 
 	return name;
@@ -166,7 +166,7 @@ NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 
 NameVariant* StackMachine::getLocalName(NameIdentifier identifier)
 {
-	Scope* scope = &globalScope;
+	Scope* scope = globalScope;
 	if(currentCallFrame != nullptr)
 		scope = currentCallFrame->getScope();
 	return scope->getNameFromIndex(identifier.localId);
@@ -174,7 +174,7 @@ NameVariant* StackMachine::getLocalName(NameIdentifier identifier)
 
 NameVariant* StackMachine::getGlobalName(NameIdentifier identifier)
 {
-	Scope* scope = &globalScope;
+	Scope* scope = globalScope;
 	return scope->getNameFromIndex(identifier.globalId);
 }
 
@@ -187,7 +187,7 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 	if(currentCallFrame != nullptr)
 		foundName = currentCallFrame->getScope()->getNameFromIndex(identifier.localId);
 	if(foundName == nullptr)
-		foundName = globalScope.getNameFromIndex(identifier.globalId);
+		foundName = globalScope->getNameFromIndex(identifier.globalId);
 
 	// If not found, add it as a new name to the nearest scope.
 	if(foundName == nullptr)
@@ -196,7 +196,7 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 		if(currentCallFrame != nullptr)
 			targetScope = currentCallFrame->getScope();
 		else
-			targetScope = &globalScope;
+			targetScope = globalScope;
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 
 		// The name may be defined without this index. This doesn't matter as the createIndexForName will check
@@ -216,7 +216,7 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 
 void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
-	Scope* targetScope = &globalScope;
+	Scope* targetScope = globalScope;
 	if(currentCallFrame != nullptr)
 		targetScope = currentCallFrame->getScope();
 
@@ -238,11 +238,11 @@ void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asCo
 }
 void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
-	NameVariant* foundName = globalScope.getNameFromIndex(identifier.globalId);
+	NameVariant* foundName = globalScope->getNameFromIndex(identifier.globalId);
 	if(foundName == nullptr)
 	{		
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-		foundName = globalScope.createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
+		foundName = globalScope->createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 	foundName->setValue(variant);
 
@@ -254,7 +254,7 @@ void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asC
 
 void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
 {
-	Scope* targetScope = &globalScope;
+	Scope* targetScope = globalScope;
 	if(currentCallFrame != nullptr)
 		targetScope = currentCallFrame->getScope();
 

@@ -6,11 +6,13 @@ UserFunctionVariant::UserFunctionVariant(int address,Scope* enclosingScope): add
 {
 	if(enclosingScope != nullptr)
 		enclosingScope->addRef();
+
 }
 
 
 UserFunctionVariant::~UserFunctionVariant(void)
 {
+	
 }
 
 std::wostream& UserFunctionVariant::format(std::wostream& stream)
@@ -27,6 +29,7 @@ int UserFunctionVariant::getAddress()
 
 void UserFunctionVariant::cleanup()
 {
+	Variant::cleanup();
 	if(enclosingScope != nullptr)
 	{
 		enclosingScope->release();

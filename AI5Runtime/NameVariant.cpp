@@ -14,7 +14,9 @@ NameVariant::~NameVariant(void)
 
 std::wostream& NameVariant::format(std::wostream& stream)
 {
-	stream << L"NameVariant";
+	stream << L"NameVariant ";
+	if(value != nullptr)
+		value->format(stream);
 	return stream;
 }
 double NameVariant::toFloating()
@@ -40,6 +42,7 @@ shared_string NameVariant::toString()
 }
 void NameVariant::cleanup()
 {
+	Variant::cleanup();
 	if(value != nullptr)
 	{
 		value->release();

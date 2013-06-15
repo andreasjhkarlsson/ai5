@@ -14,6 +14,7 @@ ListVariant::~ListVariant(void)
 
 void ListVariant::cleanup()
 {
+	Variant::cleanup();
 	if(this->list != nullptr)
 	{
 		for(int i=0;i<list->size();i++)

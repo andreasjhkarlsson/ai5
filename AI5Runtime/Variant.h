@@ -36,8 +36,8 @@ public:
 	virtual shared_string toString()=0;
 	virtual bool equal(Variant*)=0;
 	virtual void cleanup();
-	__forceinline void addRef();
-	__forceinline void release();
+	__forceinline int addRef();
+	__forceinline int release();
 	__forceinline VARIANT_TYPE getType();
 	__forceinline void scheduleRecycling(VariantFactory* factory);
 
@@ -123,14 +123,15 @@ void Variant::scheduleRecycling(VariantFactory* factory)
 	this->recycler = factory;
 }
 
-void Variant::addRef()
+int Variant::addRef()
 {
-	refCount++;
+	return ++refCount;
 }
 
-void Variant::release()
+int Variant::release()
 {
-	if (!(--refCount))
+	int resultCount = --refCount;
+	if (!(resultCount))
 	{
 		this->cleanup();
 		// Is this object used for recycling?
@@ -143,6 +144,7 @@ void Variant::release()
 			delete this;
 		}
 	}
+	return resultCount;
 }
 
 VARIANT_TYPE Variant::getType()
