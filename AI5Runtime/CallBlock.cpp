@@ -1,20 +1,20 @@
-#include "CallFrame.h"
+#include "CallBlock.h"
 #include "StackMachine.h"
 #include "DefaultVariant.h"
 #include "UserFunctionVariant.h"
 #include "NameReferenceVariant.h"
 
-CallFrame::CallFrame(): Block(CALL_BLOCK)
+CallBlock::CallBlock(): Block(CALL_BLOCK)
 {
 }
 
-CallFrame::~CallFrame(void)
+CallBlock::~CallBlock(void)
 {
 }
 
-void CallFrame::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallFrame* parentFrame)
+void CallBlock::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame)
 {
-	this->scope = Scope::getInstance();
+	this->scope = Scope::createFromFactory(machine->getVariantFactory());
 	this->returnAddress = returnAddress;
 	this->stackPosition = machine->getDataStack()->position()-(calledNumberOfArguments+1);
 	this->calledNumberOfArguments = calledNumberOfArguments;
@@ -22,39 +22,39 @@ void CallFrame::setup(StackMachine* machine,int returnAddress,int calledNumberOf
 	this->arguments.clear();
 }
 
-void CallFrame::leave(StackMachine*machine)
+void CallBlock::leave(StackMachine*machine)
 {
 	unwindStack(machine,stackPosition);
 
 	scope->release();
 }
 
-Scope* CallFrame::getScope()
+Scope* CallBlock::getScope()
 {
 	return scope;
 }
 
-void CallFrame::recycleInstance()
+void CallBlock::recycleInstance()
 {
-	CallFrame::returnInstance(this);
+	CallBlock::returnInstance(this);
 }
 
-int CallFrame::getReturnAddress()
+int CallBlock::getReturnAddress()
 {
 	return returnAddress;
 }
 
-CallFrame* CallFrame::getParentFrame()
+CallBlock* CallBlock::getParentFrame()
 {
 	return this->parentFrame;
 }
 
-void CallFrame::addArgument(const Argument& arg)
+void CallBlock::addArgument(const Argument& arg)
 {
 	this->arguments.push_back(arg);
 }
 
-void CallFrame::loadArguments(StackMachine* machine,int total,int required)
+void CallBlock::loadArguments(StackMachine* machine,int total,int required)
 {
 	if(calledNumberOfArguments > total)
 		throw RuntimeError(L"Too many arguments in function call");

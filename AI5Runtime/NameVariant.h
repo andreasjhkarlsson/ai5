@@ -1,8 +1,8 @@
 #pragma once
-#include "variant.h"
+#include "containervariant.h"
 #include "types.h"
 class NameVariant :
-	public Variant
+	public ContainerVariant
 {
 public:
 	NameVariant(Variant* value,VARIANT_TYPE type = NAME);
@@ -20,6 +20,8 @@ public:
 	virtual Variant* getValue();
 	virtual void setValue(Variant* variant);
 	static NameVariant* createFromFactory(VariantFactory* factory);
+	virtual int getChildContainersCount();
+	virtual ContainerVariant* getChildContainer(int index);
 protected:
 	Variant* value;
 private:

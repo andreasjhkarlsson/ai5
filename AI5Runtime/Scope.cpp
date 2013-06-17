@@ -22,9 +22,9 @@ NameVariant* Scope::createIndexForName(StackMachine* machine,const std::wstring 
 	return nameObj;
 }
 
-void Scope::reset()
+void Scope::cleanup()
 {
-
+	ContainerVariant::cleanup();
 	if(enclosingScope != nullptr)
 	{
 		enclosingScope->release();
@@ -68,18 +68,17 @@ void Scope::addNameToIndex(int index,NameVariant* nameVariant)
 
 }
 
-void Scope::release()
+
+Scope* Scope::createFromFactory(VariantFactory* factory)
 {
-	if(!(--refCount))
-	{
-		this->reset();
-		// Make sure ref count is one if the instance happens to be reused later.
-		this->addRef();
-		Scope::returnInstance(this);
-	}
+	return factory->createEmpty<Scope>(SCOPE);
 }
 
-void Scope::addRef()
+int Scope::getChildContainersCount()
 {
-	refCount++;
+	return 0;
+}
+ContainerVariant* Scope::getChildContainer(int index)
+{
+	return nullptr;
 }

@@ -8,7 +8,7 @@
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
 	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), 
-	currentCallFrame(nullptr), verbose(false), globalScope(Scope::getInstance())
+	currentCallBlock(nullptr), verbose(false), globalScope(new Scope())
 {
 	AI5StandardLibrary::registerFunctions(this);
 }

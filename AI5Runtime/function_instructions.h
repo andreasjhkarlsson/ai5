@@ -3,7 +3,7 @@
 #include "Variant.h"
 #include "StackMachine.h"
 #include "UserFunctionVariant.h"
-#include "CallFrame.h"
+#include "CallBlock.h"
 
 __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 {
@@ -15,14 +15,14 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 	{
 		int address = ((UserFunctionVariant*)toCall)->getAddress();
 
-		CallFrame* frame = CallFrame::getInstance();
+		CallBlock* frame = CallBlock::getInstance();
 
-		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs,machine->getCurrentCallFrame());
+		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs,machine->getCurrentCallBlock());
 
 		machine->getBlockStack()->push(frame);
 
 
-		machine->setCurrentCallFrame(frame);
+		machine->setCurrentCallBlock(frame);
 		machine->jumpAbsolute(address);		
 	}
 	else if(toCall->getType() == Variant::NATIVE_FUNCTION)
@@ -38,7 +38,7 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 __forceinline void ret(StackMachine* machine)
 {
 	// Temporarily pop return value from stack.
-	// This is needed because popping callframe will unwind
+	// This is needed because popping CallBlock will unwind
 	// anything added to the stack during calling (so it will be clean during exceptions for example9.
 	// Don't worry, we'll add it back after the unwinding is done.
 	Variant* returnValue = machine->getDataStack()->pop();
@@ -51,13 +51,13 @@ __forceinline void ret(StackMachine* machine)
 		blockStack->pop()->recycleInstance();
 	}
 
-	CallFrame* frame = static_cast<CallFrame*>(blockStack->pop());
+	CallBlock* frame = static_cast<CallBlock*>(blockStack->pop());
 
 	// Make sure stack is balanced (maybe throw corruption error here
 	// since the stack should always be balanced when RET is executed).
 	frame->leave(machine);
 	machine->jumpAbsolute(frame->getReturnAddress());
-	machine->setCurrentCallFrame(frame->getParentFrame());
+	machine->setCurrentCallBlock(frame->getParentFrame());
 	frame->recycleInstance();
 
 	// I told you I would return it to the stack.
@@ -67,7 +67,7 @@ __forceinline void ret(StackMachine* machine)
 
 __forceinline void createArgument(StackMachine* machine,NameIdentifier identifier,bool byref)
 {
-	CallFrame* frame = machine->getCurrentCallFrame();
+	CallBlock* frame = machine->getCurrentCallBlock();
 
 	Argument arg;
 	arg.identifier = identifier;
@@ -82,6 +82,6 @@ __forceinline void createArgument(StackMachine* machine,NameIdentifier identifie
 
 __forceinline void loadArguments(StackMachine* machine,int total,int required)
 {
-	machine->getCurrentCallFrame()->loadArguments(machine,total,required);
+	machine->getCurrentCallBlock()->loadArguments(machine,total,required);
 	machine->advanceCounter();
 }

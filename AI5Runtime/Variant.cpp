@@ -2,7 +2,7 @@
 #include "Variant.h"
 #include "NameVariant.h"
 
-Variant::Variant(const VARIANT_TYPE type): refCount(1), type(type), recycler(nullptr)
+Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(1), type(type), recycler(nullptr), isContainer(isContainer)
 {
 }
 
@@ -27,4 +27,35 @@ void Variant::cleanup()
 //	std::wcout << "Cleaning up ";
 //	this->format(std::wcout);
 //	std::wcout << std::endl;
+}
+
+
+std::wostream& Variant::format(std::wostream& stream)
+{
+	stream << L"No formatting available";
+	return stream;
+}
+double Variant::toFloating()
+{
+	return 0.0;
+}
+__int64 Variant::toInteger64()
+{
+	return 0;
+}
+int Variant::toInteger32()
+{
+	return 0;
+}
+bool Variant::toBoolean()
+{
+	return false;
+}
+shared_string Variant::toString()
+{
+	return shared_string(new std::wstring(L""));
+}
+bool Variant::equal(Variant*)
+{
+	return false;
 }

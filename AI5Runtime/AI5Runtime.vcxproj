@@ -151,7 +151,8 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BooleanVariant.cpp" />
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
-    <ClCompile Include="CallFrame.cpp" />
+    <ClCompile Include="CallBlock.cpp" />
+    <ClCompile Include="ContainerVariant.cpp" />
     <ClCompile Include="DataStack.cpp" />
     <ClCompile Include="DefaultVariant.cpp" />
     <ClCompile Include="FloatingVariant.cpp" />
@@ -179,8 +180,9 @@
     <ClInclude Include="BlockStack.h" />
     <ClInclude Include="BooleanVariant.h" />
     <ClInclude Include="BuiltinFunctionVariant.h" />
-    <ClInclude Include="CallFrame.h" />
+    <ClInclude Include="CallBlock.h" />
     <ClInclude Include="comparison_instructions.h" />
+    <ClInclude Include="ContainerVariant.h" />
     <ClInclude Include="DataStack.h" />
     <ClInclude Include="DefaultVariant.h" />
     <ClInclude Include="encode.h" />

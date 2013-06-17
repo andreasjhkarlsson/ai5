@@ -2,7 +2,7 @@
 #include <iostream>
 #include "RuntimeError.h"
 
-NameVariant::NameVariant(Variant* value,VARIANT_TYPE type): Variant(type), isConst(false),value(value)
+NameVariant::NameVariant(Variant* value,VARIANT_TYPE type): ContainerVariant(type), isConst(false),value(value)
 {
 	this->setValue(value);
 }
@@ -99,4 +99,18 @@ bool NameVariant::equal(Variant* other)
 {
 	// Only compare equal for exactly the same instance.
 	return this == other;
+}
+
+
+int NameVariant::getChildContainersCount()
+{
+	if(value->isContainerType())
+		return 1;
+	return 0;
+}
+ContainerVariant* NameVariant::getChildContainer(int index)
+{
+	// Assume that this method is only called if getChildContainersCount
+	// returns 1 and that index is 0.
+	return static_cast<ContainerVariant*>(value);
 }

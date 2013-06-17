@@ -13,29 +13,29 @@ struct Argument
 
 // Stores all information about a function call to a user defined function.
 // Call setup function each time an instance is to be used.
-class CallFrame: public Block, public PooledObject<CallFrame> 
+class CallBlock: public Block, public PooledObject<CallBlock> 
 {
 public:
 	
-	~CallFrame(void);
-	void setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallFrame* parentFrame);
+	~CallBlock(void);
+	void setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame);
 
 	Scope* getScope();
 	virtual void leave(StackMachine*);
 	void recycleInstance();
 	int getReturnAddress();
-	CallFrame* getParentFrame();
+	CallBlock* getParentFrame();
 	void addArgument(const Argument& argument);
 	void loadArguments(StackMachine* machine,int total,int required);
 	
-	friend class PooledObject<CallFrame>;
+	friend class PooledObject<CallBlock>;
 private:
 	int returnAddress;
 	int calledNumberOfArguments;
 	size_t stackPosition;
-	CallFrame* parentFrame;
+	CallBlock* parentFrame;
 	Scope* scope;
-	CallFrame();
+	CallBlock();
 	static const int POOL_SIZE = 1024;
 	std::vector<Argument> arguments;
 	

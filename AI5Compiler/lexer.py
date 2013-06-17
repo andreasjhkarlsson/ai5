@@ -260,7 +260,7 @@ class KeywordToken(Token):
     FUNC = "FUNC".lower()
     RETURN = "RETURN".lower()
     ENDFUNC = "ENDFUNC".lower()
-    IF = "IF".lower().lower()
+    IF = "IF".lower()
     THEN = "THEN".lower()
     ELSE = "ELSE".lower()
     ELSEIF = "ELSEIF".lower()

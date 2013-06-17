@@ -9,7 +9,7 @@
 #include "Static.h"
 #include "DataStack.h"
 #include "Scope.h"
-#include "CallFrame.h"
+#include "CallBlock.h"
 #include "BuiltinFunctionVariant.h"
 #include "macro.h"
 #include "RuntimeError.h"
@@ -49,8 +49,8 @@ public:
 	__forceinline DataStack* getDataStack();
 	__forceinline VariantFactory* getVariantFactory();
 	__forceinline BlockStack* getBlockStack();
-	inline void setCurrentCallFrame(CallFrame* frame);
-	inline CallFrame* getCurrentCallFrame();
+	inline void setCurrentCallBlock(CallBlock* frame);
+	inline CallBlock* getCurrentCallBlock();
 	int start();
 	void terminate();
 	void disassemble();
@@ -76,7 +76,7 @@ private:
 	// Represents the current call frame.
 	// Is not automatically set, so should be set by instructions
 	// manipulating the block stack.
-	CallFrame* currentCallFrame;
+	CallBlock* currentCallBlock;
 	// Macros are stored with a simple string as lookup.
 	// TODO: Lookup macros with index as well.
 	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
@@ -129,22 +129,22 @@ int StackMachine::getCurrentAddress()
 	return programCounter;
 }
 
-void StackMachine::setCurrentCallFrame(CallFrame* frame)
+void StackMachine::setCurrentCallBlock(CallBlock* frame)
 {
-	this->currentCallFrame = frame;
+	this->currentCallBlock = frame;
 }
 
-CallFrame* StackMachine::getCurrentCallFrame()
+CallBlock* StackMachine::getCurrentCallBlock()
 {
-	return this->currentCallFrame;
+	return this->currentCallBlock;
 }
 
 
 NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 {
-	if(currentCallFrame != nullptr)
+	if(currentCallBlock != nullptr)
 	{
-		NameVariant* name = currentCallFrame->getScope()->getNameFromIndex(identifier.localId);
+		NameVariant* name = currentCallBlock->getScope()->getNameFromIndex(identifier.localId);
 		if(name != nullptr)
 			return name;
 	}
@@ -167,8 +167,8 @@ NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 NameVariant* StackMachine::getLocalName(NameIdentifier identifier)
 {
 	Scope* scope = globalScope;
-	if(currentCallFrame != nullptr)
-		scope = currentCallFrame->getScope();
+	if(currentCallBlock != nullptr)
+		scope = currentCallBlock->getScope();
 	return scope->getNameFromIndex(identifier.localId);
 }
 
@@ -184,8 +184,8 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 {
 	// Search for name in local and global scope.
 	NameVariant* foundName = nullptr;
-	if(currentCallFrame != nullptr)
-		foundName = currentCallFrame->getScope()->getNameFromIndex(identifier.localId);
+	if(currentCallBlock != nullptr)
+		foundName = currentCallBlock->getScope()->getNameFromIndex(identifier.localId);
 	if(foundName == nullptr)
 		foundName = globalScope->getNameFromIndex(identifier.globalId);
 
@@ -193,8 +193,8 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 	if(foundName == nullptr)
 	{
 		Scope* targetScope = nullptr;
-		if(currentCallFrame != nullptr)
-			targetScope = currentCallFrame->getScope();
+		if(currentCallBlock != nullptr)
+			targetScope = currentCallBlock->getScope();
 		else
 			targetScope = globalScope;
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
@@ -217,8 +217,8 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	Scope* targetScope = globalScope;
-	if(currentCallFrame != nullptr)
-		targetScope = currentCallFrame->getScope();
+	if(currentCallBlock != nullptr)
+		targetScope = currentCallBlock->getScope();
 
 	NameVariant* name = targetScope->getNameFromIndex(identifier.localId);
 
@@ -255,8 +255,8 @@ void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asC
 void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
 {
 	Scope* targetScope = globalScope;
-	if(currentCallFrame != nullptr)
-		targetScope = currentCallFrame->getScope();
+	if(currentCallBlock != nullptr)
+		targetScope = currentCallBlock->getScope();
 
 	std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 	const std::wstring& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();

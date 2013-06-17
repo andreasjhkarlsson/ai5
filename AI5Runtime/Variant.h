@@ -25,16 +25,17 @@ public:
 	static const VARIANT_TYPE NAME				= 10;
 	static const VARIANT_TYPE DEFAULT			= 11;
 	static const VARIANT_TYPE NAME_REFERENCE	= 12;
-	static const int NUMBER_OF_VARIANT_TYPES	= 13;
-	Variant(const VARIANT_TYPE type);
+	static const VARIANT_TYPE SCOPE				= 13;			
+	static const int NUMBER_OF_VARIANT_TYPES	= 14;
+	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
-	virtual std::wostream& format(std::wostream& stream)=0;
-	virtual double toFloating()=0;
-	virtual __int64 toInteger64()=0;
-	virtual int toInteger32()=0;
-	virtual bool toBoolean()=0;
-	virtual shared_string toString()=0;
-	virtual bool equal(Variant*)=0;
+	virtual std::wostream& format(std::wostream& stream);
+	virtual double toFloating();
+	virtual __int64 toInteger64();
+	virtual int toInteger32();
+	virtual bool toBoolean();
+	virtual shared_string toString();
+	virtual bool equal(Variant*);
 	virtual void cleanup();
 	__forceinline int addRef();
 	__forceinline int release();
@@ -56,10 +57,12 @@ public:
 	inline bool isNameType();
 	inline bool isDefaultType();
 	inline bool isNameReferenceType();
+	inline bool isContainerType();
 
 private:
 	const VARIANT_TYPE type;
 	int refCount;
+	bool isContainer;
 	VariantFactory* recycler;
 };
 
@@ -72,7 +75,9 @@ public:
 
 	// TODO: Infer VARIANT_TYPE from OUTER.
 	template<typename OUTER,typename INNER>
-	__forceinline OUTER* create(VARIANT_TYPE type,INNER data);
+	inline OUTER* create(VARIANT_TYPE type,INNER data);
+	template<typename OUTER>
+	inline OUTER* createEmpty(VARIANT_TYPE type);
 private:
 	static const int RECYCLE_BIN_LIMIT = 1000;
 	std::vector<FastStack<Variant*>*> recycleBins;
@@ -112,6 +117,25 @@ OUTER* VariantFactory::create(VARIANT_TYPE type,INNER data)
 	{
 		// No old variant found! Create new and return it.
 		OUTER* var = new OUTER(data);
+		var->scheduleRecycling(this);
+		return var;
+	}
+}
+
+template<typename OUTER>
+OUTER* VariantFactory::createEmpty(VARIANT_TYPE type)
+{
+	// Are there cached variants available?
+	if(recycleBins[type]->size() > 0)
+	{
+		OUTER* var = static_cast<OUTER*>(recycleBins[type]->pop());
+		var->addRef();
+
+		return var;
+	} else
+	{
+		// No old variant found! Create new and return it.
+		OUTER* var = new OUTER();
 		var->scheduleRecycling(this);
 		return var;
 	}
@@ -215,4 +239,9 @@ bool Variant::isNameReferenceType()
 bool Variant::isDefaultType()
 {
 	return type == DEFAULT;
+}
+
+bool Variant::isContainerType()
+{
+	return isContainer;
 }

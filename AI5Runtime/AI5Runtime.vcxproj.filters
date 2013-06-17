@@ -67,9 +67,6 @@
     <ClCompile Include="Block.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
-    <ClCompile Include="CallFrame.cpp">
-      <Filter>blocks</Filter>
-    </ClCompile>
     <ClCompile Include="LoopBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
@@ -88,14 +85,20 @@
     <ClCompile Include="ProgramLoader.cpp">
       <Filter>general</Filter>
     </ClCompile>
-    <ClCompile Include="Scope.cpp">
-      <Filter>general</Filter>
-    </ClCompile>
     <ClCompile Include="StackMachine.cpp">
       <Filter>general</Filter>
     </ClCompile>
     <ClCompile Include="NameReferenceVariant.cpp">
       <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="ContainerVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="Scope.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="CallBlock.cpp">
+      <Filter>blocks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,9 +159,6 @@
     <ClInclude Include="Block.h">
       <Filter>blocks</Filter>
     </ClInclude>
-    <ClInclude Include="CallFrame.h">
-      <Filter>blocks</Filter>
-    </ClInclude>
     <ClInclude Include="LoopBlock.h">
       <Filter>blocks</Filter>
     </ClInclude>
@@ -195,9 +195,6 @@
     <ClInclude Include="RuntimeError.h">
       <Filter>general</Filter>
     </ClInclude>
-    <ClInclude Include="Scope.h">
-      <Filter>general</Filter>
-    </ClInclude>
     <ClInclude Include="SimplePool.h">
       <Filter>general</Filter>
     </ClInclude>
@@ -212,6 +209,15 @@
     </ClInclude>
     <ClInclude Include="NameReferenceVariant.h">
       <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="ContainerVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="Scope.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="CallBlock.h">
+      <Filter>blocks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

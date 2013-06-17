@@ -10,11 +10,13 @@
 class StackMachine;
 
 // Keeping this class optimized is VERY important.
-class Scope: public PooledObject<Scope>
+class Scope: public ContainerVariant
 {
 public:
-
-	friend class PooledObject<Scope>;
+	Scope(): ContainerVariant(SCOPE), indexTable(128,0),usedIndexes(),enclosingScope(nullptr)
+	{
+		usedIndexes.reserve(16);
+	}
 
 	__forceinline NameVariant* getNameFromString(const std::wstring &name)
 	{
@@ -32,9 +34,6 @@ public:
 
 	void insertName(const std::wstring& name,int index,NameVariant* nameVariant);
 
-	void release();
-	void addRef();
-
 	void setEnclosingScope(Scope* scope)
 	{
 		if(scope != nullptr)
@@ -42,19 +41,19 @@ public:
 		this->enclosingScope = scope;
 	}
 
-	static const int POOL_SIZE = 1024;
+	// Make the scope ready for reusing.
+	void cleanup();
+
+	static Scope* createFromFactory(VariantFactory* factory);
+	virtual int getChildContainersCount();
+	virtual ContainerVariant* getChildContainer(int index);
+
 private:
-	Scope(): indexTable(128,0),usedIndexes(),refCount(1),enclosingScope(nullptr)
-	{
-		usedIndexes.reserve(16);
-	}
+
 
 	Scope* enclosingScope;
 
-	int refCount;
 
-	// Make the scope ready for reusing.
-	void reset();
 
 	// The string->name lookup.
 	// All names in the scope NEEDS to be in this map.
