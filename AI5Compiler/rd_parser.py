@@ -1,11 +1,37 @@
 from collections import deque
 import lexer
 from lexer import Token, KeywordToken, OperatorToken
+from copy import copy
 
 class ParseError(Exception):
     def __init__(self,message,source):
         self.message = message;
         self.source = source
+
+class Name:
+    def __init__(self,name,type):
+        self.name = name
+        self.type = type
+
+class Scope:
+    DECLARED = "declared"
+    REFERENCED = "referenced"
+    def __init__(self):
+        self.names = {}
+        self.subscopes = []
+    def add_name(self,new_name,type):
+        if new_name in self.names:
+            old_name_obj = self.names[new_name]
+            if old_name_obj.type == Scope.REFERENCED and type == Scope.DECLARED:
+                old_name_obj.type = Scope.DECLARED
+        else:
+            self.names[new_name] = Name(new_name,type)
+    def get_name(self,name):
+        return self.names[name]
+    def has_name(self,name):
+        return name in self.names
+    def add_subscope(self,subscope):
+        self.subscopes.append(subscope)
 
 class Parser:
     
@@ -14,6 +40,43 @@ class Parser:
         self.current = None
         self.matched_rule = None
         self.discarded = deque()
+        self.scope_stack = []
+
+    def report_name_reference(self,name):
+        self.scope_stack[-1].add_name(name,Scope.REFERENCED)
+    def report_name_declaration(self,name):
+        self.scope_stack[-1].add_name(name,Scope.DECLARED)
+    def push_scope(self):
+        self.scope_stack.append(Scope())
+    def pop_scope(self):
+        return self.scope_stack.pop()
+    def add_subscope(self,subscope):
+        self.scope_stack[-1].add_subscope(subscope)
+    def build_name_ids(self):
+        global_scope = self.scope_stack[0]
+        global_dict = {}
+
+        def get_global_id(name):
+            if name not in global_dict:
+                global_dict[name] = len(global_dict)
+            return global_dict[name]
+
+        for name in global_scope.names.values():
+            name.global_id = get_global_id(name.name)
+            name.local_id = name.global_id
+        def traverse_local_scope(scope,lookup):
+            lookup = copy(lookup)
+            def get_local_id(name):
+                if name not in lookup:
+                    lookup[name] = len(lookup)
+                return lookup[name]
+            for name in scope.names.values():
+                name.global_id = get_global_id(name.name)
+                name.local_id = get_local_id(name.name)
+            for subscope in scope.subscopes:
+                traverse_local_scope(subscope,lookup)
+        for subscope in global_scope.subscopes: traverse_local_scope(subscope,{})
+
     def next(self):
         self.discarded.append(self.current)
         self.current = self.tokens.popleft()
@@ -81,6 +144,12 @@ class Parser:
         result = self.current.type == Token.EOF
         self.back()
         return result
+
+    def parse_program(self):
+        program = self.expectRule(Program)
+        self.build_name_ids()
+        program.scope = self.pop_scope()
+        return program
         
 
 class Rule:
@@ -180,6 +249,7 @@ class DeclarationAssignment(Rule):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {DeclarationAssignment.NODE_IDENTIFIER: parser.current}
+        parser.report_name_declaration(parser.current.value)
 
         subscripts = []
         while parser.acceptRule(ListIndexing):
@@ -263,6 +333,7 @@ class EnumConstant(Rule):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {EnumConstant.NODE_IDENTIFIER:parser.current}
+        parser.report_name_declaration(parser.current.value)
         if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
             nodes[EnumConstant.NODE_VALUE]=parser.expect(Token.INTEGER)
         return EnumConstant(nodes)
@@ -309,6 +380,7 @@ class ReDim(Rule):
         if not parser.accept(Token.KEYWORD,KeywordToken.REDIM):
             return None
         nodes = {ReDim.NODE_NAME:parser.expect(Token.IDENTIFIER)}
+        parser.report_name_reference(parser.current.value)
         qualifiers = []
         while parser.acceptAnyRule([ListIndexing]):
             qualifiers.append(parser.matched_rule)
@@ -326,6 +398,7 @@ class LineStatement(Rule):
         if not parser.accept(Token.IDENTIFIER):
             return None
         nodes = {LineStatement.NODE_START:parser.current}
+        parser.report_name_reference(parser.current.value)
         
         qualifiers = []
         while parser.acceptRule(Qualifier):
@@ -333,6 +406,7 @@ class LineStatement(Rule):
         nodes[LineStatement.NODE_QUALIFIERS] = qualifiers
             
         if parser.acceptRule(Assignment):
+            parser.report_name_declaration(nodes[LineStatement.NODE_START].value)
             nodes[LineStatement.NODE_ASSIGNMENT] = parser.matched_rule
         return LineStatement(nodes)
 
@@ -440,6 +514,7 @@ class For(Rule):
         if not parser.accept(Token.KEYWORD,KeywordToken.FOR):
             return None
         nodes = {For.NODE_LOOP_VARIABLE: parser.expect(Token.IDENTIFIER)}
+        parser.report_name_declaration(parser.current.value)
         if parser.acceptRule(ForTo):
             nodes[For.NODE_FOR_TO]=parser.matched_rule
         else:
@@ -542,6 +617,7 @@ class Argument(Rule):
             nodes[Argument.NODE_NAME] = parser.current
         else: 
             return None
+        parser.report_name_declaration(nodes[Argument.NODE_NAME].value)
         if parser.accept(Token.OPERATOR,OperatorToken.EQUAL):
             nodes[Argument.NODE_DEFAULT_VALUE] = parser.expectRule(Expression)
         return Argument(nodes)
@@ -552,11 +628,21 @@ class Function(Rule):
     NODE_NAME = "name"
     NODE_ARGUMENTS = "arguments list"
     NODE_BODY = "body"
+
+    def __init__(self, nodes,scope):
+        super().__init__(nodes)
+        self.scope = scope
+
     @classmethod
     def match(cls,parser):
         if parser.accept(Token.KEYWORD,KeywordToken.FUNC):
+
+            
+
             nodes = {}
             nodes[Function.NODE_NAME]=parser.expect(Token.IDENTIFIER)
+            parser.report_name_declaration(parser.current.value)
+            parser.push_scope()
             nodes[Function.NODE_ARGUMENTS]=parser.expectRule(ArgumentList)
             parser.expectNewline() 
             
@@ -564,22 +650,29 @@ class Function(Rule):
                 nodes[Function.NODE_BODY]=parser.matched_rule
             
             parser.expect(Token.KEYWORD,KeywordToken.ENDFUNC)
+
+            my_scope = parser.pop_scope()
+            parser.add_subscope(my_scope)
             
-            return Function(nodes)
+            return Function(nodes,my_scope)
         else:
             return None
 
 class AnonymousFunction(Function):
     type = Rule.ANONYMOUS_FUNCTION
+
     @classmethod
     def match(cls,parser):
         if not parser.accept(Token.KEYWORD,KeywordToken.FUNC):
             return None
+        parser.push_scope()
         nodes = {}
         nodes[Function.NODE_ARGUMENTS] = parser.expectRule(ArgumentList)
         nodes[Function.NODE_BODY] = parser.acceptRule(InlineBlock)
         parser.expect(Token.KEYWORD,KeywordToken.ENDFUNC)
-        return AnonymousFunction(nodes)
+        my_scope = parser.pop_scope()
+        parser.add_subscope(my_scope)
+        return AnonymousFunction(nodes,my_scope)
         
 class Block(Rule):
     type = Rule.BLOCK
@@ -873,7 +966,10 @@ class Terminal(Rule):
     NODE_TYPE = "type"
     @classmethod
     def match(cls,parser):
-        accepted = [Token.BOOLEAN,Token.MACRO,Token.IDENTIFIER,Token.INTEGER,Token.STRING,Token.FLOATING]
+        if parser.accept(Token.IDENTIFIER):
+            parser.report_name_reference(parser.current.value)
+            return Terminal({Terminal.NODE_TYPE:parser.current})
+        accepted = [Token.BOOLEAN,Token.MACRO,Token.INTEGER,Token.STRING,Token.FLOATING]
         for token_type in accepted:
             if parser.accept(token_type):
                 return Terminal({Terminal.NODE_TYPE:parser.current})
@@ -993,6 +1089,8 @@ class Program(Rule):
     @classmethod
     def match(cls,parser):
         nodes = {}
+        # * Global scope *
+        parser.push_scope()
         if parser.acceptRule(Block):
             nodes[Program.NODE_BLOCK] = parser.matched_rule
         parser.expect(Token.EOF)

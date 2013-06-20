@@ -70,45 +70,30 @@ class StaticTable:
     def length(self):
         return len(self.statics)
 
-class ScopeLookup:
-    def __init__(self):
-        self.stack = []
-        self.function_nesting = 0
-    def push_scope(self):
-        self.stack.append({})
-    def pop_scope(self):
-        self.stack.pop()
-    def enter_function(self):
-        self.function_nesting += 1
-        if self.function_nesting == 1:
-            self.push_scope()
-    def leave_function(self):
-        self.function_nesting -= 1
-        if self.function_nesting == 0:
-            self.pop_scope()
-    def get_identifier(self,id):
-        nearest_scope = self.stack[len(self.stack)-1]
-        farest_scope = self.stack[0]
-        if id not in nearest_scope:
-            nearest_scope[id] = len(nearest_scope)
-        if id not in farest_scope:
-            farest_scope[id] = len(farest_scope)
-        return farest_scope[id],nearest_scope[id]
 
 
-            
 
 class Compiler:
     def __init__(self):
         self.static_table = StaticTable()  
-        self.scope_lookup = ScopeLookup()
-        
+        self.global_scope = None
+        self.local_scopes = []
 
     def get_identifier(self,name):
-        global_id, local_id = self.scope_lookup.get_identifier(name)
+        if len(self.local_scopes) > 0:
+            name_obj = self.local_scopes[-1].get_name(name)
+        else:
+            name_obj = self.global_scope.get_name(name)
         static_id = self.static_table.get_name_id(name)
-        return Identifier(global_id,local_id,static_id)
+        return Identifier(name_obj.global_id,name_obj.local_id,static_id)
+
     
+    def set_global_scope(self,scope):
+        self.global_scope = scope
+    def push_local_scope(self,scope):
+        self.local_scopes.append(scope)
+    def pop_local_scope(self):
+        self.local_scopes.pop()
     def resolve_addresses(self,code):
 
 
@@ -138,7 +123,7 @@ class Compiler:
 
     def compile_function(self,function):
 
-        self.scope_lookup.enter_function()
+        self.push_local_scope(function.scope)
         compiled_body = []
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in arguments:
@@ -177,7 +162,7 @@ class Compiler:
         
         compiled_body += [PushNullInstruction(),RetInstruction()]
         
-        self.scope_lookup.leave_function()
+        self.pop_local_scope()
 
         function_offset = 2
         if Function.NODE_NAME in function.nodes:
@@ -853,7 +838,7 @@ class Compiler:
         return code
     
     def compile_program(self,program):
-        self.scope_lookup.push_scope()
+        self.set_global_scope(program.scope)
         code = self.compile_block(program.nodes[Program.NODE_BLOCK]) + [PushInteger32Instruction(self.static_table.get_integer32_id(0)),TerminateInstruction()]
         self.resolve_addresses(code)
         return code

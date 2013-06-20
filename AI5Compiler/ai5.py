@@ -35,15 +35,20 @@ try:
 
     lexer = Lexer()
     tokens = lexer.lex_string(input,"inline_buffer")
-    ast = Parser(tokens).expectRule(Program)
+
+    parser = Parser(tokens)
+    ast = parser.parse_program()
+
+
+
     compiler = Compiler()
 
     instructions = compiler.compile_program(ast)
 
     statics_table = compiler.static_table
-    #statics_table.dump()
-    #for index,instruction in enumerate(instructions):
-    #   print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
+    statics_table.dump()
+    for index,instruction in enumerate(instructions):
+       print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
     
 
     CompiledFile(statics_table,instructions).write_to_file(open(output_file,"wb"))
