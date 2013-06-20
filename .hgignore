@@ -9,3 +9,7 @@ AI5Runtime/AI5Runtime.sdf
 AI5Runtime/AI5Runtime.opensdf
 AI5Runtime/AI5Runtime.vcxproj.user
 AI5Compiler/build/*
+AI5Runtime/Debug/*
+AI5Runtime/Release/*
+AI5StandardLibrary/Debug/*
+AI5StandardLibrary/Release/*
