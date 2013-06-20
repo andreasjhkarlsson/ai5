@@ -108,10 +108,12 @@ __forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
 
 __forceinline void pushFunction(StackMachine* machine,int address)
 {
-	Scope *enclosingScope = nullptr;
+	UserFunctionVariant *fn = new UserFunctionVariant(address);
 	if(machine->getCurrentCallBlock() != nullptr)
-		enclosingScope = machine->getCurrentCallBlock()->getScope();
-	machine->getDataStack()->push(new UserFunctionVariant(address,enclosingScope));
+	{
+		machine->getCurrentCallBlock()->addClosure(machine,fn);
+	}
+	machine->getDataStack()->push(fn);
 	machine->advanceCounter();
 
 }

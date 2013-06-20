@@ -140,6 +140,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::MAKE_NEAREST_CONST			:
 		case Instruction::CREATE_ARGUMENT				:
 		case Instruction::CREATE_BYREF_ARGUMENT			:
+		case Instruction::CREATE_CLOSURE_NAME			:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.identifier = *(NameIdentifier*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);

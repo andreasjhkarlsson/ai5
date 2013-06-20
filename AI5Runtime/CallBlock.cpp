@@ -12,7 +12,7 @@ CallBlock::~CallBlock(void)
 {
 }
 
-void CallBlock::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame)
+void CallBlock::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner)
 {
 	this->scope = Scope::createFromFactory(machine->getVariantFactory());
 	this->returnAddress = returnAddress;
@@ -20,14 +20,59 @@ void CallBlock::setup(StackMachine* machine,int returnAddress,int calledNumberOf
 	this->calledNumberOfArguments = calledNumberOfArguments;
 	this->parentFrame = parentFrame;
 	this->arguments.clear();
+	this->closures.clear();
+	this->closureScope = nullptr;
+	this->closedNames.clear();
+	this->owner = owner;
+	this->owner->addRef();
 }
 
 void CallBlock::leave(StackMachine*machine)
 {
 	unwindStack(machine,stackPosition);
 
+	processClosures(machine);
+
 	scope->release();
+
+	this->owner->release();
 }
+
+// When returning from a function, there needs to be certain stuff
+// done to the closures created inside the call.
+// The most important one being unlinking the closures to the current scope
+// and creating new scopes with selected names attached only.
+// This avoids circular references if the closures doesn't reference themselves
+// and makes sure variable not used by closures are freed immeditely.
+void CallBlock::processClosures(StackMachine* machine)
+{
+	// For each name that was added as a "closed name" during call
+	// add it to the closure scope.
+	for(int i=0;i<closedNames.size();i++)
+	{
+		NameIdentifier id = closedNames[i];
+		NameVariant* name = scope->getNameFromIndex(id.localId);
+		if(name != nullptr)
+		{
+			StaticName* staticName = static_cast<StaticName*>(machine->getStaticData(id.staticId));
+			closureScope->insertName(*staticName->getName(),id.localId,name);
+		}
+	}
+
+	if(closureScope != nullptr)
+	{
+		// Relink closures scope into the proper scope.
+		for(int i=0;i<closures.size();i++)
+		{
+			closures[i]->getEnclosingScope()->setEnclosingScope(owner->getEnclosingScope());
+			closures[i]->release();
+		}
+		// Release the closure scope.
+		// If any closure have escaped the function the scope will live on.
+		closureScope->release();
+	}
+}
+
 
 Scope* CallBlock::getScope()
 {
@@ -106,4 +151,23 @@ void CallBlock::loadArguments(StackMachine* machine,int total,int required)
 
 	self->release();
 
+}
+
+
+void CallBlock::addClosedName(StackMachine* machine,NameIdentifier nameIdentifier)
+{
+	closedNames.push_back(nameIdentifier);
+}
+
+void CallBlock::addClosure(StackMachine* machine,UserFunctionVariant* closure)
+{
+	closure->addRef();
+
+	if(closureScope == nullptr)
+		closureScope = Scope::createFromFactory(machine->getVariantFactory());
+
+	closureScope->setEnclosingScope(scope);
+
+	closure->setEnclosingScope(closureScope);
+	closures.push_back(closure);
 }

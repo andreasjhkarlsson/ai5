@@ -134,7 +134,9 @@ class Compiler:
                 compiled_body += [CreateArgumentInstruction(self.get_identifier(argument.nodes[Argument.NODE_NAME].value))]
 
         
-        
+        for name in function.scope.names.values():
+            if name.closed:
+                compiled_body += [CreateClosureNameInstruction(self.get_identifier(name.name))]
 
         default_value_found = False
         without_default = 0

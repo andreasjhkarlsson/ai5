@@ -38,6 +38,9 @@ public:
 	{
 		if(scope != nullptr)
 			scope->addRef();
+		if(this->enclosingScope != nullptr)
+			this->enclosingScope->release();
+
 		this->enclosingScope = scope;
 	}
 
@@ -50,10 +53,7 @@ public:
 
 private:
 
-
 	Scope* enclosingScope;
-
-
 
 	// The string->name lookup.
 	// All names in the scope NEEDS to be in this map.

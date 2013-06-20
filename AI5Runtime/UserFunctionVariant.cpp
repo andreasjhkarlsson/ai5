@@ -1,11 +1,9 @@
 #include "UserFunctionVariant.h"
 #include "StackMachine.h"
 
-UserFunctionVariant::UserFunctionVariant(int address,Scope* enclosingScope): address(address), FunctionVariant(USER_FUNCTION),
-	enclosingScope(enclosingScope)
+UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(USER_FUNCTION), enclosingScope(nullptr)
 {
-	if(enclosingScope != nullptr)
-		enclosingScope->addRef();
+
 
 }
 
@@ -29,12 +27,11 @@ int UserFunctionVariant::getAddress()
 
 void UserFunctionVariant::cleanup()
 {
+	std::wcout << "Destroying function @" << address << std::endl;
 	Variant::cleanup();
-	if(enclosingScope != nullptr)
-	{
-		enclosingScope->release();
-		enclosingScope = nullptr;
-	}
+
+	enclosingScope = nullptr;
+	
 }
 
 
@@ -48,4 +45,12 @@ bool UserFunctionVariant::equal(Variant* other)
 Scope* UserFunctionVariant::getEnclosingScope()
 {
 	return enclosingScope;
+}
+
+void UserFunctionVariant::setEnclosingScope(Scope* scope)
+{
+	if(this->enclosingScope != nullptr)
+		enclosingScope->release();
+	this->enclosingScope = scope;
+	this->enclosingScope->addRef();
 }

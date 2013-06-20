@@ -93,6 +93,7 @@ public:
 	static const INSTRUCTION_TYPE PUSH_DEFAULT					= 0x51;
 	static const INSTRUCTION_TYPE PUSH_GENERAL_BLOCK			= 0x52;
 	static const INSTRUCTION_TYPE PUSH_NAME						= 0x53;
+	static const INSTRUCTION_TYPE CREATE_CLOSURE_NAME			= 0x54;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -306,6 +307,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case PUSH_NAME:
 		pushName(machine,arg.identifier);
+		break;
+	case CREATE_CLOSURE_NAME:
+		createClosureName(machine,arg.identifier);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

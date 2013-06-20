@@ -9,21 +9,22 @@ class ParseError(Exception):
         self.source = source
 
 class Name:
+    DECLARED = "declared"
+    REFERENCED = "referenced"
     def __init__(self,name,type):
         self.name = name
         self.type = type
+        self.closed = False
 
 class Scope:
-    DECLARED = "declared"
-    REFERENCED = "referenced"
     def __init__(self):
         self.names = {}
         self.subscopes = []
     def add_name(self,new_name,type):
         if new_name in self.names:
             old_name_obj = self.names[new_name]
-            if old_name_obj.type == Scope.REFERENCED and type == Scope.DECLARED:
-                old_name_obj.type = Scope.DECLARED
+            if old_name_obj.type == Name.REFERENCED and type == Name.DECLARED:
+                old_name_obj.type = Name.DECLARED
         else:
             self.names[new_name] = Name(new_name,type)
     def get_name(self,name):
@@ -33,8 +34,9 @@ class Scope:
     def add_subscope(self,subscope):
         self.subscopes.append(subscope)
 
+
 class Parser:
-    
+
     def __init__(self,tokens):
         self.tokens = deque(tokens)
         self.current = None
@@ -43,9 +45,9 @@ class Parser:
         self.scope_stack = []
 
     def report_name_reference(self,name):
-        self.scope_stack[-1].add_name(name,Scope.REFERENCED)
+        self.scope_stack[-1].add_name(name,Name.REFERENCED)
     def report_name_declaration(self,name):
-        self.scope_stack[-1].add_name(name,Scope.DECLARED)
+        self.scope_stack[-1].add_name(name,Name.DECLARED)
     def push_scope(self):
         self.scope_stack.append(Scope())
     def pop_scope(self):
@@ -76,6 +78,29 @@ class Parser:
             for subscope in scope.subscopes:
                 traverse_local_scope(subscope,lookup)
         for subscope in global_scope.subscopes: traverse_local_scope(subscope,{})
+    # Set the "closed" flag for each name that is declared in a scope
+    # and later referenced from a nested function.
+    def mark_closed_names(self):
+        global_scope = self.scope_stack[0]
+
+        # Traverse the entire scope tree.
+        def traverse(scope,declared):
+            declared = copy(declared)
+
+            for name in scope.names.values():
+                if name.name in declared:
+                    declared[name.name].closed = True
+
+
+            for name in scope.names.values():
+                if name.type == Name.DECLARED:
+                    declared[name.name] = name
+            for subscope in scope.subscopes:
+                traverse(subscope,declared)
+
+        for local_scope in global_scope.subscopes:
+            traverse(local_scope,{})
+        pass
 
     def next(self):
         self.discarded.append(self.current)
@@ -148,6 +173,7 @@ class Parser:
     def parse_program(self):
         program = self.expectRule(Program)
         self.build_name_ids()
+        self.mark_closed_names()
         program.scope = self.pop_scope()
         return program
         

@@ -267,6 +267,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::PUSH_GENERAL_BLOCK:
 		stream << "PUSH_GENERAL_BLOCK";
 		break;
+	case Instruction::CREATE_CLOSURE_NAME:
+		stream << "PUSH_CLOSURE_NAME " << *getName(machine,arg.identifier);
+		break;
 	default:
 		stream << "No pretty print available for instruction.";
 		break;

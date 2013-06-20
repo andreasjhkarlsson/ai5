@@ -17,7 +17,8 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 
 		CallBlock* frame = CallBlock::getInstance();
 
-		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs,machine->getCurrentCallBlock());
+		frame->setup(machine,machine->getCurrentAddress()+1,numberOfArgs,machine->getCurrentCallBlock(),
+			static_cast<UserFunctionVariant*>(toCall));
 
 		machine->getBlockStack()->push(frame);
 

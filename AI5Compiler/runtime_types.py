@@ -73,7 +73,7 @@ class InstructionType:
     PUSH_DEFAULT                        = 0x51;
     PUSH_GENERAL_BLOCK                  = 0x52;
     PUSH_NAME                           = 0x53;
-
+    CREATE_CLOSURE_NAME			        = 0x54;
 
 class StaticType:
     STRING      = 0x0

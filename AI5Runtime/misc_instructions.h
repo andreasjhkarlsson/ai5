@@ -149,3 +149,11 @@ __forceinline void RedimMultiDimList(StackMachine* machine,int numberOfSubscript
 
 	machine->advanceCounter();
 }
+
+
+
+inline void createClosureName(StackMachine* machine,NameIdentifier identifier)
+{
+	machine->getCurrentCallBlock()->addClosedName(machine,identifier);
+	machine->advanceCounter();
+}
