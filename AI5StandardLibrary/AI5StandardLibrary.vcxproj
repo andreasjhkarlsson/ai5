@@ -118,10 +118,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="functions.h" />
+    <ClInclude Include="math.h" />
     <ClInclude Include="StandardLibrary.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="functions.cpp" />
+    <ClCompile Include="math.cpp" />
     <ClCompile Include="StandardLibrary.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -311,6 +311,9 @@ void Instruction::execute(StackMachine* machine)
 	case CREATE_CLOSURE_NAME:
 		createClosureName(machine,arg.identifier);
 		break;
+	case NEGATION:
+		negation(machine);
+		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");
 		break;

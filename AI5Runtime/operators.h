@@ -86,6 +86,27 @@ __forceinline void mathOperationInstruction(StackMachine* machine,MATH_OPERATION
 	machine->advanceCounter();	
 }
 
+_forceinline void negation(StackMachine* machine)
+{
+	Variant* arg = machine->getDataStack()->pop();
+
+	if(arg->isInteger32Type())
+	{
+		machine->getDataStack()->push(new Integer32Variant(-arg->toInteger32()));
+	}
+	else if (arg->isInteger64Type())
+	{
+		machine->getDataStack()->push(new Integer64Variant(-arg->toInteger64()));
+	}
+	else
+	{
+		machine->getDataStack()->push(new FloatingVariant(-arg->toFloating()));
+	}
+
+	arg->release();
+	machine->advanceCounter();
+}
+
 __forceinline void booleanNot(StackMachine* machine)
 {
 	Variant *argument = machine->getDataStack()->pop();
