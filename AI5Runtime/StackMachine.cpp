@@ -15,6 +15,7 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 
 StackMachine::~StackMachine(void)
 {
+	delete globalScope;
 }
 
 int StackMachine::start()
@@ -42,8 +43,6 @@ int StackMachine::start()
 			std::endl << "The program will now terminate." << std::endl;
 		returnCode = -1;
 	}
-
-	globalScope->release();
 
 	return returnCode;
 }
