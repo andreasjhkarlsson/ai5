@@ -1,7 +1,8 @@
 #include "..\AI5Runtime\StackMachine.h"
 #include "StandardLibrary.h"
 #include "functions.h"
-#include "math.h"
+#include "math_functions.h"
+#include "string_functions.h"
 
 namespace AI5StandardLibrary
 {
@@ -11,7 +12,6 @@ namespace AI5StandardLibrary
 		machine->addBuiltInFunction(L"sleep",sleep);
 		machine->addBuiltInFunction(L"printline",printline);
 		machine->addBuiltInFunction(L"getint",getint);
-		machine->addBuiltInFunction(L"stringlen",stringlen);
 		machine->addBuiltInFunction(L"ubound",ubound);
 		machine->addBuiltInFunction(L"arrayadd",arrayadd);
 
@@ -33,6 +33,10 @@ namespace AI5StandardLibrary
 		//machine->addBuiltInFunction(L"srandom",srandom);
 		machine->addBuiltInFunction(L"tan",tangent);
 
+		/* String functions */
+		machine->addBuiltInFunction(L"stringupper",stringupper);
+		machine->addBuiltInFunction(L"stringlower",stringlower);
+		machine->addBuiltInFunction(L"stringlen",stringlen);
 
 		machine->addMacro(L"autoitpid",Macros::MyPID);
 		machine->addMacro(L"stacksize",Macros::StackSize);

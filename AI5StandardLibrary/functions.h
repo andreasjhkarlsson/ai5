@@ -8,7 +8,6 @@ Variant* hello(Variant** args,int argsSize);
 Variant* sleep(Variant** args,int argsSize);
 Variant* printline(Variant** args,int argsSize);
 Variant* getint(Variant** args,int argsSize);
-Variant* stringlen(Variant** args,int argsSize);
 Variant* ubound(Variant** args,int argsSize);
 
 Variant* arrayadd(Variant** args,int argsSize);

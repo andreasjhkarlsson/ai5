@@ -46,15 +46,6 @@ Variant* getint(Variant** args,int argsSize)
 	return new Integer64Variant(res);
 }
 
-Variant* stringlen(Variant** args,int argsSize)
-{
-	Variant* var = args[0];
-
-	size_t result = var->toString()->length();
-
-	return new Integer64Variant(result);
-}
-
 
 
 Variant* ubound(Variant** args,int argsSize)
