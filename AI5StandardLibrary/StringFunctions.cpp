@@ -1,14 +1,24 @@
-#include "string_functions.h"
+#include "StringFunctions.h"
 #include "..\AI5Runtime\StringVariant.h"
 #include "..\AI5Runtime\Integer32Variant.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include <string>
 #include <wchar.h>
+#include <functional>
+#include <memory>
+using namespace std::placeholders;
 
-namespace AI5StandardLibrary
+StringFunctions::StringFunctions(void)
 {
+}
 
 
-Variant* stringupper(Variant** args,int argsSize)
+StringFunctions::~StringFunctions(void)
+{
+}
+
+
+Variant* StringFunctions::stringupper(Variant** args,int argsSize)
 {
 	shared_string arg = args[0]->toString();
 	size_t buff_size = arg->length()+1;
@@ -22,7 +32,7 @@ Variant* stringupper(Variant** args,int argsSize)
 }
 
 
-Variant* stringlower(Variant** args,int argsSize)
+Variant* StringFunctions::stringlower(Variant** args,int argsSize)
 {
 	shared_string arg = args[0]->toString();
 	size_t buff_size = arg->length()+1;
@@ -34,11 +44,19 @@ Variant* stringlower(Variant** args,int argsSize)
 	return new StringVariant(ret);
 }
 
-Variant* stringlen(Variant** args,int argsSize)
+Variant* StringFunctions::stringlen(Variant** args,int argsSize)
 {
 	return new Integer32Variant(args[0]->toString()->length());
 }
 
+
+void StringFunctions::registerFunctions(StackMachine* machine)
+{
+	std::shared_ptr<StringFunctions> instance(new StringFunctions);
+
+	machine->addBuiltInFunction(L"stringupper",std::bind(&stringupper,instance,_1,_2));
+	machine->addBuiltInFunction(L"stringlower",std::bind(&stringlower,instance,_1,_2));
+	machine->addBuiltInFunction(L"stringlen",std::bind(&stringlen,instance,_1,_2));
 
 
 }

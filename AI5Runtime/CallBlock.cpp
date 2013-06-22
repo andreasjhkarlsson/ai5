@@ -101,10 +101,8 @@ void CallBlock::addArgument(const Argument& arg)
 
 void CallBlock::loadArguments(StackMachine* machine,int total,int required)
 {
-	if(calledNumberOfArguments > total)
-		throw RuntimeError(L"Too many arguments in function call");
-	if(calledNumberOfArguments < required)
-		throw RuntimeError(L"Too few arguments in function call");
+	if(calledNumberOfArguments > total || calledNumberOfArguments < required)
+		throw InvalidArgumentCountError(calledNumberOfArguments,required,total);
 
 	for(size_t argIndex=arguments.size();argIndex --> 0 ;)
 	{

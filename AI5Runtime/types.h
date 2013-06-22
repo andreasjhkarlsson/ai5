@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <sstream>
 
 class Variant;
 
@@ -20,3 +21,10 @@ struct NameIdentifier {
 	int localId;
 	int staticId;
 };
+
+inline std::wstring int2string(int num)
+{
+	std::wstringstream stream;
+	stream << num;
+	return stream.str();
+}

@@ -10,7 +10,7 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), 
 	currentCallBlock(nullptr), verbose(false), globalScope(new Scope())
 {
-	AI5StandardLibrary::registerFunctions(this);
+	registerStandardLibrary(this);
 }
 
 StackMachine::~StackMachine(void)
@@ -52,7 +52,7 @@ void StackMachine::terminate()
 	terminated = true;
 }
 
-void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function)
+void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunction function)
 {
 	globalScope->createName(this,name)->setValue(new BuiltinFunctionVariant(name,function));
 }

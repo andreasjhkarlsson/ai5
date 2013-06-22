@@ -1,7 +1,7 @@
 #include "BuiltinFunctionVariant.h"
 #include "StackMachine.h"
 
-BuiltinFunctionVariant::BuiltinFunctionVariant(const std::wstring &name,BuiltinFunctionPointer func): name(name),
+BuiltinFunctionVariant::BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func): name(name),
 	func(func),FunctionVariant(NATIVE_FUNCTION)
 {
 }
@@ -39,6 +39,7 @@ void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
 	// Call the function!!1!
 	Variant* result = func(passedArgs,numberOfArguments);
 
+
 	// Release arguments.
 	for(int i=0;i<numberOfArguments;i++)
 		untranslatedArgs[i]->release();
@@ -57,5 +58,5 @@ std::wostream& BuiltinFunctionVariant::format(std::wostream& stream)
 bool BuiltinFunctionVariant::equal(Variant* other)
 {
 	return getType() == other->getType() &&
-			(func == static_cast<BuiltinFunctionVariant*>(other)->func);
+			(name == static_cast<BuiltinFunctionVariant*>(other)->name);
 }

@@ -117,16 +117,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="functions.h" />
-    <ClInclude Include="math_functions.h" />
+    <ClInclude Include="FileFunctions.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="ListFunctions.h" />
+    <ClInclude Include="Macros.h" />
+    <ClInclude Include="MathFunctions.h" />
     <ClInclude Include="StandardLibrary.h" />
-    <ClInclude Include="string_functions.h" />
+    <ClInclude Include="StringFunctions.h" />
+    <ClInclude Include="TimerFunctions.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="functions.cpp" />
-    <ClCompile Include="math_functions.cpp" />
+    <ClCompile Include="FileFunctions.cpp" />
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="ListFunctions.cpp" />
+    <ClCompile Include="Macros.cpp" />
+    <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="StandardLibrary.cpp" />
-    <ClCompile Include="string_functions.cpp" />
+    <ClCompile Include="StringFunctions.cpp" />
+    <ClCompile Include="TimerFunctions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

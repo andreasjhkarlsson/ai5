@@ -2,7 +2,5 @@
 
 class StackMachine;
 
-namespace AI5StandardLibrary
-{
-	void registerFunctions(StackMachine*);
-}
+
+void registerStandardLibrary(StackMachine*);

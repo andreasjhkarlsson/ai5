@@ -1,11 +1,11 @@
 #pragma once
-
 #include <vector>
 #include <memory>
 #include <string>
 #include <map>
 #include <unordered_map>
 #include <iostream>
+#include <functional>
 #include "Static.h"
 #include "DataStack.h"
 #include "Scope.h"
@@ -64,7 +64,7 @@ public:
 	__forceinline void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	__forceinline void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
 	__forceinline void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
-	void addBuiltInFunction(const std::wstring &name,BuiltinFunctionPointer function);
+	void addBuiltInFunction(const std::wstring &name,BuiltinFunction function);
 	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
 private:
