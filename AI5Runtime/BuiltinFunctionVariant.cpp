@@ -1,5 +1,6 @@
 #include "BuiltinFunctionVariant.h"
 #include "StackMachine.h"
+#include "NullVariant.h"
 
 BuiltinFunctionVariant::BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func): name(name),
 	func(func),FunctionVariant(NATIVE_FUNCTION)
@@ -38,6 +39,11 @@ void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
 
 	// Call the function!!1!
 	Variant* result = func(passedArgs,numberOfArguments);
+	if(result == nullptr)
+	{
+		result = &NullVariant::Instance;
+		result->addRef();
+	}
 
 
 	// Release arguments.

@@ -117,6 +117,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DialogFunctions.h" />
     <ClInclude Include="FileFunctions.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="ListFunctions.h" />
@@ -127,6 +128,7 @@
     <ClInclude Include="TimerFunctions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DialogFunctions.cpp" />
     <ClCompile Include="FileFunctions.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="ListFunctions.cpp" />

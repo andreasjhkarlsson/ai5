@@ -77,8 +77,6 @@ int main(int argc, char* argv[])
 			std::wcout << L"Error loading program: "+error.getMessage() << std::endl;
 			return -1;
 		}
-
-
 	}
 	else
 	{
