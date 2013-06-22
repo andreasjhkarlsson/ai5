@@ -11,5 +11,6 @@ public:
 private:
 	FileFunctions(void);
 	Variant* printline(Variant** args,int argsSize);
+	Variant* fileexists(Variant** args,int argsSize);
 };
 

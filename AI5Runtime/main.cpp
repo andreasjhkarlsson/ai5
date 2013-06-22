@@ -11,7 +11,7 @@ enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
 
 const option::Descriptor usage[] =
 {
-	{UNKNOWN, 0,"" , ""    ,option::Arg::None, "USAGE: ai5 [options] file\n\n"
+	{UNKNOWN, 0,"" , ""    ,option::Arg::None, "USAGE: ai5r [options] file\n\n"
 	"Options:" },
 	{HELP,    0,"" , "help",option::Arg::None, "  --help  \tPrint usage and exit." },
 	{VERBOSE,    0,"v", "verbose",option::Arg::None, "  --verbose, -v  \tWrite information about the current executing instruction and other info during execution." },

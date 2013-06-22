@@ -55,11 +55,15 @@ shared_string BooleanVariant::toString()
 		return create_shared_string(L"false");
 }
 
-BooleanVariant* BooleanVariant::Get(bool value)
+BooleanVariant* BooleanVariant::Get(bool value,bool increaseRefcount)
 {
+	BooleanVariant* res;
 	if(value)
-		return &True;
-	return &False;
+		res = &True;
+	res = &False;
+	if(increaseRefcount)
+		res->addRef();
+	return res;
 }
 
 bool BooleanVariant::equal(Variant* other)

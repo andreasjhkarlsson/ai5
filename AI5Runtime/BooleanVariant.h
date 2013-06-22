@@ -12,7 +12,7 @@ public:
 	std::wostream& format(std::wostream& stream);
 	static BooleanVariant True;
 	static BooleanVariant False;
-	static BooleanVariant* Get(bool value);
+	static BooleanVariant* Get(bool value,bool increaseRefcount=false);
 	const bool value;
 	virtual shared_string toString();
 private:
