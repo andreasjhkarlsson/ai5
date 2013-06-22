@@ -42,8 +42,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 	// File couldn't be read!
 	if(!in.is_open())
 	{
-		// Throw error instead?
-		return nullptr;
+		throw ProgramLoadError(std::wstring(L"Could not open file for reading.")); 
 	}
 
 	// This little scheme gets the filesize without
@@ -57,6 +56,11 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 	// Read header directly into a ProgramHeader struct.
 	ProgramHeader header;
 	in.read(reinterpret_cast<char*>(&header),sizeof(header));
+
+	if(header.magic != 0xFEEFDEEF)
+	{
+		throw ProgramLoadError(L"File is corrupt or of wrong type.");
+	}
 
 	// Read all instructions at once!
 	std::vector<unsigned char> instructionBuffer;

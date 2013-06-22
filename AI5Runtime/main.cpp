@@ -11,7 +11,7 @@ enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
 
 const option::Descriptor usage[] =
 {
-	{UNKNOWN, 0,"" , ""    ,option::Arg::None, "USAGE: ai5 file [options]\n\n"
+	{UNKNOWN, 0,"" , ""    ,option::Arg::None, "USAGE: ai5 [options] file\n\n"
 	"Options:" },
 	{HELP,    0,"" , "help",option::Arg::None, "  --help  \tPrint usage and exit." },
 	{VERBOSE,    0,"v", "verbose",option::Arg::None, "  --verbose, -v  \tWrite information about the current executing instruction and other info during execution." },
@@ -42,33 +42,43 @@ int main(int argc, char* argv[])
 
 		// Make console UTF-16 aware.
 		_setmode(_fileno(stdout), _O_U8TEXT);
-		std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
+		try
+		{
+			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
+			bool isVerbose = options[VERBOSE] != 0;
+			bool disassemble = options[DISASSEMBLE] != 0;
+			#if _DEBUG
+			isVerbose = true;
+			#endif
 
-		bool isVerbose = options[VERBOSE] != 0;
-		bool disassemble = options[DISASSEMBLE] != 0;
-		#if _DEBUG
-		isVerbose = true;
-		#endif
+			if(isVerbose)
+				machine->setVerbose();
 
-		if(isVerbose)
-			machine->setVerbose();
+			int returnCode = 0;
 
-		int returnCode = 0;
+			if(disassemble)
+				machine->disassemble();
+			else
+				returnCode = machine->start();
 
-		if(disassemble)
-			machine->disassemble();
-		else
-			returnCode = machine->start();
+			if(isVerbose)
+				std::wcout << L"Program ended with code: " << returnCode << std::endl;
 
-		if(isVerbose)
-			std::wcout << L"Program ended with code: " << returnCode << std::endl;
+			clock_t end = clock();
+			double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+			if(isVerbose)
+				std::wcout << "Execution time: " << elapsed_secs << std::endl;
 
-		clock_t end = clock();
-		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-		if(isVerbose)
-			std::wcout << "Execution time: " << elapsed_secs << std::endl;
+			return returnCode;
 
-		return returnCode;
+		}
+		catch(ProgramLoadError& error)
+		{
+			std::wcout << L"Error loading program: "+error.getMessage() << std::endl;
+			return -1;
+		}
+
+
 	}
 	else
 	{
