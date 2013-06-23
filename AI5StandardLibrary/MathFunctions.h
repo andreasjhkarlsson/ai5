@@ -1,5 +1,6 @@
 #pragma once
 #include "functions.h"
+#include <random>
 class Variant;
 class StackMachine;
 class MathFunctions :
@@ -26,5 +27,6 @@ private:
 	Variant* _sqrt(Variant** args,int argsSize);
 	Variant* srandom(Variant** args,int argsSize);
 	Variant* tangent(Variant** args,int argsSize);
+	std::mt19937 rng;
 };
 

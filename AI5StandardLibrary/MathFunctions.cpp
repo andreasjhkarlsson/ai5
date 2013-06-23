@@ -6,10 +6,12 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <ctime>
 using namespace std::placeholders;
 
 MathFunctions::MathFunctions(void)
 {
+	rng.seed(time(NULL));
 }
 
 
@@ -124,6 +126,49 @@ Variant* MathFunctions::tangent(Variant** args,int argsSize)
 		return new FloatingVariant(tan(args[0]->toFloating()));
 }
 
+Variant* MathFunctions::random(Variant** args,int argsSize)
+{
+	validateArgCount(argsSize,0,3);
+	double min=0.0,max = 1.0;
+	bool floating = true;
+
+	if(argsSize >= 1)
+		min = args[0]->toFloating();
+	if(argsSize >= 2)
+		max = args[1]->toFloating();
+	if(argsSize >= 3)
+		floating = !args[2]->toBoolean();
+
+	// This is weird, but the logic is that
+	// if there are only one argument, that argument is intepreted as max.
+	if(argsSize == 1)
+	{
+		max = min;
+		min = 0;
+	}
+
+	Variant* result = nullptr;
+
+	if(floating)
+	{
+		result = new FloatingVariant(std::uniform_real_distribution<>(min,max)(rng));
+	}
+	else
+	{
+		result = new Integer32Variant(std::uniform_int_distribution<>((int)min,(int)max)(rng));
+	}
+
+	return result;
+}
+
+Variant* MathFunctions::srandom(Variant** args,int argsSize)
+{
+	validateArgCount(argsSize,1,1);
+
+	rng.seed(args[0]->toInteger32());
+
+	return nullptr;
+}
 
 void MathFunctions::registerFunctions(StackMachine* machine)
 {
@@ -140,10 +185,10 @@ void MathFunctions::registerFunctions(StackMachine* machine)
 	machine->addBuiltInFunction(L"floor",std::bind(&floor,instance,_1,_2));
 	machine->addBuiltInFunction(L"log",std::bind(&logarithm,instance,_1,_2));
 	machine->addBuiltInFunction(L"mod",std::bind(&modulus,instance,_1,_2));
-	//machine->addBuiltInFunction(L"random",random);
+	machine->addBuiltInFunction(L"random",std::bind(&random,instance,_1,_2));
 	machine->addBuiltInFunction(L"round",std::bind(&_round,instance,_1,_2));
 	machine->addBuiltInFunction(L"sin",std::bind(&sine,instance,_1,_2));
 	machine->addBuiltInFunction(L"sqrt",std::bind(&_sqrt,instance,_1,_2));
-	//machine->addBuiltInFunction(L"srandom",srandom);
+	machine->addBuiltInFunction(L"srandom",std::bind(&srandom,instance,_1,_2));
 	machine->addBuiltInFunction(L"tan",std::bind(&tangent,instance,_1,_2));
 }
