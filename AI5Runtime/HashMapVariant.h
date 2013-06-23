@@ -8,6 +8,8 @@ public:
 	HashMapVariant(void);
 	~HashMapVariant(void);
 	virtual void cleanup();
+	virtual shared_string toString();
+	virtual std::wostream& format(std::wostream& stream);
 	void set(Variant* key,Variant* value);
 	Variant* get(Variant* key);
 private:

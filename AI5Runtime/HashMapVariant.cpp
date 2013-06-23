@@ -36,3 +36,30 @@ Variant* HashMapVariant::get(Variant* key)
 	}
 	return res;
 }
+
+shared_string HashMapVariant::toString()
+{
+	std::wstring* str = new std::wstring();
+	(*str) += L"{";
+
+	bool first = true;
+	for(auto it=map.begin();it!=map.end();it++)
+	{
+		if(!first)
+			(*str)+=L", ";
+		(*str) += *it->first->toString() + L": "+*it->second->toString();
+
+
+		first = false;
+	}
+
+	(*str)+=L"}";
+
+	return shared_string(str);
+
+}
+std::wostream& HashMapVariant::format(std::wostream& stream)
+{
+	stream << L"HashVariant: " << *toString();
+	return stream;
+}
