@@ -12,8 +12,13 @@ public:
 	~StringFunctions(void);
 private:
 	StringFunctions(void);
-	Variant* stringlower(Variant** args,int argsSize);
-	Variant* stringupper(Variant** args,int argsSize);
-	Variant* stringlen(Variant** args,int argsSize);
+	Variant* stringLower(Variant** args,int argsSize);
+	Variant* stringUpper(Variant** args,int argsSize);
+	Variant* stringLen(Variant** args,int argsSize);
+	Variant* stringLeft(Variant** args,int argsSize);
+	Variant* stringTrimLeft(Variant** args,int argsSize);
+	Variant* stringRight(Variant** args,int argsSize);
+	Variant* stringTrimRight(Variant** args,int argsSize);
+	Variant* stringIsDigit(Variant** args,int argsSize);
 };
 
