@@ -100,6 +100,7 @@
     <ClCompile Include="CallBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
+    <ClCompile Include="BinaryVariant.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -219,5 +220,6 @@
     <ClInclude Include="CallBlock.h">
       <Filter>blocks</Filter>
     </ClInclude>
+    <ClInclude Include="BinaryVariant.h" />
   </ItemGroup>
 </Project>

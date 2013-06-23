@@ -6,6 +6,7 @@
 #include "TimerFunctions.h"
 #include "FileFunctions.h"
 #include "DialogFunctions.h"
+#include "VariableFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 
 
@@ -19,6 +20,7 @@ void registerStandardLibrary(StackMachine* machine)
 	TimerFunctions::registerFunctions(machine);
 	FileFunctions::registerFunctions(machine);
 	DialogFunctions::registerFunctions(machine);
+	VariableFunctions::registerFunctions(machine);
 
 	machine->addMacro(L"autoitpid",Macros::MyPID);
 }

@@ -25,8 +25,9 @@ public:
 	static const VARIANT_TYPE NAME				= 10;
 	static const VARIANT_TYPE DEFAULT			= 11;
 	static const VARIANT_TYPE NAME_REFERENCE	= 12;
-	static const VARIANT_TYPE SCOPE				= 13;			
-	static const int NUMBER_OF_VARIANT_TYPES	= 14;
+	static const VARIANT_TYPE SCOPE				= 13;
+	static const VARIANT_TYPE BINARY			= 14;
+	static const int NUMBER_OF_VARIANT_TYPES	= 15;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream);
@@ -37,6 +38,7 @@ public:
 	virtual shared_string toString();
 	virtual bool equal(Variant*);
 	virtual void cleanup();
+	virtual size_t hash();
 	__forceinline int addRef();
 	__forceinline int release();
 	__forceinline VARIANT_TYPE getType();
@@ -58,6 +60,7 @@ public:
 	inline bool isDefaultType();
 	inline bool isNameReferenceType();
 	inline bool isContainerType();
+	inline bool isBinaryType();
 
 private:
 	const VARIANT_TYPE type;
@@ -65,6 +68,19 @@ private:
 	bool isContainer;
 	VariantFactory* recycler;
 };
+
+
+typedef struct
+{
+	size_t operator() (Variant* k) const { return k->hash(); }
+} VariantKeyHasher;
+ 
+typedef struct
+{
+	bool operator() (Variant* x,Variant* y) const { return x->equal(y); }
+} VariantKeyComparator;
+
+
 
 class VariantFactory
 {
@@ -244,4 +260,9 @@ bool Variant::isDefaultType()
 bool Variant::isContainerType()
 {
 	return isContainer;
+}
+
+bool Variant::isBinaryType()
+{
+	return type == BINARY;
 }

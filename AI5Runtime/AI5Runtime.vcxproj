@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BinaryVariant.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="BooleanVariant.cpp" />
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="Variant.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BinaryVariant.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockStack.h" />
     <ClInclude Include="BooleanVariant.h" />
