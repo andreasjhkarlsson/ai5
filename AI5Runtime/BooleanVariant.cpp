@@ -58,9 +58,9 @@ shared_string BooleanVariant::toString()
 BooleanVariant* BooleanVariant::Get(bool value,bool increaseRefcount)
 {
 	BooleanVariant* res;
+	res = &False;
 	if(value)
 		res = &True;
-	res = &False;
 	if(increaseRefcount)
 		res->addRef();
 	return res;
