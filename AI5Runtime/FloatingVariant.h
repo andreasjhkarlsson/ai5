@@ -14,6 +14,7 @@ public:
 	virtual bool equal(Variant*);
 	std::wostream& format(std::wostream& stream);
 	virtual shared_string toString();
+	virtual size_t hash();
 	double getValue()
 	{
 		return value;

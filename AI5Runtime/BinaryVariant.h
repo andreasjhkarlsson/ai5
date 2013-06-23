@@ -2,7 +2,7 @@
 #include "variant.h"
 #include <vector>
 
-typedef std::shared_ptr<std::vector<unsigned char>> shared_binary;
+typedef std::shared_ptr<std::vector<char>> shared_binary;
 
 class BinaryVariant :
 	public Variant
@@ -15,6 +15,7 @@ public:
 	virtual bool toBoolean();
 	virtual bool equal(Variant*);
 	virtual shared_string toString();
+	virtual size_t hash();
 private:
 	shared_binary binary;
 };

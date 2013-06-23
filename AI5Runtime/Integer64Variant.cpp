@@ -2,6 +2,7 @@
 #include <iostream>
 #include "StackMachine.h"
 #include <sstream>
+#include "3rdparty\hsieh_hash.h"
 
 Integer64Variant::Integer64Variant(const __int64 integer): Variant(INTEGER64), value(integer)
 {
@@ -54,4 +55,9 @@ bool Integer64Variant::equal(Variant* other)
 {
 	return getType() == other->getType() &&
 			(value == static_cast<Integer64Variant*>(other)->value);
+}
+
+size_t Integer64Variant::hash()
+{
+	return SuperFastHash((const char*)&value,sizeof(value));
 }

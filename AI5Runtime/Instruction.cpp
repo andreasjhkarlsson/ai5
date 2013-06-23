@@ -231,6 +231,9 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::BUILD_LIST:
 		stream << "BUILD_LIST "<<arg.integer;
 		break;
+	case Instruction::BUILD_MAP:
+		stream << "BUILD_MAP "<<arg.integer;
+		break;
 	case Instruction::CREATE_MULTIDIM_LIST:
 		stream << "CREATE_MULTIDIM_LIST " << (int)arg.byte;
 		break;

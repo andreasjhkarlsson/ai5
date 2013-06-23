@@ -196,6 +196,11 @@ class BuildListInstruction(Instruction):
         self.count = count
     def to_binary(self):
         return self.to_binary_with_int_arg(InstructionType.BUILD_LIST,self.count)
+class BuildMapInstruction(Instruction):
+    def __init__(self,count):
+        self.count = count
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.BUILD_MAP,self.count)
 
 class PushBooleanInstruction(Instruction):
     def __init__(self,value):

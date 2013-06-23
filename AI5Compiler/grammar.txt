@@ -29,7 +29,7 @@
 <expression> = <factor>,{<binary operator>, <factor>}
 <unary operator> = "-"|"not"
 <binary operator> = "and"|"or"|"<="|">="|"<>"|"<"|">"|"=="|"="|"&"|"+"|"-"|"*"|"/"|"^"
-<factor> = [<unary operator>],(<terminal>|'(',<expression>,')'|<inline list>){<qualifier>}
+<factor> = [<unary operator>],(<terminal>|'(',<expression>,')'|<inline list>|<inline map>){<qualifier>}
 <terminal> = "true"|"false"|<macro>|<identifier>|<integer>|<string>|<floating>|<anonymous function>
 <assignment operator> = "="|"+="|"-="|"/="|"*="|"&="
 <property> = ".",<identifier>
@@ -43,3 +43,5 @@
 <redim> = "redim",<terminal>,{<qualifier>}
 <enum> = "enum", ["step", ["+"|"-"|"*"], <integer>], <enum constant>{",",<enum constant>}
 <enum constant> = <identifier>,["=",<integer>]
+<inline map> = "{",[<key value>,{",", <key value>}],"}"
+<key value> = <expression>,":",<expression>

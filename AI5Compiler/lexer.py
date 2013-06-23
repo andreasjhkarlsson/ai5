@@ -41,6 +41,9 @@ class Token(object):
     RIGHT_PAREN = "right parenthesis token"
     LEFT_BRACKET = "left bracket token"
     RIGHT_BRACKET = "right bracket token"
+    LEFT_CURLY_BRACKET = "left curly bracket"
+    RIGHT_CURLY_BRACKET = "right curly bracket"
+    COLON = "colon"
     DOT = "dot token"
     COMMA = "comma token"
     EOF = "eof token"
@@ -99,6 +102,16 @@ class EOFToken(Token):
 class CommaToken(Token):
     expr = re.compile(r''',''')
     type = Token.COMMA
+
+class ColonToken(Token):
+    expr = re.compile(r''':''')
+    type = Token.COLON
+class LeftCurlyBracketToken(Token):
+    expr = re.compile(r'''{''')
+    type = Token.LEFT_CURLY_BRACKET
+class RightCurlyBracketToken(Token):
+    expr = re.compile(r'''}''')
+    type = Token.RIGHT_CURLY_BRACKET
 
 class FloatingToken(Token):
     expr = re.compile(r'''\d*\.\d+|\d+\.\d*''')
@@ -300,7 +313,8 @@ class KeywordToken(Token):
 
 
 class Lexer:
-    TOKEN_CLASSES = [IncludeFileToken,CommaToken,LeftParenToken,RightParenToken,LeftBracketToken,RightBracketToken, KeywordToken,
+    TOKEN_CLASSES = [IncludeFileToken,CommaToken,LeftParenToken,RightParenToken,LeftBracketToken,RightBracketToken,
+                    LeftCurlyBracketToken,RightCurlyBracketToken,ColonToken, KeywordToken,
                      FloatingToken,DotToken,MacroToken,CommentToken,DirectiveToken,NewlineToken,WhitespaceToken,
                      OperatorToken,IntegerToken,StringToken,BooleanToken,IdentifierToken]
     def __init__(self):

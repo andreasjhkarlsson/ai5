@@ -159,6 +159,7 @@
     <ClCompile Include="FloatingVariant.cpp" />
     <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="GeneralBlock.cpp" />
+    <ClCompile Include="HashMapVariant.cpp" />
     <ClCompile Include="Instruction.cpp" />
     <ClCompile Include="Integer32Variant.cpp" />
     <ClCompile Include="Integer64Variant.cpp" />
@@ -177,6 +178,8 @@
     <ClCompile Include="Variant.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\hsieh_hash.h" />
+    <ClInclude Include="3rdparty\optionparser.h" />
     <ClInclude Include="BinaryVariant.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="BlockStack.h" />
@@ -193,6 +196,7 @@
     <ClInclude Include="FunctionVariant.h" />
     <ClInclude Include="function_instructions.h" />
     <ClInclude Include="GeneralBlock.h" />
+    <ClInclude Include="HashMapVariant.h" />
     <ClInclude Include="Integer32Variant.h" />
     <ClInclude Include="Integer64Variant.h" />
     <ClInclude Include="jump_instructions.h" />

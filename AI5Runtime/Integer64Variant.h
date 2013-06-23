@@ -14,6 +14,7 @@ public:
 	virtual bool equal(Variant*);
 	std::wostream& format(std::wostream& stream);
 	virtual shared_string toString();
+	virtual size_t hash();
 	friend class VariantFactory;
 	__forceinline __int64 getValue();
 	void setValue(__int64 value)

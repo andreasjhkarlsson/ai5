@@ -1,6 +1,7 @@
 #include "Integer32Variant.h"
 #include <sstream>
 #include <iostream>
+#include "3rdparty\hsieh_hash.h"
 
 Integer32Variant::Integer32Variant(int value): Variant(INTEGER32), value(value)
 {
@@ -51,4 +52,9 @@ bool Integer32Variant::equal(Variant* other)
 {
 	return getType() == other->getType() &&
 			(value == static_cast<Integer32Variant*>(other)->value);
+}
+
+size_t Integer32Variant::hash()
+{
+	return SuperFastHash((const char*)&value,sizeof(value));
 }

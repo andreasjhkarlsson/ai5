@@ -27,7 +27,8 @@ public:
 	static const VARIANT_TYPE NAME_REFERENCE	= 12;
 	static const VARIANT_TYPE SCOPE				= 13;
 	static const VARIANT_TYPE BINARY			= 14;
-	static const int NUMBER_OF_VARIANT_TYPES	= 15;
+	static const VARIANT_TYPE HASH_MAP			= 15;
+	static const int NUMBER_OF_VARIANT_TYPES	= 16;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream);
@@ -61,6 +62,7 @@ public:
 	inline bool isNameReferenceType();
 	inline bool isContainerType();
 	inline bool isBinaryType();
+	inline bool isHashMap();
 
 private:
 	const VARIANT_TYPE type;
@@ -72,12 +74,17 @@ private:
 
 typedef struct
 {
-	size_t operator() (Variant* k) const { return k->hash(); }
+	size_t operator() (Variant* k) const
+	{
+		return k->hash();
+	}
 } VariantKeyHasher;
  
 typedef struct
 {
-	bool operator() (Variant* x,Variant* y) const { return x->equal(y); }
+	bool operator() (Variant* x,Variant* y) const {
+		return x->equal(y);
+	}
 } VariantKeyComparator;
 
 
@@ -265,4 +272,9 @@ bool Variant::isContainerType()
 bool Variant::isBinaryType()
 {
 	return type == BINARY;
+}
+
+bool Variant::isHashMap()
+{
+	return type == HASH_MAP;
 }

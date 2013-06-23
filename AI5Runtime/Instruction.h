@@ -94,6 +94,7 @@ public:
 	static const INSTRUCTION_TYPE PUSH_GENERAL_BLOCK			= 0x52;
 	static const INSTRUCTION_TYPE PUSH_NAME						= 0x53;
 	static const INSTRUCTION_TYPE CREATE_CLOSURE_NAME			= 0x54;
+	static const INSTRUCTION_TYPE BUILD_MAP						= 0x55;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -313,6 +314,9 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case NEGATION:
 		negation(machine);
+		break;
+	case BUILD_MAP:
+		buildMap(machine,arg.integer);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

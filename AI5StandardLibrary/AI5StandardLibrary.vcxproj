@@ -79,6 +79,9 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>Shlwapi.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -129,6 +132,7 @@
     <ClInclude Include="StandardLibrary.h" />
     <ClInclude Include="StringFunctions.h" />
     <ClInclude Include="TimerFunctions.h" />
+    <ClInclude Include="VariableFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DialogFunctions.cpp" />
@@ -140,6 +144,7 @@
     <ClCompile Include="StandardLibrary.cpp" />
     <ClCompile Include="StringFunctions.cpp" />
     <ClCompile Include="TimerFunctions.cpp" />
+    <ClCompile Include="VariableFunctions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

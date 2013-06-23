@@ -7,6 +7,7 @@
 #include "DefaultVariant.h"
 #include "GeneralBlock.h"
 #include "NameReferenceVariant.h"
+#include "HashMapVariant.h"
 
 __forceinline void pushInteger64(StackMachine* machine,int arg)
 {
@@ -148,7 +149,7 @@ __forceinline void pushBoolean(StackMachine* machine,char arg)
 	machine->advanceCounter();
 }
 
-__forceinline void buildList(StackMachine* machine,int count)
+inline void buildList(StackMachine* machine,int count)
 {
 
 	ListVariant* list = new ListVariant();
@@ -167,21 +168,50 @@ __forceinline void buildList(StackMachine* machine,int count)
 	machine->advanceCounter();
 }
 
+
+inline void buildMap(StackMachine* machine,int count)
+{
+	HashMapVariant* map = new HashMapVariant();
+
+	// Since a hash map is not sorted
+	// it doesn't matter which order the arguments are popped
+	for(int i=0;i<count;i++)
+	{
+		Variant* value = machine->getDataStack()->pop();
+		Variant* key = machine->getDataStack()->pop();
+		map->set(key,value);
+		value->release();
+		key->release();
+	}
+
+	machine->getDataStack()->push(map);
+	machine->advanceCounter();
+
+}
+
 __forceinline void derefIndex(StackMachine* machine)
 {
 	Variant* index = machine->getDataStack()->pop();
-	Variant* list = machine->getDataStack()->pop();
-
-	if(!list->isListType())
+	Variant* container = machine->getDataStack()->pop();
+	Variant* result = nullptr;
+	if(container->isListType())
+	{
+		result = static_cast<ListVariant*>(container)->getElement(index->toInteger32());
+	}
+	else if(container->isHashMap())
+	{
+		result = static_cast<HashMapVariant*>(container)->get(index);
+	}
+	else
 	{
 		throw RuntimeError(L"List indexing must have list type");
 	}
 
-	Variant* result = static_cast<ListVariant*>(list)->getElement(index->toInteger32());
+	
 
 	result->addRef();
 	index->release();
-	list->release();
+	container->release();
 
 	machine->getDataStack()->push(result);
 

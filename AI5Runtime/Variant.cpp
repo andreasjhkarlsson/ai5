@@ -59,3 +59,9 @@ bool Variant::equal(Variant*)
 {
 	return false;
 }
+
+
+size_t Variant::hash()
+{
+	return (size_t)this;
+}

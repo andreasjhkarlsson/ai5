@@ -126,6 +126,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::PUSH_INTEGER32				:
 		case Instruction::PUSH_INTEGER64				:
 		case Instruction::PUSH_MACRO					:
+		case Instruction::BUILD_MAP						:
 			inst = Instruction::PTR(new Instruction(instructionBuffer[pos]));
 			inst->arg.integer = *(int*)&instructionBuffer[pos+1];
 			instructions->push_back(inst);

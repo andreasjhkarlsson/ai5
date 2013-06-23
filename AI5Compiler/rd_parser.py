@@ -224,6 +224,8 @@ class Rule:
     SELECT = "rule_select"
     SELECT_CASE = "rule_select_case"
     ANONYMOUS_FUNCTION = "rule_anonymous_function"
+    INLINE_MAP = "inline map"
+    KEY_VALUE = "key value"
     
     def __init__(self,nodes):
         self.nodes = nodes
@@ -911,7 +913,7 @@ class Factor(Rule):
         nodes[Factor.NODE_UNARIES] = unaries
         
         
-        if parser.acceptAnyRule([Terminal,InlineList]):
+        if parser.acceptAnyRule([Terminal,InlineList,InlineMap]):
             nodes[Factor.NODE_SUBNODE]=parser.matched_rule
         elif parser.accept(Token.LEFT_PAREN):
             nodes[Factor.NODE_SUBNODE]=parser.expectRule(Expression)
@@ -1035,6 +1037,34 @@ class BinaryOperator(Rule):
     def is_left_associative(self):
         return self.nodes[BinaryOperator.NODE_OPERATOR].value != OperatorToken.POW
 
+
+class InlineMap(Rule):
+    type = Rule.INLINE_MAP
+    NODE_KEY_VALUES = "key values"
+    @classmethod
+    def match(cls,parser):
+        if not parser.accept(Token.LEFT_CURLY_BRACKET):
+            return None
+        key_values = []
+        if parser.acceptRule(KeyValue):
+            key_values += [parser.matched_rule]
+            while parser.accept(Token.COMMA):
+                key_values += [parser.expectRule(KeyValue)]
+        parser.expect(Token.RIGHT_CURLY_BRACKET)
+        return InlineMap({InlineMap.NODE_KEY_VALUES: key_values})
+
+class KeyValue(Rule):
+    type = Rule.KEY_VALUE
+    NODE_KEY = "key"
+    NODE_VALUE = "value"
+    @classmethod
+    def match(cls,parser):
+        if not parser.acceptRule(Expression):
+            return None
+        key = parser.matched_rule
+        parser.expect(Token.COLON)
+        value = parser.expectRule(Expression)
+        return KeyValue({KeyValue.NODE_KEY: key, KeyValue.NODE_VALUE: value})
     
 class Expression(Rule):
     

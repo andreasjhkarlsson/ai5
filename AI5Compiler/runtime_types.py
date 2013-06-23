@@ -74,6 +74,7 @@ class InstructionType:
     PUSH_GENERAL_BLOCK                  = 0x52;
     PUSH_NAME                           = 0x53;
     CREATE_CLOSURE_NAME			        = 0x54;
+    BUILD_MAP                           = 0x55;
 
 class StaticType:
     STRING      = 0x0

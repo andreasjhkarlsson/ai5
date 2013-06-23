@@ -20,6 +20,9 @@
     <Filter Include="general">
       <UniqueIdentifier>{5eac65d7-3c21-4c35-9b96-b5e2edc72c49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="3rdParty">
+      <UniqueIdentifier>{1bbfdca6-9afc-40bc-baaf-cf8f411f6621}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Instruction.cpp">
@@ -100,7 +103,12 @@
     <ClCompile Include="CallBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
-    <ClCompile Include="BinaryVariant.cpp" />
+    <ClCompile Include="BinaryVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="HashMapVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -220,6 +228,17 @@
     <ClInclude Include="CallBlock.h">
       <Filter>blocks</Filter>
     </ClInclude>
-    <ClInclude Include="BinaryVariant.h" />
+    <ClInclude Include="BinaryVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="HashMapVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\optionparser.h">
+      <Filter>3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\hsieh_hash.h">
+      <Filter>3rdParty</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #include "FloatingVariant.h"
 #include <iostream>
 #include <sstream>
+#include "3rdparty\hsieh_hash.h"
 
 FloatingVariant::FloatingVariant(double value): Variant(FLOATING), value(value)
 {
@@ -56,4 +57,9 @@ bool FloatingVariant::equal(Variant* other)
 {
 	return getType() == other->getType() &&
 			(value == static_cast<FloatingVariant*>(other)->value);
+}
+
+size_t FloatingVariant::hash()
+{
+	return SuperFastHash((const char*)&value,sizeof(value));
 }

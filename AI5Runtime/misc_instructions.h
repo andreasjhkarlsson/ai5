@@ -2,6 +2,7 @@
 #include "StackMachine.h"
 #include "NullVariant.h"
 #include "ListVariant.h"
+#include "HashMapVariant.h"
 
 
 __forceinline void noop(StackMachine* machine)
@@ -69,18 +70,26 @@ __forceinline void assignIndex(StackMachine* machine)
 {
 	Variant* value = machine->getDataStack()->pop();
 	Variant* index = machine->getDataStack()->pop();
-	Variant* list = machine->getDataStack()->pop();
+	Variant* container = machine->getDataStack()->pop();
 
-	if(!list->isListType())
+	if(container->isListType())
+	{
+		static_cast<ListVariant*>(container)->setElement(index->toInteger32(),value);
+	}
+	else if(container->isHashMap())
+	{
+		static_cast<HashMapVariant*>(container)->set(index,value);
+	}
+	else
 	{
 		throw RuntimeError(L"List index assignment must have list type");
 	}
 
-	static_cast<ListVariant*>(list)->setElement(index->toInteger32(),value);
+	
 	
 	value->release();
 	index->release();
-	list->release();
+	container->release();
 
 	machine->advanceCounter();
 }

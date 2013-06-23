@@ -13,6 +13,7 @@ public:
 	virtual bool toBoolean();
 	virtual shared_string toString();
 	virtual bool equal(Variant*);
+	virtual size_t hash();
 	friend class VariantFactory;
 	static Integer32Variant* createFromFactory(VariantFactory* factory,int value);
 	int getValue()

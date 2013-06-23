@@ -2,6 +2,7 @@
 #include <wchar.h>
 #include <iostream>
 #include <Windows.h>
+#include "3rdparty\hsieh_hash.h"
 
 StringVariant::StringVariant(shared_string str): Variant(STRING), str(str)
 {
@@ -46,6 +47,15 @@ shared_string StringVariant::toString()
 
 bool StringVariant::equal(Variant* other)
 {
-	return (getType() != other->getType()) &&
+	return (getType() == other->getType()) &&
 		(wcscmp(str->c_str(),static_cast<StringVariant*>(other)->str->c_str()) == 0);
+}
+
+
+size_t StringVariant::hash()
+{
+	// Only hash first 32 chars.
+	if(str->length() < 32)
+		return SuperFastHash((const char*)str->c_str(),str->length()*2);
+	return SuperFastHash((const char*)str->c_str(),32*2);
 }

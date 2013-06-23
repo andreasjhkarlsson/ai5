@@ -798,6 +798,18 @@ class Compiler:
             code += self.compile_expression(element)
         code += [BuildListInstruction(len(elements))]
         return code
+
+    def compile_inline_map(self,inline_map):
+        key_values = inline_map.nodes[InlineMap.NODE_KEY_VALUES]
+        code = []
+        for key_value in key_values:
+            key = key_value.nodes[KeyValue.NODE_KEY]
+            value  = key_value.nodes[KeyValue.NODE_VALUE]
+            code += self.compile_expression(key)
+            code += self.compile_expression(value)
+        code += [BuildMapInstruction(len(key_values))]
+        return code
+
         
     def compile_factor(self,factor):
         rule = factor.nodes[Factor.NODE_SUBNODE]
@@ -809,6 +821,8 @@ class Compiler:
             code = self.compile_expression(rule)
         elif rule.type == Rule.INLINE_LIST:
             code = self.compile_inline_list(rule)
+        elif rule.type == Rule.INLINE_MAP:
+            code = self.compile_inline_map(rule)
 
             
         code += self.compile_qualifiers(factor.nodes[Factor.NODE_QUALIFIERS])

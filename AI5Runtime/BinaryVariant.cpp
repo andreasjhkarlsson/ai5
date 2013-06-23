@@ -1,6 +1,7 @@
 #include "BinaryVariant.h"
 #include <sstream>
 #include <string>
+#include "3rdparty\hsieh_hash.h"
 
 BinaryVariant::BinaryVariant(shared_binary binary): binary(binary), Variant(BINARY)
 {
@@ -41,4 +42,9 @@ shared_string BinaryVariant::toString()
 		stream << std::hex << (*binary)[i];
 	}
 	return shared_string(new std::wstring(stream.str()));
+}
+
+size_t BinaryVariant::hash()
+{
+	return SuperFastHash((const char*)&(*binary)[0],binary->size());
 }
