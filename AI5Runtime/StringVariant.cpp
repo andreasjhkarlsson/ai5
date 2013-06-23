@@ -19,33 +19,33 @@ StringVariant::~StringVariant(void)
 
 }
 
-std::wostream& StringVariant::format(std::wostream& stream)
+std::wostream& StringVariant::format(std::wostream& stream) const
 {
 	stream << "StringVariant: " << *str;
 	return stream;
 
 }
-double StringVariant::toFloating()
+double StringVariant::toFloating() const
 {
 	return _wtof(str->c_str());
 }
-__int64 StringVariant::toInteger64()
+__int64 StringVariant::toInteger64() const
 {
 	return _wtoi64(str->c_str());
 }
 
 
-int StringVariant::toInteger32()
+int StringVariant::toInteger32() const
 {
 	return _wtoi(str->c_str());
 }
 
-bool StringVariant::toBoolean()
+bool StringVariant::toBoolean() const
 {
 	return str->length() > 0;
 }
 
-shared_string StringVariant::toString()
+shared_string StringVariant::toString() const
 {
 	return str;
 }
@@ -57,7 +57,7 @@ bool StringVariant::equal(Variant* other)
 }
 
 
-size_t StringVariant::hash()
+size_t StringVariant::hash() const
 {
 	// Only hash first 32 chars.
 	if(str->length() < 32)

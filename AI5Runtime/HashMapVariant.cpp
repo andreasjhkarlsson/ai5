@@ -37,7 +37,7 @@ Variant* HashMapVariant::get(Variant* key)
 	return res;
 }
 
-shared_string HashMapVariant::toString()
+shared_string HashMapVariant::toString() const
 {
 	std::wstring* str = new std::wstring();
 	(*str) += L"{";
@@ -58,7 +58,7 @@ shared_string HashMapVariant::toString()
 	return shared_string(str);
 
 }
-std::wostream& HashMapVariant::format(std::wostream& stream)
+std::wostream& HashMapVariant::format(std::wostream& stream) const
 {
 	stream << L"HashVariant: " << *toString();
 	return stream;

@@ -7,13 +7,13 @@ class ListVariant :
 public:
 	ListVariant(void);
 	~ListVariant(void);
-	std::wostream& format(std::wostream& stream);
-	virtual double toFloating();
-	virtual __int64 toInteger64();
-	virtual int toInteger32();
-	virtual bool toBoolean();
+	std::wostream& format(std::wostream& stream) const;
+	virtual double toFloating() const;
+	virtual __int64 toInteger64() const;
+	virtual int toInteger32() const;
+	virtual bool toBoolean() const;
 	virtual bool equal(Variant*);
-	virtual shared_string toString();
+	virtual shared_string toString() const;
 	void addElement(Variant* var);
 	Variant* getElement(size_t index);
 	void setElement(size_t index,Variant* var);

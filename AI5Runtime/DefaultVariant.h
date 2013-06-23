@@ -6,12 +6,12 @@ class DefaultVariant :
 public:
 	DefaultVariant(void);
 	~DefaultVariant(void);
-	virtual std::wostream& format(std::wostream& stream);
-	virtual double toFloating();
-	virtual __int64 toInteger64();
-	virtual int toInteger32();
-	virtual bool toBoolean();
-	virtual shared_string toString();
+	virtual std::wostream& format(std::wostream& stream) const;
+	virtual double toFloating() const;
+	virtual __int64 toInteger64() const;
+	virtual int toInteger32() const;
+	virtual bool toBoolean() const;
+	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
 	static DefaultVariant Instance;
 };

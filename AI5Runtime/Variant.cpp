@@ -30,28 +30,28 @@ void Variant::cleanup()
 }
 
 
-std::wostream& Variant::format(std::wostream& stream)
+std::wostream& Variant::format(std::wostream& stream) const
 {
 	stream << L"No formatting available";
 	return stream;
 }
-double Variant::toFloating()
+double Variant::toFloating() const
 {
 	return 0.0;
 }
-__int64 Variant::toInteger64()
+__int64 Variant::toInteger64() const
 {
 	return 0;
 }
-int Variant::toInteger32()
+int Variant::toInteger32() const
 {
 	return 0;
 }
-bool Variant::toBoolean()
+bool Variant::toBoolean() const
 {
 	return false;
 }
-shared_string Variant::toString()
+shared_string Variant::toString() const
 {
 	return shared_string(new std::wstring(L""));
 }
@@ -61,7 +61,7 @@ bool Variant::equal(Variant*)
 }
 
 
-size_t Variant::hash()
+size_t Variant::hash() const
 {
 	return (size_t)this;
 }

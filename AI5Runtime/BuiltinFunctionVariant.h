@@ -15,7 +15,7 @@ public:
 	BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func);
 	~BuiltinFunctionVariant(void);
 	void call(StackMachine* machine,int numberOfArguments);
-	std::wostream& format(std::wostream& stream);
+	std::wostream& format(std::wostream& stream) const;
 	virtual bool equal(Variant*);
 private:
 	BuiltinFunction func;

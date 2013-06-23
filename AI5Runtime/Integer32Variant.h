@@ -6,14 +6,14 @@ class Integer32Variant :
 public:
 	Integer32Variant(int value);
 	~Integer32Variant(void);
-	std::wostream& format(std::wostream& stream);
-	virtual double toFloating();
-	virtual __int64 toInteger64();
-	virtual int toInteger32();
-	virtual bool toBoolean();
-	virtual shared_string toString();
+	std::wostream& format(std::wostream& stream) const;
+	virtual double toFloating() const;
+	virtual __int64 toInteger64() const;
+	virtual int toInteger32() const;
+	virtual bool toBoolean() const;
+	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
-	virtual size_t hash();
+	virtual size_t hash() const;
 	friend class VariantFactory;
 	static Integer32Variant* createFromFactory(VariantFactory* factory,int value);
 	int getValue()

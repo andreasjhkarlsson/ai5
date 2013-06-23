@@ -7,12 +7,12 @@ class NameVariant :
 public:
 	NameVariant(Variant* value,VARIANT_TYPE type = NAME);
 	~NameVariant(void);
-	std::wostream& format(std::wostream& stream);
-	virtual double toFloating();
-	virtual __int64 toInteger64();
-	virtual int toInteger32();
-	virtual bool toBoolean();
-	virtual shared_string toString();
+	std::wostream& format(std::wostream& stream) const;
+	virtual double toFloating() const;
+	virtual __int64 toInteger64() const;
+	virtual int toInteger32() const;
+	virtual bool toBoolean() const;
+	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
 	virtual void cleanup();
 	void markAsConst();

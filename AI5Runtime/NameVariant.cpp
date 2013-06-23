@@ -12,30 +12,30 @@ NameVariant::~NameVariant(void)
 	cleanup();
 }
 
-std::wostream& NameVariant::format(std::wostream& stream)
+std::wostream& NameVariant::format(std::wostream& stream) const
 {
 	stream << L"NameVariant ";
 	if(value != nullptr)
 		value->format(stream);
 	return stream;
 }
-double NameVariant::toFloating()
+double NameVariant::toFloating() const
 {
 	return 0.0;
 }
-__int64 NameVariant::toInteger64()
+__int64 NameVariant::toInteger64() const
 {
 	return 0;
 }
-int NameVariant::toInteger32()
+int NameVariant::toInteger32() const
 {
 	return 0;
 }
-bool NameVariant::toBoolean()
+bool NameVariant::toBoolean() const
 {
 	return value != nullptr;
 }
-shared_string NameVariant::toString()
+shared_string NameVariant::toString() const
 {
 	return shared_string(new std::wstring(L""));
 

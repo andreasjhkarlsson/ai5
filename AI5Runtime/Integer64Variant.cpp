@@ -11,29 +11,29 @@ Integer64Variant::Integer64Variant(const __int64 integer): Variant(INTEGER64), v
 
 
 
-std::wostream& Integer64Variant::format(std::wostream& stream)
+std::wostream& Integer64Variant::format(std::wostream& stream) const
 {
 	stream << "IntegerVariant64: " << *toString();
 	return stream;
 }
 
-__int64 Integer64Variant::toInteger64()
+__int64 Integer64Variant::toInteger64() const
 {
 	return value;
 }
 
-int Integer64Variant::toInteger32()
+int Integer64Variant::toInteger32() const
 {
 	// LOSS OF DATA!!
 	return (int)value;
 }
 
-bool Integer64Variant::toBoolean()
+bool Integer64Variant::toBoolean() const
 {
 	return value != 0;
 }
 
-double Integer64Variant::toFloating()
+double Integer64Variant::toFloating() const
 {
 	return (double)value;
 }
@@ -43,7 +43,7 @@ Integer64Variant* Integer64Variant::createFromFactory(VariantFactory* factory,__
 	return factory->create<Integer64Variant,__int64>(Variant::INTEGER64,value);
 }
 
-shared_string Integer64Variant::toString()
+shared_string Integer64Variant::toString() const
 {
 	std::wstringstream stream;
 	stream << value;
@@ -57,7 +57,7 @@ bool Integer64Variant::equal(Variant* other)
 			(value == static_cast<Integer64Variant*>(other)->value);
 }
 
-size_t Integer64Variant::hash()
+size_t Integer64Variant::hash() const
 {
 	return SuperFastHash((const char*)&value,sizeof(value));
 }

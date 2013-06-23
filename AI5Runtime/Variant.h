@@ -31,38 +31,38 @@ public:
 	static const int NUMBER_OF_VARIANT_TYPES	= 16;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
-	virtual std::wostream& format(std::wostream& stream);
-	virtual double toFloating();
-	virtual __int64 toInteger64();
-	virtual int toInteger32();
-	virtual bool toBoolean();
-	virtual shared_string toString();
+	virtual std::wostream& format(std::wostream& stream) const;
+	virtual double toFloating() const;
+	virtual __int64 toInteger64() const;
+	virtual int toInteger32() const;
+	virtual bool toBoolean() const;
+	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
 	virtual void cleanup();
-	virtual size_t hash();
+	virtual size_t hash() const;
 	__forceinline int addRef();
 	__forceinline int release();
 	__forceinline VARIANT_TYPE getType();
 	__forceinline void scheduleRecycling(VariantFactory* factory);
 
-	inline bool isIntegerType();
-	inline bool isInteger32Type();
-	inline bool isInteger64Type();
-	inline bool isFloatingType();
-	inline bool isBooleanType();
-	inline bool isNullType();
-	inline bool isFunctionType();
-	inline bool isNativeFunctionType();
-	inline bool isUserFunctionType();
-	inline bool isStringType();
-	inline bool isListType();
-	inline bool isReferenceType();
-	inline bool isNameType();
-	inline bool isDefaultType();
-	inline bool isNameReferenceType();
-	inline bool isContainerType();
-	inline bool isBinaryType();
-	inline bool isHashMap();
+	inline bool isIntegerType() const;
+	inline bool isInteger32Type() const;
+	inline bool isInteger64Type() const;
+	inline bool isFloatingType() const;
+	inline bool isBooleanType() const;
+	inline bool isNullType() const;
+	inline bool isFunctionType() const;
+	inline bool isNativeFunctionType() const;
+	inline bool isUserFunctionType() const;
+	inline bool isStringType() const;
+	inline bool isListType() const;
+	inline bool isReferenceType() const;
+	inline bool isNameType() const;
+	inline bool isDefaultType() const;
+	inline bool isNameReferenceType() const;
+	inline bool isContainerType() const;
+	inline bool isBinaryType() const;
+	inline bool isHashMap() const;
 
 private:
 	const VARIANT_TYPE type;
@@ -199,82 +199,82 @@ VARIANT_TYPE Variant::getType()
 	return type;
 }
 
-bool Variant::isIntegerType()
+bool Variant::isIntegerType() const
 {
 	return type == INTEGER32 || type == INTEGER64;
 }
 
-bool Variant::isInteger32Type()
+bool Variant::isInteger32Type() const
 {
 	return type == INTEGER32;
 }
-bool Variant::isInteger64Type()
+bool Variant::isInteger64Type() const
 {
 	return type == INTEGER64;
 }
-bool Variant::isFloatingType()
+bool Variant::isFloatingType() const
 {
 	return type == FLOATING;
 }
-bool Variant::isBooleanType()
+bool Variant::isBooleanType() const
 {
 	return type == BOOLEAN;
 }
-bool Variant::isNullType()
+bool Variant::isNullType() const
 {
 	return type == NULL_VAR;
 }
-bool Variant::isFunctionType()
+bool Variant::isFunctionType() const
 {
 	return type == NATIVE_FUNCTION || type == USER_FUNCTION;
 }
-bool Variant::isNativeFunctionType()
+bool Variant::isNativeFunctionType() const
 {
 	return type == NATIVE_FUNCTION;
 }
-bool Variant::isUserFunctionType()
+bool Variant::isUserFunctionType() const
 {
 	return type == USER_FUNCTION;
 }
-bool Variant::isStringType()
+bool Variant::isStringType() const
 {
 	return type == STRING;
 }
-bool Variant::isListType()
+bool Variant::isListType() const
 {
 	return type == LIST;
 }
-bool Variant::isReferenceType()
+bool Variant::isReferenceType() const
 {
 	return type == REFERENCE;
 }
 
-bool Variant::isNameType()
+bool Variant::isNameType() const
 {
 	return type == NAME;
 }
 
-bool Variant::isNameReferenceType()
+bool Variant::isNameReferenceType() const
 {
 	return type == NAME_REFERENCE;
 }
 
-bool Variant::isDefaultType()
+bool Variant::isDefaultType() const
 {
 	return type == DEFAULT;
 }
 
-bool Variant::isContainerType()
+bool Variant::isContainerType() const
 {
 	return isContainer;
 }
 
-bool Variant::isBinaryType()
+bool Variant::isBinaryType() const
 {
 	return type == BINARY;
 }
 
-bool Variant::isHashMap()
+bool Variant::isHashMap() const
 {
 	return type == HASH_MAP;
 }

@@ -25,29 +25,29 @@ void ListVariant::cleanup()
 	}
 }
 
-std::wostream& ListVariant::format(std::wostream& stream)
+std::wostream& ListVariant::format(std::wostream& stream) const
 {
 	stream << L"ListVariant: " << *toString();
 	return stream;
 }
 
-double ListVariant::toFloating()
+double ListVariant::toFloating() const
 {
 	return 0.0;
 }
-__int64 ListVariant::toInteger64()
+__int64 ListVariant::toInteger64() const
 {
 	return 0;
 }
-int ListVariant::toInteger32()
+int ListVariant::toInteger32() const
 {
 	return 0;
 }
-bool ListVariant::toBoolean()
+bool ListVariant::toBoolean() const
 {
 	return list->size() > 0;
 }
-shared_string ListVariant::toString()
+shared_string ListVariant::toString() const
 {
 	std::wstring* str = new std::wstring();
 

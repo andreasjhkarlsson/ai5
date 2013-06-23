@@ -19,12 +19,12 @@ shared_binary BinaryVariant::getValue()
 }
 
 
-std::wostream& BinaryVariant::format(std::wostream& stream)
+std::wostream& BinaryVariant::format(std::wostream& stream) const
 {
 	stream << L"BinaryVariant: " << *toString();
 	return stream;
 }
-bool BinaryVariant::toBoolean()
+bool BinaryVariant::toBoolean() const
 {
 	return binary->size() > 0;
 }
@@ -34,7 +34,7 @@ bool BinaryVariant::equal(Variant* other)
 }
 
 
-shared_string BinaryVariant::toString()
+shared_string BinaryVariant::toString() const
 {
 	std::wstringstream stream;
 	for(int i=0;i<binary->size();i++)
@@ -44,7 +44,7 @@ shared_string BinaryVariant::toString()
 	return shared_string(new std::wstring(stream.str()));
 }
 
-size_t BinaryVariant::hash()
+size_t BinaryVariant::hash() const
 {
 	return SuperFastHash((const char*)&(*binary)[0],binary->size());
 }

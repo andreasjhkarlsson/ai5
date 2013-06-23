@@ -7,14 +7,14 @@ class Integer64Variant: public Variant
 {
 public:
 	Integer64Variant(const __int64 integer);
-	virtual double toFloating();
-	virtual __int64 toInteger64();
-	virtual int toInteger32();
-	virtual bool toBoolean();
+	virtual double toFloating() const;
+	virtual __int64 toInteger64() const;
+	virtual int toInteger32() const;
+	virtual bool toBoolean() const;
 	virtual bool equal(Variant*);
-	std::wostream& format(std::wostream& stream);
-	virtual shared_string toString();
-	virtual size_t hash();
+	std::wostream& format(std::wostream& stream) const;
+	virtual shared_string toString() const;
+	virtual size_t hash() const;
 	friend class VariantFactory;
 	__forceinline __int64 getValue();
 	void setValue(__int64 value)

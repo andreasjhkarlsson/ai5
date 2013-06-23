@@ -11,28 +11,28 @@ DefaultVariant::~DefaultVariant(void)
 }
 
 
-std::wostream& DefaultVariant::format(std::wostream& stream)
+std::wostream& DefaultVariant::format(std::wostream& stream) const
 {
 	stream << L"DefaultVariant: Default";
 	return stream;
 }
-double DefaultVariant::toFloating()
+double DefaultVariant::toFloating() const
 {
 	return 0.0;
 }
-__int64 DefaultVariant::toInteger64()
+__int64 DefaultVariant::toInteger64() const
 {
 	return 0;
 }
-int DefaultVariant::toInteger32()
+int DefaultVariant::toInteger32() const
 {
 	return 0;
 }
-bool DefaultVariant::toBoolean()
+bool DefaultVariant::toBoolean() const
 {
 	return false;
 }
-shared_string DefaultVariant::toString()
+shared_string DefaultVariant::toString() const
 {
 	return shared_string(new std::wstring(L"Default"));
 }
