@@ -11,6 +11,10 @@ public:
 private:
 	FileFunctions(void);
 	Variant* printline(Variant** args,int argsSize);
-	Variant* fileexists(Variant** args,int argsSize);
+	Variant* fileExists(Variant** args,int argsSize);
+	Variant* fileChangeDir(Variant** args,int argsSize);
+	Variant* consoleWrite(Variant** args,int argSize);
+	Variant* consoleWriteError(Variant** args,int argSize);
+	Variant* consoleReadLine(Variant** args,int argSize);
 };
 
