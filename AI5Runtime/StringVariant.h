@@ -6,6 +6,7 @@ class StringVariant :
 {
 public:
 	StringVariant(shared_string str);
+	StringVariant(const std::wstring& str);
 	~StringVariant(void);
 	std::wostream& format(std::wostream& stream);
 	virtual double toFloating();

@@ -221,7 +221,7 @@ __forceinline void derefIndex(StackMachine* machine)
 
 __forceinline void pushMacro(StackMachine* machine,int arg)
 {
-	machine->getDataStack()->push(machine->getMacro(arg)(machine));
+	machine->getDataStack()->push(machine->getMacro(arg)());
 	machine->advanceCounter();
 }
 

@@ -70,7 +70,7 @@ MACRO_FUNCTION StackMachine::getMacro(int staticIndex)
 
 void StackMachine::disassemble()
 {
-	for(int i=0;i<program->size();i++)
+	for(size_t i=0;i<program->size();i++)
 	{
 		std::wcout << i << ": ";
 		(*program)[i]->format(std::wcout,this);

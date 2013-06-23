@@ -9,6 +9,11 @@ StringVariant::StringVariant(shared_string str): Variant(STRING), str(str)
 
 }
 
+StringVariant::StringVariant(const std::wstring& str): Variant(STRING)
+{
+	this->str = create_shared_string(str);
+}
+
 StringVariant::~StringVariant(void)
 {
 

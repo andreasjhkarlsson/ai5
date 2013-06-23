@@ -12,8 +12,6 @@
 
 void registerStandardLibrary(StackMachine* machine)
 {
-
-
 	MathFunctions::registerFunctions(machine);
 	StringFunctions::registerFunctions(machine);
 	ListFunctions::registerFunctions(machine);
@@ -21,6 +19,5 @@ void registerStandardLibrary(StackMachine* machine)
 	FileFunctions::registerFunctions(machine);
 	DialogFunctions::registerFunctions(machine);
 	VariableFunctions::registerFunctions(machine);
-
-	machine->addMacro(L"autoitpid",Macros::MyPID);
+	Macros::registerMacros(machine);
 }
