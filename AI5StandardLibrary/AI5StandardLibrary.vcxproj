@@ -126,6 +126,7 @@
     <ClInclude Include="DialogFunctions.h" />
     <ClInclude Include="FileFunctions.h" />
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="GraphicsAndSoundFunctions.h" />
     <ClInclude Include="ListFunctions.h" />
     <ClInclude Include="Macros.h" />
     <ClInclude Include="MathFunctions.h" />
@@ -138,6 +139,7 @@
     <ClCompile Include="DialogFunctions.cpp" />
     <ClCompile Include="FileFunctions.cpp" />
     <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="GraphicsAndSoundFunctions.cpp" />
     <ClCompile Include="ListFunctions.cpp" />
     <ClCompile Include="Macros.cpp" />
     <ClCompile Include="MathFunctions.cpp" />
