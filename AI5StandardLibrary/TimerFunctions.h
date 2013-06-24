@@ -11,5 +11,8 @@ public:
 private:
 	TimerFunctions(void);
 	Variant* sleep(Variant** args,int argsSize);
+	Variant* timerInit(Variant** args,int argsSize);
+	Variant* timerDiff(Variant** args,int argsSize);
+	double performanceCounterFrequency; 
 };
 

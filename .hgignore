@@ -14,3 +14,4 @@ AI5Runtime/Release/*
 AI5StandardLibrary/Debug/*
 AI5StandardLibrary/Release/*
 wscite/bin/*
+AI5StandardLibrary/AI5StandardLibrary.vcxproj.user
