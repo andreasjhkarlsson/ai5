@@ -16,5 +16,13 @@ private:
 	static Variant* TempDirectory();
 	static Variant* SystemDirectory();
 	static Variant* WindowsDirectory();
+	static Variant* millisecond();
+	static Variant* second();
+	static Variant* minute();
+	static Variant* hour();
+	static Variant* monthDay();
+	static Variant* month();
+	static Variant* year();
+	static Variant* weekDay();
 };
 

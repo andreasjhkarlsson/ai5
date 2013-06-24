@@ -19,6 +19,14 @@ void Macros::registerMacros(StackMachine* machine)
 	machine->addMacro(L"tempdir",&TempDirectory);
 	machine->addMacro(L"systemdir",&SystemDirectory);
 	machine->addMacro(L"windowsdir",&WindowsDirectory);
+	machine->addMacro(L"msec",&millisecond);
+	machine->addMacro(L"sec",&second);
+	machine->addMacro(L"min",&minute);
+	machine->addMacro(L"hour",&hour);
+	machine->addMacro(L"mday",&monthDay);
+	machine->addMacro(L"mon",&month);
+	machine->addMacro(L"year",&year);
+	machine->addMacro(L"wday",&weekDay);
 }
 
 Variant* Macros::MyPID()
@@ -88,4 +96,55 @@ Variant* Macros::WindowsDirectory()
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetWindowsDirectoryW(&buffer[0],MAX_PATH);
 	return new StringVariant(&buffer[0]);
+}
+
+
+Variant* Macros::millisecond()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wMilliseconds);
+}
+
+Variant* Macros::second()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wSecond);
+}
+Variant* Macros::minute()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wMinute);
+}
+Variant* Macros::hour()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wHour);
+}
+Variant* Macros::monthDay()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wDay);
+}
+Variant* Macros::month()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wMonth);
+}
+Variant* Macros::year()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wYear);
+}
+Variant* Macros::weekDay()
+{
+	SYSTEMTIME stime;
+	GetLocalTime(&stime);
+	return new Integer32Variant(stime.wDayOfWeek);
 }
