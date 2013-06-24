@@ -1,5 +1,6 @@
 #pragma once
 #include "functions.h"
+#include "..\AI5Runtime\BinaryVariant.h"
 class Variant;
 class StackMachine;
 class VariableFunctions :
@@ -18,5 +19,8 @@ private:
 	Variant* isHashMap(Variant** args,int argCount);
 	Variant* isBool(Variant** args,int argCount);
 	Variant* ToString(Variant** args,int argCount);
+
+
+	void swapUtf16Endiness(wchar_t* binary,int size);
 };
 

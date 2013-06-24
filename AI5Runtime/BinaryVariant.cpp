@@ -1,6 +1,7 @@
 #include "BinaryVariant.h"
 #include <sstream>
 #include <string>
+#include <iomanip>
 #include "3rdparty\hsieh_hash.h"
 
 BinaryVariant::BinaryVariant(shared_binary binary): binary(binary), Variant(BINARY)
@@ -39,7 +40,7 @@ shared_string BinaryVariant::toString() const
 	std::wstringstream stream;
 	for(int i=0;i<binary->size();i++)
 	{
-		stream << std::hex << (*binary)[i];
+		stream << std::hex << std::setw(2) << std::setfill(L'0') << (unsigned char)(*binary)[i];
 	}
 	return shared_string(new std::wstring(stream.str()));
 }
