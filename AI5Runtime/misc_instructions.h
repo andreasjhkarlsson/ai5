@@ -112,14 +112,14 @@ __forceinline void concatStrings(StackMachine* machine)
 }
 
 
-ListVariant* createList(std::stack<int> subscripts);
-void redimList(Variant* list,std::stack<int> subscripts);
+ListVariant* createList(std::stack<unsigned int> subscripts);
+void redimList(Variant* list,std::stack<unsigned int> subscripts);
 
 __forceinline void createMultiDimList(StackMachine* machine,int numberOfSubscripts)
 {
 	// Use std::stack instead of FastStack since we need the copying mechanism
 	// of std::stack which FastStack cannot handle (and shouldn't?).
-	std::stack<int> subscripts;
+	std::stack<unsigned int> subscripts;
 
 	// Popping these arguments into another stack will reverse order (perfect!).
 	for(int i=0;i<numberOfSubscripts;i++)
@@ -140,12 +140,12 @@ __forceinline void RedimMultiDimList(StackMachine* machine,int numberOfSubscript
 {
 	// Use std::stack instead of FastStack since we need the copying mechanism
 	// of std::stack which FastStack cannot handle (and shouldn't?).
-	std::stack<int> subscripts;
+	std::stack<unsigned int> subscripts;
 
 	// Popping these arguments into another stack will reverse order (perfect!).
 	for(int i=0;i<numberOfSubscripts;i++)
 	{
-		subscripts.push(machine->getDataStack()->top()->toInteger32());
+		subscripts.push((unsigned int)machine->getDataStack()->top()->toInteger32());
 		machine->getDataStack()->pop()->release();
 	}
 

@@ -8,7 +8,7 @@ using namespace std::placeholders;
 
 TimerFunctions::TimerFunctions(void)
 {
-	// Query performance frqeuwncy to be used by timerDiff function.
+	// Query performance frequency to be used by timerDiff function.
     LARGE_INTEGER li;
     QueryPerformanceFrequency(&li);
 	performanceCounterFrequency = double(li.QuadPart)/1000.0;

@@ -1,21 +1,21 @@
 #include "misc_instructions.h"
 
 // Inlining recursive function?? Crazy shit!!
-ListVariant* createList(std::stack<int> subscripts)
+ListVariant* createList(std::stack<unsigned int> subscripts)
 {
 
-	int count = subscripts.top();
+	unsigned int count = subscripts.top();
 	subscripts.pop();
 
 	ListVariant* list = new ListVariant();
 	if(subscripts.empty())
 	{
-		for(int i=0;i<count;i++)
+		for(unsigned int i=0;i<count;i++)
 			list->addElement(&NullVariant::Instance);
 		return list;
 	}
 
-	for(int i=0;i<count;i++)
+	for(unsigned int i=0;i<count;i++)
 	{
 		list->addElement(createList(subscripts));
 	}
@@ -25,14 +25,14 @@ ListVariant* createList(std::stack<int> subscripts)
 }
 
 
-void redimList(Variant* listVar,std::stack<int> subscripts)
+void redimList(Variant* listVar,std::stack<unsigned int> subscripts)
 {
 	if(!listVar->isListType())
 		throw RuntimeError(L"Can only redim list types!");
 
 	ListVariant* list = static_cast<ListVariant*>(listVar);
 
-	int count = subscripts.top();
+	unsigned int count = subscripts.top();
 	subscripts.pop();
 
 	// If this is the terminating list, add NullVariants or
@@ -50,8 +50,7 @@ void redimList(Variant* listVar,std::stack<int> subscripts)
 		// Or should they be removed?
 		else if(count < list->size())
 		{
-			size_t initialListSize = list->size();
-			for(size_t i=list->size()-1;i >= (initialListSize-count);i--)
+			for(size_t i=list->size()-1;i >= (count);i--)
 			{
 				list->deleteAt(i);
 			}
