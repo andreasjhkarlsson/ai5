@@ -42,7 +42,7 @@ public:
 	virtual size_t hash() const;
 	__forceinline int addRef();
 	__forceinline int release();
-	__forceinline VARIANT_TYPE getType();
+	__forceinline VARIANT_TYPE getType() const;
 	__forceinline void scheduleRecycling(VariantFactory* factory);
 
 	inline bool isIntegerType() const;
@@ -194,7 +194,7 @@ int Variant::release()
 	return resultCount;
 }
 
-VARIANT_TYPE Variant::getType()
+VARIANT_TYPE Variant::getType() const
 {
 	return type;
 }
