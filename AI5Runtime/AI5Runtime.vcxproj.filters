@@ -23,6 +23,9 @@
     <Filter Include="3rdParty">
       <UniqueIdentifier>{1bbfdca6-9afc-40bc-baaf-cf8f411f6621}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DllCall">
+      <UniqueIdentifier>{42c28c0b-fcf9-4f9d-bc2b-5dc41f59e6fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Instruction.cpp">
@@ -108,6 +111,12 @@
     </ClCompile>
     <ClCompile Include="HashMapVariant.cpp">
       <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="DllCall.cpp">
+      <Filter>DllCall</Filter>
+    </ClCompile>
+    <ClCompile Include="COMVar.cpp">
+      <Filter>DllCall</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +248,12 @@
     </ClInclude>
     <ClInclude Include="3rdparty\hsieh_hash.h">
       <Filter>3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="DllCall.h">
+      <Filter>DllCall</Filter>
+    </ClInclude>
+    <ClInclude Include="COMVar.h">
+      <Filter>DllCall</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
