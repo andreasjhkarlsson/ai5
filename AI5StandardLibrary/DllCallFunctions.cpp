@@ -17,7 +17,7 @@ DllCallFunctions::~DllCallFunctions()
 
 
 
-Variant* DllCallFunctions::dllcall(Variant** args,int argsSize)
+Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 {
 	validateArgCount(argsSize, 3, 3 + 2 * MAX_ARG_DLLCALL);
 
@@ -29,8 +29,12 @@ Variant* DllCallFunctions::dllcall(Variant** args,int argsSize)
 	for (int i = 4; i < argsSize; ++i)
 		vArgs.push_back(args[i++]); // post-increment used to get every other element
 
+	// The code here should assess some global container in case first argument is not string (when pseudo handle from dllopen is passed)
+	// In that case default DllCall constructor is called and then SetRetTypeAndCC(), SetParamsTypes() and SetFunc() called.
+	// When dll name string is passed then it's simply:
 	auto dllcall = DllCall(*args[0]->toString().get(), *args[1]->toString().get(), *args[2]->toString().get(), vParamTypes);
 
+	// To collect processed aruments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
 
 	// Make the  actual call
@@ -67,6 +71,7 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 	dllcall.SetParamsTypes(vParamTypes);
 	dllcall.SetFunc(reinterpret_cast<LPVOID>(args[1]->toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
 
+	// To collect processed aruments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
 
 	// Make the  actual call
@@ -85,6 +90,27 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 	return vRet;
 }
 
+Variant* DllCallFunctions::dllopen(Variant** args, int argsSize)
+{
+	validateArgCount(argsSize, 1, 1);
+
+	// The code here should assess some global container
+	// TODO: Add missing code
+
+	return nullptr;
+}
+
+Variant* DllCallFunctions::dllclose(Variant** args, int argsSize)
+{
+	validateArgCount(argsSize, 1, 1);
+
+	// The code here should assess some global container
+	// TODO: Add missing code
+
+	return nullptr;
+}
+
+
 void DllCallFunctions::registerFunctions(StackMachine* machine)
 {
 
@@ -92,4 +118,6 @@ void DllCallFunctions::registerFunctions(StackMachine* machine)
 
 	machine->addBuiltInFunction(L"dllcall", std::bind(&dllcall, instance, _1, _2));
 	machine->addBuiltInFunction(L"dllcalladdress", std::bind(&dllcalladdress, instance, _1, _2));
+	machine->addBuiltInFunction(L"dllopen", std::bind(&dllcall, instance, _1, _2));
+	machine->addBuiltInFunction(L"dllclose", std::bind(&dllcall, instance, _1, _2));
 }
