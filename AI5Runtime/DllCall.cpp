@@ -109,10 +109,10 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 	if (this->pFunc)
 	{
 		// Number of parameters
-		int iFuncArgs = vArgs.size();
+		int iFuncArgs = static_cast<int>(vArgs.size());
 
 		// Number of parameters according to definition
-		int iSpecFuncParams = this->vTypes.size();
+		int iSpecFuncParams = static_cast<int>(this->vTypes.size());
 
 		// Number of parameters must match number specified in definition
 		if (iFuncArgs != iSpecFuncParams) return false;
@@ -295,11 +295,13 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 		* Ret VARIANT predprocessing
 		*
 		************************************************************/
-		COMVar vRet; // VARIANT to collect the result
+		COMVar vRet; // VARIANT to collect the result to
 
 		VARTYPE vtRet = this->vtRetType;
+		if (vtRet == VT_ILLEGAL)
+			return false;
 		// Correct type of ret variant (these are all pointers):
-		if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
+		else if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
 		{
 			vtRet = VT_UI8; // for pointer to fit in any case. Eiher for x64 or x86.
 		}
