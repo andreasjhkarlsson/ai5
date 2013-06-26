@@ -4,6 +4,7 @@ class Integer32Variant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = INTEGER32;
 	Integer32Variant(int value);
 	~Integer32Variant(void);
 	std::wostream& format(std::wostream& stream) const;

@@ -1,7 +1,7 @@
 #include "UserFunctionVariant.h"
 #include "StackMachine.h"
 
-UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(USER_FUNCTION), enclosingScope(nullptr)
+UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(TYPE), enclosingScope(nullptr)
 {
 
 

@@ -118,6 +118,9 @@
     <ClCompile Include="COMVar.cpp">
       <Filter>DllCall</Filter>
     </ClCompile>
+    <ClCompile Include="HandleVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -254,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="COMVar.h">
       <Filter>DllCall</Filter>
+    </ClInclude>
+    <ClInclude Include="HandleVariant.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

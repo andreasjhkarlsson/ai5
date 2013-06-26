@@ -12,6 +12,7 @@ class BuiltinFunctionVariant :
 	public FunctionVariant
 {
 public:
+	static const VARIANT_TYPE TYPE = NATIVE_FUNCTION;
 	BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func);
 	~BuiltinFunctionVariant(void);
 	void call(StackMachine* machine,int numberOfArguments);

@@ -1,7 +1,7 @@
 #include "DefaultVariant.h"
 #include <string>
 
-DefaultVariant::DefaultVariant(void): Variant(DEFAULT)
+DefaultVariant::DefaultVariant(void): Variant(TYPE)
 {
 }
 

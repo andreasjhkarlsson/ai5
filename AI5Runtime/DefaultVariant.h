@@ -4,6 +4,7 @@ class DefaultVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = DEFAULT;
 	DefaultVariant(void);
 	~DefaultVariant(void);
 	virtual std::wostream& format(std::wostream& stream) const;

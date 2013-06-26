@@ -3,7 +3,7 @@
 #include <sstream>
 #include "3rdparty\hsieh_hash.h"
 
-FloatingVariant::FloatingVariant(double value): Variant(FLOATING), value(value)
+FloatingVariant::FloatingVariant(double value): Variant(TYPE), value(value)
 {
 }
 

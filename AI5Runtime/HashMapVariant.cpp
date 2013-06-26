@@ -1,7 +1,7 @@
 #include "HashMapVariant.h"
 
 
-HashMapVariant::HashMapVariant(void): Variant(HASH_MAP)
+HashMapVariant::HashMapVariant(void): Variant(TYPE)
 {
 }
 

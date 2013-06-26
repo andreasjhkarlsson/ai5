@@ -5,6 +5,7 @@ class ListVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = LIST;
 	ListVariant(void);
 	~ListVariant(void);
 	std::wostream& format(std::wostream& stream) const;

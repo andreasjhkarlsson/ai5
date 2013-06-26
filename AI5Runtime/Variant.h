@@ -28,7 +28,8 @@ public:
 	static const VARIANT_TYPE SCOPE				= 13;
 	static const VARIANT_TYPE BINARY			= 14;
 	static const VARIANT_TYPE HASH_MAP			= 15;
-	static const int NUMBER_OF_VARIANT_TYPES	= 16;
+	static const VARIANT_TYPE HANDLE			= 16;
+	static const int NUMBER_OF_VARIANT_TYPES	= 17;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
@@ -63,6 +64,18 @@ public:
 	inline bool isContainerType() const;
 	inline bool isBinaryType() const;
 	inline bool isHashMap() const;
+
+
+	template<class T>
+	T* cast()
+	{
+		if(getType() != T::TYPE)
+		{
+			// TODO: Nicer error.
+			throw RuntimeError(L"Expected variant of type X got Y");
+		}
+		return static_cast<T*>(this);
+	}
 
 private:
 	const VARIANT_TYPE type;

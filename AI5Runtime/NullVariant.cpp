@@ -1,7 +1,7 @@
 #include "NullVariant.h"
 #include <iostream>
 
-NullVariant::NullVariant(void): Variant(Variant::NULL_VAR)
+NullVariant::NullVariant(void): Variant(TYPE)
 {
 }
 

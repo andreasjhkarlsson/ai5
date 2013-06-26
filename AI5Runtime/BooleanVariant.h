@@ -4,6 +4,7 @@ class BooleanVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = BOOLEAN;
 	virtual double toFloating() const;
 	virtual __int64 toInteger64() const;
 	virtual int toInteger32() const;

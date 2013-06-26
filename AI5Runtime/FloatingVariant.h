@@ -5,6 +5,7 @@ class FloatingVariant:
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = FLOATING;
 	FloatingVariant(double value);
 	~FloatingVariant(void);
 	virtual double toFloating() const;

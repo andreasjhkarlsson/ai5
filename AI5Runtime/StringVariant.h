@@ -5,6 +5,7 @@ class StringVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = STRING;
 	StringVariant(shared_string str);
 	StringVariant(const std::wstring& str);
 	~StringVariant(void);

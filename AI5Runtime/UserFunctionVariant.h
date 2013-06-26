@@ -5,6 +5,7 @@ class UserFunctionVariant :
 	public FunctionVariant
 {
 public:
+	static const VARIANT_TYPE TYPE = USER_FUNCTION;
 	UserFunctionVariant(int address);
 	~UserFunctionVariant(void);
 	std::wostream& format(std::wostream& stream);

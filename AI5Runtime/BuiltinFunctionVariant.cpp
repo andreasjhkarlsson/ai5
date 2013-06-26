@@ -3,7 +3,7 @@
 #include "NullVariant.h"
 
 BuiltinFunctionVariant::BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func): name(name),
-	func(func),FunctionVariant(NATIVE_FUNCTION)
+	func(func),FunctionVariant(TYPE)
 {
 }
 
