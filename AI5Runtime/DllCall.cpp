@@ -60,7 +60,7 @@ bool DllCall::SetFunc(const std::wstring&  sFunc)
 // Manually loads the module. Unloads previously loaded.
 void DllCall::SetRetTypeAndCC(const std::wstring& sRet)
 {
-	this->CrackReturnType(sRet.c_str(), &this->cc, &this->vtRetType);
+	this->CrackReturnType(sRet.c_str(), this->cc, this->vtRetType);
 }
 
 
@@ -270,7 +270,7 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 
 		VARTYPE vtRet = this->vtRetType;
 		// Correct type of ret variant (these are all pointers):
-		else if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
+		if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
 		{
 			vtRet = VT_UI8; // for pointer to fit in any case. Eiher for x64 or x86.
 		}
@@ -796,15 +796,15 @@ void DllCall::FixDecimalSeparator(BSTR bString, bool bFlag)
 
 
 // Cracks string describing the vt of the return VARIANT
-void  DllCall::CrackReturnType(LPCWSTR sType, CALLCONV* cConv, VARTYPE* vRetType)
+void  DllCall::CrackReturnType(LPCWSTR sType, CALLCONV& cConv, VARTYPE& vRetType)
 {
-	*cConv = CC_STDCALL; // preset
+	cConv = CC_STDCALL; // preset
 
 	// Determine the type of ret VARIANT
-	*vRetType = this->VarType(sType);
+	vRetType = this->VarType(sType);
 
 	// If valid type then return
-	if (*vRetType != VT_ILLEGAL) 
+	if (vRetType != VT_ILLEGAL) 
 		return; // All done!
 
 	// In case calling convention was specified...
@@ -822,10 +822,10 @@ void  DllCall::CrackReturnType(LPCWSTR sType, CALLCONV* cConv, VARTYPE* vRetType
 			// Can be cdecl:
 			LPCWSTR sCdecl = L"cdecl";
 			if (::lstrcmpiW(sConvention, sCdecl) == 0) 
-				*cConv = CC_CDECL;
+				cConv = CC_CDECL;
 
 			sTypeLocal[i] = '\0'; // null terminate after the type
-			*vRetType = this->VarType(sTypeLocal);
+			vRetType = this->VarType(sTypeLocal);
 			// e.g. "dword*:cdecl" or "dword:cdecl"
 			break; // all done
 		}
