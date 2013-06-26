@@ -111,8 +111,11 @@ Variant* Variant::createFromCOMVar(const COMVar& comvar)
 	case VT_BSTR:
 		return new StringVariant(create_shared_string(comvar.bstrVal,SysStringLen(comvar.bstrVal)));
 		break;
+	case VT_EMPTY:
+		NullVariant::Instance.addRef();
+		return &NullVariant::Instance;
 	default:
-		// TODO: Implement all other types.
+		throw RuntimeError(L"No conversion exists for COMVar");
 		break;
 	}
 }
