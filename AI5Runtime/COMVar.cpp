@@ -36,7 +36,7 @@ COMVar::COMVar(const COMVar* comVar)
 }
 
 // Assignment operator with another COMVar.
-VOID COMVar::operator= (const COMVar& comVar)
+void COMVar::operator= (const COMVar& comVar)
 {
 	::VariantClear(this); // release current content
 	if (FAILED(::VariantCopy(this, &comVar))) // copy new VARIANT into "this" VARIANT
@@ -46,7 +46,7 @@ VOID COMVar::operator= (const COMVar& comVar)
 }
 
 // Assignment operator with pointer to another COMVar.
-VOID COMVar::operator= (const COMVar* comVar)
+void COMVar::operator= (const COMVar* comVar)
 {
 	::VariantClear(this); // release current content
 	if (FAILED(::VariantCopy(this, comVar))) // copy new VARIANT into "this" VARIANT
@@ -56,13 +56,13 @@ VOID COMVar::operator= (const COMVar* comVar)
 }
 
 // Assignment operator with Variant object.
-VOID COMVar::operator= (const Variant& vVar)
+void COMVar::operator= (const Variant& vVar)
 {
 	*this = COMVar(vVar); // Variant is turned into COMVar and then copyied into "this"
 }
 
 // Assignment operator with pointer to Variant.
-VOID COMVar::operator= (const Variant* pVar)
+void COMVar::operator= (const Variant* pVar)
 {
 	*this = COMVar(*pVar); // Pointer to Variant is dereferenced and get object is turned into COMVar and then copyied into "this"
 }

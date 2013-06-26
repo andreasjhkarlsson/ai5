@@ -26,10 +26,10 @@ public:
 	COMVar     (const Variant*);
 
 	// Assignment operator
-	VOID operator= (const COMVar&);
-	VOID operator= (const COMVar*);
-	VOID operator= (const Variant&);
-	VOID operator= (const Variant*);
+	void operator= (const COMVar&);
+	void operator= (const COMVar*);
+	void operator= (const Variant&);
+	void operator= (const Variant*);
 
 	// Element types for sructures
 #ifdef _X64

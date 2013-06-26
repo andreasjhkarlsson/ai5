@@ -41,8 +41,8 @@ private:
 	BSTR                          AllocReadStringByref   (VARIANT*, VARTYPE);
 	BSTR                          AllocReadString        (VARIANT*, VARTYPE);
 	bool                          VARCopyConvert         (VARIANT*, VARIANT*, VARTYPE);
-	VOID                          VARDerefCopy           (VARIANT*, VARIANT*, VARTYPE);
-	VOID                          CrackReturnType        (LPCWSTR, CALLCONV&, VARTYPE&);
+	void                          VARDerefCopy           (VARIANT*, VARIANT*, VARTYPE);
+	void                          CrackReturnType        (LPCWSTR, CALLCONV&, VARTYPE&);
 
 	HMODULE                       hModule;
 	CALLCONV                      cc;
