@@ -57,16 +57,17 @@ bool DllCall::SetFunc(const std::wstring&  sFunc)
 }
 
 
-// Manually loads the module. Unloads previously loaded.
+// Resolves return type and calling convention.
 void DllCall::SetRetTypeAndCC(const std::wstring& sRet)
 {
-	this->CrackReturnType(sRet.c_str(), &this->cc, &this->vtRetType);
+	this->CrackReturnType(sRet.c_str(), this->cc, this->vtRetType);
 }
 
 
-// Manually loads the module. Unloads previously loaded.
+// Loads (resolves and saves) parameters types.
 void DllCall::SetParamsTypes(const std::vector<std::wstring>& sParams)
 {
+	vTypes.clear();
 	for (size_t i = 0; i < sParams.size(); ++i)
 		this->vTypes.push_back(this->VarType(sParams[i].c_str()));
 }
@@ -77,7 +78,7 @@ void DllCall::SetParamsTypes(const std::vector<std::wstring>& sParams)
 bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 {
 	// Sanity check
-	if (this->pFunc)
+	if (this->pFunc && this->vtRetType != VT_ILLEGAL)
 	{
 		// Number of parameters
 		int iFuncArgs = static_cast<int>(vArgs.size());
@@ -144,7 +145,7 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 			// TODO: Check for possible references
 			vCurrentParam = vArgs[i];
 
-			// Parameter type by Interface specification
+			// Parameter type by specification
 			VARTYPE vParamType = this->vTypes[i];
 			// Basic type out of that
 			VARTYPE vParamTypeInd = vParamType & VT_TYPEMASK;
@@ -243,7 +244,7 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 					// First clear passed
 					::VariantClear(&pvSubVariant[iIndex]);
 
-					// And then set new and correct data according to Interface definition
+					// And then set new and correct data according to definition
 					pvSubVariant[iIndex].vt = vParamType;
 					pvSubVariant[iIndex].byref = pSubBuffer[iIndex];
 				}
@@ -269,10 +270,8 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 		COMVar vRet; // VARIANT to collect the result to
 
 		VARTYPE vtRet = this->vtRetType;
-		if (vtRet == VT_ILLEGAL)
-			return false;
 		// Correct type of ret variant (these are all pointers):
-		else if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
+		if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
 		{
 			vtRet = VT_UI8; // for pointer to fit in any case. Eiher for x64 or x86.
 		}
@@ -303,9 +302,9 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 
 			if ((vRetType & VT_BYREF) && vRet.byref)
 			{
-				// Basic type of ret variant by Interface definition
+				// Basic type of ret variant by definition
 				VARTYPE vTypeInd = vRetType & VT_TYPEMASK; // basic type
-				// Setting correct type of ret variant (according to Interface description)
+				// Setting correct type of ret variant (according to description)
 				vRet.vt = vRetType;
 				// Copy dereferenced value of VARIANT
 				this->VARDerefCopy(&vRet, &pcvResult[0], vTypeInd);
@@ -375,6 +374,13 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 			}
 		}
 
+		/************************************************************
+		*
+		* Free dynamically allocated memory
+		*
+		************************************************************/
+		for (int i = 0; i < iFuncParams; ++i)
+			delete [] pSubBuffer[i]; // for any possible allocation per parameter
 
 		// Return whatever the result
 		return hr == S_OK;
@@ -791,15 +797,15 @@ void DllCall::FixDecimalSeparator(BSTR bString, bool bFlag)
 
 
 // Cracks string describing the vt of the return VARIANT
-void  DllCall::CrackReturnType(LPCWSTR sType, CALLCONV* cConv, VARTYPE* vRetType)
+void  DllCall::CrackReturnType(LPCWSTR sType, CALLCONV& cConv, VARTYPE& vRetType)
 {
-	*cConv = CC_STDCALL; // preset
+	cConv = CC_STDCALL; // preset
 
 	// Determine the type of ret VARIANT
-	*vRetType = this->VarType(sType);
+	vRetType = this->VarType(sType);
 
 	// If valid type then return
-	if (*vRetType != VT_ILLEGAL) 
+	if (vRetType != VT_ILLEGAL) 
 		return; // All done!
 
 	// In case calling convention was specified...
@@ -817,10 +823,10 @@ void  DllCall::CrackReturnType(LPCWSTR sType, CALLCONV* cConv, VARTYPE* vRetType
 			// Can be cdecl:
 			LPCWSTR sCdecl = L"cdecl";
 			if (::lstrcmpiW(sConvention, sCdecl) == 0) 
-				*cConv = CC_CDECL;
+				cConv = CC_CDECL;
 
 			sTypeLocal[i] = '\0'; // null terminate after the type
-			*vRetType = this->VarType(sTypeLocal);
+			vRetType = this->VarType(sTypeLocal);
 			// e.g. "dword*:cdecl" or "dword:cdecl"
 			break; // all done
 		}
