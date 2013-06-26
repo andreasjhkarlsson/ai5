@@ -51,16 +51,14 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
 
 	// Make the  actual call
-	if (!!!dllcall.Invoke(vArgs, pcvRet))
-	{
-		// On failure return what? Maybe this?
-		NullVariant::Instance.addRef();
-		return &NullVariant::Instance;
-	}
+	bool bRet = dllcall.Invoke(vArgs, pcvRet);
 
 	// If we only loaded the module for this call.
 	if(loadedModule)
 		FreeLibrary(hModule);
+
+	if (bRet == false)
+		return nullptr; // TODO: Set error.
 
 	ListVariant* vRet = new ListVariant;
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
@@ -94,11 +92,8 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 
 	// Make the  actual call
 	if (!!!dllcall.Invoke(vArgs, pcvRet))
-	{
-		// On failure return what? Maybe this?
-		NullVariant::Instance.addRef();
-		return &NullVariant::Instance;
-	}
+		return nullptr; // TODO: Set error.
+
 	ListVariant* vRet = new ListVariant;
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
