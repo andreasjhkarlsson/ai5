@@ -3,6 +3,7 @@
 #include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\ListVariant.h"
 #include "..\AI5Runtime\NullVariant.h"
+#include "Handles.h"
 
 using namespace std::placeholders;
 
@@ -32,7 +33,23 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 	// The code here should assess some global container in case first argument is not string (when pseudo handle from dllopen is passed)
 	// In that case default DllCall constructor is called and then SetRetTypeAndCC(), SetParamsTypes() and SetFunc() called.
 	// When dll name string is passed then it's simply:
-	auto dllcall = DllCall(*args[0]->toString().get(), *args[1]->toString().get(), *args[2]->toString().get(), vParamTypes);
+
+	bool loadedModule = false;
+	HMODULE hModule = nullptr;
+	if(args[0]->isStringType())
+	{
+		hModule = ::LoadLibraryW(args[0]->toString()->c_str());
+		loadedModule = true;
+	}
+	else
+	{
+		// How about this cast chain? :D If only C++ would allow virtual template methods...
+		hModule = args[0]->cast<HandleVariant>()->castHandle<ModuleHandle>()->getModule();
+	}
+
+	// TODO: Check for hModule == nullptr and throw error.
+
+	auto dllcall = DllCall(hModule, *args[1]->toString().get(), *args[2]->toString().get(), vParamTypes);
 
 	// To collect processed aruments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
@@ -44,6 +61,10 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 		NullVariant::Instance.addRef();
 		return &NullVariant::Instance;
 	}
+
+	// If we only loaded the module for this call.
+	if(loadedModule)
+		FreeLibrary(hModule);
 
 	ListVariant* vRet = new ListVariant;
 	// TODO: Make the below code working
@@ -94,18 +115,22 @@ Variant* DllCallFunctions::dllopen(Variant** args, int argsSize)
 {
 	validateArgCount(argsSize, 1, 1);
 
-	// The code here should assess some global container
-	// TODO: Add missing code
+	shared_string dllPath = args[0]->toString();
 
-	return nullptr;
+	HMODULE module = ::LoadLibraryW(dllPath->c_str());
+
+	if(!module)
+		return nullptr; // TODO: Set error.
+
+	return new ModuleHandle(module);
 }
 
 Variant* DllCallFunctions::dllclose(Variant** args, int argsSize)
 {
 	validateArgCount(argsSize, 1, 1);
 
-	// The code here should assess some global container
-	// TODO: Add missing code
+	ModuleHandle* handle = args[0]->cast<HandleVariant>()->castHandle<ModuleHandle>();
+	handle->close();
 
 	return nullptr;
 }
@@ -118,6 +143,6 @@ void DllCallFunctions::registerFunctions(StackMachine* machine)
 
 	machine->addBuiltInFunction(L"dllcall", std::bind(&dllcall, instance, _1, _2));
 	machine->addBuiltInFunction(L"dllcalladdress", std::bind(&dllcalladdress, instance, _1, _2));
-	machine->addBuiltInFunction(L"dllopen", std::bind(&dllcall, instance, _1, _2));
-	machine->addBuiltInFunction(L"dllclose", std::bind(&dllcall, instance, _1, _2));
+	machine->addBuiltInFunction(L"dllopen", std::bind(&dllopen, instance, _1, _2));
+	machine->addBuiltInFunction(L"dllclose", std::bind(&dllclose, instance, _1, _2));
 }

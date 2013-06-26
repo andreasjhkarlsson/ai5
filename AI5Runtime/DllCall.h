@@ -11,12 +11,10 @@ class DllCall
 
 public:
 	DllCall                                              ();
-	DllCall                                              (const std::wstring&, const std::wstring&, const std::wstring&, const std::vector<std::wstring>&);
+	DllCall                                              (HMODULE, const std::wstring&, const std::wstring&, const std::vector<std::wstring>&);
 	~DllCall                                             ();
 
 	bool                          Invoke                 (const std::vector<Variant*>&, COMVar*);
-	void                          SetModule              (const std::wstring&);
-	void                          SetModule              (HMODULE);
 	__forceinline bool            SetFunc                (const std::wstring&);
 	void                          SetFunc                (LPVOID);
 	__forceinline void            SetRetTypeAndCC        (const std::wstring&);
@@ -51,7 +49,6 @@ private:
 	VARTYPE                       vtRetType;
 	std::vector<VARTYPE>          vTypes;
 	LPVOID                        pFunc;
-	bool                          bLoadedModule;
 };
 
 

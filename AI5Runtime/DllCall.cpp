@@ -3,13 +3,13 @@
 
 
 // Default constructor
-DllCall::DllCall(): bLoadedModule(false), hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(VT_INT)
+DllCall::DllCall(): hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(VT_INT)
 {
 }
 
 
 // Constructor
-DllCall::DllCall(const std::wstring& sModule, const std::wstring& sRetType, const std::wstring& sFunc, const std::vector<std::wstring>& sParamsTypes): bLoadedModule(false), hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(VT_INT)
+DllCall::DllCall(HMODULE hModule, const std::wstring& sRetType, const std::wstring& sFunc, const std::vector<std::wstring>& sParamsTypes):hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(VT_INT)
 {
 	// Resolve ret type and calling convention
 	this->SetRetTypeAndCC(sRetType.c_str());
@@ -17,14 +17,12 @@ DllCall::DllCall(const std::wstring& sModule, const std::wstring& sRetType, cons
 	// Resolve params types
 	this->SetParamsTypes(sParamsTypes);
 
-	// Load the module
-	if (sModule.size())
-		this->hModule = ::LoadLibrary(sModule.c_str());
+	// Set module.
+	this->hModule = hModule;
 
 	// Get the function pointer
 	if (this->hModule)
 	{
-		this->bLoadedModule = true;
 		this->SetFunc(sFunc);
 	}
 }
@@ -33,35 +31,8 @@ DllCall::DllCall(const std::wstring& sModule, const std::wstring& sRetType, cons
 // Destructor
 DllCall::~DllCall()
 {
-	if (this->bLoadedModule)
-		::FreeLibrary(this->hModule);
+
 }
-
-
-// Manually loads the module. Unloads previously loaded.
-void DllCall::SetModule(const std::wstring& sModule)
-{
-	if (this->bLoadedModule)
-	{
-		::FreeLibrary(this->hModule);
-		this->bLoadedModule = false;
-	}
-	if (sModule.size())
-		this->hModule = ::LoadLibrary(sModule.c_str());
-	if (this->hModule) // check if loaded now
-		this->bLoadedModule = true;
-}
-
-
-// Manually sets preloaded module. Unloads previously loaded.
-void DllCall::SetModule(HMODULE hMod)
-{
-	if (this->bLoadedModule)
-		::FreeLibrary(this->hModule);
-	this->hModule = hMod;
-	this->bLoadedModule = false;
-}
-
 
 // Manually sets function pointer
 void DllCall::SetFunc(LPVOID pFunction)
