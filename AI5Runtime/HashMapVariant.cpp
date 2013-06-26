@@ -60,6 +60,31 @@ shared_string HashMapVariant::toString() const
 }
 std::wostream& HashMapVariant::format(std::wostream& stream) const
 {
-	stream << L"HashVariant: " << *toString();
+	stream << L"HashMapVariant: " << *toString();
 	return stream;
 }
+
+IteratorVariant* HashMapVariant::iterate()
+{
+	return new KeyIterator(this);
+}
+
+HashMapVariant::KeyIterator::KeyIterator(HashMapVariant* map):map(map)
+{
+	map->addRef();
+	it = map->map.begin();
+
+}
+void HashMapVariant::KeyIterator::cleanup()
+{
+	map->release();
+}
+bool HashMapVariant::KeyIterator::hasMore()
+{
+	return it != map->map.end();	
+}
+Variant* HashMapVariant::KeyIterator::next()
+{
+	return (it++)->first;
+}
+
