@@ -375,6 +375,13 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 			}
 		}
 
+		/************************************************************
+		*
+		* Free dynamically allocated memory
+		*
+		************************************************************/
+		for (int i = 0; i < iFuncParams; ++i)
+			delete [] pSubBuffer[i]; // for any possible allocation per parameter
 
 		// Return whatever the result
 		return hr == S_OK;
