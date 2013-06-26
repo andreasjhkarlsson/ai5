@@ -77,7 +77,7 @@ void DllCall::SetParamsTypes(const std::vector<std::wstring>& sParams)
 bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 {
 	// Sanity check
-	if (this->pFunc)
+	if (this->pFunc && this->vtRetType != VT_ILLEGAL)
 	{
 		// Number of parameters
 		int iFuncArgs = static_cast<int>(vArgs.size());
@@ -269,8 +269,6 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 		COMVar vRet; // VARIANT to collect the result to
 
 		VARTYPE vtRet = this->vtRetType;
-		if (vtRet == VT_ILLEGAL)
-			return false;
 		// Correct type of ret variant (these are all pointers):
 		else if ((vtRet & VT_BYREF) || (vtRet == VT_LPSTR) || (vtRet == VT_LPWSTR) || (vtRet == VT_CLSID))
 		{
