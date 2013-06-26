@@ -8,6 +8,7 @@
 #include "DialogFunctions.h"
 #include "VariableFunctions.h"
 #include "GraphicsAndSoundFunctions.h"
+#include "DllCallFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 
 
@@ -21,5 +22,6 @@ void registerStandardLibrary(StackMachine* machine)
 	DialogFunctions::registerFunctions(machine);
 	VariableFunctions::registerFunctions(machine);
 	GraphicsAndSoundFunctions::registerFunctions(machine);
+	DllCallFunctions::registerFunctions(machine);
 	Macros::registerMacros(machine);
 }

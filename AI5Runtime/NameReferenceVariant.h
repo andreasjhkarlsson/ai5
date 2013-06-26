@@ -5,6 +5,7 @@ class NameReferenceVariant :
 	public NameVariant
 {
 public:
+	static const VARIANT_TYPE TYPE = NAME_REFERENCE;
 	NameReferenceVariant(Variant* value);
 	~NameReferenceVariant(void);
 	virtual void setValue(Variant* var);

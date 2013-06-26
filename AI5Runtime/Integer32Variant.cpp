@@ -3,7 +3,7 @@
 #include <iostream>
 #include "3rdparty\hsieh_hash.h"
 
-Integer32Variant::Integer32Variant(int value): Variant(INTEGER32), value(value)
+Integer32Variant::Integer32Variant(int value): Variant(TYPE), value(value)
 {
 }
 

@@ -1,7 +1,7 @@
 #include "NameReferenceVariant.h"
 
 
-NameReferenceVariant::NameReferenceVariant(Variant* value): NameVariant(value,NAME_REFERENCE)
+NameReferenceVariant::NameReferenceVariant(Variant* value): NameVariant(value,TYPE)
 {
 }
 

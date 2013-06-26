@@ -8,6 +8,7 @@ class BinaryVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = BINARY;
 	BinaryVariant(shared_binary binary);
 	~BinaryVariant(void);
 	shared_binary getValue();

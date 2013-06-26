@@ -6,6 +6,7 @@
 class Integer64Variant: public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = INTEGER64;
 	Integer64Variant(const __int64 integer);
 	virtual double toFloating() const;
 	virtual __int64 toInteger64() const;

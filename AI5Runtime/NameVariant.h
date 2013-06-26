@@ -5,7 +5,8 @@ class NameVariant :
 	public ContainerVariant
 {
 public:
-	NameVariant(Variant* value,VARIANT_TYPE type = NAME);
+	static const VARIANT_TYPE TYPE = NAME;
+	NameVariant(Variant* value,VARIANT_TYPE type = TYPE);
 	~NameVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;

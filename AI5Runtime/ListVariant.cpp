@@ -1,7 +1,7 @@
 #include "ListVariant.h"
 #include "RuntimeError.h"
 
-ListVariant::ListVariant(void): Variant(LIST)
+ListVariant::ListVariant(void): Variant(TYPE)
 {
 	list = shared_var_list(new std::vector<Variant*>());
 }

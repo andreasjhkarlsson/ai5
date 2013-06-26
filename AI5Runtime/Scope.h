@@ -13,7 +13,8 @@ class StackMachine;
 class Scope: public ContainerVariant
 {
 public:
-	Scope(): ContainerVariant(SCOPE), indexTable(128,0),usedIndexes(),enclosingScope(nullptr)
+	static const VARIANT_TYPE TYPE = SCOPE;
+	Scope(): ContainerVariant(TYPE), indexTable(128,0),usedIndexes(),enclosingScope(nullptr)
 	{
 		usedIndexes.reserve(16);
 	}

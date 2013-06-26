@@ -4,6 +4,7 @@ class IteratorVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = ITERATOR;
 	~IteratorVariant(void);
 	virtual bool hasMore()=0;
 	virtual Variant* next()=0;

@@ -15,6 +15,11 @@ inline shared_string create_shared_string(const std::wstring& string)
 	return shared_string(new std::wstring(string));
 }
 
+inline shared_string create_shared_string(const wchar_t* str,int len)
+{
+	return shared_string(new std::wstring(str,len));
+}
+
 
 struct NameIdentifier {
 	int globalId;

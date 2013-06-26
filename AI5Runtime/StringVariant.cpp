@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include "3rdparty\hsieh_hash.h"
 
-StringVariant::StringVariant(shared_string str): Variant(STRING), str(str)
+StringVariant::StringVariant(shared_string str): Variant(TYPE), str(str)
 {
 
 }

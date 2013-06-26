@@ -4,6 +4,7 @@ class NullVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = NULL_VAR;
 	static NullVariant Instance;
 	~NullVariant(void);
 	std::wostream& format(std::wostream& stream) const;

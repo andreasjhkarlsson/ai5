@@ -4,7 +4,7 @@
 #include <iomanip>
 #include "3rdparty\hsieh_hash.h"
 
-BinaryVariant::BinaryVariant(shared_binary binary): binary(binary), Variant(BINARY)
+BinaryVariant::BinaryVariant(shared_binary binary): binary(binary), Variant(TYPE)
 {
 }
 

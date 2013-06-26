@@ -23,6 +23,9 @@
     <Filter Include="3rdParty">
       <UniqueIdentifier>{1bbfdca6-9afc-40bc-baaf-cf8f411f6621}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DllCall">
+      <UniqueIdentifier>{42c28c0b-fcf9-4f9d-bc2b-5dc41f59e6fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Instruction.cpp">
@@ -110,6 +113,15 @@
       <Filter>variants</Filter>
     </ClCompile>
     <ClCompile Include="IteratorVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="DllCall.cpp">
+      <Filter>DllCall</Filter>
+    </ClCompile>
+    <ClCompile Include="COMVar.cpp">
+      <Filter>DllCall</Filter>
+    </ClCompile>
+    <ClCompile Include="HandleVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
   </ItemGroup>
@@ -244,6 +256,15 @@
       <Filter>3rdParty</Filter>
     </ClInclude>
     <ClInclude Include="IteratorVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="DllCall.h">
+      <Filter>DllCall</Filter>
+    </ClInclude>
+    <ClInclude Include="COMVar.h">
+      <Filter>DllCall</Filter>
+    </ClInclude>
+    <ClInclude Include="HandleVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>

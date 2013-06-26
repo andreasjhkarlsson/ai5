@@ -7,6 +7,7 @@
 class VariantFactory;
 class NameVariant;
 class IteratorVariant;
+class COMVar;
 
 typedef int VARIANT_TYPE;
 
@@ -30,7 +31,8 @@ public:
 	static const VARIANT_TYPE BINARY			= 14;
 	static const VARIANT_TYPE HASH_MAP			= 15;
 	static const VARIANT_TYPE ITERATOR			= 16;
-	static const int NUMBER_OF_VARIANT_TYPES	= 17;
+	static const VARIANT_TYPE HANDLE			= 17;
+	static const int NUMBER_OF_VARIANT_TYPES	= 18;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
@@ -45,7 +47,7 @@ public:
 	virtual IteratorVariant* iterate();
 	__forceinline int addRef();
 	__forceinline int release();
-	__forceinline VARIANT_TYPE getType();
+	__forceinline VARIANT_TYPE getType() const;
 	__forceinline void scheduleRecycling(VariantFactory* factory);
 
 	inline bool isIntegerType() const;
@@ -67,6 +69,19 @@ public:
 	inline bool isBinaryType() const;
 	inline bool isHashMap() const;
 	inline bool isIterator() const;
+
+	static Variant* createFromCOMVar(const COMVar&);
+
+	template<class T>
+	T* cast()
+	{
+		if(getType() != T::TYPE)
+		{
+			// TODO: Nicer error.
+			throw RuntimeError(L"Expected variant of type X got Y");
+		}
+		return static_cast<T*>(this);
+	}
 
 private:
 	const VARIANT_TYPE type;
@@ -198,7 +213,7 @@ int Variant::release()
 	return resultCount;
 }
 
-VARIANT_TYPE Variant::getType()
+VARIANT_TYPE Variant::getType() const
 {
 	return type;
 }

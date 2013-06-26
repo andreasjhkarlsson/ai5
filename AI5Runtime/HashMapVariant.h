@@ -5,6 +5,7 @@ class HashMapVariant :
 	public Variant
 {
 public:
+	static const VARIANT_TYPE TYPE = HASH_MAP;
 	HashMapVariant(void);
 	~HashMapVariant(void);
 	virtual void cleanup();

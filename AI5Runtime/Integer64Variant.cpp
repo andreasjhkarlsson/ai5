@@ -4,7 +4,7 @@
 #include <sstream>
 #include "3rdparty\hsieh_hash.h"
 
-Integer64Variant::Integer64Variant(const __int64 integer): Variant(INTEGER64), value(integer)
+Integer64Variant::Integer64Variant(const __int64 integer): Variant(TYPE), value(integer)
 {
 	//std::cout << "Creating new instance with value: " << integer << std::endl;
 }

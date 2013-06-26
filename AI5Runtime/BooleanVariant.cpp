@@ -1,7 +1,7 @@
 #include "BooleanVariant.h"
 #include <iostream>
 
-BooleanVariant::BooleanVariant(bool value): Variant(BOOLEAN), value(value)
+BooleanVariant::BooleanVariant(bool value): Variant(TYPE), value(value)
 {
 }
 
