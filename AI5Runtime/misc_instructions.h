@@ -3,7 +3,7 @@
 #include "NullVariant.h"
 #include "ListVariant.h"
 #include "HashMapVariant.h"
-
+#include "BooleanVariant.h"
 
 __forceinline void noop(StackMachine* machine)
 {
@@ -165,4 +165,42 @@ inline void createClosureName(StackMachine* machine,NameIdentifier identifier)
 {
 	machine->getCurrentCallBlock()->addClosedName(machine,identifier);
 	machine->advanceCounter();
+}
+
+
+inline void getIterator(StackMachine* machine)
+{
+	Variant* arg = machine->getDataStack()->pop();
+	IteratorVariant* iterator = arg->iterate();
+	machine->getDataStack()->push(iterator);
+	arg->release();
+	machine->advanceCounter();
+}
+
+
+inline void iteratorHasMore(StackMachine* machine)
+{
+	Variant* iter = machine->getDataStack()->pop();
+
+	if(!iter->isIterator())
+		throw RuntimeError(L"Top of stack is not iterator. This is most likely a compiler bug.");
+
+	machine->getDataStack()->push(BooleanVariant::Get(static_cast<IteratorVariant*>(iter)->hasMore(),true));
+	machine->advanceCounter();
+}
+
+inline void iteratorNext(StackMachine* machine)
+{
+	Variant* var = machine->getDataStack()->pop();
+
+	if(!var->isIterator())
+		throw RuntimeError(L"Top of stack is not iterator. This is most likely a compiler bug.");
+
+	IteratorVariant* iter = static_cast<IteratorVariant*>(var);
+
+	Variant* next = iter->next();
+	next->addRef();
+	machine->getDataStack()->push(next);
+	machine->advanceCounter();
+
 }

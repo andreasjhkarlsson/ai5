@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Variant.h"
 #include "NameVariant.h"
+#include "IteratorVariant.h"
 
 Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(1), type(type), recycler(nullptr), isContainer(isContainer)
 {
@@ -64,4 +65,10 @@ bool Variant::equal(Variant*)
 size_t Variant::hash() const
 {
 	return (size_t)this;
+}
+
+
+IteratorVariant* Variant::iterate()
+{
+	throw RuntimeError(L"Type not iterable");
 }

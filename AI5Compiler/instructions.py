@@ -383,3 +383,15 @@ class ContinueLoopInstruction(Instruction):
         self.level=level
     def to_binary(self):
         return self.to_binary_with_char_arg(InstructionType.CONTINUE_LOOP,self.level)
+
+class GetIteratorInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.GET_ITERATOR)
+
+class IteratorHasMoreInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ITERATOR_HAS_MORE)
+
+class IteratorNextInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.ITERATOR_NEXT)

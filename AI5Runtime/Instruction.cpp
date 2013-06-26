@@ -273,6 +273,15 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 	case Instruction::CREATE_CLOSURE_NAME:
 		stream << "PUSH_CLOSURE_NAME " << *getName(machine,arg.identifier);
 		break;
+	case Instruction::GET_ITERATOR:
+		stream << "GET_ITERATOR";
+		break;
+	case Instruction::ITERATOR_HAS_MORE:
+		stream << "ITERATOR_HAS_MORE";
+		break;
+	case Instruction::ITERATOR_NEXT:
+		stream << "ITERATOR_NEXT";
+		break;
 	default:
 		stream << "No pretty print available for instruction.";
 		break;

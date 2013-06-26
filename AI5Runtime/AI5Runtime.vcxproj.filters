@@ -109,6 +109,9 @@
     <ClCompile Include="HashMapVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="IteratorVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -239,6 +242,9 @@
     </ClInclude>
     <ClInclude Include="3rdparty\hsieh_hash.h">
       <Filter>3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="IteratorVariant.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

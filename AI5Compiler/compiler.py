@@ -515,8 +515,33 @@ class Compiler:
             code = compiled_init + compiled_check + compiled_body + compiled_increment + [PopInstruction(),PopBlockInstruction()]
             code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(code)-len(compiled_increment)-1),
                                              UnresolvedAbsoluteAddress(len(code)+1))] + code
+        elif For.NODE_FOR_IN in for_stmt.nodes:
+            forin = for_stmt.nodes[For.NODE_FOR_IN]
 
-            return code
+            compiled_init = self.compile_expression(forin.nodes[ForIn.NODE_LIST_EXPRESSION])
+            compiled_init += [GetIteratorInstruction()]
+
+            check_end_jump = JumpIfFalseInstruction(None)
+            compiled_check = [DoubleTopInstruction(),IteratorHasMoreInstruction(),check_end_jump]
+
+            compiled_next = [DoubleTopInstruction(), IteratorNextInstruction(), AssignNearestInstruction(loop_var_id)]
+
+
+            jump_back = JumpInstruction(None)
+            compiled_jump_back = [jump_back]
+
+            compiled_end = [PopInstruction(),PopBlockInstruction()]
+
+            check_end_jump.address = RelativeAddress(len(compiled_next)+len(compiled_body)+len(compiled_jump_back)+1)
+            jump_back.address = RelativeAddress(-(len(compiled_body)+len(compiled_next)+len(compiled_check)))
+
+            
+            code = compiled_init + compiled_check + compiled_next + compiled_body + compiled_jump_back + compiled_end
+            code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(compiled_init)+1),
+                                             UnresolvedAbsoluteAddress(len(code)+1))]+ code
+
+
+        return code
 
     def compile_exit(self,exit_statement):
         code = []

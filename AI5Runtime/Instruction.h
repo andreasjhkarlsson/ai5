@@ -95,6 +95,9 @@ public:
 	static const INSTRUCTION_TYPE PUSH_NAME						= 0x53;
 	static const INSTRUCTION_TYPE CREATE_CLOSURE_NAME			= 0x54;
 	static const INSTRUCTION_TYPE BUILD_MAP						= 0x55;
+	static const INSTRUCTION_TYPE GET_ITERATOR					= 0x56;
+	static const INSTRUCTION_TYPE ITERATOR_HAS_MORE				= 0x57;
+	static const INSTRUCTION_TYPE ITERATOR_NEXT					= 0x58;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachine* machine);
@@ -317,6 +320,15 @@ void Instruction::execute(StackMachine* machine)
 		break;
 	case BUILD_MAP:
 		buildMap(machine,arg.integer);
+		break;
+	case GET_ITERATOR:
+		getIterator(machine);
+		break;
+	case ITERATOR_HAS_MORE:
+		iteratorHasMore(machine);
+		break;
+	case ITERATOR_NEXT:
+		iteratorNext(machine);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

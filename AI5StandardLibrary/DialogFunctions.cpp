@@ -24,7 +24,6 @@ Variant* DialogFunctions::msgbox(Variant** args,int argCount)
 	shared_string title = args[1]->toString();
 	shared_string text = args[2]->toString();
 
-
 	return new Integer32Variant(MessageBoxW(NULL,text->c_str(),title->c_str(),flag));
 }
 

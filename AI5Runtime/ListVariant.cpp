@@ -74,7 +74,7 @@ void ListVariant::addElement(Variant* var)
 	list->push_back(var);
 }
 
-Variant* ListVariant::getElement(size_t index)
+Variant* ListVariant::getElement(size_t index) const
 {
 	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
@@ -94,7 +94,7 @@ void ListVariant::setElement(size_t index,Variant* var)
 }
 
 
-size_t ListVariant::size()
+size_t ListVariant::size() const
 {
 	return list->size();
 }
@@ -122,4 +122,29 @@ bool ListVariant::equal(Variant* other)
 
 	return true;
 
+}
+
+
+IteratorVariant* ListVariant::iterate()
+{
+	return new ForwardIterator(this);
+}
+
+
+ListVariant::ForwardIterator::ForwardIterator(ListVariant* list):list(list),pos(0)
+{
+	list->addRef();
+}
+void ListVariant::ForwardIterator::cleanup()
+{
+	Variant::cleanup();
+	list->release();
+}
+bool ListVariant::ForwardIterator::hasMore()
+{
+	return pos < list->size();
+}
+Variant* ListVariant::ForwardIterator::next()
+{
+	return list->getElement(pos++);
 }

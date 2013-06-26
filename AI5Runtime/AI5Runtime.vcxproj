@@ -163,6 +163,7 @@
     <ClCompile Include="Instruction.cpp" />
     <ClCompile Include="Integer32Variant.cpp" />
     <ClCompile Include="Integer64Variant.cpp" />
+    <ClCompile Include="IteratorVariant.cpp" />
     <ClCompile Include="ListVariant.cpp" />
     <ClCompile Include="LoopBlock.cpp" />
     <ClCompile Include="main.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="HashMapVariant.h" />
     <ClInclude Include="Integer32Variant.h" />
     <ClInclude Include="Integer64Variant.h" />
+    <ClInclude Include="IteratorVariant.h" />
     <ClInclude Include="jump_instructions.h" />
     <ClInclude Include="ListVariant.h" />
     <ClInclude Include="LoopBlock.h" />

@@ -6,6 +6,7 @@
 
 class VariantFactory;
 class NameVariant;
+class IteratorVariant;
 
 typedef int VARIANT_TYPE;
 
@@ -28,7 +29,8 @@ public:
 	static const VARIANT_TYPE SCOPE				= 13;
 	static const VARIANT_TYPE BINARY			= 14;
 	static const VARIANT_TYPE HASH_MAP			= 15;
-	static const int NUMBER_OF_VARIANT_TYPES	= 16;
+	static const VARIANT_TYPE ITERATOR			= 16;
+	static const int NUMBER_OF_VARIANT_TYPES	= 17;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
@@ -40,6 +42,7 @@ public:
 	virtual bool equal(Variant*);
 	virtual void cleanup();
 	virtual size_t hash() const;
+	virtual IteratorVariant* iterate();
 	__forceinline int addRef();
 	__forceinline int release();
 	__forceinline VARIANT_TYPE getType();
@@ -63,6 +66,7 @@ public:
 	inline bool isContainerType() const;
 	inline bool isBinaryType() const;
 	inline bool isHashMap() const;
+	inline bool isIterator() const;
 
 private:
 	const VARIANT_TYPE type;
@@ -277,4 +281,9 @@ bool Variant::isBinaryType() const
 bool Variant::isHashMap() const
 {
 	return type == HASH_MAP;
+}
+
+bool Variant::isIterator() const
+{
+	return type == ITERATOR;
 }

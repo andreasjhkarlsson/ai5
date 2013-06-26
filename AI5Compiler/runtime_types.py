@@ -75,6 +75,9 @@ class InstructionType:
     PUSH_NAME                           = 0x53;
     CREATE_CLOSURE_NAME			        = 0x54;
     BUILD_MAP                           = 0x55;
+    GET_ITERATOR                        = 0x56;
+    ITERATOR_HAS_MORE                   = 0x57;
+    ITERATOR_NEXT                       = 0x58;
 
 class StaticType:
     STRING      = 0x0
