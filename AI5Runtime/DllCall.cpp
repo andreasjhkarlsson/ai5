@@ -57,14 +57,14 @@ bool DllCall::SetFunc(const std::wstring&  sFunc)
 }
 
 
-// Manually loads the module. Unloads previously loaded.
+// Resolves return type and calling convention.
 void DllCall::SetRetTypeAndCC(const std::wstring& sRet)
 {
 	this->CrackReturnType(sRet.c_str(), this->cc, this->vtRetType);
 }
 
 
-// Manually loads the module. Unloads previously loaded.
+// Loads (resolves and saves) parameters types.
 void DllCall::SetParamsTypes(const std::vector<std::wstring>& sParams)
 {
 	for (size_t i = 0; i < sParams.size(); ++i)
@@ -144,7 +144,7 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 			// TODO: Check for possible references
 			vCurrentParam = vArgs[i];
 
-			// Parameter type by Interface specification
+			// Parameter type by specification
 			VARTYPE vParamType = this->vTypes[i];
 			// Basic type out of that
 			VARTYPE vParamTypeInd = vParamType & VT_TYPEMASK;
@@ -243,7 +243,7 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 					// First clear passed
 					::VariantClear(&pvSubVariant[iIndex]);
 
-					// And then set new and correct data according to Interface definition
+					// And then set new and correct data according to definition
 					pvSubVariant[iIndex].vt = vParamType;
 					pvSubVariant[iIndex].byref = pSubBuffer[iIndex];
 				}
@@ -301,9 +301,9 @@ bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
 
 			if ((vRetType & VT_BYREF) && vRet.byref)
 			{
-				// Basic type of ret variant by Interface definition
+				// Basic type of ret variant by definition
 				VARTYPE vTypeInd = vRetType & VT_TYPEMASK; // basic type
-				// Setting correct type of ret variant (according to Interface description)
+				// Setting correct type of ret variant (according to description)
 				vRet.vt = vRetType;
 				// Copy dereferenced value of VARIANT
 				this->VARDerefCopy(&vRet, &pcvResult[0], vTypeInd);

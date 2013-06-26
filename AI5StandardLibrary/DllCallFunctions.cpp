@@ -30,10 +30,6 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 	for (int i = 4; i < argsSize; ++i)
 		vArgs.push_back(args[i++]); // post-increment used to get every other element
 
-	// The code here should assess some global container in case first argument is not string (when pseudo handle from dllopen is passed)
-	// In that case default DllCall constructor is called and then SetRetTypeAndCC(), SetParamsTypes() and SetFunc() called.
-	// When dll name string is passed then it's simply:
-
 	bool loadedModule = false;
 	HMODULE hModule = nullptr;
 	if(args[0]->isStringType())
@@ -51,7 +47,7 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 
 	auto dllcall = DllCall(hModule, *args[1]->toString().get(), *args[2]->toString().get(), vParamTypes);
 
-	// To collect processed aruments to (some may be altered byref)
+	// To collect processed arguments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
 
 	// Make the  actual call
@@ -67,7 +63,6 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 		FreeLibrary(hModule);
 
 	ListVariant* vRet = new ListVariant;
-	// TODO: Make the below code working
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
 		vRet->addElement(Variant::createFromCOMVar(pcvRet[i]));
@@ -94,7 +89,7 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 	dllcall.SetParamsTypes(vParamTypes);
 	dllcall.SetFunc(reinterpret_cast<LPVOID>(args[1]->toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
 
-	// To collect processed aruments to (some may be altered byref)
+	// To collect processed arguments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
 
 	// Make the  actual call
@@ -105,7 +100,6 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 		return &NullVariant::Instance;
 	}
 	ListVariant* vRet = new ListVariant;
-	// TODO: Make the below code working
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
 		vRet->addElement(Variant::createFromCOMVar(pcvRet[i]));
