@@ -6,6 +6,7 @@
 
 class VariantFactory;
 class NameVariant;
+class COMVar;
 
 typedef int VARIANT_TYPE;
 
@@ -29,7 +30,7 @@ public:
 	static const VARIANT_TYPE BINARY			= 14;
 	static const VARIANT_TYPE HASH_MAP			= 15;
 	static const VARIANT_TYPE HANDLE			= 16;
-	static const int NUMBER_OF_VARIANT_TYPES	= 17;
+	static const int NUMBER_OF_VARIANT_TYPES	= 18;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
@@ -65,6 +66,7 @@ public:
 	inline bool isBinaryType() const;
 	inline bool isHashMap() const;
 
+	static Variant* createFromCOMVar(const COMVar&);
 
 	template<class T>
 	T* cast()
