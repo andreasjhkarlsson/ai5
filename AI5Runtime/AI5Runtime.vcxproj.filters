@@ -124,6 +124,12 @@
     <ClCompile Include="HandleVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="encode.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="types.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">

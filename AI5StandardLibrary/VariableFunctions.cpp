@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include <Windows.h>
+#include "..\AI5Runtime\encode.h"
 using namespace std::placeholders;
 
 VariableFunctions::VariableFunctions(void)
@@ -48,38 +49,7 @@ Variant* VariableFunctions::stringToBinary(Variant** args,int argCount)
 	if(flag < 0 || flag > 4)
 		throw RuntimeError(L"Flag must be between 0 and 4");
 	
-	shared_binary res = shared_binary(new std::vector<char>);
-
-	switch(flag)
-	{
-	case 1: // ANSI
-		{
-			size_t required_size = WideCharToMultiByte(CP_ACP,0,str->c_str(),str->length(),NULL,0,NULL,NULL);
-			res->resize(required_size);
-			WideCharToMultiByte(CP_ACP,0,str->c_str(),str->length(),&(*res)[0],required_size,NULL,NULL);
-		}
-		break;
-	case 2: // UTF-16 little endian.
-		{
-		res->resize(str->length()*2);
-		memcpy(&(*res)[0],str->c_str(),str->length()*2);
-		}
-		break;
-	case 3: // UTF-16 big endian.
-		{
-		res->resize(str->length()*2);
-		memcpy(&(*res)[0],str->c_str(),str->length()*2);
-		swapUtf16Endiness((wchar_t*)&(*res)[0],res->size()/2);
-		}
-		break;
-	case 4: // UTF-8.
-		{
-		size_t required_size = WideCharToMultiByte(CP_UTF8,0,str->c_str(),str->size(),NULL,0,NULL,NULL);
-		res->resize(required_size);
-		WideCharToMultiByte(CP_UTF8,0,str->c_str(),str->length(),&(*res)[0],required_size,NULL,NULL);
-		}
-		break;
-	}
+	shared_binary res = Encode::encode(str->c_str(),str->length(),flag);
 
 	return new BinaryVariant(res);
 
@@ -111,41 +81,7 @@ Variant* VariableFunctions::binaryToString(Variant** args,int argCount)
 	if(flag < 0 || flag > 4)
 		throw RuntimeError(L"Flag must be between 0 and 4");
 
-	shared_string result = nullptr;
-
-
-	switch(flag)
-	{
-	case 1:
-		{
-		size_t required_size = MultiByteToWideChar(CP_ACP,0,&(*binary)[0],binary->size(),NULL,0);
-		std::vector<wchar_t> buffer(required_size);
-		MultiByteToWideChar(CP_ACP,0,&(*binary)[0],binary->size(),&buffer[0],required_size);
-		result = shared_string(new std::wstring(&buffer[0],required_size));
-		}
-		break;
-	case 2:
-		{
-			result = shared_string(new std::wstring((wchar_t*)&(*binary)[0],binary->size()/2));
-		}
-		break;	
-	case 3:
-		{
-			std::vector<char> buffer = *binary;
-			swapUtf16Endiness((wchar_t*)&buffer[0],buffer.size()/2);
-			result = shared_string(new std::wstring((wchar_t*)&buffer[0],buffer.size()/2));
-		}
-		break;
-	case 4:
-		{
-		size_t required_size = MultiByteToWideChar(CP_UTF8,0,&(*binary)[0],binary->size(),NULL,0);
-		std::vector<wchar_t> buffer(required_size);
-		MultiByteToWideChar(CP_UTF8,0,&(*binary)[0],binary->size(),&buffer[0],required_size);
-		result = shared_string(new std::wstring(&buffer[0],required_size));
-		}
-		break;
-
-	}
+	shared_string result = Encode::decode(&(*binary)[0],binary->size(),flag);
 
 	return new StringVariant(result);
 }

@@ -158,6 +158,7 @@
     <ClCompile Include="DataStack.cpp" />
     <ClCompile Include="DefaultVariant.cpp" />
     <ClCompile Include="DllCall.cpp" />
+    <ClCompile Include="encode.cpp" />
     <ClCompile Include="FloatingVariant.cpp" />
     <ClCompile Include="FunctionVariant.cpp" />
     <ClCompile Include="GeneralBlock.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="ProgramLoader.cpp" />
     <ClCompile Include="StackMachine.cpp" />
     <ClCompile Include="StringVariant.cpp" />
+    <ClCompile Include="types.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />
     <ClCompile Include="Variant.cpp" />
   </ItemGroup>

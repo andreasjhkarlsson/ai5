@@ -36,7 +36,7 @@ private:
 class StaticString: public StaticData
 {
 public:
-	StaticString(const std::wstring& str): StaticData(STRING), strVar(create_shared_string(str))
+	StaticString(shared_string str): StaticData(STRING), strVar(str)
 	{
 
 	}
@@ -51,7 +51,7 @@ private:
 class StaticName: public StaticData
 {
 public:
-	StaticName(const std::wstring& str): StaticData(NAME),name(create_shared_string(str))
+	StaticName(shared_string str): StaticData(NAME),name(str)
 	{
 
 	}
@@ -68,7 +68,7 @@ private:
 class StaticMacro: public StaticData
 {
 public:
-	StaticMacro(const std::wstring& str): StaticData(MACRO),name(create_shared_string(str))
+	StaticMacro(shared_string str): StaticData(MACRO),name(str)
 	{
 
 	}

@@ -1,8 +1,5 @@
 #pragma once
 #include "variant.h"
-#include <vector>
-
-typedef std::shared_ptr<std::vector<char>> shared_binary;
 
 class BinaryVariant :
 	public Variant

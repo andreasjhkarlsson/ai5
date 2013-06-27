@@ -41,9 +41,7 @@ Variant* ListFunctions::ubound(Variant** args,int argsSize)
 		result->addRef();
 	}
 
-
 	return result;
-
 }
 
 
