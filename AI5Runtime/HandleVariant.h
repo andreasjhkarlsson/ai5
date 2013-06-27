@@ -22,6 +22,10 @@ public:
 		}
 		return static_cast<T*>(this);
 	}
+
+	virtual bool isValid()=0;
+	virtual bool toBoolean();
+
 private:
 	HANDLE_TYPE handleType;
 };

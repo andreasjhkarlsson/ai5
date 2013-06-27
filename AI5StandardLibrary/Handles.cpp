@@ -22,3 +22,8 @@ HMODULE ModuleHandle::getModule()
 {
 	return module;
 }
+
+bool ModuleHandle::isValid()
+{
+	return module != nullptr;
+}

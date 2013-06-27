@@ -9,6 +9,7 @@ public:
 	ModuleHandle(HMODULE module);
 	void cleanup();
 	void close();
+	virtual bool isValid();
 	HMODULE getModule();
 private:
 	HMODULE module;

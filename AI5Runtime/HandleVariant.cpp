@@ -9,3 +9,9 @@ HandleVariant::HandleVariant(HANDLE_TYPE handleType): Variant(TYPE), handleType(
 HandleVariant::~HandleVariant(void)
 {
 }
+
+
+bool HandleVariant::toBoolean()
+{
+	return isValid();
+}
