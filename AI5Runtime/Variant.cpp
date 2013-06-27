@@ -88,7 +88,7 @@ Variant* Variant::createFromCOMVar(const COMVar& comvar)
 	switch(comvar.vt)
 	{
 	case VT_BOOL:
-		return BooleanVariant::Get(comvar.boolVal == VARIANT_TRUE);
+		return BooleanVariant::Get(comvar.boolVal != VARIANT_FALSE);
 		break;
 	case VT_I1:
 		return new Integer32Variant(comvar.bVal);
