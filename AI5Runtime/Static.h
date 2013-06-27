@@ -1,14 +1,11 @@
 #pragma once
-
-#include <vector>
-#include <memory>
+#include "types.h"
 #include "StringVariant.h"
 #include "FloatingVariant.h"
 #include "Integer64Variant.h"
 #include "Integer32Variant.h"
 
 typedef unsigned char STATIC_TYPE;
-
 
 class StaticData
 {
@@ -21,13 +18,8 @@ public:
 	const static STATIC_TYPE INTEGER64 = 4;
 	const static STATIC_TYPE INTEGER32 = 5;
 	const static STATIC_TYPE MACRO = 6;
-	StaticData(STATIC_TYPE type): type(type)
-	{
-	}
-	__forceinline STATIC_TYPE getType()
-	{
-		return type;
-	}
+	StaticData(STATIC_TYPE type);
+	STATIC_TYPE getType();
 private:
 	STATIC_TYPE type;
 
@@ -36,14 +28,8 @@ private:
 class StaticString: public StaticData
 {
 public:
-	StaticString(shared_string str): StaticData(STRING), strVar(str)
-	{
-
-	}
-	StringVariant* getVariant()
-	{
-		return &strVar;
-	}
+	StaticString(shared_string str);
+	StringVariant* getVariant();
 private:
 	StringVariant strVar;
 };
@@ -51,15 +37,8 @@ private:
 class StaticName: public StaticData
 {
 public:
-	StaticName(shared_string str): StaticData(NAME),name(str)
-	{
-
-	}
-
-	__forceinline shared_string getName()
-	{
-		return name;
-	}
+	StaticName(shared_string str);
+	shared_string getName();
 private:
 	shared_string name;
 };
@@ -68,15 +47,8 @@ private:
 class StaticMacro: public StaticData
 {
 public:
-	StaticMacro(shared_string str): StaticData(MACRO),name(str)
-	{
-
-	}
-
-	__forceinline shared_string getName()
-	{
-		return name;
-	}
+	StaticMacro(shared_string str);
+	shared_string getName();
 private:
 	shared_string name;
 };
@@ -85,15 +57,8 @@ private:
 class StaticInteger64: public StaticData
 {
 public:
-	StaticInteger64(__int64 value): StaticData(INTEGER64),variant(value)
-	{
-
-	}
-
-	__forceinline Integer64Variant* getVariant()
-	{
-		return &variant;
-	}
+	StaticInteger64(__int64 value);
+	Integer64Variant* getVariant();
 private:
 	Integer64Variant variant;
 };
@@ -102,15 +67,8 @@ private:
 class StaticInteger32: public StaticData
 {
 public:
-	StaticInteger32(int value): StaticData(INTEGER32),variant(value)
-	{
-
-	}
-
-	__forceinline Integer32Variant* getVariant()
-	{
-		return &variant;
-	}
+	StaticInteger32(int value);
+	Integer32Variant* getVariant();
 private:
 	Integer32Variant variant;
 };
@@ -119,15 +77,8 @@ private:
 class StaticFloating: public StaticData
 {
 public:
-	StaticFloating(double value): StaticData(FLOATING),variant(value)
-	{
-
-	}
-
-	__forceinline FloatingVariant* getVariant()
-	{
-		return &variant;
-	}
+	StaticFloating(double value);
+	FloatingVariant* getVariant();
 private:
 	FloatingVariant variant;
 };

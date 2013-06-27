@@ -1,6 +1,5 @@
 #pragma once
 #include "variant.h"
-#include "RuntimeError.h"
 
 typedef int HANDLE_TYPE;
 

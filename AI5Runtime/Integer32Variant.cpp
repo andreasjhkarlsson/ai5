@@ -58,3 +58,14 @@ size_t Integer32Variant::hash() const
 {
 	return SuperFastHash((const char*)&value,sizeof(value));
 }
+
+
+int Integer32Variant::getValue()
+{
+	return value;
+}
+
+void Integer32Variant::setValue(int value)
+{
+	this->value = value;
+}

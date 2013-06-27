@@ -9,7 +9,15 @@ Integer64Variant::Integer64Variant(const __int64 integer): Variant(TYPE), value(
 	//std::cout << "Creating new instance with value: " << integer << std::endl;
 }
 
+void Integer64Variant::setValue(__int64 value)
+{
+	this->value = value;
+}
 
+__int64 Integer64Variant::getValue()
+{
+	return value;
+}
 
 std::wostream& Integer64Variant::format(std::wostream& stream) const
 {

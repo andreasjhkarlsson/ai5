@@ -2,7 +2,6 @@
 #include <vector>
 #include <map>
 #include <string>
-#include <algorithm>
 #include "Variant.h"
 #include "NameVariant.h"
 #include "PooledObject.h"

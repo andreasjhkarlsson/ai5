@@ -178,6 +178,7 @@
     <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
     <ClCompile Include="StackMachine.cpp" />
+    <ClCompile Include="Static.cpp" />
     <ClCompile Include="StringVariant.cpp" />
     <ClCompile Include="types.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />

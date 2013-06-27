@@ -6,14 +6,8 @@
 class ProgramLoadError
 {
 public:
-	ProgramLoadError(const std::wstring& message): message(message)
-	{
-
-	}
-	const std::wstring& getMessage() const
-	{
-		return message;
-	}
+	ProgramLoadError(const std::wstring& message);
+	const std::wstring& getMessage() const;
 private:
 	const std::wstring message;
 };

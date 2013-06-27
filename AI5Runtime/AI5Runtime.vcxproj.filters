@@ -130,6 +130,9 @@
     <ClCompile Include="types.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="Static.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">

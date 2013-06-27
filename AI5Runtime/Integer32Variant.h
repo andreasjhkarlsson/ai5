@@ -17,14 +17,8 @@ public:
 	virtual size_t hash() const;
 	friend class VariantFactory;
 	static Integer32Variant* createFromFactory(VariantFactory* factory,int value);
-	int getValue()
-	{
-		return value;
-	}
-	void setValue(int value)
-	{
-		this->value = value;
-	}
+	int getValue();
+	void setValue(int value);
 private:
 	int value;
 };

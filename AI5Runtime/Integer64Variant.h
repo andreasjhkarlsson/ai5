@@ -17,21 +17,14 @@ public:
 	virtual shared_string toString() const;
 	virtual size_t hash() const;
 	friend class VariantFactory;
-	__forceinline __int64 getValue();
-	void setValue(__int64 value)
-	{
-		this->value = value;
-	}
+	__int64 getValue();
+	void setValue(__int64 value);
 	static Integer64Variant* createFromFactory(VariantFactory* factory,__int64 value);
 private:
 	__int64 value;
-	
 };
 
 
-__int64 Integer64Variant::getValue()
-{
-	return value;
-}
+
 
 

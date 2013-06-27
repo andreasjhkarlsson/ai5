@@ -292,3 +292,14 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 
 	return shared_ptr<StackMachine>(machine);
 }
+
+
+ProgramLoadError::ProgramLoadError(const std::wstring& message): message(message)
+{
+
+}
+
+const std::wstring& ProgramLoadError::getMessage() const
+{
+	return message;
+}
