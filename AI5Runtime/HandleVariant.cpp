@@ -15,3 +15,9 @@ bool HandleVariant::toBoolean()
 {
 	return isValid();
 }
+
+std::wostream& HandleVariant::format(std::wostream& stream) const
+{
+	stream << L"HandleVariant: <0x" << this << ">";
+	return stream;
+}

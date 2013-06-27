@@ -153,6 +153,7 @@
     <ClCompile Include="BooleanVariant.cpp" />
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
     <ClCompile Include="CallBlock.cpp" />
+    <ClCompile Include="CallInfo.cpp" />
     <ClCompile Include="COMVar.cpp" />
     <ClCompile Include="ContainerVariant.cpp" />
     <ClCompile Include="DataStack.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="BooleanVariant.h" />
     <ClInclude Include="BuiltinFunctionVariant.h" />
     <ClInclude Include="CallBlock.h" />
+    <ClInclude Include="CallInfo.h" />
     <ClInclude Include="comparison_instructions.h" />
     <ClInclude Include="COMVar.h" />
     <ClInclude Include="ContainerVariant.h" />

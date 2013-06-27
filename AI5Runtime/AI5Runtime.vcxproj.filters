@@ -133,6 +133,9 @@
     <ClCompile Include="Static.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="CallInfo.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -275,6 +278,9 @@
     </ClInclude>
     <ClInclude Include="HandleVariant.h">
       <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="CallInfo.h">
+      <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

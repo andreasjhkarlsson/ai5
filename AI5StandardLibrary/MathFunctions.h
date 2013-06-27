@@ -1,32 +1,31 @@
 #pragma once
-#include "functions.h"
 #include <random>
 class Variant;
 class StackMachine;
-class MathFunctions :
-	public Functions
+class CallInfo;
+class MathFunctions
 {
 public:
 	static void registerFunctions(StackMachine* machine);
 	~MathFunctions(void);
 private:
 	MathFunctions(void);
-	Variant* absolute(Variant** args,int argsSize);
-	Variant* acosine(Variant** args,int argsSize);
-	Variant* asine(Variant** args,int argsSize);
-	Variant* atangent(Variant** args,int argsSize);
-	Variant* cosine(Variant** args,int argsSize);
-	Variant* ceiling(Variant** args,int argsSize);
-	Variant* exponent(Variant** args,int argsSize);
-	Variant* floor(Variant** args,int argsSize);
-	Variant* logarithm(Variant** args,int argsSize);
-	Variant* modulus(Variant** args,int argsSize);
-	Variant* random(Variant** args,int argsSize);
-	Variant* _round(Variant** args,int argsSize);
-	Variant* sine(Variant** args,int argsSize);
-	Variant* _sqrt(Variant** args,int argsSize);
-	Variant* srandom(Variant** args,int argsSize);
-	Variant* tangent(Variant** args,int argsSize);
+	Variant* absolute(CallInfo* callInfo);
+	Variant* acosine(CallInfo* callInfo);
+	Variant* asine(CallInfo* callInfo);
+	Variant* atangent(CallInfo* callInfo);
+	Variant* cosine(CallInfo* callInfo);
+	Variant* ceiling(CallInfo* callInfo);
+	Variant* exponent(CallInfo* callInfo);
+	Variant* floor(CallInfo* callInfo);
+	Variant* logarithm(CallInfo* callInfo);
+	Variant* modulus(CallInfo* callInfo);
+	Variant* random(CallInfo* callInfo);
+	Variant* _round(CallInfo* callInfo);
+	Variant* sine(CallInfo* callInfo);
+	Variant* _sqrt(CallInfo* callInfo);
+	Variant* srandom(CallInfo* callInfo);
+	Variant* tangent(CallInfo* callInfo);
 	std::mt19937 rng;
 };
 

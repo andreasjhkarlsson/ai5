@@ -1,20 +1,24 @@
 #pragma once
-#include "functions.h"
 class Variant;
 class StackMachine;
-class FileFunctions :
-	public Functions
+class CallInfo;
+
+class FileFunctions
 {
 public:
 	~FileFunctions(void);
 	static void registerFunctions(StackMachine* machine);
 private:
 	FileFunctions(void);
-	Variant* printline(Variant** args,int argsSize);
-	Variant* fileExists(Variant** args,int argsSize);
-	Variant* fileChangeDir(Variant** args,int argsSize);
-	Variant* consoleWrite(Variant** args,int argSize);
-	Variant* consoleWriteError(Variant** args,int argSize);
-	Variant* consoleReadLine(Variant** args,int argSize);
+	Variant* printline(CallInfo* callInfo);
+	Variant* fileExists(CallInfo* callInfo);
+	Variant* fileChangeDir(CallInfo* callInfo);
+	Variant* consoleWrite(CallInfo* callInfo);
+	Variant* consoleWriteError(CallInfo* callInfo);
+	Variant* consoleReadLine(CallInfo* callInfo);
+	Variant* fileOpen(CallInfo* callInfo);
+	Variant* fileClose(CallInfo* callInfo);
+	Variant* fileRead(CallInfo* callInfo);
+	Variant* fileWrite(CallInfo* callInfo);
 };
 

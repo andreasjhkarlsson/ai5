@@ -1,24 +1,24 @@
 #pragma once
-#include "functions.h"
+
 
 class Variant;
 class StackMachine;
+class CallInfo;
 
-class StringFunctions :
-	public Functions
+class StringFunctions
 {
 public:
 	static void registerFunctions(StackMachine* machine);
 	~StringFunctions(void);
 private:
 	StringFunctions(void);
-	Variant* stringLower(Variant** args,int argsSize);
-	Variant* stringUpper(Variant** args,int argsSize);
-	Variant* stringLen(Variant** args,int argsSize);
-	Variant* stringLeft(Variant** args,int argsSize);
-	Variant* stringTrimLeft(Variant** args,int argsSize);
-	Variant* stringRight(Variant** args,int argsSize);
-	Variant* stringTrimRight(Variant** args,int argsSize);
-	Variant* stringIsDigit(Variant** args,int argsSize);
+	Variant* stringLower(CallInfo* callInfo);
+	Variant* stringUpper(CallInfo* callInfo);
+	Variant* stringLen(CallInfo* callInfo);
+	Variant* stringLeft(CallInfo* callInfo);
+	Variant* stringTrimLeft(CallInfo* callInfo);
+	Variant* stringRight(CallInfo* callInfo);
+	Variant* stringTrimRight(CallInfo* callInfo);
+	Variant* stringIsDigit(CallInfo* callInfo);
 };
 

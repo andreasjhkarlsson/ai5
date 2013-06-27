@@ -31,7 +31,7 @@ public:
 	static const VARIANT_TYPE BINARY			= 14;
 	static const VARIANT_TYPE HASH_MAP			= 15;
 	static const VARIANT_TYPE ITERATOR			= 16;
-	static const VARIANT_TYPE HANDLE			= 17;
+	static const VARIANT_TYPE HANDLE_VAR		= 17;
 	static const int NUMBER_OF_VARIANT_TYPES	= 18;
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);

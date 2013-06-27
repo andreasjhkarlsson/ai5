@@ -3,10 +3,11 @@
 #include <vector>
 #include <functional>
 #include "FunctionVariant.h"
+#include "CallInfo.h"
 class StackMachine;
 
-typedef Variant* (*BuiltinFunctionPointer)(Variant** args,int argsSize);
-typedef std::function<Variant*(Variant**,int)> BuiltinFunction;
+typedef Variant* (*BuiltinFunctionPointer)(CallInfo*);
+typedef std::function<Variant*(CallInfo*)> BuiltinFunction;
 
 class BuiltinFunctionVariant :
 	public FunctionVariant
@@ -22,6 +23,5 @@ private:
 	BuiltinFunction func;
 	std::wstring name;
 	std::vector<Variant*> passedArgs;
-	static const int MAX_ARGS = 128;
 };
 

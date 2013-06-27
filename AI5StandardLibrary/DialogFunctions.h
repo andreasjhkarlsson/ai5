@@ -1,16 +1,16 @@
 #pragma once
-#include "functions.h"
 
 class StackMachine;
 class Variant;
-class DialogFunctions :
-	public Functions
+class CallInfo;
+
+class DialogFunctions
 {
 public:
 	static void registerFunctions(StackMachine* machine);
 	~DialogFunctions(void);
 private:
 	DialogFunctions(void);
-	Variant* msgbox(Variant** args,int argCount);
+	Variant* msgbox(CallInfo* callInfo);
 };
 

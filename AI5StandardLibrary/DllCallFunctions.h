@@ -1,19 +1,19 @@
 #pragma once
-#include "functions.h"
 
 class Variant;
 class StackMachine;
+class CallInfo;
 
-class DllCallFunctions : public Functions
+class DllCallFunctions
 {
 public:
 	static void registerFunctions(StackMachine* machine);
 	~DllCallFunctions();
 private:
 	DllCallFunctions();
-	Variant* dllcall(Variant** args, int argsSize);
-	Variant* dllcalladdress(Variant** args, int argsSize);
-	Variant* dllopen(Variant** args, int argsSize);
-	Variant* dllclose(Variant** args, int argsSize);
+	Variant* dllcall(CallInfo* callInfo);
+	Variant* dllcalladdress(CallInfo* callInfo);
+	Variant* dllopen(CallInfo* callInfo);
+	Variant* dllclose(CallInfo* callInfo);
 };
 

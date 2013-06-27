@@ -126,7 +126,6 @@
     <ClInclude Include="DialogFunctions.h" />
     <ClInclude Include="DllCallFunctions.h" />
     <ClInclude Include="FileFunctions.h" />
-    <ClInclude Include="Functions.h" />
     <ClInclude Include="GraphicsAndSoundFunctions.h" />
     <ClInclude Include="Handles.h" />
     <ClInclude Include="ListFunctions.h" />
@@ -141,7 +140,6 @@
     <ClCompile Include="DialogFunctions.cpp" />
     <ClCompile Include="DllCallFunctions.cpp" />
     <ClCompile Include="FileFunctions.cpp" />
-    <ClCompile Include="Functions.cpp" />
     <ClCompile Include="GraphicsAndSoundFunctions.cpp" />
     <ClCompile Include="Handles.cpp" />
     <ClCompile Include="ListFunctions.cpp" />

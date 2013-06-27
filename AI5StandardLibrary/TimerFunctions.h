@@ -1,18 +1,17 @@
 #pragma once
-#include "functions.h"
 class Variant;
 class StackMachine;
-class TimerFunctions :
-	public Functions
+class CallInfo;
+class TimerFunctions
 {
 public:
 	static void registerFunctions(StackMachine* machine);
 	~TimerFunctions(void);
 private:
 	TimerFunctions(void);
-	Variant* sleep(Variant** args,int argsSize);
-	Variant* timerInit(Variant** args,int argsSize);
-	Variant* timerDiff(Variant** args,int argsSize);
+	Variant* sleep(CallInfo* callInfo);
+	Variant* timerInit(CallInfo* callInfo);
+	Variant* timerDiff(CallInfo* callInfo);
 	double performanceCounterFrequency; 
 };
 

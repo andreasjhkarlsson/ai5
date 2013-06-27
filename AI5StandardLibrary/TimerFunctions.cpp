@@ -1,6 +1,7 @@
 #include "TimerFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\NullVariant.h"
+#include "..\AI5Runtime\CallInfo.h"
 #include <Windows.h>
 #include <functional>
 #include <memory>
@@ -20,15 +21,15 @@ TimerFunctions::~TimerFunctions(void)
 }
 
 
-Variant* TimerFunctions::sleep(Variant** args,int argsSize)
+Variant* TimerFunctions::sleep(CallInfo* callInfo)
 {
-	Variant* var = args[0];
+	callInfo->validateArgCount(1,1);
 
-	int sleepDelay = var->toInteger32();
+	int sleepDelay = callInfo->getInt32Arg(0);
 
 	Sleep(sleepDelay);
-	NullVariant::Instance.addRef();
-	return &NullVariant::Instance;
+	
+	return nullptr;
 }
 
 
@@ -37,24 +38,24 @@ void TimerFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<TimerFunctions> instance(new TimerFunctions);
 
-	machine->addBuiltInFunction(L"sleep",std::bind(&sleep,instance,_1,_2));
-	machine->addBuiltInFunction(L"timerinit",std::bind(&timerInit,instance,_1,_2));
-	machine->addBuiltInFunction(L"timerdiff",std::bind(&timerDiff,instance,_1,_2));
+	machine->addBuiltInFunction(L"sleep",std::bind(&sleep,instance,_1));
+	machine->addBuiltInFunction(L"timerinit",std::bind(&timerInit,instance,_1));
+	machine->addBuiltInFunction(L"timerdiff",std::bind(&timerDiff,instance,_1));
 }
 
 
-Variant* TimerFunctions::timerInit(Variant** args,int argsSize)
+Variant* TimerFunctions::timerInit(CallInfo* callInfo)
 {
-	validateArgCount(argsSize,0,0);
+	callInfo->validateArgCount(0,0);
 	LARGE_INTEGER li;
 	QueryPerformanceCounter(&li);
 	return new Integer64Variant(li.QuadPart);
 }
 
-Variant* TimerFunctions::timerDiff(Variant** args,int argsSize)
+Variant* TimerFunctions::timerDiff(CallInfo* callInfo)
 {
-	validateArgCount(argsSize,1,1);
-	__int64 start = args[0]->toInteger64();
+	callInfo->validateArgCount(1,1);
+	__int64 start = callInfo->getInt64Arg(0);
 	LARGE_INTEGER end;
 	QueryPerformanceCounter(&end);
 

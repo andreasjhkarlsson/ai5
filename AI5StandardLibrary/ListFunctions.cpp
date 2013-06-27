@@ -2,6 +2,7 @@
 #include "..\AI5Runtime\ListVariant.h"
 #include "..\AI5Runtime\NullVariant.h"
 #include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\CallInfo.h"
 #include <functional>
 #include <memory>
 using namespace std::placeholders;
@@ -20,40 +21,33 @@ void ListFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<ListFunctions> instance(new ListFunctions);
 
-	machine->addBuiltInFunction(L"ubound",std::bind(&ubound,instance,_1,_2));
-	machine->addBuiltInFunction(L"arrayadd",std::bind(&arrayadd,instance,_1,_2));
+	machine->addBuiltInFunction(L"ubound",std::bind(&ubound,instance,_1));
+	machine->addBuiltInFunction(L"arrayadd",std::bind(&arrayadd,instance,_1));
 }
 
 
-Variant* ListFunctions::ubound(Variant** args,int argsSize)
+Variant* ListFunctions::ubound(CallInfo* callInfo)
 {
-	Variant* var = args[0];
+
+	callInfo->validateArgCount(1,1);
+
+	Variant* var = callInfo->getArg(0);
 	Variant* result;
 
-
-	if(var->isListType())
-	{
-		result = new Integer32Variant((int)static_cast<ListVariant*>(var)->size());
-	}
-	else
-	{
-		result = &NullVariant::Instance;
-		result->addRef();
-	}
+	result = new Integer32Variant((int)var->cast<ListVariant>()->size());
 
 	return result;
 }
 
 
-Variant* ListFunctions::arrayadd(Variant** args,int argsSize)
+Variant* ListFunctions::arrayadd(CallInfo* callInfo)
 {
-	Variant* listArg = args[0];
-	Variant* elementArg = args[1];
+	callInfo->validateArgCount(2,2);
+	ListVariant* listArg = callInfo->getArg(0)->cast<ListVariant>();
+	Variant* elementArg = callInfo->getArg(1);
 
-	if(!listArg->isListType())
-		throw RuntimeError(L"Can only add element to list type.");
 
-	static_cast<ListVariant*>(listArg)->addElement(elementArg);
+	listArg->addElement(elementArg);
 
 	NullVariant::Instance.addRef();
 	return &NullVariant::Instance;

@@ -1,6 +1,7 @@
 #include "DialogFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\Integer32Variant.h"
+#include "..\AI5Runtime\CallInfo.h"
 #include <cmath>
 #include <functional>
 #include <memory>
@@ -16,13 +17,13 @@ DialogFunctions::~DialogFunctions(void)
 {
 }
 
-Variant* DialogFunctions::msgbox(Variant** args,int argCount)
+Variant* DialogFunctions::msgbox(CallInfo* callInfo)
 {
-	validateArgCount(argCount,3,5);
+	callInfo->validateArgCount(3,5);
 
-	int flag = args[0]->toInteger32();
-	shared_string title = args[1]->toString();
-	shared_string text = args[2]->toString();
+	int flag = callInfo->getInt32Arg(0);
+	shared_string title = callInfo->getStringArg(1);
+	shared_string text = callInfo->getStringArg(2);
 
 	return new Integer32Variant(MessageBoxW(NULL,text->c_str(),title->c_str(),flag));
 }
@@ -32,5 +33,5 @@ void DialogFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<DialogFunctions> instance(new DialogFunctions);
 
-	machine->addBuiltInFunction(L"msgbox",std::bind(&msgbox,instance,_1,_2));
+	machine->addBuiltInFunction(L"msgbox",std::bind(&msgbox,instance,_1));
 }

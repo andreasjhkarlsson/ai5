@@ -3,6 +3,7 @@
 #include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\ListVariant.h"
 #include "..\AI5Runtime\NullVariant.h"
+#include "..\AI5Runtime\CallInfo.h"
 #include "Handles.h"
 
 using namespace std::placeholders;
@@ -18,34 +19,35 @@ DllCallFunctions::~DllCallFunctions()
 
 
 
-Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
+Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
 {
-	validateArgCount(argsSize, 3, 3 + 2 * MAX_ARG_DLLCALL);
+	callInfo->validateArgCount(3, 3 + 2 * MAX_ARG_DLLCALL);
 
 	std::vector<std::wstring> vParamTypes;
-	for (int i = 3; i < argsSize; ++i)
-		vParamTypes.push_back(args[i++]->toString().get()->c_str()); // post-increment used to get every other element
+	for (int i = 3; i < callInfo->getArgCount(); ++i)
+		vParamTypes.push_back(callInfo->getStringArg(i++)->c_str()); // post-increment used to get every other element
 
 	std::vector<Variant*> vArgs;
-	for (int i = 4; i < argsSize; ++i)
-		vArgs.push_back(args[i++]); // post-increment used to get every other element
+	for (int i = 4; i < callInfo->getArgCount(); ++i)
+		vArgs.push_back(callInfo->getArg(i++)); // post-increment used to get every other element
 
 	bool loadedModule = false;
 	HMODULE hModule = nullptr;
-	if(args[0]->isStringType())
+	if(callInfo->getArg(0)->isStringType())
 	{
-		hModule = ::LoadLibraryW(args[0]->toString()->c_str());
+		hModule = ::LoadLibraryW(callInfo->getStringArg(0)->c_str());
 		loadedModule = true;
 	}
 	else
 	{
 		// How about this cast chain? :D If only C++ would allow virtual template methods...
-		hModule = args[0]->cast<HandleVariant>()->castHandle<ModuleHandle>()->getModule();
+		hModule = callInfo->getHandleArg(0)->castHandle<ModuleHandle>()->getModule();
 	}
 
 	// TODO: Check for hModule == nullptr and throw error.
 
-	auto dllcall = DllCall(hModule, *args[1]->toString().get(), *args[2]->toString().get(), vParamTypes);
+	auto dllcall = DllCall(hModule, *callInfo->getArg(1)->toString().get(),
+		*callInfo->getStringArg(2), vParamTypes);
 
 	// To collect processed arguments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
@@ -71,23 +73,23 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 	return vRet;
 }
 
-Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
+Variant* DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 {
-	validateArgCount(argsSize, 2, 3 + 2 * MAX_ARG_DLLCALL);
+	callInfo->validateArgCount(2, 3 + 2 * MAX_ARG_DLLCALL);
 
 	std::vector<std::wstring> vParamTypes;
-	for (int i = 2; i < argsSize; ++i)
-		vParamTypes.push_back(args[i++]->toString().get()->c_str()); // post-increment used to get every other element
+	for (int i = 2; i < callInfo->getArgCount(); ++i)
+		vParamTypes.push_back(callInfo->getStringArg(i++)->c_str()); // post-increment used to get every other element
 
 	std::vector<Variant*> vArgs;
-	for (int i = 3; i < argsSize; ++i)
-		vArgs.push_back(args[i++]); // post-increment used to get every other element
+	for (int i = 3; i < callInfo->getArgCount(); ++i)
+		vArgs.push_back(callInfo->getArg(i++)); // post-increment used to get every other element
 
 	auto dllcall = DllCall();
 
-	dllcall.SetRetTypeAndCC(*args[0]->toString().get());
+	dllcall.SetRetTypeAndCC(*callInfo->getStringArg(0));
 	dllcall.SetParamsTypes(vParamTypes);
-	dllcall.SetFunc(reinterpret_cast<LPVOID>(args[1]->toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
+	dllcall.SetFunc(reinterpret_cast<LPVOID>(callInfo->getArg(1)->toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
 
 	// To collect processed arguments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
@@ -107,11 +109,11 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 	return vRet;
 }
 
-Variant* DllCallFunctions::dllopen(Variant** args, int argsSize)
+Variant* DllCallFunctions::dllopen(CallInfo* callInfo)
 {
-	validateArgCount(argsSize, 1, 1);
+	callInfo->validateArgCount(1, 1);
 
-	shared_string dllPath = args[0]->toString();
+	shared_string dllPath = callInfo->getStringArg(0);
 
 	HMODULE module = ::LoadLibraryW(dllPath->c_str());
 
@@ -121,11 +123,11 @@ Variant* DllCallFunctions::dllopen(Variant** args, int argsSize)
 	return new ModuleHandle(module);
 }
 
-Variant* DllCallFunctions::dllclose(Variant** args, int argsSize)
+Variant* DllCallFunctions::dllclose(CallInfo* callInfo)
 {
-	validateArgCount(argsSize, 1, 1);
+	callInfo->validateArgCount(1, 1);
 
-	ModuleHandle* handle = args[0]->cast<HandleVariant>()->castHandle<ModuleHandle>();
+	ModuleHandle* handle = callInfo->getHandleArg(0)->castHandle<ModuleHandle>();
 	handle->close();
 
 	return nullptr;
@@ -137,8 +139,8 @@ void DllCallFunctions::registerFunctions(StackMachine* machine)
 
 	std::shared_ptr<DllCallFunctions> instance(new DllCallFunctions);
 
-	machine->addBuiltInFunction(L"dllcall", std::bind(&dllcall, instance, _1, _2));
-	machine->addBuiltInFunction(L"dllcalladdress", std::bind(&dllcalladdress, instance, _1, _2));
-	machine->addBuiltInFunction(L"dllopen", std::bind(&dllopen, instance, _1, _2));
-	machine->addBuiltInFunction(L"dllclose", std::bind(&dllclose, instance, _1, _2));
+	machine->addBuiltInFunction(L"dllcall", std::bind(&dllcall, instance, _1));
+	machine->addBuiltInFunction(L"dllcalladdress", std::bind(&dllcalladdress, instance, _1));
+	machine->addBuiltInFunction(L"dllopen", std::bind(&dllopen, instance, _1));
+	machine->addBuiltInFunction(L"dllclose", std::bind(&dllclose, instance, _1));
 }

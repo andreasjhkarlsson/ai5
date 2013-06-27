@@ -4,6 +4,7 @@
 #include "..\AI5Runtime\BinaryVariant.h"
 #include "..\AI5Runtime\BooleanVariant.h"
 #include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\CallInfo.h"
 #include <string>
 #include <wchar.h>
 #include <functional>
@@ -27,24 +28,23 @@ void VariableFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<VariableFunctions> instance(new VariableFunctions);
 
-	machine->addBuiltInFunction(L"stringtobinary",std::bind(&stringToBinary,instance,_1,_2));
-	machine->addBuiltInFunction(L"binarytostring",std::bind(&binaryToString,instance,_1,_2));
-	machine->addBuiltInFunction(L"isfloat",std::bind(&isFloat,instance,_1,_2));
-	machine->addBuiltInFunction(L"isstring",std::bind(&isString,instance,_1,_2));
-	machine->addBuiltInFunction(L"isarray",std::bind(&isArray,instance,_1,_2));
-	machine->addBuiltInFunction(L"ishashmap",std::bind(&isHashMap,instance,_1,_2));
-	machine->addBuiltInFunction(L"isbool",std::bind(&isBool,instance,_1,_2));
-	machine->addBuiltInFunction(L"string",std::bind(&isString,instance,_1,_2));
+	machine->addBuiltInFunction(L"stringtobinary",std::bind(&stringToBinary,instance,_1));
+	machine->addBuiltInFunction(L"binarytostring",std::bind(&binaryToString,instance,_1));
+	machine->addBuiltInFunction(L"isfloat",std::bind(&isFloat,instance,_1));
+	machine->addBuiltInFunction(L"isstring",std::bind(&isString,instance,_1));
+	machine->addBuiltInFunction(L"isarray",std::bind(&isArray,instance,_1));
+	machine->addBuiltInFunction(L"ishashmap",std::bind(&isHashMap,instance,_1));
+	machine->addBuiltInFunction(L"isbool",std::bind(&isBool,instance,_1));
+	machine->addBuiltInFunction(L"string",std::bind(&isString,instance,_1));
 }
 
 
-Variant* VariableFunctions::stringToBinary(Variant** args,int argCount)
+Variant* VariableFunctions::stringToBinary(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,2);
-	shared_string str = args[0]->toString();
-	int flag = 1;
-	if(argCount == 2)
-		flag = args[1]->toInteger32();
+	callInfo->validateArgCount(1,2);
+	shared_string str = callInfo->getStringArg(0);
+	int flag = callInfo->getInt32Arg(1,1);
+
 
 	if(flag < 0 || flag > 4)
 		throw RuntimeError(L"Flag must be between 0 and 4");
@@ -65,18 +65,16 @@ void VariableFunctions::swapUtf16Endiness(wchar_t* binary,int size)
 	}
 }
 
-Variant* VariableFunctions::binaryToString(Variant** args,int argCount)
+Variant* VariableFunctions::binaryToString(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,2);
+	callInfo->validateArgCount(1,2);
 
-	if(!args[0]->isBinaryType())
+	if(!callInfo->getArg(0)->isBinaryType())
 		throw RuntimeError(L"Type error! BinaryToString requires binary type");
 
-	shared_binary binary = static_cast<BinaryVariant*>(args[0])->getValue();
+	shared_binary binary = callInfo->getArg(0)->cast<BinaryVariant>()->getValue();
 
-	int flag = 1;
-	if(argCount == 2)
-		flag = args[1]->toInteger32();
+	int flag = callInfo->getInt32Arg(1,1);
 
 	if(flag < 0 || flag > 4)
 		throw RuntimeError(L"Flag must be between 0 and 4");
@@ -88,38 +86,38 @@ Variant* VariableFunctions::binaryToString(Variant** args,int argCount)
 
 
 
-Variant* VariableFunctions::isFloat(Variant** args,int argCount)
+Variant* VariableFunctions::isFloat(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,1);
-	return BooleanVariant::Get(args[0]->isFloatingType(),true);
+	callInfo->validateArgCount(1,1);
+	return BooleanVariant::Get(callInfo->getArg(0)->isFloatingType(),true);
 	
 }
-Variant* VariableFunctions::isString(Variant** args,int argCount)
+Variant* VariableFunctions::isString(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,1);
-	return BooleanVariant::Get(args[0]->isStringType(),true);
+	callInfo->validateArgCount(1,1);
+	return BooleanVariant::Get(callInfo->getArg(0)->isStringType(),true);
 	
 }
-Variant* VariableFunctions::isArray(Variant** args,int argCount)
+Variant* VariableFunctions::isArray(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,1);
-	return BooleanVariant::Get(args[0]->isListType(),true);
+	callInfo->validateArgCount(1,1);
+	return BooleanVariant::Get(callInfo->getArg(0)->isListType(),true);
 	
 }
-Variant* VariableFunctions::isHashMap(Variant** args,int argCount)
+Variant* VariableFunctions::isHashMap(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,1);
-	return BooleanVariant::Get(args[0]->isHashMap(),true);
+	callInfo->validateArgCount(1,1);
+	return BooleanVariant::Get(callInfo->getArg(0)->isHashMap(),true);
 	
 }
-Variant* VariableFunctions::isBool(Variant** args,int argCount)
+Variant* VariableFunctions::isBool(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,1);
-	return BooleanVariant::Get(args[0]->isBooleanType(),true);
+	callInfo->validateArgCount(1,1);
+	return BooleanVariant::Get(callInfo->getArg(0)->isBooleanType(),true);
 	
 }
-Variant* VariableFunctions::ToString(Variant** args,int argCount)
+Variant* VariableFunctions::ToString(CallInfo* callInfo)
 {
-	validateArgCount(argCount,1,1);
-	return new StringVariant(args[0]->toString());	
+	callInfo->validateArgCount(1,1);
+	return new StringVariant(callInfo->getArg(0)->toString());	
 }

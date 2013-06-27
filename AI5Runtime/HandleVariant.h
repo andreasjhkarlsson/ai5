@@ -7,9 +7,10 @@ class HandleVariant :
 	public Variant
 {
 public:
-	static const VARIANT_TYPE TYPE = HANDLE;
+	static const VARIANT_TYPE TYPE = HANDLE_VAR;
 
 	static const HANDLE_TYPE MODULE_HANDLE = 0;
+	static const HANDLE_TYPE FILE_HANDLE = 1;
 
 	HandleVariant(HANDLE_TYPE handleType);
 	~HandleVariant(void);
@@ -25,6 +26,7 @@ public:
 
 	virtual bool isValid()=0;
 	virtual bool toBoolean();
+	virtual std::wostream& format(std::wostream& stream) const;
 
 private:
 	HANDLE_TYPE handleType;
