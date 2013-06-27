@@ -63,7 +63,9 @@ Variant* DllCallFunctions::dllcall(Variant** args, int argsSize)
 	ListVariant* vRet = new ListVariant;
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
-		vRet->addElement(Variant::createFromCOMVar(pcvRet[i]));
+		Variant* el = Variant::createFromCOMVar(pcvRet[i]);
+		vRet->addElement(el);
+		el->release();
 	}
 
 	return vRet;
@@ -97,7 +99,9 @@ Variant* DllCallFunctions::dllcalladdress(Variant** args, int argsSize)
 	ListVariant* vRet = new ListVariant;
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
-		vRet->addElement(Variant::createFromCOMVar(pcvRet[i]));
+		Variant* el = Variant::createFromCOMVar(pcvRet[i]);
+		vRet->addElement(el);
+		el->release();
 	}
 
 	return vRet;
