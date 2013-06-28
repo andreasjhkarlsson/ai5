@@ -131,6 +131,7 @@
     <ClInclude Include="ListFunctions.h" />
     <ClInclude Include="Macros.h" />
     <ClInclude Include="MathFunctions.h" />
+    <ClInclude Include="MiscFunctions.h" />
     <ClInclude Include="StandardLibrary.h" />
     <ClInclude Include="StringFunctions.h" />
     <ClInclude Include="TimerFunctions.h" />
@@ -145,6 +146,7 @@
     <ClCompile Include="ListFunctions.cpp" />
     <ClCompile Include="Macros.cpp" />
     <ClCompile Include="MathFunctions.cpp" />
+    <ClCompile Include="MiscFunctions.cpp" />
     <ClCompile Include="StandardLibrary.cpp" />
     <ClCompile Include="StringFunctions.cpp" />
     <ClCompile Include="TimerFunctions.cpp" />

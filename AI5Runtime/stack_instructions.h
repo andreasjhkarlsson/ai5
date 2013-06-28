@@ -71,7 +71,6 @@ __forceinline void doubleTopTwo(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-
 __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 {
 	NameVariant* name = machine->getNearestName(nameId);
@@ -82,13 +81,11 @@ __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 		throw RuntimeError(std::wstring(L"Undeclared identifier ")+(*staticString->getName())+L"!");
 	}
 
-
 	Variant* var = name->getValue();
 	var->addRef();
 	machine->getDataStack()->push(var);
 	machine->advanceCounter();
 }
-
 
 
 __forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
@@ -124,7 +121,6 @@ __forceinline void pushNull(StackMachine* machine)
 	machine->getDataStack()->pushNull();
 	machine->advanceCounter();
 }
-
 
 __forceinline void pushDefault(StackMachine* machine)
 {
@@ -168,7 +164,6 @@ inline void buildList(StackMachine* machine,int count)
 	machine->advanceCounter();
 }
 
-
 inline void buildMap(StackMachine* machine,int count)
 {
 	HashMapVariant* map = new HashMapVariant();
@@ -186,7 +181,6 @@ inline void buildMap(StackMachine* machine,int count)
 
 	machine->getDataStack()->push(map);
 	machine->advanceCounter();
-
 }
 
 __forceinline void derefIndex(StackMachine* machine)
@@ -207,8 +201,6 @@ __forceinline void derefIndex(StackMachine* machine)
 		throw RuntimeError(L"List indexing must have list type");
 	}
 
-	
-
 	result->addRef();
 	index->release();
 	container->release();
@@ -218,13 +210,11 @@ __forceinline void derefIndex(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-
 __forceinline void pushMacro(StackMachine* machine,int arg)
 {
-	machine->getDataStack()->push(machine->getMacro(arg)());
+	machine->getDataStack()->push(machine->getMacro(arg)(machine));
 	machine->advanceCounter();
 }
-
 
 __forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int exitAddress)
 {
@@ -235,7 +225,6 @@ __forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int e
 	machine->getBlockStack()->push(lBlock);
 
 	machine->advanceCounter();
-
 }
 
 __forceinline void popBlock(StackMachine* machine)
@@ -244,8 +233,6 @@ __forceinline void popBlock(StackMachine* machine)
 	machine->getBlockStack()->pop()->recycleInstance();
 	machine->advanceCounter();
 }
-
-
 
 __forceinline void pushGeneralBlock(StackMachine* machine)
 {

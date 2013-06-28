@@ -66,6 +66,12 @@ public:
 	void addBuiltInFunction(const std::wstring &name,BuiltinFunction function);
 	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
+
+	Variant* getErrorCode();
+	Variant* getExtendedCode();
+	void setExtendedCode(Variant*);
+	void setErrorCode(Variant*);
+
 private:
 	// Code and static data.
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
@@ -86,8 +92,11 @@ private:
 	bool terminated;
 	// Classic program counter.
 	int programCounter;
-
 	bool verbose;
+
+
+	Variant* errorCode;
+	Variant* extendedCode;
 };
 
 void StackMachine::jumpRelative(int offset)

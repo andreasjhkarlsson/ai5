@@ -6,23 +6,25 @@ class Macros
 public:
 	static void registerMacros(StackMachine*);
 private:
-	static Variant* MyPID();
-	static Variant* CRLF();
-	static Variant* CR();
-	static Variant* LF();
-	static Variant* TAB();
-	static Variant* Username();
-	static Variant* WorkingDirectory();
-	static Variant* TempDirectory();
-	static Variant* SystemDirectory();
-	static Variant* WindowsDirectory();
-	static Variant* millisecond();
-	static Variant* second();
-	static Variant* minute();
-	static Variant* hour();
-	static Variant* monthDay();
-	static Variant* month();
-	static Variant* year();
-	static Variant* weekDay();
+	static Variant* MyPID(StackMachine*);
+	static Variant* CRLF(StackMachine*);
+	static Variant* CR(StackMachine*);
+	static Variant* LF(StackMachine*);
+	static Variant* TAB(StackMachine*);
+	static Variant* Username(StackMachine*);
+	static Variant* WorkingDirectory(StackMachine*);
+	static Variant* TempDirectory(StackMachine*);
+	static Variant* SystemDirectory(StackMachine*);
+	static Variant* WindowsDirectory(StackMachine*);
+	static Variant* millisecond(StackMachine*);
+	static Variant* second(StackMachine*);
+	static Variant* minute(StackMachine*);
+	static Variant* hour(StackMachine*);
+	static Variant* monthDay(StackMachine*);
+	static Variant* month(StackMachine*);
+	static Variant* year(StackMachine*);
+	static Variant* weekDay(StackMachine*);
+	static Variant* errorCode(StackMachine*);
+	static Variant* extendedCode(StackMachine*);
 };
 

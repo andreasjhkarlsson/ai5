@@ -27,33 +27,48 @@ void Macros::registerMacros(StackMachine* machine)
 	machine->addMacro(L"mon",&month);
 	machine->addMacro(L"year",&year);
 	machine->addMacro(L"wday",&weekDay);
+	machine->addMacro(L"error",&errorCode);
+	machine->addMacro(L"extended",&extendedCode);
 }
 
-Variant* Macros::MyPID()
+Variant* Macros::MyPID(StackMachine*)
 {
 	return new Integer64Variant(GetCurrentProcessId());
 }
 
+Variant* Macros::errorCode(StackMachine* machine)
+{
+	Variant* vError = machine->getErrorCode();
+	vError->addRef();
+	return vError;
+}
 
-Variant* Macros::CRLF()
+Variant* Macros::extendedCode(StackMachine* machine)
+{
+	Variant* vExtended = machine->getExtendedCode();
+	vExtended->addRef();
+	return vExtended;
+}
+
+Variant* Macros::CRLF(StackMachine*)
 {
 	static StringVariant crlf(L"\r\n");
 	crlf.addRef();
 	return &crlf;
 }
-Variant* Macros::CR()
+Variant* Macros::CR(StackMachine*)
 {
 	static StringVariant cr(L"\r");
 	cr.addRef();
 	return &cr;
 }
-Variant* Macros::LF()
+Variant* Macros::LF(StackMachine*)
 {
 	static StringVariant lf(L"\n");
 	lf.addRef();
 	return &lf;
 }
-Variant* Macros::TAB()
+Variant* Macros::TAB(StackMachine*)
 {
 	static StringVariant tab(L"\t");
 	tab.addRef();
@@ -61,7 +76,7 @@ Variant* Macros::TAB()
 }
 
 
-Variant* Macros::Username()
+Variant* Macros::Username(StackMachine*)
 {
 	DWORD buffSize = UNLEN+1;
 	std::vector<wchar_t> buffer(buffSize);
@@ -70,14 +85,14 @@ Variant* Macros::Username()
 
 }
 
-Variant* Macros::WorkingDirectory()
+Variant* Macros::WorkingDirectory(StackMachine*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetCurrentDirectoryW(MAX_PATH,&buffer[0]);
 	return new StringVariant(&buffer[0]);
 }
 
-Variant* Macros::TempDirectory()
+Variant* Macros::TempDirectory(StackMachine*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetTempPathW(MAX_PATH,&buffer[0]);
@@ -85,13 +100,13 @@ Variant* Macros::TempDirectory()
 }
 
 
-Variant* Macros::SystemDirectory()
+Variant* Macros::SystemDirectory(StackMachine*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetSystemDirectoryW(&buffer[0],MAX_PATH);
 	return new StringVariant(&buffer[0]);
 }
-Variant* Macros::WindowsDirectory()
+Variant* Macros::WindowsDirectory(StackMachine*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetWindowsDirectoryW(&buffer[0],MAX_PATH);
@@ -99,50 +114,50 @@ Variant* Macros::WindowsDirectory()
 }
 
 
-Variant* Macros::millisecond()
+Variant* Macros::millisecond(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wMilliseconds);
 }
 
-Variant* Macros::second()
+Variant* Macros::second(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wSecond);
 }
-Variant* Macros::minute()
+Variant* Macros::minute(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wMinute);
 }
-Variant* Macros::hour()
+Variant* Macros::hour(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wHour);
 }
-Variant* Macros::monthDay()
+Variant* Macros::monthDay(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wDay);
 }
-Variant* Macros::month()
+Variant* Macros::month(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wMonth);
 }
-Variant* Macros::year()
+Variant* Macros::year(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return new Integer32Variant(stime.wYear);
 }
-Variant* Macros::weekDay()
+Variant* Macros::weekDay(StackMachine*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);

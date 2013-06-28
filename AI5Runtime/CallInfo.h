@@ -17,8 +17,8 @@ public:
 	bool getBoolArg(int index,bool defaultValue=false);
 	shared_string getStringArg(int index);
 	HandleVariant* getHandleArg(int index);
-	void setError(int error,int extended=0);
-	void setError(Variant* error,Variant* extended);
+	void setError(int error);
+	void setExtended(int extended);
 	static const int MAX_ARGS = 64;
 private:
 	Variant* args[MAX_ARGS];

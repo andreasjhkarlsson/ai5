@@ -66,15 +66,20 @@ HandleVariant* CallInfo::getHandleArg(int index)
 {
 	return getArg(index)->cast<HandleVariant>();
 }
-void CallInfo::setError(int error,int extended)
+void CallInfo::setError(int error)
 {
-	// TODO
-}
-void CallInfo::setError(Variant* error,Variant* extended)
-{
-	// TODO
+	Variant* vError = Integer32Variant::createFromFactory(machine->getVariantFactory(),error);
+	machine->setErrorCode(vError);
+	vError->release();
 }
 
+
+void CallInfo::setExtended(int extended)
+{
+	Variant* vExtended = Integer32Variant::createFromFactory(machine->getVariantFactory(),extended);
+	machine->setExtendedCode(vExtended);
+	vExtended->release();
+}
 
 CallInfo::~CallInfo(void)
 {

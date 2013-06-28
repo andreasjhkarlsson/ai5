@@ -8,14 +8,16 @@
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
 	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), 
-	currentCallBlock(nullptr), verbose(false), globalScope(new Scope())
+	currentCallBlock(nullptr), verbose(false), globalScope(new Scope()), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
 {
 	registerStandardLibrary(this);
 }
 
 StackMachine::~StackMachine(void)
 {
-	delete globalScope;
+	globalScope->release();
+	errorCode->release();
+	extendedCode->release();
 }
 
 int StackMachine::start()
@@ -206,4 +208,31 @@ void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* na
 	std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 	const std::wstring& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();
 	targetScope->insertName(strName,identifier.localId,name);
+}
+
+
+
+Variant* StackMachine::getErrorCode()
+{
+	return errorCode;
+}
+Variant* StackMachine::getExtendedCode()
+{
+	return extendedCode;
+}
+void StackMachine::setExtendedCode(Variant* extendedCode)
+{
+	if(this->extendedCode != nullptr)
+		this->extendedCode->release();
+	this->extendedCode = extendedCode;
+	if(this->extendedCode != nullptr)
+		this->extendedCode->addRef();
+}
+void StackMachine::setErrorCode(Variant* extendedCode)
+{
+	if(this->errorCode != nullptr)
+		this->errorCode->release();
+	this->errorCode = extendedCode;
+	if(this->errorCode != nullptr)
+		this->errorCode->addRef();
 }
