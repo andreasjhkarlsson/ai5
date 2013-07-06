@@ -46,7 +46,7 @@ try:
     instructions = compiler.compile_program(ast)
 
     statics_table = compiler.static_table
-    statics_table.dump()
+    #statics_table.dump()
     for index,instruction in enumerate(instructions):
        print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
     

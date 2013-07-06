@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include "Variant.h"
 #include "NameVariant.h"
 #include "PooledObject.h"
+#include "types.h"
 
 class StackMachine;
 
@@ -18,7 +19,7 @@ public:
 		usedIndexes.reserve(16);
 	}
 
-	__forceinline NameVariant* getNameFromString(const std::wstring &name)
+	__forceinline NameVariant* getNameFromString(const UnicodeString &name)
 	{
 		return lookup[name];
 	}
@@ -29,10 +30,10 @@ public:
 			result = enclosingScope->getNameFromIndex(index);
 		return result;
 	}
-	NameVariant* createName(StackMachine* machine,const std::wstring &name);
-	NameVariant* createIndexForName(StackMachine* machine,const std::wstring &name,int index);
+	NameVariant* createName(StackMachine* machine,const UnicodeString &name);
+	NameVariant* createIndexForName(StackMachine* machine,const UnicodeString &name,int index);
 
-	void insertName(const std::wstring& name,int index,NameVariant* nameVariant);
+	void insertName(const UnicodeString& name,int index,NameVariant* nameVariant);
 
 	void setEnclosingScope(Scope* scope)
 	{
@@ -57,7 +58,7 @@ private:
 
 	// The string->name lookup.
 	// All names in the scope NEEDS to be in this map.
-	std::map<std::wstring,NameVariant*> lookup;
+	std::unordered_map<UnicodeString,NameVariant*,UnicodeStringHasher,UnicodeStringComparator> lookup;
 
 	// Used to provide super fast lookup of names in this scope.
 	// Not all names are necessarily in this table. 

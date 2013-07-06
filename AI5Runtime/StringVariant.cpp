@@ -9,7 +9,7 @@ StringVariant::StringVariant(shared_string str): Variant(TYPE), str(str)
 
 }
 
-StringVariant::StringVariant(const std::wstring& str): Variant(STRING)
+StringVariant::StringVariant(const UnicodeString& str): Variant(STRING)
 {
 	this->str = create_shared_string(str);
 }
@@ -21,23 +21,23 @@ StringVariant::~StringVariant(void)
 
 std::wostream& StringVariant::format(std::wostream& stream) const
 {
-	stream << "StringVariant: " << *str;
+	stream << "StringVariant: " << str->getTerminatedBuffer();
 	return stream;
 
 }
 double StringVariant::toFloating() const
 {
-	return _wtof(str->c_str());
+	return _wtof(str->getTerminatedBuffer());
 }
 __int64 StringVariant::toInteger64() const
 {
-	return _wtoi64(str->c_str());
+	return _wtoi64(str->getTerminatedBuffer());
 }
 
 
 int StringVariant::toInteger32() const
 {
-	return _wtoi(str->c_str());
+	return _wtoi(str->getTerminatedBuffer());
 }
 
 bool StringVariant::toBoolean() const
@@ -53,7 +53,7 @@ shared_string StringVariant::toString() const
 bool StringVariant::equal(Variant* other)
 {
 	return (getType() == other->getType()) &&
-		(wcscmp(str->c_str(),static_cast<StringVariant*>(other)->str->c_str()) == 0);
+		(wcscmp(str->getTerminatedBuffer(),static_cast<StringVariant*>(other)->str->getTerminatedBuffer()) == 0);
 }
 
 
@@ -61,6 +61,6 @@ size_t StringVariant::hash() const
 {
 	// Only hash first 32 chars.
 	if(str->length() < 32)
-		return SuperFastHash((const char*)str->c_str(),str->length()*2);
-	return SuperFastHash((const char*)str->c_str(),32*2);
+		return SuperFastHash((const char*)str->getTerminatedBuffer(),str->length()*2);
+	return SuperFastHash((const char*)str->getTerminatedBuffer(),32*2);
 }

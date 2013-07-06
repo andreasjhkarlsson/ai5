@@ -9,10 +9,10 @@ DllCall::DllCall(): hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(
 
 
 // Constructor
-DllCall::DllCall(HMODULE hModule, const std::wstring& sRetType, const std::wstring& sFunc, const std::vector<std::wstring>& sParamsTypes):hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(VT_INT)
+DllCall::DllCall(HMODULE hModule, UnicodeString& sRetType, UnicodeString& sFunc, std::vector<UnicodeString>& sParamsTypes):hModule(nullptr), pFunc(nullptr), cc(CC_STDCALL), vtRetType(VT_INT)
 {
 	// Resolve ret type and calling convention
-	this->SetRetTypeAndCC(sRetType.c_str());
+	this->SetRetTypeAndCC(sRetType);
 
 	// Resolve params types
 	this->SetParamsTypes(sParamsTypes);
@@ -42,11 +42,12 @@ void DllCall::SetFunc(LPVOID pFunction)
 
 
 // Manually sets function
-bool DllCall::SetFunc(const std::wstring&  sFunc)
+bool DllCall::SetFunc(UnicodeString&  sFunc)
 {
 	if (this->hModule)
 	{
-		std::string s(sFunc.begin(), sFunc.end());
+		std::string s;
+		sFunc.toUTF8String(s);
 		this->pFunc = ::GetProcAddress(this->hModule, s.c_str());
 		// In case of failure try adding "A" to function name to mimic behaviour of AutoIt v3
 		if (!!!this->pFunc)
@@ -58,24 +59,24 @@ bool DllCall::SetFunc(const std::wstring&  sFunc)
 
 
 // Resolves return type and calling convention.
-void DllCall::SetRetTypeAndCC(const std::wstring& sRet)
+void DllCall::SetRetTypeAndCC(UnicodeString& sRet)
 {
-	this->CrackReturnType(sRet.c_str(), this->cc, this->vtRetType);
+	this->CrackReturnType(sRet.getTerminatedBuffer(), this->cc, this->vtRetType);
 }
 
 
 // Loads (resolves and saves) parameters types.
-void DllCall::SetParamsTypes(const std::vector<std::wstring>& sParams)
+void DllCall::SetParamsTypes(std::vector<UnicodeString>& sParams)
 {
 	vTypes.clear();
 	for (size_t i = 0; i < sParams.size(); ++i)
-		this->vTypes.push_back(this->VarType(sParams[i].c_str()));
+		this->vTypes.push_back(this->VarType(sParams[i].getTerminatedBuffer()));
 }
 
 
 // Calls function pointer. 
 // First param is vector of Variant arguments and second one is array of COMVars whose elements are set by this function byref.
-bool DllCall::Invoke(const std::vector<Variant*>& vArgs, COMVar* pcvResult)
+bool DllCall::Invoke(std::vector<Variant*>& vArgs, COMVar* pcvResult)
 {
 	// Sanity check
 	if (this->pFunc && this->vtRetType != VT_ILLEGAL)

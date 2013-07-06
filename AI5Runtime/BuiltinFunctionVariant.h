@@ -14,14 +14,14 @@ class BuiltinFunctionVariant :
 {
 public:
 	static const VARIANT_TYPE TYPE = NATIVE_FUNCTION;
-	BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func);
+	BuiltinFunctionVariant(const UnicodeString &name,BuiltinFunction func);
 	~BuiltinFunctionVariant(void);
 	void call(StackMachine* machine,int numberOfArguments);
 	std::wostream& format(std::wostream& stream) const;
 	virtual bool equal(Variant*);
 private:
 	BuiltinFunction func;
-	std::wstring name;
+	UnicodeString name;
 	std::vector<Variant*> passedArgs;
 };
 

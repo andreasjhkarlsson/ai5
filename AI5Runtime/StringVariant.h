@@ -7,7 +7,7 @@ class StringVariant :
 public:
 	static const VARIANT_TYPE TYPE = STRING;
 	StringVariant(shared_string str);
-	StringVariant(const std::wstring& str);
+	StringVariant(const UnicodeString& str);
 	~StringVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;

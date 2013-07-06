@@ -32,14 +32,14 @@ Variant* HashMapVariant::get(Variant* key)
 	Variant* res = map[key];
 	if(res == nullptr)
 	{
-		throw RuntimeError(std::wstring(L"No value found for key: ")+(*key->toString()));
+		throw RuntimeError(UnicodeString(L"No value found for key: ")+(*key->toString()));
 	}
 	return res;
 }
 
 shared_string HashMapVariant::toString() const
 {
-	std::wstring* str = new std::wstring();
+	UnicodeString* str = new UnicodeString();
 	(*str) += L"{";
 
 	bool first = true;
@@ -60,7 +60,7 @@ shared_string HashMapVariant::toString() const
 }
 std::wostream& HashMapVariant::format(std::wostream& stream) const
 {
-	stream << L"HashMapVariant: " << *toString();
+	stream << L"HashMapVariant: " << toString()->getTerminatedBuffer();
 	return stream;
 }
 

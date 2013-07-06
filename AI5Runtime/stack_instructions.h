@@ -78,7 +78,7 @@ __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 	if (name == nullptr)
 	{
 		StaticName* staticString = (StaticName*)machine->getStaticData(nameId.staticId);
-		throw RuntimeError(std::wstring(L"Undeclared identifier ")+(*staticString->getName())+L"!");
+		throw RuntimeError(UnicodeString(L"Undeclared identifier ")+(*staticString->getName())+L"!");
 	}
 
 	Variant* var = name->getValue();
@@ -95,7 +95,7 @@ __forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
 	if (name == nullptr)
 	{
 		StaticName* staticString = (StaticName*)machine->getStaticData(nameId.staticId);
-		throw RuntimeError(std::wstring(L"Undeclared identifier ")+(*staticString->getName())+L"!");
+		throw RuntimeError(UnicodeString(L"Undeclared identifier ")+(*staticString->getName())+L"!");
 	}
 
 	name->addRef();

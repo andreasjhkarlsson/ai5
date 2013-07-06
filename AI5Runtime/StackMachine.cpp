@@ -39,9 +39,9 @@ int StackMachine::start()
 		}
 		returnCode = dataStack.top()->toInteger32();
 	}
-	catch(const RuntimeError& error)
+	catch(RuntimeError& error)
 	{
-		std::wcout << L"Runtime error:" << std::endl << error.getMessage() <<
+		std::wcout << L"Runtime error:" << std::endl << error.getMessage().getTerminatedBuffer() <<
 			std::endl << "The program will now terminate." << std::endl;
 		returnCode = -1;
 	}
@@ -54,12 +54,12 @@ void StackMachine::terminate()
 	terminated = true;
 }
 
-void StackMachine::addBuiltInFunction(const std::wstring &name,BuiltinFunction function)
+void StackMachine::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
 {
 	globalScope->createName(this,name)->setValue(new BuiltinFunctionVariant(name,function));
 }
 
-void StackMachine::addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc)
+void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
 {
 	macros[name] = macroFunc;
 }
@@ -206,7 +206,7 @@ void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* na
 		targetScope = currentCallBlock->getScope();
 
 	std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-	const std::wstring& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();
+	const UnicodeString& strName = *std::static_pointer_cast<StaticName>(staticData)->getName();
 	targetScope->insertName(strName,identifier.localId,name);
 }
 

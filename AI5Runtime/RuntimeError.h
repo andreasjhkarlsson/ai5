@@ -6,7 +6,7 @@
 class RuntimeError
 {
 public:
-	RuntimeError(const std::wstring& message): message(message)
+	RuntimeError(const UnicodeString& message): message(message)
 	{
 
 	}
@@ -14,17 +14,17 @@ public:
 	{
 
 	}
-	const std::wstring& getMessage() const
+	UnicodeString& getMessage()
 	{
 		return message;
 	}
 protected:
-	void setMessage(const std::wstring& message)
+	void setMessage(const UnicodeString& message)
 	{
 		this->message = message;
 	}
 private:
-	std::wstring message;
+	UnicodeString message;
 };
 
 class InvalidArgumentCountError: RuntimeError
@@ -34,12 +34,12 @@ public:
 	{
 		if(got < required)
 		{
-			this->setMessage(std::wstring(L"Too few arguments to function call. Got ")+
+			this->setMessage(UnicodeString(L"Too few arguments to function call. Got ")+
 			int2string(got)+L" expected "+int2string(required)+L".");
 		}
 		else
 		{
-			this->setMessage(std::wstring(L"Too many arguments to function call. Got ")+int2string(got)+L" max is "+int2string(max)+L".");
+			this->setMessage(UnicodeString(L"Too many arguments to function call. Got ")+int2string(got)+L" max is "+int2string(max)+L".");
 		}
 	}
 };

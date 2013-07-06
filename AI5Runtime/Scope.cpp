@@ -1,14 +1,14 @@
 #include "Scope.h"
 #include "StackMachine.h"
 
-NameVariant* Scope::createName(StackMachine* machine,const std::wstring &name)
+NameVariant* Scope::createName(StackMachine* machine,const UnicodeString& name)
 {
 	NameVariant* n = NameVariant::createFromFactory(machine->getVariantFactory());
 	lookup[name] = n;
 	return n;
 }
 
-NameVariant* Scope::createIndexForName(StackMachine* machine,const std::wstring &name,int index)
+NameVariant* Scope::createIndexForName(StackMachine* machine,const UnicodeString& name,int index)
 {
 	if (lookup.find(name) == lookup.end())
 	{
@@ -47,7 +47,7 @@ void Scope::cleanup()
 	usedIndexes.clear();
 }
 
-void Scope::insertName(const std::wstring& name,int index,NameVariant* nameVariant)
+void Scope::insertName(const UnicodeString& name,int index,NameVariant* nameVariant)
 {
 	nameVariant->addRef();
 	lookup[name] = nameVariant;

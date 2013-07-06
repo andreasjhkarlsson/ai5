@@ -25,7 +25,7 @@ Variant* DialogFunctions::msgbox(CallInfo* callInfo)
 	shared_string title = callInfo->getStringArg(1);
 	shared_string text = callInfo->getStringArg(2);
 
-	return new Integer32Variant(MessageBoxW(NULL,text->c_str(),title->c_str(),flag));
+	return new Integer32Variant(MessageBoxW(NULL,text->getTerminatedBuffer(),title->getTerminatedBuffer(),flag));
 }
 
 

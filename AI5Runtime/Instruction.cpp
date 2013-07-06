@@ -48,10 +48,10 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "NOOP";
 		break;
 	case Instruction::PUSH_NAME_VALUE:
-		stream << "PUSH_NAME_VALUE" << " " << *getName(machine,this->arg.identifier);
+		stream << "PUSH_NAME_VALUE" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::PUSH_NAME:
-		stream << "PUSH_NAME" << " " << *getName(machine,this->arg.identifier);
+		stream << "PUSH_NAME" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::PUSH_INTEGER64:
 		stream << "PUSH_INTEGER64" << " " << getInteger64(machine, this->arg.integer);
@@ -70,7 +70,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 			stream << "false";
 		break;
 	case Instruction::PUSH_STRING:
-		stream << "PUSH_STRING" << " " << *getString(machine,this->arg.integer);
+		stream << "PUSH_STRING" << " " << getString(machine,this->arg.integer)->getTerminatedBuffer();
 		break;
 	case Instruction::PUSH_FUNCTION:
 		stream << "PUSH_FUNCTION" << " " << this->arg.integer;
@@ -91,28 +91,28 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "POP";
 		break;
 	case Instruction::MAKE_GLOBAL_CONST:
-		stream << "MAKE_GLOBAL_CONST" << " " << *getName(machine,this->arg.identifier);
+		stream << "MAKE_GLOBAL_CONST" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::MAKE_LOCAL_CONST:
-		stream << "MAKE_LOCAL_CONST" << " " << *getName(machine,this->arg.identifier);
+		stream << "MAKE_LOCAL_CONST" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::MAKE_NEAREST_CONST:
-		stream << "MAKE_NEAREST_CONST" << " " << *getName(machine,this->arg.identifier);
+		stream << "MAKE_NEAREST_CONST" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::ASSIGN_GLOBAL:
-		stream << "ASSIGN_GLOBAL" << " " << *getName(machine,this->arg.identifier);
+		stream << "ASSIGN_GLOBAL" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::ASSIGN_LOCAL:
-		stream << "ASSIGN_LOCAL" << " " << *getName(machine,this->arg.identifier);
+		stream << "ASSIGN_LOCAL" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::ASSIGN_NEAREST:
-		stream << "ASSIGN_NEAREST" << " " << *getName(machine,this->arg.identifier);
+		stream << "ASSIGN_NEAREST" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::ASSIGN_INDEX:
 		stream << "ASSIGN_INDEX";
 		break;
 	case Instruction::ASSIGN_PROPERTY:
-		stream << "ASSIGN_PROPERTY" << " " << *getName(machine,this->arg.identifier);
+		stream << "ASSIGN_PROPERTY" << " " << getName(machine,this->arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::JUMP_LONG_ABSOLUTE:
 		stream << "JUMP_LONG_ABSOLUTE" << " " << this->arg.integer;
@@ -241,7 +241,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "REDIM_MULTIDIM_LIST " << (int)arg.byte;
 		break;
 	case Instruction::PUSH_MACRO:
-		stream << "PUSH_MACRO " << *getMacro(machine,arg.integer);
+		stream << "PUSH_MACRO " << getMacro(machine,arg.integer)->getTerminatedBuffer();
 		break;
 	case Instruction::DOUBLE_TOP_TWO:
 		stream << "DOUBLE_TOP_TWO";
@@ -259,10 +259,10 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "BREAK_LOOP " << (int)arg.byte;
 		break;
 	case Instruction::CREATE_ARGUMENT:
-		stream << "CREATE_ARGUMENT " << *getName(machine,arg.identifier);
+		stream << "CREATE_ARGUMENT " << getName(machine,arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::CREATE_BYREF_ARGUMENT:
-		stream << "CREATE_BYREF_ARGUMENT " << *getName(machine,arg.identifier);
+		stream << "CREATE_BYREF_ARGUMENT " << getName(machine,arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::LOAD_ARGUMENTS:
 		stream << "LOAD_ARGUMENTS " << (int)arg.bytePair.b1 << " " << (int)arg.bytePair.b2;
@@ -271,7 +271,7 @@ std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
 		stream << "PUSH_GENERAL_BLOCK";
 		break;
 	case Instruction::CREATE_CLOSURE_NAME:
-		stream << "PUSH_CLOSURE_NAME " << *getName(machine,arg.identifier);
+		stream << "PUSH_CLOSURE_NAME " << getName(machine,arg.identifier)->getTerminatedBuffer();
 		break;
 	case Instruction::GET_ITERATOR:
 		stream << "GET_ITERATOR";

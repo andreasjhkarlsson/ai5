@@ -62,7 +62,7 @@ bool Variant::toBoolean() const
 }
 shared_string Variant::toString() const
 {
-	return shared_string(new std::wstring(L""));
+	return shared_string(new UnicodeString(L""));
 }
 bool Variant::equal(Variant*)
 {

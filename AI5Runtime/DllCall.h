@@ -3,6 +3,7 @@
 #include "windows.h"
 #include "variant.h"
 #include "COMVar.h"
+#include "types.h"
 
 #define MAX_ARG_DLLCALL 32 // Maximum number of arguments for DllCall
 
@@ -11,14 +12,14 @@ class DllCall
 
 public:
 	DllCall                                              ();
-	DllCall                                              (HMODULE, const std::wstring&, const std::wstring&, const std::vector<std::wstring>&);
+	DllCall                                              (HMODULE, UnicodeString&, UnicodeString&, std::vector<UnicodeString>&);
 	~DllCall                                             ();
 
-	bool                          Invoke                 (const std::vector<Variant*>&, COMVar*);
-	__forceinline bool            SetFunc                (const std::wstring&);
+	bool                          Invoke                 (std::vector<Variant*>&, COMVar*);
+	__forceinline bool            SetFunc                (UnicodeString&);
 	void                          SetFunc                (LPVOID);
-	__forceinline void            SetRetTypeAndCC        (const std::wstring&);
-	__forceinline void            SetParamsTypes         (const std::vector<std::wstring>&);
+	__forceinline void            SetRetTypeAndCC        (UnicodeString&);
+	__forceinline void            SetParamsTypes         (std::vector<UnicodeString>&);
 
 	// The size of the buffer in characters for dynamically allocated strings
 	static const UINT             SIZE_BUFFER = 65536;

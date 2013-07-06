@@ -47,7 +47,7 @@ Variant* FileFunctions::fileExists(CallInfo* callInfo)
 	shared_string path = callInfo->getStringArg(0);
 
 
-	return BooleanVariant::Get(PathFileExistsW(path->c_str()) != 0,true);
+	return BooleanVariant::Get(PathFileExistsW(path->getTerminatedBuffer()) != 0,true);
 
 }
 
@@ -72,7 +72,7 @@ void FileFunctions::registerFunctions(StackMachine* machine)
 Variant* FileFunctions::consoleWrite(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	std::wcout << *callInfo->getStringArg(0);
+	std::wcout << callInfo->getStringArg(0)->getTerminatedBuffer();
 	return nullptr;
 }
 
@@ -80,7 +80,7 @@ Variant* FileFunctions::consoleWrite(CallInfo* callInfo)
 Variant* FileFunctions::consoleWriteError(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	std::wcerr << *callInfo->getStringArg(0);
+	std::wcerr << callInfo->getStringArg(0)->getTerminatedBuffer();
 	return nullptr;
 }
 
@@ -89,14 +89,14 @@ Variant* FileFunctions::consoleReadLine(CallInfo* callInfo)
 	callInfo->validateArgCount(0,0);
 	std::wstring str;
 	std::getline(std::wcin,str);
-	return new StringVariant(str);
+	return new StringVariant(str.c_str());
 }
 
 Variant* FileFunctions::fileChangeDir(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
-	SetCurrentDirectoryW(callInfo->getStringArg(0)->c_str());
+	SetCurrentDirectoryW(callInfo->getStringArg(0)->getTerminatedBuffer());
 
 	return nullptr;
 }
@@ -131,7 +131,7 @@ public:
 		else 
 			openOpt = OPEN_EXISTING;
 
-		handle = CreateFileW(filename->c_str(),readWrite,0,NULL,openOpt,FILE_ATTRIBUTE_NORMAL,NULL);
+		handle = CreateFileW(filename->getTerminatedBuffer(),readWrite,0,NULL,openOpt,FILE_ATTRIBUTE_NORMAL,NULL);
 		if(!handle)
 		{
 			// TODO: raise error!

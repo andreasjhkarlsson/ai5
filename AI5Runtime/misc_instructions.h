@@ -101,7 +101,9 @@ __forceinline void concatStrings(StackMachine* machine)
 	Variant* arg2 = machine->getDataStack()->pop();
 	Variant* arg1 = machine->getDataStack()->pop();
 
-	shared_string result = shared_string(new std::wstring(*arg1->toString() + *arg2->toString()));
+	shared_string result = shared_string(new UnicodeString(L""));
+	(*result)+=*arg1->toString();
+	(*result)+=*arg2->toString();
 
 	arg1->release();
 	arg2->release();

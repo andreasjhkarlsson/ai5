@@ -34,16 +34,15 @@ bool FloatingVariant::toBoolean() const
 
 std::wostream& FloatingVariant::format(std::wostream& stream) const
 {
-	stream << "FloatingVariant: " << *toString();
+	stream << "FloatingVariant: " << toString()->getTerminatedBuffer();
 	return stream;
 }
-
 
 shared_string FloatingVariant::toString() const
 {
 	std::wstringstream sstream;
 	sstream << value;
-	return create_shared_string(sstream.str());
+	return create_shared_string(sstream.str().c_str());
 }
 
 

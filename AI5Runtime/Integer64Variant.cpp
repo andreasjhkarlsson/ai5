@@ -21,7 +21,7 @@ __int64 Integer64Variant::getValue()
 
 std::wostream& Integer64Variant::format(std::wostream& stream) const
 {
-	stream << "IntegerVariant64: " << *toString();
+	stream << "IntegerVariant64: " << toString()->getTerminatedBuffer();
 	return stream;
 }
 
@@ -55,7 +55,7 @@ shared_string Integer64Variant::toString() const
 {
 	std::wstringstream stream;
 	stream << value;
-	return create_shared_string(stream.str());
+	return create_shared_string(stream.str().c_str());
 }
 
 

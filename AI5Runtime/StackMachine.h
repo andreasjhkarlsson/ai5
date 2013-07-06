@@ -63,8 +63,8 @@ public:
 	void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
 	void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
-	void addBuiltInFunction(const std::wstring &name,BuiltinFunction function);
-	void addMacro(const std::wstring &name,MACRO_FUNCTION macroFunc);
+	void addBuiltInFunction(const UnicodeString &name,BuiltinFunction function);
+	void addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
 
 	Variant* getErrorCode();
@@ -84,7 +84,7 @@ private:
 	CallBlock* currentCallBlock;
 	// Macros are stored with a simple string as lookup.
 	// TODO: Lookup macros with index as well.
-	std::unordered_map<std::wstring,MACRO_FUNCTION> macros;
+	std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator> macros;
 	Scope *globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;

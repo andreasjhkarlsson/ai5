@@ -23,9 +23,9 @@ Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(3, 3 + 2 * MAX_ARG_DLLCALL);
 
-	std::vector<std::wstring> vParamTypes;
+	std::vector<UnicodeString> vParamTypes;
 	for (int i = 3; i < callInfo->getArgCount(); ++i)
-		vParamTypes.push_back(callInfo->getStringArg(i++)->c_str()); // post-increment used to get every other element
+		vParamTypes.push_back(callInfo->getStringArg(i++)->getTerminatedBuffer()); // post-increment used to get every other element
 
 	std::vector<Variant*> vArgs;
 	for (int i = 4; i < callInfo->getArgCount(); ++i)
@@ -35,7 +35,7 @@ Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
 	HMODULE hModule = nullptr;
 	if(callInfo->getArg(0)->isStringType())
 	{
-		hModule = ::LoadLibraryW(callInfo->getStringArg(0)->c_str());
+		hModule = ::LoadLibraryW(callInfo->getStringArg(0)->getTerminatedBuffer());
 		loadedModule = true;
 	}
 	else
@@ -77,9 +77,9 @@ Variant* DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2, 3 + 2 * MAX_ARG_DLLCALL);
 
-	std::vector<std::wstring> vParamTypes;
+	std::vector<UnicodeString> vParamTypes;
 	for (int i = 2; i < callInfo->getArgCount(); ++i)
-		vParamTypes.push_back(callInfo->getStringArg(i++)->c_str()); // post-increment used to get every other element
+		vParamTypes.push_back(callInfo->getStringArg(i++)->getTerminatedBuffer()); // post-increment used to get every other element
 
 	std::vector<Variant*> vArgs;
 	for (int i = 3; i < callInfo->getArgCount(); ++i)
@@ -115,7 +115,7 @@ Variant* DllCallFunctions::dllopen(CallInfo* callInfo)
 
 	shared_string dllPath = callInfo->getStringArg(0);
 
-	HMODULE module = ::LoadLibraryW(dllPath->c_str());
+	HMODULE module = ::LoadLibraryW(dllPath->getTerminatedBuffer());
 
 	if(!module)
 		return nullptr; // TODO: Set error.

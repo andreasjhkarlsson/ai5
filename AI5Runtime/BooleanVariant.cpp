@@ -43,7 +43,7 @@ bool BooleanVariant::toBoolean() const
 
 std::wostream& BooleanVariant::format(std::wostream& stream) const
 {
-	stream << "BooleanVariant: " << *toString();
+	stream << "BooleanVariant: " << toString()->getTerminatedBuffer();
 	return stream;
 }
 

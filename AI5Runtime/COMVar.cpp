@@ -98,7 +98,7 @@ COMVar::COMVar(const Variant& vVar)
 
 	case Variant::STRING:
 		this->vt		  =  VT_BSTR;
-		this->bstrVal	  =  ::SysAllocString(vVar.toString()->c_str());
+		this->bstrVal	  =  ::SysAllocString(vVar.toString()->getTerminatedBuffer());
 		break;
 
 	case Variant::LIST:

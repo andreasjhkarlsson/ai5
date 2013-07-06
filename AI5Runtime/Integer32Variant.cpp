@@ -44,7 +44,7 @@ shared_string Integer32Variant::toString() const
 {
 	std::wstringstream stream;
 	stream << value;
-	return create_shared_string(stream.str());
+	return create_shared_string(stream.str().c_str());
 }
 
 

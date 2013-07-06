@@ -1,6 +1,8 @@
 #include "encode.h"
 #include <Windows.h>
 #include <string>
+#include "unicode/format.h"
+
 
 shared_string Encode::utf8_to_utf16(const char* utf8data,int length)
 {
@@ -8,18 +10,8 @@ shared_string Encode::utf8_to_utf16(const char* utf8data,int length)
 	{
 		return create_shared_string(L"");
 	}
-	// Allocate temporary buffer (and make sure NULLCHAR fits).
-	wchar_t* buff = new wchar_t[length+1];
 
-	// Do the conversion
-	int res = MultiByteToWideChar(CP_UTF8,0,utf8data,length,buff,length+1);
-
-	std::wstring *str = new std::wstring(buff,res);
-
-	// Clean up!
-	delete[] buff;
-
-	return shared_string(str);
+	return shared_string(new UnicodeString(utf8data,length,"utf-8"));
 }
 
 // Encodes UTF-16 little endian into TYPE.
@@ -75,12 +67,12 @@ shared_string Encode::decode(const char* bin,size_t len,TYPE type)
 		size_t required_size = MultiByteToWideChar(CP_ACP,0,bin,len,NULL,0);
 		std::vector<wchar_t> buffer(required_size);
 		size_t converted_size = MultiByteToWideChar(CP_ACP,0,bin,len,&buffer[0],required_size);
-		result = shared_string(new std::wstring(&buffer[0],converted_size));
+		result = shared_string(new UnicodeString(&buffer[0],converted_size));
 		}
 		break;
 	case 2:
 		{
-			result = shared_string(new std::wstring((wchar_t*)bin,len/2));
+			result = shared_string(new UnicodeString((wchar_t*)bin,len/2));
 		}
 		break;	
 	case 3:
@@ -88,7 +80,7 @@ shared_string Encode::decode(const char* bin,size_t len,TYPE type)
 			std::vector<char> buffer(len);
 			memcpy(&buffer[0],bin,len);
 			swapUtf16Endiness((wchar_t*)&buffer[0],buffer.size()/2);
-			result = shared_string(new std::wstring((wchar_t*)&buffer[0],buffer.size()/2));
+			result = shared_string(new UnicodeString((wchar_t*)&buffer[0],buffer.size()/2));
 		}
 		break;
 	case 4:
@@ -96,7 +88,7 @@ shared_string Encode::decode(const char* bin,size_t len,TYPE type)
 		size_t required_size = MultiByteToWideChar(CP_UTF8,0,bin,len,NULL,0);
 		std::vector<wchar_t> buffer(required_size);
 		MultiByteToWideChar(CP_UTF8,0,bin,len,&buffer[0],required_size);
-		result = shared_string(new std::wstring(&buffer[0],required_size));
+		result = shared_string(new UnicodeString(&buffer[0],required_size));
 		}
 		break;
 	}	
@@ -106,6 +98,7 @@ shared_string Encode::decode(const char* bin,size_t len,TYPE type)
 
 void Encode::swapUtf16Endiness(wchar_t* binary,int size)
 {
+
 	for(int i=0;i<size;i++)
 	{
 		char high = (binary[i]>>8)&0xFF;

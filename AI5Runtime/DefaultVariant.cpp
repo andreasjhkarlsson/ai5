@@ -34,7 +34,7 @@ bool DefaultVariant::toBoolean() const
 }
 shared_string DefaultVariant::toString() const
 {
-	return shared_string(new std::wstring(L"Default"));
+	return shared_string(new UnicodeString(L"Default"));
 }
 bool DefaultVariant::equal(Variant* other)
 {

@@ -94,19 +94,20 @@ class StringComparator: public Comparator
 public:
 	virtual bool greater(Variant* var1,Variant* var2)
 	{
-		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) > 0;
+		return var1->toString()->compare(*var2->toString()) > 0;
+		
 	}
 	virtual bool lesser(Variant* var1,Variant* var2)
 	{
-		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) < 0;
+		return var1->toString()->compare(*var2->toString()) < 0;
 	}
 	virtual bool greaterEqual(Variant* var1,Variant* var2)
 	{
-		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) >= 0;
+		return var1->toString()->compare(*var2->toString()) >= 0;
 	}
 	virtual bool lesserEqual(Variant* var1,Variant* var2)
 	{
-		return _wcsicmp(var1->toString()->c_str(),var2->toString()->c_str()) <= 0;
+		return var1->toString()->compare(*var2->toString()) <= 0;
 	}
 	virtual bool equal(Variant* var1,Variant* var2)
 	{
@@ -115,7 +116,7 @@ public:
 
 		if(str1->length() != str2->length()) return false;
 
-		return _wcsicmp(str1->c_str(),str2->c_str()) == 0;
+		return str1->caseCompare(*str2,0) == 0;
 	} 
 
 	virtual bool strongEqual(Variant* var1,Variant* var2)
@@ -125,7 +126,7 @@ public:
 
 		if(str1->length() != str2->length()) return false;
 
-		return wcscmp(str1->c_str(),str2->c_str()) == 0;
+		return str1->compare(*str2) == 0;
 	}
 };
 

@@ -1,21 +1,26 @@
 #include "types.h"
 #include <sstream>
 
-std::wstring int2string(int num)
+UnicodeString int2string(int num)
 {
 	std::wstringstream stream;
 	stream << num;
-	return stream.str();
+	return UnicodeString(stream.str().c_str());
 }
 
 
 shared_string create_shared_string(const wchar_t* str,int len)
 {
-	return shared_string(new std::wstring(str,len));
+	return shared_string(new UnicodeString(str,len));
 }
 
 
-shared_string create_shared_string(const std::wstring& string)
+shared_string create_shared_string(const UnicodeString& string)
 {
-	return shared_string(new std::wstring(string));
+	return shared_string(new UnicodeString(string));
+}
+
+shared_string create_shared_string_from_wstring(const std::wstring& string)
+{
+	return shared_string(new UnicodeString(string.c_str()));
 }

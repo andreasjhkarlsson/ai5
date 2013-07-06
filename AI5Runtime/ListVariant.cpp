@@ -27,7 +27,7 @@ void ListVariant::cleanup()
 
 std::wostream& ListVariant::format(std::wostream& stream) const
 {
-	stream << L"ListVariant: " << *toString();
+	stream << L"ListVariant: " << toString()->getTerminatedBuffer();
 	return stream;
 }
 
@@ -49,7 +49,7 @@ bool ListVariant::toBoolean() const
 }
 shared_string ListVariant::toString() const
 {
-	std::wstring* str = new std::wstring();
+	UnicodeString* str = new UnicodeString();
 
 	(*str)+=L"[";
 	bool first = true;

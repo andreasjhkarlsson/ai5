@@ -3,7 +3,7 @@
 #include "NullVariant.h"
 #include "CallInfo.h"
 
-BuiltinFunctionVariant::BuiltinFunctionVariant(const std::wstring &name,BuiltinFunction func): name(name),
+BuiltinFunctionVariant::BuiltinFunctionVariant(const UnicodeString &name,BuiltinFunction func): name(name),
 	func(func),FunctionVariant(TYPE)
 {
 }
@@ -43,7 +43,7 @@ void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
 
 std::wostream& BuiltinFunctionVariant::format(std::wostream& stream) const
 {
-	stream << "Builtin function: " << name.c_str();
+	stream << "Builtin function: ";// << name.getTerminatedBuffer();
 	return stream;
 }
 

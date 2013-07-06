@@ -49,7 +49,7 @@ Variant* VariableFunctions::stringToBinary(CallInfo* callInfo)
 	if(flag < 0 || flag > 4)
 		throw RuntimeError(L"Flag must be between 0 and 4");
 	
-	shared_binary res = Encode::encode(str->c_str(),str->length(),flag);
+	shared_binary res = Encode::encode(str->getTerminatedBuffer(),str->length(),flag);
 
 	return new BinaryVariant(res);
 

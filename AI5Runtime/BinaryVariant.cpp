@@ -22,7 +22,7 @@ shared_binary BinaryVariant::getValue()
 
 std::wostream& BinaryVariant::format(std::wostream& stream) const
 {
-	stream << L"BinaryVariant: " << *toString();
+	stream << L"BinaryVariant: " << toString()->getTerminatedBuffer();
 	return stream;
 }
 bool BinaryVariant::toBoolean() const
@@ -42,7 +42,7 @@ shared_string BinaryVariant::toString() const
 	{
 		stream << std::hex << std::setw(2) << std::setfill(L'0') << (unsigned char)(*binary)[i];
 	}
-	return shared_string(new std::wstring(stream.str()));
+	return shared_string(new UnicodeString(std::wstring(stream.str()).c_str()));
 }
 
 size_t BinaryVariant::hash() const

@@ -37,7 +37,7 @@ bool NameVariant::toBoolean() const
 }
 shared_string NameVariant::toString() const
 {
-	return shared_string(new std::wstring(L""));
+	return shared_string(new UnicodeString(L""));
 
 }
 void NameVariant::cleanup()

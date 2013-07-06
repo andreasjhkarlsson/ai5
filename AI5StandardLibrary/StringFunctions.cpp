@@ -24,13 +24,7 @@ Variant* StringFunctions::stringUpper(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	shared_string arg = callInfo->getStringArg(0);
-	size_t buff_size = arg->length()+1;
-	wchar_t* buffer = new wchar_t[buff_size];
-	wcscpy_s(buffer,buff_size,arg->c_str());
-	
-	_wcsupr_s(buffer,buff_size);
-	shared_string ret = shared_string(new std::wstring(buffer));
-	delete buffer;
+	shared_string ret = shared_string(new UnicodeString(arg->toUpper()));
 	return new StringVariant(ret);
 }
 
@@ -39,12 +33,7 @@ Variant* StringFunctions::stringLower(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	shared_string arg = callInfo->getStringArg(0);
-	size_t buff_size = arg->length()+1;
-	wchar_t* buffer = new wchar_t[buff_size];
-	wcscpy_s(buffer,buff_size,arg->c_str());
-	_wcslwr_s(buffer,buff_size);
-	shared_string ret = shared_string(new std::wstring(buffer));
-	delete buffer;
+	shared_string ret = shared_string(new UnicodeString(arg->toLower()));
 	return new StringVariant(ret);
 }
 
@@ -60,38 +49,47 @@ Variant* StringFunctions::stringLeft(CallInfo* callInfo)
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
 	int count = callInfo->getInt32Arg(1);
-	return new StringVariant(shared_string(new std::wstring(*str,0,count)));
+	shared_string ret = shared_string(new UnicodeString(L""));
+	str->extract(0,count,*ret);
+	return new StringVariant(ret);
 }
+
 Variant* StringFunctions::stringTrimLeft(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
 	int count = callInfo->getInt32Arg(1);
-	if(count > str->size())
+	if(count > str->countChar32())
 		return new StringVariant(L"");
-	return new StringVariant(shared_string(new std::wstring(*str,count,std::wstring::npos)));
+	shared_string ret = shared_string(new UnicodeString(L""));
+	str->extract(count,str->length()-count,*ret);
+	return new StringVariant(ret);
 }
 Variant* StringFunctions::stringRight(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
 	int count = callInfo->getInt32Arg(1);
-	if(count > str->size())
+	if(count > str->length())
 	{
 		return new StringVariant(str);
 	}
-	return new StringVariant(shared_string(new std::wstring(*str,str->size()-(count),std::wstring::npos)));
+	shared_string ret =  shared_string(new UnicodeString(L""));
+	str->extract(str->length()-count,count,*ret);
+	return new StringVariant(ret);
 }
 Variant* StringFunctions::stringTrimRight(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
 	int count = callInfo->getInt32Arg(1);
-	if(count > str->size())
+	if(count > str->length())
 	{
 		return new StringVariant(L"");
 	}
-	return new StringVariant(shared_string(new std::wstring(*str,0,str->size()-(count))));
+	shared_string ret = shared_string(new UnicodeString(L""));
+	str->extract(0,str->length()-count,*ret);
+	return new StringVariant(ret);
 }
 
 
@@ -99,10 +97,11 @@ Variant* StringFunctions::stringIsDigit(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	shared_string str = callInfo->getStringArg(0);
-	const wchar_t* c_str = str->c_str();
+	const wchar_t* c_str = str->getTerminatedBuffer();
 
 	for(int i=0;i<str->length();i++)
 	{
+
 		wchar_t chr = c_str[i];
 		if(chr < L'0' || chr > L'9')
 			return BooleanVariant::Get(false,true);
