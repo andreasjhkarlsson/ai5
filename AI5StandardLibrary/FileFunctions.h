@@ -20,5 +20,6 @@ private:
 	Variant* fileClose(CallInfo* callInfo);
 	Variant* fileRead(CallInfo* callInfo);
 	Variant* fileWrite(CallInfo* callInfo);
+	Variant* fileReadLine(CallInfo* callInfo);
 };
 

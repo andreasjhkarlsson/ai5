@@ -9,6 +9,10 @@
 #include <memory>
 #include "..\AI5Runtime\encode.h"
 #include "..\AI5Runtime\CallInfo.h"
+#include "unicode/ustdio.h"
+#include "unicode/uchar.h"
+#include "unicode/ustring.h"
+#include <string>
 using namespace std::placeholders;
 
 FileFunctions::FileFunctions(void)
@@ -65,7 +69,7 @@ void FileFunctions::registerFunctions(StackMachine* machine)
 	machine->addBuiltInFunction(L"fileclose",std::bind(&fileClose,instance,_1));
 	machine->addBuiltInFunction(L"fileread",std::bind(&fileRead,instance,_1));
 	machine->addBuiltInFunction(L"filewrite",std::bind(&fileWrite,instance,_1));
-
+	machine->addBuiltInFunction(L"filereadline",std::bind(&fileReadLine,instance,_1));
 }
 
 
@@ -117,40 +121,73 @@ public:
 			handle(nullptr), HandleVariant(FILE_HANDLE), filename(filename),
 				mode(mode), encoding(encoding), binary(binary), bom(bom), fullDetection(fullDetection)
 	{
-		DWORD readWrite = 0;
-		DWORD openOpt;
+
+		char* openMode;
 		if(mode&READ)
-			readWrite |= GENERIC_READ;
-		if(mode&WRITE || mode&WRITE_APPEND)
-			readWrite |= GENERIC_WRITE;
+			openMode = "r";
+		if(mode&WRITE)
+			openMode = "w";
+		if(mode&WRITE_APPEND)
+			openMode = "w+"; // <- This is not documented by ICU, but ICU uses regular fopen so it works!
 
-		if(readWrite&WRITE_APPEND)
-			openOpt = CREATE_NEW;
-		else if(readWrite&WRITE)
-			openOpt = CREATE_ALWAYS;
-		else 
-			openOpt = OPEN_EXISTING;
+		char* codepage = nullptr;
+		if(encoding == Encode::UTF8)
+			codepage = "UTF-8";
+		else if(encoding == Encode::UTF16_LITTLE_ENDIAN)
+			codepage = "UTF-16 LE";
+		else if(encoding == Encode::UTF16_BIG_ENDIAN)
+			codepage = "UTF-16 BE";
 
-		handle = CreateFileW(filename->getTerminatedBuffer(),readWrite,0,NULL,openOpt,FILE_ATTRIBUTE_NORMAL,NULL);
+		std::string utf8_filename;
+		// TODO: Use GetShortPath to make unicode filenames work.
+		filename->toUTF8String(utf8_filename);
+		handle = u_fopen(utf8_filename.c_str(),openMode,NULL,codepage);
+
 		if(!handle)
 		{
-			// TODO: raise error!
-			return;
+			// It's an error! Do something!
 		}
 
 	}
 
 	Variant* read(size_t count)
 	{
-		if(count == 0)
+		int bytesRead;
+		std::vector<UChar> buffer(count);
+		bytesRead = u_file_read(&buffer[0],count,handle);
+
+		return new StringVariant(create_shared_string(&buffer[0],bytesRead));
+	}
+
+	Variant* readLine()
+	{
+		shared_string str = create_shared_string(L"");
+		const int buffer_size = 12;
+
+		UChar buffer[buffer_size];
+		int read_length;
+		do
 		{
-			// TODO
-		}
+			// If u_fgets returns nullptr, there are no more lines!
+			if(!u_fgets(buffer,buffer_size,handle))
+				break;
+			read_length = u_strlen(buffer);
+
+			// If the last char is '\n', then line has been processes.
+			if(buffer[read_length-1] == L'\n')
+			{
+				// Do not append linebreak.
+				str->append(buffer,read_length-1);
+				break;
+			}
+			else
+			{
+				str->append(buffer,read_length);
+			}
+		}while(true);
 
 
-		//if(!binary && (encoding == Encode::UTF16_LITTLE_ENDIAN
-
-
+		return new StringVariant(str);
 	}
 
 	virtual bool isValid()
@@ -163,14 +200,17 @@ public:
 	}
 	void close()
 	{
+		// You can close as many times as you like! :))
 		if(handle != nullptr)
 		{
-			CloseHandle(handle);
+			u_fclose(handle);
 			handle = nullptr;
 		}
 	}
+
+
 private:
-	HANDLE handle;
+	UFILE* handle;
 	Encode::TYPE encoding;
 	MODE mode;
 	bool binary;
@@ -190,7 +230,7 @@ Variant* FileFunctions::fileOpen(CallInfo* callInfo)
 	int flag = callInfo->getInt32Arg(1,0);
 
 	// Default values for flags.
-	FileHandle::MODE mode = FileHandle::READ; 
+	FileHandle::MODE mode; 
 	bool createDirectories = false;
 	bool binary_mode = false; // Force every read to binary!
 	bool bom = false; // Try to detect encoding with BOM.
@@ -200,8 +240,10 @@ Variant* FileFunctions::fileOpen(CallInfo* callInfo)
 	// Extract flags from bitfield.
 	if(flag&0x1)
 		mode = FileHandle::WRITE;
-	if(flag&0x2)
+	else if(flag&0x2)
 		mode = FileHandle::WRITE_APPEND;
+	else 
+		mode = FileHandle::READ;
 	if(flag&0x8)
 		createDirectories = true;
 	if(flag&0x10)
@@ -244,9 +286,21 @@ Variant* FileFunctions::fileClose(CallInfo* callInfo)
 }
 Variant* FileFunctions::fileRead(CallInfo* callInfo)
 {
+	callInfo->validateArgCount(1,2);
 
-	return nullptr;
+	int count = callInfo->getInt32Arg(1,0);
+
+	return callInfo->getHandleArg(0)->castHandle<FileHandle>()->read(count);
+
 }
+
+Variant* FileFunctions::fileReadLine(CallInfo* callInfo)
+{
+	callInfo->validateArgCount(1,1);
+
+	return callInfo->getHandleArg(0)->castHandle<FileHandle>()->readLine();
+}
+
 Variant* FileFunctions::fileWrite(CallInfo* callInfo)
 {
 	return nullptr;

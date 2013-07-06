@@ -96,7 +96,7 @@
       <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)</Command>
+      <Command>xcopy /D /F $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Performing custom post-build script</Message>
@@ -136,6 +136,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /D /F $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

@@ -217,8 +217,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 				unsigned int nameSize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
 				shared_string name;
-				if(nameSize > 0)
-					name = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],nameSize);
+				name = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],nameSize);
 				index += nameSize;
 				statics->push_back(StaticData::PTR(new StaticName(name)));
 				
@@ -231,8 +230,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
 				shared_string str;
-				if(strsize > 0)
-					str = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
+				str = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
 				index += strsize;
 				statics->push_back(StaticData::PTR(new StaticString(str)));
 				
@@ -245,8 +243,7 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
 				shared_string str;
-				if(strsize > 0)
-					str = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
+				str = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
 				index += strsize;
 				statics->push_back(StaticData::PTR(new StaticMacro(str)));
 				
