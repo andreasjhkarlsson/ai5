@@ -3,6 +3,7 @@
 #include "..\AI5Runtime\NullVariant.h"
 #include "..\AI5Runtime\BooleanVariant.h"
 #include "..\AI5Runtime\HandleVariant.h"
+#include "..\AI5Runtime\IteratorVariant.h"
 #include <Windows.h>
 #include <Shlwapi.h>
 #include <functional>
@@ -118,7 +119,7 @@ public:
 	static const HANDLE_TYPE HTYPE = FILE_HANDLE;
 	FileHandle(shared_string filename,MODE mode,
 		Encode::TYPE encoding,bool binary,bool bom,bool fullDetection):
-			handle(nullptr), HandleVariant(FILE_HANDLE), filename(filename),
+	handle(nullptr), HandleVariant(FILE_HANDLE), filename(filename),
 				mode(mode), encoding(encoding), binary(binary), bom(bom), fullDetection(fullDetection)
 	{
 
@@ -206,6 +207,41 @@ public:
 			u_fclose(handle);
 			handle = nullptr;
 		}
+	}
+
+	bool isEOFReached()
+	{
+		return u_feof(handle);
+	}
+
+	class LineIterator: public IteratorVariant
+	{
+	public:
+		LineIterator(FileHandle* handle): handle(handle)
+		{
+			handle->addRef();
+		}
+		virtual bool hasMore()
+		{
+			return !handle->isEOFReached();
+		}
+		virtual Variant* next()
+		{
+			return handle->readLine();
+			
+		}
+
+		virtual void cleanup()
+		{
+			handle->release();
+		}
+	private:
+		FileHandle* handle;
+	};
+	
+	virtual IteratorVariant* iterate()
+	{
+		return new LineIterator(this);
 	}
 
 
