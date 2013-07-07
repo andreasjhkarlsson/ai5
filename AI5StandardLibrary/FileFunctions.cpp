@@ -4,7 +4,6 @@
 #include "..\AI5Runtime\BooleanVariant.h"
 #include "..\AI5Runtime\HandleVariant.h"
 #include "..\AI5Runtime\IteratorVariant.h"
-#include <Windows.h>
 #include <Shlwapi.h>
 #include <functional>
 #include <memory>
@@ -14,6 +13,7 @@
 #include "unicode/uchar.h"
 #include "unicode/ustring.h"
 #include <string>
+
 using namespace std::placeholders;
 
 FileFunctions::FileFunctions(void)
@@ -144,11 +144,19 @@ public:
 		filename->toUTF8String(utf8_filename);
 		handle = u_fopen(utf8_filename.c_str(),openMode,NULL,codepage);
 
+
 		if(!handle)
 		{
 			// It's an error! Do something!
 		}
 
+		if(encoding == Encode::UTF8 && bom)
+		{
+			char bom[3];
+			//u_fgetc(handle);
+			FILE* f = u_fgetfile(handle);
+			fread(bom,1,3,f);
+		}
 	}
 
 	Variant* read(size_t count)
