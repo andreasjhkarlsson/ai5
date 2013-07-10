@@ -15,3 +15,13 @@ AI5StandardLibrary/Debug/*
 AI5StandardLibrary/Release/*
 wscite/bin/*
 AI5StandardLibrary/AI5StandardLibrary.vcxproj.user
+shared\ICU\source\*
+shared/icu/source/*
+*.pdb
+*.bsc
+*.ilk
+shared/icu/as_is/*
+shared/icu/packaging/*
+shared/icu/readme.html
+shared/icu/icu4c.css
+shared/icu/APIChangeReport.html
