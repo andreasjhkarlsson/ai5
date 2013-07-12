@@ -58,8 +58,10 @@ bool CallInfo::getBoolArg(int index,bool defaultValue)
 		return defaultValue;
 	return getArg(index)->toBoolean();
 }
-shared_string CallInfo::getStringArg(int index)
+shared_string CallInfo::getStringArg(int index,const wchar_t* defaultValue)
 {
+	if(index >= argCount)
+		return shared_string(new UnicodeString(defaultValue));
 	return getArg(index)->toString();
 }
 HandleVariant* CallInfo::getHandleArg(int index)

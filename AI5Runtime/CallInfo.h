@@ -15,7 +15,7 @@ public:
 	int getInt32Arg(int index,int defaultValue=0);
 	__int64 getInt64Arg(int index,__int64 defaultValue=0);
 	bool getBoolArg(int index,bool defaultValue=false);
-	shared_string getStringArg(int index);
+	shared_string getStringArg(int index,const wchar_t* defaultValue=L"");
 	HandleVariant* getHandleArg(int index);
 	void setError(int error);
 	void setExtended(int extended);
