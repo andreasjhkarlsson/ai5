@@ -10,6 +10,7 @@
 #include "GraphicsAndSoundFunctions.h"
 #include "DllCallFunctions.h"
 #include "MiscFunctions.h"
+#include "MouseFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 
 
@@ -25,5 +26,6 @@ void registerStandardLibrary(StackMachine* machine)
 	GraphicsAndSoundFunctions::registerFunctions(machine);
 	DllCallFunctions::registerFunctions(machine);
 	MiscFunctions::registerFunctions(machine);
+	MouseFunctions::registerFunctions(machine);
 	Macros::registerMacros(machine);
 }
