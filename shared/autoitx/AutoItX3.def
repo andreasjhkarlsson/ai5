@@ -33,7 +33,7 @@ AU3_IniWrite@16 @30
 AU3_Init@0 @31
 AU3_IsAdmin@0 @32
 AU3_MouseClick@20 @33
-AU3_MouseClickDrag@28 @34
+AU3_MouseClickDrag@24 @34
 AU3_MouseDown@4 @35
 AU3_MouseGetCursor@0 @36
 AU3_MouseGetPosX@0 @37
