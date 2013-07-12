@@ -96,7 +96,8 @@
       <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /D /F $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)</Command>
+      <Command>copy /Y $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)
+copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Performing custom post-build script</Message>
@@ -137,7 +138,8 @@
       <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /D /F $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)</Command>
+      <Command>copy /Y $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)
+copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
