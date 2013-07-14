@@ -1,11 +1,11 @@
 #include <map>
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "RuntimeError.h"
 #include "NullVariant.h"
 #include "Instruction.h"
 #include "..\AI5StandardLibrary\StandardLibrary.h"
 
-StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
+StackMachineThread::StackMachineThread(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
 	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), 
 	currentCallBlock(nullptr), verbose(false), globalScope(new Scope()), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
@@ -13,14 +13,14 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	registerStandardLibrary(this);
 }
 
-StackMachine::~StackMachine(void)
+StackMachineThread::~StackMachineThread(void)
 {
 	globalScope->release();
 	errorCode->release();
 	extendedCode->release();
 }
 
-int StackMachine::start()
+int StackMachineThread::start()
 {
 	terminated = false;
 	int returnCode;
@@ -49,28 +49,28 @@ int StackMachine::start()
 	return returnCode;
 }
 
-void StackMachine::terminate()
+void StackMachineThread::terminate()
 {
 	terminated = true;
 }
 
-void StackMachine::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
+void StackMachineThread::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
 {
 	globalScope->createName(this,name)->setValue(new BuiltinFunctionVariant(name,function));
 }
 
-void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
+void StackMachineThread::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
 {
 	macros[name] = macroFunc;
 }
 
-MACRO_FUNCTION StackMachine::getMacro(int staticIndex)
+MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)
 {
 	return macros[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
 }
 
 
-void StackMachine::disassemble()
+void StackMachineThread::disassemble()
 {
 	for(size_t i=0;i<program->size();i++)
 	{
@@ -80,14 +80,14 @@ void StackMachine::disassemble()
 	}
 }
 
-void StackMachine::setVerbose()
+void StackMachineThread::setVerbose()
 {
 	verbose = true;
 }
 
 
 
-NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
+NameVariant* StackMachineThread::getNearestName(NameIdentifier identifier)
 {
 	if(currentCallBlock != nullptr)
 	{
@@ -111,7 +111,7 @@ NameVariant* StackMachine::getNearestName(NameIdentifier identifier)
 	return name;
 }
 
-NameVariant* StackMachine::getLocalName(NameIdentifier identifier)
+NameVariant* StackMachineThread::getLocalName(NameIdentifier identifier)
 {
 	Scope* scope = globalScope;
 	if(currentCallBlock != nullptr)
@@ -119,7 +119,7 @@ NameVariant* StackMachine::getLocalName(NameIdentifier identifier)
 	return scope->getNameFromIndex(identifier.localId);
 }
 
-NameVariant* StackMachine::getGlobalName(NameIdentifier identifier)
+NameVariant* StackMachineThread::getGlobalName(NameIdentifier identifier)
 {
 	Scope* scope = globalScope;
 	return scope->getNameFromIndex(identifier.globalId);
@@ -127,7 +127,7 @@ NameVariant* StackMachine::getGlobalName(NameIdentifier identifier)
 
 // This function sets the value for a name in the nearest scope where it's found.
 // If it isn't found it is added to the local scope, and if there is no local scope, to the global scope.
-void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool asConst)
+void StackMachineThread::setNearest(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	// Search for name in local and global scope.
 	NameVariant* foundName = nullptr;
@@ -161,7 +161,7 @@ void StackMachine::setNearest(NameIdentifier identifier,Variant* variant,bool as
 }
 
 
-void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
+void StackMachineThread::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	Scope* targetScope = globalScope;
 	if(currentCallBlock != nullptr)
@@ -183,7 +183,7 @@ void StackMachine::setLocal(NameIdentifier identifier,Variant* variant,bool asCo
 	}
 
 }
-void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asConst)
+void StackMachineThread::setGlobal(NameIdentifier identifier,Variant* variant,bool asConst)
 {
 	NameVariant* foundName = globalScope->getNameFromIndex(identifier.globalId);
 	if(foundName == nullptr)
@@ -199,7 +199,7 @@ void StackMachine::setGlobal(NameIdentifier identifier,Variant* variant,bool asC
 	}
 }
 
-void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
+void StackMachineThread::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
 {
 	Scope* targetScope = globalScope;
 	if(currentCallBlock != nullptr)
@@ -212,15 +212,15 @@ void StackMachine::addNameToLocalScope(NameIdentifier identifier,NameVariant* na
 
 
 
-Variant* StackMachine::getErrorCode()
+Variant* StackMachineThread::getErrorCode()
 {
 	return errorCode;
 }
-Variant* StackMachine::getExtendedCode()
+Variant* StackMachineThread::getExtendedCode()
 {
 	return extendedCode;
 }
-void StackMachine::setExtendedCode(Variant* extendedCode)
+void StackMachineThread::setExtendedCode(Variant* extendedCode)
 {
 	if(this->extendedCode != nullptr)
 		this->extendedCode->release();
@@ -228,7 +228,7 @@ void StackMachine::setExtendedCode(Variant* extendedCode)
 	if(this->extendedCode != nullptr)
 		this->extendedCode->addRef();
 }
-void StackMachine::setErrorCode(Variant* extendedCode)
+void StackMachineThread::setErrorCode(Variant* extendedCode)
 {
 	if(this->errorCode != nullptr)
 		this->errorCode->release();

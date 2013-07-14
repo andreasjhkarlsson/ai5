@@ -1,5 +1,5 @@
 #include "MathFunctions.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\FloatingVariant.h"
 #include "..\AI5Runtime\Integer32Variant.h"
 #include "..\AI5Runtime\Integer64Variant.h"
@@ -185,7 +185,7 @@ Variant* MathFunctions::srandom(CallInfo* callInfo)
 	return nullptr;
 }
 
-void MathFunctions::registerFunctions(StackMachine* machine)
+void MathFunctions::registerFunctions(StackMachineThread* machine)
 {
 	
 	std::shared_ptr<MathFunctions> instance(new MathFunctions);

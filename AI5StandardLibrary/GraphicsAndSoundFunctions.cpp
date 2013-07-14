@@ -1,5 +1,5 @@
 #include "GraphicsAndSoundFunctions.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\Integer32Variant.h"
 #include <Windows.h>
 #include <functional>
@@ -16,7 +16,7 @@ GraphicsAndSoundFunctions::~GraphicsAndSoundFunctions(void)
 }
 
 
-void GraphicsAndSoundFunctions::registerFunctions(StackMachine* machine)
+void GraphicsAndSoundFunctions::registerFunctions(StackMachineThread* machine)
 {
 	std::shared_ptr<GraphicsAndSoundFunctions> instance(new GraphicsAndSoundFunctions);
 

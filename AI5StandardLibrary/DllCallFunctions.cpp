@@ -1,6 +1,6 @@
 #include "DllcallFunctions.h"
 #include "..\AI5Runtime\DllCall.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\ListVariant.h"
 #include "..\AI5Runtime\NullVariant.h"
 #include "..\AI5Runtime\CallInfo.h"
@@ -134,7 +134,7 @@ Variant* DllCallFunctions::dllclose(CallInfo* callInfo)
 }
 
 
-void DllCallFunctions::registerFunctions(StackMachine* machine)
+void DllCallFunctions::registerFunctions(StackMachineThread* machine)
 {
 
 	std::shared_ptr<DllCallFunctions> instance(new DllCallFunctions);

@@ -1,4 +1,4 @@
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "Integer64Variant.h"
 #include "UserFunctionVariant.h"
 #include "ListVariant.h"
@@ -9,7 +9,7 @@
 #include "NameReferenceVariant.h"
 #include "HashMapVariant.h"
 
-__forceinline void pushInteger64(StackMachine* machine,int arg)
+__forceinline void pushInteger64(StackMachineThread* machine,int arg)
 {
 	Integer64Variant* variant = static_cast<StaticInteger64*>(machine->getStaticData(arg))->getVariant();
 	variant->addRef();
@@ -17,7 +17,7 @@ __forceinline void pushInteger64(StackMachine* machine,int arg)
 	machine->advanceCounter();
 }
 
-__forceinline void pushInteger32(StackMachine* machine,int arg)
+__forceinline void pushInteger32(StackMachineThread* machine,int arg)
 {
 	Integer32Variant* variant = static_cast<StaticInteger32*>(machine->getStaticData(arg))->getVariant();
 	variant->addRef();
@@ -25,7 +25,7 @@ __forceinline void pushInteger32(StackMachine* machine,int arg)
 	machine->advanceCounter();
 }
 
-__forceinline void pushFloating(StackMachine* machine,int arg)
+__forceinline void pushFloating(StackMachineThread* machine,int arg)
 {
 	FloatingVariant* variant = static_cast<StaticFloating*>(machine->getStaticData(arg))->getVariant();
 	variant->addRef();
@@ -33,7 +33,7 @@ __forceinline void pushFloating(StackMachine* machine,int arg)
 	machine->advanceCounter();
 }
 
-__forceinline void pushString(StackMachine* machine,int staticIndex)
+__forceinline void pushString(StackMachineThread* machine,int staticIndex)
 {
 	StaticString* sString = static_cast<StaticString*>(machine->getStaticData(staticIndex));
 	sString->getVariant()->addRef();
@@ -41,13 +41,13 @@ __forceinline void pushString(StackMachine* machine,int staticIndex)
 	machine->advanceCounter();
 }
 
-__forceinline void pop(StackMachine* machine)
+__forceinline void pop(StackMachineThread* machine)
 {
 	machine->getDataStack()->pop()->release();
 	machine->advanceCounter();
 }
 
-__forceinline void doubleTop(StackMachine* machine)
+__forceinline void doubleTop(StackMachineThread* machine)
 {
 	DataStack *stack = machine->getDataStack();
 	stack->push(stack->top());
@@ -55,7 +55,7 @@ __forceinline void doubleTop(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void doubleTopTwo(StackMachine* machine)
+__forceinline void doubleTopTwo(StackMachineThread* machine)
 {
 	DataStack *stack = machine->getDataStack();
 	
@@ -71,7 +71,7 @@ __forceinline void doubleTopTwo(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
+__forceinline void pushNameValue(StackMachineThread* machine,NameIdentifier nameId)
 {
 	NameVariant* name = machine->getNearestName(nameId);
 
@@ -88,7 +88,7 @@ __forceinline void pushNameValue(StackMachine* machine,NameIdentifier nameId)
 }
 
 
-__forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
+__forceinline void pushName(StackMachineThread* machine,NameIdentifier nameId)
 {
 	NameVariant* name = machine->getNearestName(nameId);
 
@@ -104,7 +104,7 @@ __forceinline void pushName(StackMachine* machine,NameIdentifier nameId)
 	machine->advanceCounter();
 }
 
-__forceinline void pushFunction(StackMachine* machine,int address)
+__forceinline void pushFunction(StackMachineThread* machine,int address)
 {
 	UserFunctionVariant *fn = new UserFunctionVariant(address);
 	if(machine->getCurrentCallBlock() != nullptr)
@@ -116,13 +116,13 @@ __forceinline void pushFunction(StackMachine* machine,int address)
 
 }
 
-__forceinline void pushNull(StackMachine* machine)
+__forceinline void pushNull(StackMachineThread* machine)
 {
 	machine->getDataStack()->pushNull();
 	machine->advanceCounter();
 }
 
-__forceinline void pushDefault(StackMachine* machine)
+__forceinline void pushDefault(StackMachineThread* machine)
 {
 	DefaultVariant* variant = &DefaultVariant::Instance;
 	variant->addRef();
@@ -131,7 +131,7 @@ __forceinline void pushDefault(StackMachine* machine)
 }
 
 
-__forceinline void pushBoolean(StackMachine* machine,char arg)
+__forceinline void pushBoolean(StackMachineThread* machine,char arg)
 {
 	Variant* var = nullptr;
 
@@ -145,7 +145,7 @@ __forceinline void pushBoolean(StackMachine* machine,char arg)
 	machine->advanceCounter();
 }
 
-inline void buildList(StackMachine* machine,int count)
+inline void buildList(StackMachineThread* machine,int count)
 {
 
 	ListVariant* list = new ListVariant();
@@ -164,7 +164,7 @@ inline void buildList(StackMachine* machine,int count)
 	machine->advanceCounter();
 }
 
-inline void buildMap(StackMachine* machine,int count)
+inline void buildMap(StackMachineThread* machine,int count)
 {
 	HashMapVariant* map = new HashMapVariant();
 
@@ -183,7 +183,7 @@ inline void buildMap(StackMachine* machine,int count)
 	machine->advanceCounter();
 }
 
-__forceinline void derefIndex(StackMachine* machine)
+__forceinline void derefIndex(StackMachineThread* machine)
 {
 	Variant* index = machine->getDataStack()->pop();
 	Variant* container = machine->getDataStack()->pop();
@@ -210,13 +210,13 @@ __forceinline void derefIndex(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void pushMacro(StackMachine* machine,int arg)
+__forceinline void pushMacro(StackMachineThread* machine,int arg)
 {
 	machine->getDataStack()->push(machine->getMacro(arg)(machine));
 	machine->advanceCounter();
 }
 
-__forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int exitAddress)
+__forceinline void pushLoopBlock(StackMachineThread* machine,int continueAddress,int exitAddress)
 {
 	LoopBlock *lBlock = LoopBlock::getInstance();
 
@@ -227,14 +227,14 @@ __forceinline void pushLoopBlock(StackMachine* machine,int continueAddress,int e
 	machine->advanceCounter();
 }
 
-__forceinline void popBlock(StackMachine* machine)
+__forceinline void popBlock(StackMachineThread* machine)
 {
 	machine->getBlockStack()->top()->leave(machine);
 	machine->getBlockStack()->pop()->recycleInstance();
 	machine->advanceCounter();
 }
 
-__forceinline void pushGeneralBlock(StackMachine* machine)
+__forceinline void pushGeneralBlock(StackMachineThread* machine)
 {
 	GeneralBlock* block = GeneralBlock::getInstance();
 	block->setup(machine);
@@ -244,7 +244,7 @@ __forceinline void pushGeneralBlock(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void swapTop(StackMachine* machine)
+__forceinline void swapTop(StackMachineThread* machine)
 {
 	Variant* v1 = machine->getDataStack()->pop();
 	Variant* v2 = machine->getDataStack()->pop();

@@ -1,21 +1,21 @@
 #include <stack>
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "NullVariant.h"
 #include "ListVariant.h"
 #include "HashMapVariant.h"
 #include "BooleanVariant.h"
 
-__forceinline void noop(StackMachine* machine)
+__forceinline void noop(StackMachineThread* machine)
 {
 	machine->advanceCounter();
 }
 
-__forceinline void terminate(StackMachine* machine)
+__forceinline void terminate(StackMachineThread* machine)
 {
 	machine->terminate();
 }
 
-__forceinline void assignGlobal(StackMachine* machine, NameIdentifier arg)
+__forceinline void assignGlobal(StackMachineThread* machine, NameIdentifier arg)
 {
 	Variant* var = machine->getDataStack()->pop();
 	
@@ -25,7 +25,7 @@ __forceinline void assignGlobal(StackMachine* machine, NameIdentifier arg)
 	machine->advanceCounter();
 }
 
-__forceinline void assignLocal(StackMachine* machine, NameIdentifier arg)
+__forceinline void assignLocal(StackMachineThread* machine, NameIdentifier arg)
 {
 	Variant* var = machine->getDataStack()->pop();
 	
@@ -37,7 +37,7 @@ __forceinline void assignLocal(StackMachine* machine, NameIdentifier arg)
 
 
 
-__forceinline void assignNearest(StackMachine* machine,NameIdentifier arg)
+__forceinline void assignNearest(StackMachineThread* machine,NameIdentifier arg)
 {
 	Variant* var = machine->getDataStack()->pop();
 	
@@ -47,26 +47,26 @@ __forceinline void assignNearest(StackMachine* machine,NameIdentifier arg)
 	machine->advanceCounter();
 }
 
-__forceinline void makeGlobalConst(StackMachine* machine,NameIdentifier arg)
+__forceinline void makeGlobalConst(StackMachineThread* machine,NameIdentifier arg)
 {
 	machine->getGlobalName(arg)->markAsConst();
 	machine->advanceCounter();
 }
 
-__forceinline void makeLocalConst(StackMachine* machine,NameIdentifier arg)
+__forceinline void makeLocalConst(StackMachineThread* machine,NameIdentifier arg)
 {
 	machine->getLocalName(arg)->markAsConst();
 	machine->advanceCounter();
 }
 
-__forceinline void makeNearestConst(StackMachine* machine,NameIdentifier arg)
+__forceinline void makeNearestConst(StackMachineThread* machine,NameIdentifier arg)
 {
 	machine->getNearestName(arg)->markAsConst();
 	machine->advanceCounter();
 }
 
 
-__forceinline void assignIndex(StackMachine* machine)
+__forceinline void assignIndex(StackMachineThread* machine)
 {
 	Variant* value = machine->getDataStack()->pop();
 	Variant* index = machine->getDataStack()->pop();
@@ -95,7 +95,7 @@ __forceinline void assignIndex(StackMachine* machine)
 }
 
 
-__forceinline void concatStrings(StackMachine* machine)
+__forceinline void concatStrings(StackMachineThread* machine)
 {
 
 	Variant* arg2 = machine->getDataStack()->pop();
@@ -117,7 +117,7 @@ __forceinline void concatStrings(StackMachine* machine)
 ListVariant* createList(std::stack<unsigned int> subscripts);
 void redimList(Variant* list,std::stack<unsigned int> subscripts);
 
-__forceinline void createMultiDimList(StackMachine* machine,int numberOfSubscripts)
+__forceinline void createMultiDimList(StackMachineThread* machine,int numberOfSubscripts)
 {
 	// Use std::stack instead of FastStack since we need the copying mechanism
 	// of std::stack which FastStack cannot handle (and shouldn't?).
@@ -138,7 +138,7 @@ __forceinline void createMultiDimList(StackMachine* machine,int numberOfSubscrip
 }
 
 
-__forceinline void RedimMultiDimList(StackMachine* machine,int numberOfSubscripts)
+__forceinline void RedimMultiDimList(StackMachineThread* machine,int numberOfSubscripts)
 {
 	// Use std::stack instead of FastStack since we need the copying mechanism
 	// of std::stack which FastStack cannot handle (and shouldn't?).
@@ -163,14 +163,14 @@ __forceinline void RedimMultiDimList(StackMachine* machine,int numberOfSubscript
 
 
 
-inline void createClosureName(StackMachine* machine,NameIdentifier identifier)
+inline void createClosureName(StackMachineThread* machine,NameIdentifier identifier)
 {
 	machine->getCurrentCallBlock()->addClosedName(machine,identifier);
 	machine->advanceCounter();
 }
 
 
-inline void getIterator(StackMachine* machine)
+inline void getIterator(StackMachineThread* machine)
 {
 	Variant* arg = machine->getDataStack()->pop();
 	IteratorVariant* iterator = arg->iterate();
@@ -180,7 +180,7 @@ inline void getIterator(StackMachine* machine)
 }
 
 
-inline void iteratorHasMore(StackMachine* machine)
+inline void iteratorHasMore(StackMachineThread* machine)
 {
 	Variant* iter = machine->getDataStack()->pop();
 
@@ -191,7 +191,7 @@ inline void iteratorHasMore(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-inline void iteratorNext(StackMachine* machine)
+inline void iteratorNext(StackMachineThread* machine)
 {
 	Variant* var = machine->getDataStack()->pop();
 

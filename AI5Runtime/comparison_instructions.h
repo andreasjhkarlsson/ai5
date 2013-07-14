@@ -2,7 +2,7 @@
 #include <wchar.h>
 #include "Variant.h"
 #include "BooleanVariant.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 
 class Comparator
 {
@@ -202,7 +202,7 @@ enum COMPARISON_TYPE
 	EXACTLY_EQUAL
 };
 
-inline void comparisonInstruction(StackMachine* machine,COMPARISON_TYPE type)
+inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE type)
 {
 	static ComparisonTable table;
 	static StringComparator stringComparator;

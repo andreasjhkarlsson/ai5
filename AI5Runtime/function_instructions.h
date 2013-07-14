@@ -1,11 +1,11 @@
 #pragma once
 #include "Block.h"
 #include "Variant.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "UserFunctionVariant.h"
 #include "CallBlock.h"
 
-__forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
+__forceinline void callFunction(StackMachineThread* machine,unsigned int numberOfArgs)
 {
 	// The actual object resides below the arguments on the stack. 
 	// It's up the the function to pop arguments + function from stack.
@@ -36,7 +36,7 @@ __forceinline void callFunction(StackMachine* machine,unsigned int numberOfArgs)
 	}
 }
 
-__forceinline void ret(StackMachine* machine)
+__forceinline void ret(StackMachineThread* machine)
 {
 	// Temporarily pop return value from stack.
 	// This is needed because popping CallBlock will unwind
@@ -66,7 +66,7 @@ __forceinline void ret(StackMachine* machine)
 }
 
 
-__forceinline void createArgument(StackMachine* machine,NameIdentifier identifier,bool byref)
+__forceinline void createArgument(StackMachineThread* machine,NameIdentifier identifier,bool byref)
 {
 	CallBlock* frame = machine->getCurrentCallBlock();
 
@@ -81,7 +81,7 @@ __forceinline void createArgument(StackMachine* machine,NameIdentifier identifie
 }
 
 
-__forceinline void loadArguments(StackMachine* machine,int total,int required)
+__forceinline void loadArguments(StackMachineThread* machine,int total,int required)
 {
 	machine->getCurrentCallBlock()->loadArguments(machine,total,required);
 	machine->advanceCounter();

@@ -1,30 +1,30 @@
 #pragma once
 class Variant;
-class StackMachine;
+class StackMachineThread;
 class Macros
 {
 public:
-	static void registerMacros(StackMachine*);
+	static void registerMacros(StackMachineThread*);
 private:
-	static Variant* MyPID(StackMachine*);
-	static Variant* CRLF(StackMachine*);
-	static Variant* CR(StackMachine*);
-	static Variant* LF(StackMachine*);
-	static Variant* TAB(StackMachine*);
-	static Variant* Username(StackMachine*);
-	static Variant* WorkingDirectory(StackMachine*);
-	static Variant* TempDirectory(StackMachine*);
-	static Variant* SystemDirectory(StackMachine*);
-	static Variant* WindowsDirectory(StackMachine*);
-	static Variant* millisecond(StackMachine*);
-	static Variant* second(StackMachine*);
-	static Variant* minute(StackMachine*);
-	static Variant* hour(StackMachine*);
-	static Variant* monthDay(StackMachine*);
-	static Variant* month(StackMachine*);
-	static Variant* year(StackMachine*);
-	static Variant* weekDay(StackMachine*);
-	static Variant* errorCode(StackMachine*);
-	static Variant* extendedCode(StackMachine*);
+	static Variant* MyPID(StackMachineThread*);
+	static Variant* CRLF(StackMachineThread*);
+	static Variant* CR(StackMachineThread*);
+	static Variant* LF(StackMachineThread*);
+	static Variant* TAB(StackMachineThread*);
+	static Variant* Username(StackMachineThread*);
+	static Variant* WorkingDirectory(StackMachineThread*);
+	static Variant* TempDirectory(StackMachineThread*);
+	static Variant* SystemDirectory(StackMachineThread*);
+	static Variant* WindowsDirectory(StackMachineThread*);
+	static Variant* millisecond(StackMachineThread*);
+	static Variant* second(StackMachineThread*);
+	static Variant* minute(StackMachineThread*);
+	static Variant* hour(StackMachineThread*);
+	static Variant* monthDay(StackMachineThread*);
+	static Variant* month(StackMachineThread*);
+	static Variant* year(StackMachineThread*);
+	static Variant* weekDay(StackMachineThread*);
+	static Variant* errorCode(StackMachineThread*);
+	static Variant* extendedCode(StackMachineThread*);
 };
 

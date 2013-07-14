@@ -1,11 +1,11 @@
 #pragma once
 class Variant;
-class StackMachine;
+class StackMachineThread;
 class CallInfo;
 class MouseFunctions
 {
 public:
-	static void registerFunctions(StackMachine* machine);
+	static void registerFunctions(StackMachineThread* machine);
 	~MouseFunctions(void);
 private:
 	MouseFunctions(void);

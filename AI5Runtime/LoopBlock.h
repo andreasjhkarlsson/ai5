@@ -11,8 +11,8 @@ class LoopBlock :
 public:
 	~LoopBlock(void);
 	friend class PooledObject<LoopBlock>;
-	void leave(StackMachine* machine);
-	void setup(StackMachine* machine,int continuePosition,int exitPosition);
+	void leave(StackMachineThread* machine);
+	void setup(StackMachineThread* machine,int continuePosition,int exitPosition);
 	void recycleInstance();
 	int getContinueAddress();
 	int getExitAddress();

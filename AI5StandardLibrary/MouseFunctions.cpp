@@ -1,5 +1,5 @@
 #include "MouseFunctions.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include "..\AI5Runtime\ListVariant.h"
 #include <functional>
@@ -110,7 +110,7 @@ Variant* MouseFunctions::mouseGetCursor(CallInfo* callInfo)
 
 
 
-void MouseFunctions::registerFunctions(StackMachine* machine)
+void MouseFunctions::registerFunctions(StackMachineThread* machine)
 {
 	std::shared_ptr<MouseFunctions> instance(new MouseFunctions);
 

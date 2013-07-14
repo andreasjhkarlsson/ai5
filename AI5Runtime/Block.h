@@ -1,6 +1,6 @@
 #pragma once
 
-class StackMachine;
+class StackMachineThread;
 
 
 typedef unsigned char BLOCK_TYPE;
@@ -11,14 +11,14 @@ typedef unsigned char BLOCK_TYPE;
 class Block
 {
 public:
-	virtual void leave(StackMachine*)=0;
+	virtual void leave(StackMachineThread*)=0;
 	virtual void recycleInstance()=0;
 	bool isCallBlock();
 	bool isLoopBlock();
 	BLOCK_TYPE getType();
 protected:
 	Block(BLOCK_TYPE type);
-	void unwindStack(StackMachine*,size_t stackPosition);
+	void unwindStack(StackMachineThread*,size_t stackPosition);
 private:
 	BLOCK_TYPE type;
 public:

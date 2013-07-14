@@ -7,7 +7,7 @@
 #include "PooledObject.h"
 #include "types.h"
 
-class StackMachine;
+class StackMachineThread;
 
 // Keeping this class optimized is VERY important.
 class Scope: public ContainerVariant
@@ -30,8 +30,8 @@ public:
 			result = enclosingScope->getNameFromIndex(index);
 		return result;
 	}
-	NameVariant* createName(StackMachine* machine,const UnicodeString &name);
-	NameVariant* createIndexForName(StackMachine* machine,const UnicodeString &name,int index);
+	NameVariant* createName(StackMachineThread* machine,const UnicodeString &name);
+	NameVariant* createIndexForName(StackMachineThread* machine,const UnicodeString &name,int index);
 
 	void insertName(const UnicodeString& name,int index,NameVariant* nameVariant);
 

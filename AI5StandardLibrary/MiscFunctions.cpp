@@ -1,6 +1,6 @@
 #include "MiscFunctions.h"
 #include "..\AI5Runtime\NullVariant.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include <functional>
 #include <memory>
@@ -16,7 +16,7 @@ MiscFunctions::~MiscFunctions(void)
 }
 
 
-void MiscFunctions::registerFunctions(StackMachine* machine)
+void MiscFunctions::registerFunctions(StackMachineThread* machine)
 {
 	std::shared_ptr<MiscFunctions> instance(new MiscFunctions);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "operators.h"
 #include "stack_instructions.h"
 #include "misc_instructions.h"
@@ -99,8 +99,8 @@ public:
 	static const INSTRUCTION_TYPE ITERATOR_NEXT					= 0x58;
 
 	Instruction(unsigned char type): type(type){}
-	__forceinline void execute(StackMachine* machine);
-	std::wostream& format(std::wostream& stream,StackMachine* machine);
+	__forceinline void execute(StackMachineThread* machine);
+	std::wostream& format(std::wostream& stream,StackMachineThread* machine);
 	friend class ProgramLoader;
 private:
 	INSTRUCTION_TYPE type;
@@ -124,7 +124,7 @@ private:
 
 
 
-void Instruction::execute(StackMachine* machine)
+void Instruction::execute(StackMachineThread* machine)
 {
 	// Assume compiler generates jump table for 
 	// the instructions.

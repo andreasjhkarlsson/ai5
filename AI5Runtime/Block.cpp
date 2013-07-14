@@ -1,5 +1,5 @@
 #include "Block.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "RuntimeError.h"
 
 Block::Block(BLOCK_TYPE type):type(type)
@@ -10,7 +10,7 @@ Block::Block(BLOCK_TYPE type):type(type)
 
 
 
-void Block::unwindStack(StackMachine* machine,size_t stackPosition)
+void Block::unwindStack(StackMachineThread* machine,size_t stackPosition)
 {
 	DataStack* stack = machine->getDataStack();
 

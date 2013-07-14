@@ -3,44 +3,44 @@
 #include "types.h"
 
 
-shared_string getName(StackMachine* machine,NameIdentifier nameId)
+shared_string getName(StackMachineThread* machine,NameIdentifier nameId)
 {
 	StaticData* staticData = machine->getStaticData(nameId.staticId);
 	return static_cast<StaticName*>(staticData)->getName();
 }
 
-shared_string getString(StackMachine* machine,int index)
+shared_string getString(StackMachineThread* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticString*>(staticData)->getVariant()->toString();
 }
 
-shared_string getMacro(StackMachine* machine,int index)
+shared_string getMacro(StackMachineThread* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticMacro*>(staticData)->getName();
 }
 
-double getFloating(StackMachine* machine,int index)
+double getFloating(StackMachineThread* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticFloating*>(staticData)->getVariant()->getValue();
 }
 
-__int64 getInteger64(StackMachine* machine,int index)
+__int64 getInteger64(StackMachineThread* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticInteger64*>(staticData)->getVariant()->getValue();
 }
 
-int getInteger32(StackMachine* machine,int index)
+int getInteger32(StackMachineThread* machine,int index)
 {
 	StaticData* staticData = machine->getStaticData(index);
 	return static_cast<StaticInteger32*>(staticData)->getVariant()->toInteger32();
 }
 
 
-std::wostream& Instruction::format(std::wostream& stream,StackMachine* machine)
+std::wostream& Instruction::format(std::wostream& stream,StackMachineThread* machine)
 {
 	switch(this->type)
 	{

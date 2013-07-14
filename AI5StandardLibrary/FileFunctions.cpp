@@ -1,5 +1,5 @@
 #include "FileFunctions.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\NullVariant.h"
 #include "..\AI5Runtime\BooleanVariant.h"
 #include "..\AI5Runtime\HandleVariant.h"
@@ -56,7 +56,7 @@ Variant* FileFunctions::fileExists(CallInfo* callInfo)
 
 }
 
-void FileFunctions::registerFunctions(StackMachine* machine)
+void FileFunctions::registerFunctions(StackMachineThread* machine)
 {
 	std::shared_ptr<FileFunctions> instance(new FileFunctions);
 
@@ -155,7 +155,8 @@ public:
 			char bom[3];
 			//u_fgetc(handle);
 			FILE* f = u_fgetfile(handle);
-			fread(bom,1,3,f);
+			fseek(f,3,SEEK_SET);
+		//	fread(bom,1,3,f);
 		}
 	}
 

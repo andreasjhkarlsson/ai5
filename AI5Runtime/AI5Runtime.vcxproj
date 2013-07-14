@@ -195,7 +195,7 @@ copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
-    <ClCompile Include="StackMachine.cpp" />
+    <ClCompile Include="StackMachineThread.cpp" />
     <ClCompile Include="Static.cpp" />
     <ClCompile Include="StringVariant.cpp" />
     <ClCompile Include="types.cpp" />
@@ -246,7 +246,7 @@ copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
     <ClInclude Include="stack_instructions.h" />
     <ClInclude Include="Static.h" />
     <ClInclude Include="Instruction.h" />
-    <ClInclude Include="StackMachine.h" />
+    <ClInclude Include="StackMachineThread.h" />
     <ClInclude Include="StringVariant.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="UserFunctionVariant.h" />

@@ -1,13 +1,13 @@
 #pragma once
 
 class Variant;
-class StackMachine;
+class StackMachineThread;
 class CallInfo;
 
 class DllCallFunctions
 {
 public:
-	static void registerFunctions(StackMachine* machine);
+	static void registerFunctions(StackMachineThread* machine);
 	~DllCallFunctions();
 private:
 	DllCallFunctions();

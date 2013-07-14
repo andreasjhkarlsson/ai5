@@ -1,12 +1,12 @@
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "UserFunctionVariant.h"
 
-__forceinline void jumpLongRelative(StackMachine* machine,unsigned int arg)
+__forceinline void jumpLongRelative(StackMachineThread* machine,unsigned int arg)
 {
 	machine->jumpRelative(arg);
 }
 
-__forceinline void jumpLongRelativeIfFalse(StackMachine* machine,unsigned int arg)
+__forceinline void jumpLongRelativeIfFalse(StackMachineThread* machine,unsigned int arg)
 {
 	Variant *v = machine->getDataStack()->pop();
 
@@ -23,17 +23,17 @@ __forceinline void jumpLongRelativeIfFalse(StackMachine* machine,unsigned int ar
 	v->release();
 }
 
-__forceinline void jumpShortRelativeIfFalse(StackMachine* machine,char arg)
+__forceinline void jumpShortRelativeIfFalse(StackMachineThread* machine,char arg)
 {
 	jumpLongRelativeIfFalse(machine,arg);
 }
 
-__forceinline void jumpShortRelative(StackMachine* machine,char arg)
+__forceinline void jumpShortRelative(StackMachineThread* machine,char arg)
 {
 	jumpLongRelative(machine,arg);
 }
 
-__forceinline void jumpLongRelativeIfTrue(StackMachine* machine,unsigned int arg)
+__forceinline void jumpLongRelativeIfTrue(StackMachineThread* machine,unsigned int arg)
 {
 	Variant *v = machine->getDataStack()->pop();
 
@@ -57,7 +57,7 @@ enum LOOP_JUMP_TYPE
 	BREAK
 };
 
-inline void loopJump(LOOP_JUMP_TYPE type,StackMachine* machine,int level)
+inline void loopJump(LOOP_JUMP_TYPE type,StackMachineThread* machine,int level)
 {
 
 	BlockStack* stack = machine->getBlockStack();

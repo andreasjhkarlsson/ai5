@@ -1,9 +1,9 @@
 #include "CallInfo.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "HandleVariant.h"
 #include "RuntimeError.h"
 
-CallInfo::CallInfo(StackMachine* machine): argCount(0),machine(machine)
+CallInfo::CallInfo(StackMachineThread* machine): argCount(0),machine(machine)
 {
 
 }

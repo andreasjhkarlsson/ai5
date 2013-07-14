@@ -1,7 +1,7 @@
 #pragma once
 #include "Variant.h"
 #include <functional>
-class StackMachine;
+class StackMachineThread;
 
-typedef Variant*(*MACRO_FUNCTION_POINTER)(StackMachine*);
-typedef std::function<Variant*(StackMachine*)> MACRO_FUNCTION;
+typedef Variant*(*MACRO_FUNCTION_POINTER)(StackMachineThread*);
+typedef std::function<Variant*(StackMachineThread*)> MACRO_FUNCTION;

@@ -4,7 +4,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include "ProgramLoader.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "3rdparty\optionparser.h"
 
 enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 		_setmode(_fileno(stdout), _O_U8TEXT);
 		try
 		{
-			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
+			std::shared_ptr<StackMachineThread> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 			bool isVerbose = options[VERBOSE] != 0;
 			bool disassemble = options[DISASSEMBLE] != 0;
 			#if _DEBUG

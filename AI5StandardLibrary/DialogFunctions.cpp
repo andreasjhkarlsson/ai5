@@ -1,5 +1,5 @@
 #include "DialogFunctions.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\Integer32Variant.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include <cmath>
@@ -29,7 +29,7 @@ Variant* DialogFunctions::msgbox(CallInfo* callInfo)
 }
 
 
-void DialogFunctions::registerFunctions(StackMachine* machine)
+void DialogFunctions::registerFunctions(StackMachineThread* machine)
 {
 	std::shared_ptr<DialogFunctions> instance(new DialogFunctions);
 

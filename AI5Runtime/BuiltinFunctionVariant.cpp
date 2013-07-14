@@ -1,5 +1,5 @@
 #include "BuiltinFunctionVariant.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "NullVariant.h"
 #include "CallInfo.h"
 
@@ -14,7 +14,7 @@ BuiltinFunctionVariant::~BuiltinFunctionVariant(void)
 }
 
 
-void BuiltinFunctionVariant::call(StackMachine* machine,int numberOfArguments)
+void BuiltinFunctionVariant::call(StackMachineThread* machine,int numberOfArguments)
 {
 	CallInfo callInfo(machine);
 

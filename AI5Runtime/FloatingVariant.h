@@ -1,6 +1,6 @@
 #pragma once
 #include "variant.h"
-class StackMachine;
+class StackMachineThread;
 class FloatingVariant:
 	public Variant
 {

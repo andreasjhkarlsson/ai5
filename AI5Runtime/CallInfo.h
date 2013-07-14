@@ -1,11 +1,11 @@
 #pragma once
 #include "Variant.h"
 class HandleVariant;
-class StackMachine;
+class StackMachineThread;
 class CallInfo
 {
 public:
-	CallInfo(StackMachine*);
+	CallInfo(StackMachineThread*);
 	~CallInfo(void);
 	void addArg(Variant*);
 	Variant* getArg(int index);
@@ -23,6 +23,6 @@ public:
 private:
 	Variant* args[MAX_ARGS];
 	int argCount;
-	StackMachine* machine;
+	StackMachineThread* machine;
 };
 

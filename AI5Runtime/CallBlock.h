@@ -19,21 +19,21 @@ class CallBlock: public Block, public PooledObject<CallBlock>
 public:
 	
 	~CallBlock(void);
-	void setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner);
+	void setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner);
 
 	Scope* getScope();
-	virtual void leave(StackMachine*);
+	virtual void leave(StackMachineThread*);
 	void recycleInstance();
 	int getReturnAddress();
 	CallBlock* getParentFrame();
 	void addArgument(const Argument& argument);
-	void loadArguments(StackMachine* machine,int total,int required);
-	void addClosedName(StackMachine* machine,NameIdentifier nameIdentifier);
-	void addClosure(StackMachine* machine,UserFunctionVariant* closure);
+	void loadArguments(StackMachineThread* machine,int total,int required);
+	void addClosedName(StackMachineThread* machine,NameIdentifier nameIdentifier);
+	void addClosure(StackMachineThread* machine,UserFunctionVariant* closure);
 	
 	friend class PooledObject<CallBlock>;
 private:
-	void processClosures(StackMachine*);
+	void processClosures(StackMachineThread*);
 	int returnAddress;
 	int calledNumberOfArguments;
 	size_t stackPosition;

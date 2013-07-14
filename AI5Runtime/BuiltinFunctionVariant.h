@@ -4,7 +4,7 @@
 #include <functional>
 #include "FunctionVariant.h"
 #include "CallInfo.h"
-class StackMachine;
+class StackMachineThread;
 
 typedef Variant* (*BuiltinFunctionPointer)(CallInfo*);
 typedef std::function<Variant*(CallInfo*)> BuiltinFunction;
@@ -16,7 +16,7 @@ public:
 	static const VARIANT_TYPE TYPE = NATIVE_FUNCTION;
 	BuiltinFunctionVariant(const UnicodeString &name,BuiltinFunction func);
 	~BuiltinFunctionVariant(void);
-	void call(StackMachine* machine,int numberOfArguments);
+	void call(StackMachineThread* machine,int numberOfArguments);
 	std::wostream& format(std::wostream& stream) const;
 	virtual bool equal(Variant*);
 private:

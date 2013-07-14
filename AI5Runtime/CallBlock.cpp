@@ -1,5 +1,5 @@
 #include "CallBlock.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "DefaultVariant.h"
 #include "UserFunctionVariant.h"
 #include "NameReferenceVariant.h"
@@ -12,7 +12,7 @@ CallBlock::~CallBlock(void)
 {
 }
 
-void CallBlock::setup(StackMachine* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner)
+void CallBlock::setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner)
 {
 	this->scope = Scope::createFromFactory(machine->getVariantFactory());
 	this->returnAddress = returnAddress;
@@ -27,7 +27,7 @@ void CallBlock::setup(StackMachine* machine,int returnAddress,int calledNumberOf
 	this->owner->addRef();
 }
 
-void CallBlock::leave(StackMachine*machine)
+void CallBlock::leave(StackMachineThread*machine)
 {
 	unwindStack(machine,stackPosition);
 
@@ -44,7 +44,7 @@ void CallBlock::leave(StackMachine*machine)
 // and creating new scopes with selected names attached only.
 // This avoids circular references if the closures doesn't reference themselves
 // and makes sure variable not used by closures are freed immeditely.
-void CallBlock::processClosures(StackMachine* machine)
+void CallBlock::processClosures(StackMachineThread* machine)
 {
 	// For each name that was added as a "closed name" during call
 	// add it to the closure scope.
@@ -99,7 +99,7 @@ void CallBlock::addArgument(const Argument& arg)
 	this->arguments.push_back(arg);
 }
 
-void CallBlock::loadArguments(StackMachine* machine,int total,int required)
+void CallBlock::loadArguments(StackMachineThread* machine,int total,int required)
 {
 	if(calledNumberOfArguments > total || calledNumberOfArguments < required)
 		throw InvalidArgumentCountError(calledNumberOfArguments,required,total);
@@ -152,12 +152,12 @@ void CallBlock::loadArguments(StackMachine* machine,int total,int required)
 }
 
 
-void CallBlock::addClosedName(StackMachine* machine,NameIdentifier nameIdentifier)
+void CallBlock::addClosedName(StackMachineThread* machine,NameIdentifier nameIdentifier)
 {
 	closedNames.push_back(nameIdentifier);
 }
 
-void CallBlock::addClosure(StackMachine* machine,UserFunctionVariant* closure)
+void CallBlock::addClosure(StackMachineThread* machine,UserFunctionVariant* closure)
 {
 	closure->addRef();
 

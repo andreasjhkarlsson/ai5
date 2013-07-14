@@ -1,6 +1,6 @@
 #include "Variant.h"
 #include "Integer64Variant.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include "BooleanVariant.h"
 #include "FloatingVariant.h"
 #include <cmath>
@@ -39,7 +39,7 @@ __forceinline T mathOperation(MATH_OPERATION type,T v1,T v2)
 	return res;
 }
 
-__forceinline void mathOperationInstruction(StackMachine* machine,MATH_OPERATION type)
+__forceinline void mathOperationInstruction(StackMachineThread* machine,MATH_OPERATION type)
 {
 	// Pop the arguments in reverse.
 	Variant *v2 = machine->getDataStack()->pop();
@@ -86,7 +86,7 @@ __forceinline void mathOperationInstruction(StackMachine* machine,MATH_OPERATION
 	machine->advanceCounter();	
 }
 
-_forceinline void negation(StackMachine* machine)
+_forceinline void negation(StackMachineThread* machine)
 {
 	Variant* arg = machine->getDataStack()->pop();
 
@@ -107,7 +107,7 @@ _forceinline void negation(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void booleanNot(StackMachine* machine)
+__forceinline void booleanNot(StackMachineThread* machine)
 {
 	Variant *argument = machine->getDataStack()->pop();
 	Variant* result = nullptr;
@@ -126,7 +126,7 @@ __forceinline void booleanNot(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void booleanAnd(StackMachine* machine)
+__forceinline void booleanAnd(StackMachineThread* machine)
 {
 	Variant *argument2 = machine->getDataStack()->pop();
 	Variant *argument1 = machine->getDataStack()->pop();
@@ -147,7 +147,7 @@ __forceinline void booleanAnd(StackMachine* machine)
 	machine->advanceCounter();
 }
 
-__forceinline void booleanOr(StackMachine* machine)
+__forceinline void booleanOr(StackMachineThread* machine)
 {
 	Variant *argument2 = machine->getDataStack()->pop();
 	Variant *argument1 = machine->getDataStack()->pop();

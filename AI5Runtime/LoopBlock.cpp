@@ -1,5 +1,5 @@
 #include "LoopBlock.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 
 LoopBlock::LoopBlock(void): Block(LOOP_BLOCK)
 {
@@ -17,12 +17,12 @@ void LoopBlock::recycleInstance()
 }
 
 
-void LoopBlock::leave(StackMachine* machine)
+void LoopBlock::leave(StackMachineThread* machine)
 {
 	Block::unwindStack(machine,stackPosition);
 }
 
-void LoopBlock::setup(StackMachine* machine,int continuePosition,int exitPosition)
+void LoopBlock::setup(StackMachineThread* machine,int continuePosition,int exitPosition)
 {
 	this->stackPosition = machine->getDataStack()->size();
 	this->exitPosition = exitPosition;

@@ -22,15 +22,15 @@ using std::vector;
 
 // This represents the virtual machine.
 // It controls program counter, stacks, tables, scopes and memory allocation.
-class StackMachine
+class StackMachineThread
 {
 private:
 	static const int BLOCK_STACK_SIZE		= 8192;
 	static const int DATA_STACK_SIZE		= 32768;
 public:
-	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
+	StackMachineThread(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program);
-	~StackMachine(void);
+	~StackMachineThread(void);
 
 	// These methods are called by instructions, so they need
 	// to be inlined for maximum speed.
@@ -99,50 +99,50 @@ private:
 	Variant* extendedCode;
 };
 
-void StackMachine::jumpRelative(int offset)
+void StackMachineThread::jumpRelative(int offset)
 {
 	programCounter += offset;
 }
-void StackMachine::jumpAbsolute(int position)
+void StackMachineThread::jumpAbsolute(int position)
 {
 	programCounter = position;
 }
-StaticData* StackMachine::getStaticData(int index)
+StaticData* StackMachineThread::getStaticData(int index)
 {
 	return (*staticsTable)[index].get();
 }
 
-DataStack* StackMachine::getDataStack()
+DataStack* StackMachineThread::getDataStack()
 {
 	return &dataStack;
 }
 
-BlockStack* StackMachine::getBlockStack()
+BlockStack* StackMachineThread::getBlockStack()
 {
 	return &blockStack;
 }
 
-void StackMachine::advanceCounter()
+void StackMachineThread::advanceCounter()
 {
 	programCounter++;
 }
 
-VariantFactory* StackMachine::getVariantFactory()
+VariantFactory* StackMachineThread::getVariantFactory()
 {
 	return &variantFactory;
 }
 
-int StackMachine::getCurrentAddress()
+int StackMachineThread::getCurrentAddress()
 {
 	return programCounter;
 }
 
-void StackMachine::setCurrentCallBlock(CallBlock* frame)
+void StackMachineThread::setCurrentCallBlock(CallBlock* frame)
 {
 	this->currentCallBlock = frame;
 }
 
-CallBlock* StackMachine::getCurrentCallBlock()
+CallBlock* StackMachineThread::getCurrentCallBlock()
 {
 	return this->currentCallBlock;
 }

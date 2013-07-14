@@ -2,13 +2,13 @@
 
 
 class Variant;
-class StackMachine;
+class StackMachineThread;
 class CallInfo;
 
 class StringFunctions
 {
 public:
-	static void registerFunctions(StackMachine* machine);
+	static void registerFunctions(StackMachineThread* machine);
 	~StringFunctions(void);
 private:
 	StringFunctions(void);

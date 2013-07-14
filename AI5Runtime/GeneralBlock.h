@@ -7,8 +7,8 @@ class GeneralBlock :
 public:
 	~GeneralBlock(void);
 	friend class PooledObject<GeneralBlock>;
-	void leave(StackMachine* machine);
-	void setup(StackMachine* machine);
+	void leave(StackMachineThread* machine);
+	void setup(StackMachineThread* machine);
 	void recycleInstance();
 private:
 	GeneralBlock(void);

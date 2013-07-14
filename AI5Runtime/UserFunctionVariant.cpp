@@ -1,5 +1,5 @@
 #include "UserFunctionVariant.h"
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 
 UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(TYPE), enclosingScope(nullptr)
 {

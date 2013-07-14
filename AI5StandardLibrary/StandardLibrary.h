@@ -1,6 +1,6 @@
 #pragma once
 
-class StackMachine;
+class StackMachineThread;
 
 
-void registerStandardLibrary(StackMachine*);
+void registerStandardLibrary(StackMachineThread*);

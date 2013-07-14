@@ -1,6 +1,6 @@
 #include "Integer64Variant.h"
 #include <iostream>
-#include "StackMachine.h"
+#include "StackMachineThread.h"
 #include <sstream>
 #include "3rdparty\hsieh_hash.h"
 

@@ -91,9 +91,6 @@
     <ClCompile Include="ProgramLoader.cpp">
       <Filter>general</Filter>
     </ClCompile>
-    <ClCompile Include="StackMachine.cpp">
-      <Filter>general</Filter>
-    </ClCompile>
     <ClCompile Include="NameReferenceVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
@@ -134,6 +131,9 @@
       <Filter>general</Filter>
     </ClCompile>
     <ClCompile Include="CallInfo.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="StackMachineThread.cpp">
       <Filter>general</Filter>
     </ClCompile>
   </ItemGroup>
@@ -234,9 +234,6 @@
     <ClInclude Include="SimplePool.h">
       <Filter>general</Filter>
     </ClInclude>
-    <ClInclude Include="StackMachine.h">
-      <Filter>general</Filter>
-    </ClInclude>
     <ClInclude Include="Static.h">
       <Filter>general</Filter>
     </ClInclude>
@@ -280,6 +277,9 @@
       <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="CallInfo.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="StackMachineThread.h">
       <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>

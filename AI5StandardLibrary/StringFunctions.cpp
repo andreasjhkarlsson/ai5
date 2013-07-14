@@ -2,7 +2,7 @@
 #include "..\AI5Runtime\StringVariant.h"
 #include "..\AI5Runtime\Integer32Variant.h"
 #include "..\AI5Runtime\BooleanVariant.h"
-#include "..\AI5Runtime\StackMachine.h"
+#include "..\AI5Runtime\StackMachineThread.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include <string>
 #include <wchar.h>
@@ -109,7 +109,7 @@ Variant* StringFunctions::stringIsDigit(CallInfo* callInfo)
 	return BooleanVariant::Get(true,true);
 }
 
-void StringFunctions::registerFunctions(StackMachine* machine)
+void StringFunctions::registerFunctions(StackMachineThread* machine)
 {
 	std::shared_ptr<StringFunctions> instance(new StringFunctions);
 
