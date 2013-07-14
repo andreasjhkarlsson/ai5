@@ -1,5 +1,5 @@
 #pragma once
-#include "StackMachineThread.h"
+#include "StackMachine.h"
 #include <memory>
 #include <string>
 
@@ -16,7 +16,7 @@ private:
 class ProgramLoader
 {
 public:
-	static std::shared_ptr<StackMachineThread> LoadFromFile(const std::string&filename);
+	static std::shared_ptr<StackMachine> LoadFromFile(const std::string&filename);
 private:
 	ProgramLoader(void);
 	~ProgramLoader(void);

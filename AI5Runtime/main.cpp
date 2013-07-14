@@ -4,7 +4,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include "ProgramLoader.h"
-#include "StackMachineThread.h"
+#include "StackMachine.h"
 #include "3rdparty\optionparser.h"
 
 enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
@@ -44,22 +44,27 @@ int main(int argc, char* argv[])
 		_setmode(_fileno(stdout), _O_U8TEXT);
 		try
 		{
-			std::shared_ptr<StackMachineThread> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
+			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 			bool isVerbose = options[VERBOSE] != 0;
 			bool disassemble = options[DISASSEMBLE] != 0;
 			#if _DEBUG
 			isVerbose = true;
 			#endif
 
-			if(isVerbose)
-				machine->setVerbose();
+		//	if(isVerbose)
+		//		machine->setVerbose();
 
 			int returnCode = 0;
 
 			if(disassemble)
-				machine->disassemble();
+			{
+				machine->disassembleProgram();
+			}
 			else
-				returnCode = machine->start();
+			{
+				machine->startMainThread();
+				returnCode = machine->waitForTermination();
+			}
 
 			if(isVerbose)
 				std::wcout << L"Program ended with code: " << returnCode << std::endl;

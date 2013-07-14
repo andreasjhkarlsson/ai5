@@ -30,8 +30,8 @@ public:
 			result = enclosingScope->getNameFromIndex(index);
 		return result;
 	}
-	NameVariant* createName(StackMachineThread* machine,const UnicodeString &name);
-	NameVariant* createIndexForName(StackMachineThread* machine,const UnicodeString &name,int index);
+	NameVariant* createName(VariantFactory* factory,const UnicodeString &name);
+	NameVariant* createIndexForName(VariantFactory* factory,const UnicodeString &name,int index);
 
 	void insertName(const UnicodeString& name,int index,NameVariant* nameVariant);
 

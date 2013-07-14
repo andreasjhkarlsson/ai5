@@ -3,14 +3,18 @@
 #include "RuntimeError.h"
 #include "NullVariant.h"
 #include "Instruction.h"
-#include "..\AI5StandardLibrary\StandardLibrary.h"
+#include <functional>
 
-StackMachineThread::StackMachineThread(shared_ptr<vector<shared_ptr<StaticData>>> statics,
-	shared_ptr<vector<shared_ptr<Instruction>>> program): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), 
-	currentCallBlock(nullptr), verbose(false), globalScope(new Scope()), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
+using namespace std::placeholders;
+
+StackMachineThread::StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
+	shared_ptr<vector<shared_ptr<Instruction>>> program,
+	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
+	Scope* globalScope): programCounter(0),
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), macros(macros),startAddress(address),
+	currentCallBlock(nullptr), verbose(false), globalScope(globalScope), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
 {
-	registerStandardLibrary(this);
+	globalScope->addRef();
 }
 
 StackMachineThread::~StackMachineThread(void)
@@ -20,10 +24,22 @@ StackMachineThread::~StackMachineThread(void)
 	extendedCode->release();
 }
 
-int StackMachineThread::start()
+void StackMachineThread::startThread()
+{
+	
+	myThread = new std::thread(std::bind(&StackMachineThread::run,this));
+}
+
+
+int StackMachineThread::join()
+{
+	myThread->join();
+	return returnCode;
+}
+
+void StackMachineThread::run()
 {
 	terminated = false;
-	int returnCode;
 	try
 	{
 		while (!terminated) 
@@ -31,7 +47,7 @@ int StackMachineThread::start()
 			if(verbose)
 			{
 				std::wcout << "\t";
-				(*program)[programCounter]->format(std::wcout,this);
+				(*program)[programCounter]->format(std::wcout,staticsTable);
 				std::wcout << std::endl;
 			}
 			
@@ -46,7 +62,6 @@ int StackMachineThread::start()
 		returnCode = -1;
 	}
 
-	return returnCode;
 }
 
 void StackMachineThread::terminate()
@@ -54,31 +69,14 @@ void StackMachineThread::terminate()
 	terminated = true;
 }
 
-void StackMachineThread::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
-{
-	globalScope->createName(this,name)->setValue(new BuiltinFunctionVariant(name,function));
-}
 
-void StackMachineThread::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
-{
-	macros[name] = macroFunc;
-}
 
 MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)
 {
-	return macros[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
+	return (*macros)[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
 }
 
 
-void StackMachineThread::disassemble()
-{
-	for(size_t i=0;i<program->size();i++)
-	{
-		std::wcout << i << ": ";
-		(*program)[i]->format(std::wcout,this);
-		std::wcout << std::endl;
-	}
-}
 
 void StackMachineThread::setVerbose()
 {
@@ -99,13 +97,13 @@ NameVariant* StackMachineThread::getNearestName(NameIdentifier identifier)
 	NameVariant* name = globalScope->getNameFromIndex(identifier.globalId);
 
 	// If name not found from index, do a "hard" search with the name
-	// Add it as an index afterwords so next lookup is FAST.
+	// Add it as an index afterwards so next lookup is FAST.
 	if(name == nullptr)
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 		name = globalScope->getNameFromString(*std::static_pointer_cast<StaticName>(staticData)->getName());
 		// If name is still nullptr, throw error!
-		globalScope->createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
+		globalScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 
 	return name;
@@ -148,7 +146,7 @@ void StackMachineThread::setNearest(NameIdentifier identifier,Variant* variant,b
 
 		// The name may be defined without this index. This doesn't matter as the createIndexForName will check
 		// if the name is already defined.
-		foundName = targetScope->createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
+		foundName = targetScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
 	}
 
 
@@ -172,7 +170,7 @@ void StackMachineThread::setLocal(NameIdentifier identifier,Variant* variant,boo
 	if(name == nullptr)
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-		name = targetScope->createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
+		name = targetScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
 	}
 
 	name->setValue(variant);
@@ -189,7 +187,7 @@ void StackMachineThread::setGlobal(NameIdentifier identifier,Variant* variant,bo
 	if(foundName == nullptr)
 	{		
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-		foundName = globalScope->createIndexForName(this,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
+		foundName = globalScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 	foundName->setValue(variant);
 

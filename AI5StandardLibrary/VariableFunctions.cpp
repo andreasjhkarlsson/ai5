@@ -3,7 +3,7 @@
 #include "..\AI5Runtime\Integer32Variant.h"
 #include "..\AI5Runtime\BinaryVariant.h"
 #include "..\AI5Runtime\BooleanVariant.h"
-#include "..\AI5Runtime\StackMachineThread.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include <string>
 #include <wchar.h>
@@ -24,7 +24,7 @@ VariableFunctions::~VariableFunctions(void)
 
 
 
-void VariableFunctions::registerFunctions(StackMachineThread* machine)
+void VariableFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<VariableFunctions> instance(new VariableFunctions);
 

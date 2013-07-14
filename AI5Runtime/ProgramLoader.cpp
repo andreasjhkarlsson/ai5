@@ -33,7 +33,7 @@ struct ProgramHeader
 // This method creates a fully prepared StackMachine from a file.
 // This involves decoding all instructions, statics, headers and 
 // setting the proper state of the machine.
-std::shared_ptr<StackMachineThread> ProgramLoader::LoadFromFile(const std::string&filename)
+std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&filename)
 {
 	std::ifstream in;
 
@@ -282,12 +282,10 @@ std::shared_ptr<StackMachineThread> ProgramLoader::LoadFromFile(const std::strin
 
 	}
 
-	StackMachineThread* machine = new StackMachineThread(statics,instructions);
+	StackMachine* machine = new StackMachine(statics,instructions,header.entry_instruction);
 
-	// Set the initial state of the machine.
-	machine->jumpAbsolute(header.entry_instruction);
 
-	return shared_ptr<StackMachineThread>(machine);
+	return shared_ptr<StackMachine>(machine);
 }
 
 

@@ -14,11 +14,14 @@
 #include "SimplePool.h"
 #include "BlockStack.h"
 #include "BuiltinFunctionVariant.h"
+#include <thread>
 
 class Instruction;
 
 using std::shared_ptr;
 using std::vector;
+
+typedef unsigned int SM_THREAD_ID;
 
 // This represents the virtual machine.
 // It controls program counter, stacks, tables, scopes and memory allocation.
@@ -28,8 +31,10 @@ private:
 	static const int BLOCK_STACK_SIZE		= 8192;
 	static const int DATA_STACK_SIZE		= 32768;
 public:
-	StackMachineThread(shared_ptr<vector<shared_ptr<StaticData>>> statics,
-					shared_ptr<vector<shared_ptr<Instruction>>> program);
+	StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
+					shared_ptr<vector<shared_ptr<Instruction>>> program,
+					shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
+					Scope* globalScope);
 	~StackMachineThread(void);
 
 	// These methods are called by instructions, so they need
@@ -50,9 +55,10 @@ public:
 	__forceinline BlockStack* getBlockStack();
 	inline void setCurrentCallBlock(CallBlock* frame);
 	inline CallBlock* getCurrentCallBlock();
-	int start();
+	void startThread();
+	int join();
+	void run();
 	void terminate();
-	void disassemble();
 	void setVerbose();
 	NameVariant* getNearestName(NameIdentifier identifier);
 	NameVariant* getGlobalName(NameIdentifier identifier);
@@ -63,8 +69,6 @@ public:
 	void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
 	void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
 	void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
-	void addBuiltInFunction(const UnicodeString &name,BuiltinFunction function);
-	void addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc);
 	MACRO_FUNCTION getMacro(int staticIndex);
 
 	Variant* getErrorCode();
@@ -76,6 +80,7 @@ private:
 	// Code and static data.
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
+	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros;
 	// Stores active blocks. Blocks can be loops, function calls, exception handler etc.
 	BlockStack blockStack; 
 	// Represents the current call frame.
@@ -84,7 +89,7 @@ private:
 	CallBlock* currentCallBlock;
 	// Macros are stored with a simple string as lookup.
 	// TODO: Lookup macros with index as well.
-	std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator> macros;
+	
 	Scope *globalScope;
 	DataStack dataStack;
 	VariantFactory variantFactory;
@@ -94,9 +99,14 @@ private:
 	int programCounter;
 	bool verbose;
 
-
 	Variant* errorCode;
 	Variant* extendedCode;
+
+	int returnCode;
+
+	std::thread* myThread;
+
+	int startAddress;
 };
 
 void StackMachineThread::jumpRelative(int offset)

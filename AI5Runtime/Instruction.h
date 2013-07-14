@@ -100,7 +100,7 @@ public:
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachineThread* machine);
-	std::wostream& format(std::wostream& stream,StackMachineThread* machine);
+	std::wostream& format(std::wostream& stream,shared_ptr<vector<shared_ptr<StaticData>>> statics);
 	friend class ProgramLoader;
 private:
 	INSTRUCTION_TYPE type;

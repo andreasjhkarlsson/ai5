@@ -1,13 +1,13 @@
 #pragma once
 
-class StackMachineThread;
+class StackMachine;
 class Variant;
 class CallInfo;
 
 class DialogFunctions
 {
 public:
-	static void registerFunctions(StackMachineThread* machine);
+	static void registerFunctions(StackMachine* machine);
 	~DialogFunctions(void);
 private:
 	DialogFunctions(void);

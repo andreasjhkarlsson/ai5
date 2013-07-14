@@ -1,5 +1,5 @@
 #include "FileFunctions.h"
-#include "..\AI5Runtime\StackMachineThread.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\NullVariant.h"
 #include "..\AI5Runtime\BooleanVariant.h"
 #include "..\AI5Runtime\HandleVariant.h"
@@ -56,7 +56,7 @@ Variant* FileFunctions::fileExists(CallInfo* callInfo)
 
 }
 
-void FileFunctions::registerFunctions(StackMachineThread* machine)
+void FileFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<FileFunctions> instance(new FileFunctions);
 

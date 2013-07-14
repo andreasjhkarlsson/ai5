@@ -1,13 +1,13 @@
 #pragma once
 #include "..\AI5Runtime\BinaryVariant.h"
 class Variant;
-class StackMachineThread;
+class StackMachine;
 class CallInfo;
 class VariableFunctions
 {
 public:
 	~VariableFunctions(void);
-	static void registerFunctions(StackMachineThread* machine);
+	static void registerFunctions(StackMachine* machine);
 private:
 	VariableFunctions(void);
 	Variant* stringToBinary(CallInfo* callInfo);

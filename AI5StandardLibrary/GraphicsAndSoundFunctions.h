@@ -1,12 +1,12 @@
 #pragma once
 
-class StackMachineThread;
+class StackMachine;
 class Variant;
 class CallInfo;
 class GraphicsAndSoundFunctions
 {
 public:
-	static void registerFunctions(StackMachineThread* machine);
+	static void registerFunctions(StackMachine* machine);
 	~GraphicsAndSoundFunctions(void);
 private:
 	GraphicsAndSoundFunctions(void);

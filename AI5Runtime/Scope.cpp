@@ -1,18 +1,18 @@
 #include "Scope.h"
-#include "StackMachineThread.h"
+#include "StackMachine.h"
 
-NameVariant* Scope::createName(StackMachineThread* machine,const UnicodeString& name)
+NameVariant* Scope::createName(VariantFactory* factory,const UnicodeString& name)
 {
-	NameVariant* n = NameVariant::createFromFactory(machine->getVariantFactory());
+	NameVariant* n = NameVariant::createFromFactory(factory);
 	lookup[name] = n;
 	return n;
 }
 
-NameVariant* Scope::createIndexForName(StackMachineThread* machine,const UnicodeString& name,int index)
+NameVariant* Scope::createIndexForName(VariantFactory* factory,const UnicodeString& name,int index)
 {
 	if (lookup.find(name) == lookup.end())
 	{
-		lookup[name] = NameVariant::createFromFactory(machine->getVariantFactory());
+		lookup[name] = NameVariant::createFromFactory(factory);
 	}
 
 	NameVariant* nameObj = lookup[name];

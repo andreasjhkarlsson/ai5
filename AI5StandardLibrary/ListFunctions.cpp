@@ -1,7 +1,7 @@
 #include "ListFunctions.h"
 #include "..\AI5Runtime\ListVariant.h"
 #include "..\AI5Runtime\NullVariant.h"
-#include "..\AI5Runtime\StackMachineThread.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include <functional>
 #include <memory>
@@ -17,7 +17,7 @@ ListFunctions::~ListFunctions(void)
 }
 
 
-void ListFunctions::registerFunctions(StackMachineThread* machine)
+void ListFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<ListFunctions> instance(new ListFunctions);
 

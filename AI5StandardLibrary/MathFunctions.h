@@ -1,12 +1,12 @@
 #pragma once
 #include <random>
 class Variant;
-class StackMachineThread;
+class StackMachine;
 class CallInfo;
 class MathFunctions
 {
 public:
-	static void registerFunctions(StackMachineThread* machine);
+	static void registerFunctions(StackMachine* machine);
 	~MathFunctions(void);
 private:
 	MathFunctions(void);

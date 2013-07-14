@@ -1,10 +1,11 @@
 #pragma once
 class Variant;
+class StackMachine;
 class StackMachineThread;
 class Macros
 {
 public:
-	static void registerMacros(StackMachineThread*);
+	static void registerMacros(StackMachine*);
 private:
 	static Variant* MyPID(StackMachineThread*);
 	static Variant* CRLF(StackMachineThread*);

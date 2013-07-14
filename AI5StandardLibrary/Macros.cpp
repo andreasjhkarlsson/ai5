@@ -1,5 +1,6 @@
 #include "Macros.h"
 #include "..\AI5Runtime\StackMachineThread.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\Integer64Variant.h"
 #include "..\AI5Runtime\StringVariant.h"
 #include <Windows.h>
@@ -7,7 +8,7 @@
 #include <Lmcons.h>
 
 
-void Macros::registerMacros(StackMachineThread* machine)
+void Macros::registerMacros(StackMachine* machine)
 {
 	machine->addMacro(L"autoitpid",&MyPID);
 	machine->addMacro(L"crlf",&CRLF);

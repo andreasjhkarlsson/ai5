@@ -11,12 +11,12 @@
 #include "DllCallFunctions.h"
 #include "MiscFunctions.h"
 #include "MouseFunctions.h"
-#include "..\AI5Runtime\StackMachineThread.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include <Windows.h>
 #include "autoit3.h"
 
 
-void registerStandardLibrary(StackMachineThread* machine)
+void registerStandardLibrary(StackMachine* machine)
 {
 	AU3_Init();
 	MathFunctions::registerFunctions(machine);

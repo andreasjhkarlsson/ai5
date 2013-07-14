@@ -1,5 +1,5 @@
 #include "TimerFunctions.h"
-#include "..\AI5Runtime\StackMachineThread.h"
+#include "..\AI5Runtime\StackMachine.h"
 #include "..\AI5Runtime\NullVariant.h"
 #include "..\AI5Runtime\CallInfo.h"
 #include <Windows.h>
@@ -34,7 +34,7 @@ Variant* TimerFunctions::sleep(CallInfo* callInfo)
 
 
 
-void TimerFunctions::registerFunctions(StackMachineThread* machine)
+void TimerFunctions::registerFunctions(StackMachine* machine)
 {
 	std::shared_ptr<TimerFunctions> instance(new TimerFunctions);
 

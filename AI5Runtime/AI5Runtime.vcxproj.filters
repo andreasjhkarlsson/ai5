@@ -136,6 +136,9 @@
     <ClCompile Include="StackMachineThread.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="StackMachine.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -280,6 +283,9 @@
       <Filter>general</Filter>
     </ClInclude>
     <ClInclude Include="StackMachineThread.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="StackMachine.h">
       <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>

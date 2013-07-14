@@ -1,11 +1,11 @@
 #pragma once
-class StackMachineThread;
+class StackMachine;
 class CallInfo;
 class Variant;
 class MiscFunctions
 {
 public:
-	static void registerFunctions(StackMachineThread* machine);
+	static void registerFunctions(StackMachine* machine);
 	~MiscFunctions(void);
 private:
 	MiscFunctions(void);
