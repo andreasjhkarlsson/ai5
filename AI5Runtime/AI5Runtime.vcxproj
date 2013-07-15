@@ -93,11 +93,14 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>icuucd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)
-copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
+      <Command>copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll $(OutDir)\AutoItX3.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icuuc51d.dll $(OutDir)\icuuc51d.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icuio51d.dll $(OutDir)\icuio51d.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icudt51.dll $(OutDir)\icudt51.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icuin51d.dll $(OutDir)\icuin51d.dll</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Performing custom post-build script</Message>
@@ -138,8 +141,11 @@ copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
       <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(SolutionDir)..\shared\icu\bin\*.dll $(OutDir)
-copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll</Command>
+      <Command>copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icuuc51.dll $(OutDir)\icuuc51.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icuio51.dll $(OutDir)\icuio51.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icudt51.dll $(OutDir)\icudt51.dll
+copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

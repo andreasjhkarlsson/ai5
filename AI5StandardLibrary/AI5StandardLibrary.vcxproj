@@ -85,7 +85,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>Shlwapi.lib;icuuc.lib;icuio.lib;autoitx3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>Shlwapi.lib;icuucd.lib;icuiod.lib;autoitx3.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
