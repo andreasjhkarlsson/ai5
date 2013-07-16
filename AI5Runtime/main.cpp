@@ -6,6 +6,7 @@
 #include "ProgramLoader.h"
 #include "StackMachine.h"
 #include "3rdparty\optionparser.h"
+#include "GlobalOptions.h"
 
 enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
 
@@ -51,8 +52,8 @@ int main(int argc, char* argv[])
 			isVerbose = true;
 			#endif
 
-		//	if(isVerbose)
-		//		machine->setVerbose();
+			if(isVerbose)
+				GlobalOptions::setVerbose();
 
 			int returnCode = 0;
 

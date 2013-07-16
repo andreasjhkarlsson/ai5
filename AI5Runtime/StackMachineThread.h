@@ -59,7 +59,6 @@ public:
 	int join();
 	void run();
 	void terminate();
-	void setVerbose();
 	NameVariant* getNearestName(NameIdentifier identifier);
 	NameVariant* getGlobalName(NameIdentifier identifier);
 	NameVariant* getLocalName(NameIdentifier identifier);
@@ -97,7 +96,6 @@ private:
 	bool terminated;
 	// Classic program counter.
 	int programCounter;
-	bool verbose;
 
 	Variant* errorCode;
 	Variant* extendedCode;

@@ -3,6 +3,7 @@
 #include "RuntimeError.h"
 #include "NullVariant.h"
 #include "Instruction.h"
+#include "GlobalOptions.h"
 #include <functional>
 
 using namespace std::placeholders;
@@ -12,7 +13,7 @@ StackMachineThread::StackMachineThread(int address,shared_ptr<vector<shared_ptr<
 	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
 	Scope* globalScope): programCounter(0),
 	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), macros(macros),startAddress(address),
-	currentCallBlock(nullptr), verbose(false), globalScope(globalScope), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
+	currentCallBlock(nullptr), globalScope(globalScope), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
 {
 	globalScope->addRef();
 }
@@ -44,7 +45,7 @@ void StackMachineThread::run()
 	{
 		while (!terminated) 
 		{
-			if(verbose)
+			if(GlobalOptions::isVerbose())
 			{
 				std::wcout << "\t";
 				(*program)[programCounter]->format(std::wcout,staticsTable);
@@ -75,14 +76,6 @@ MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)
 {
 	return (*macros)[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
 }
-
-
-
-void StackMachineThread::setVerbose()
-{
-	verbose = true;
-}
-
 
 
 NameVariant* StackMachineThread::getNearestName(NameIdentifier identifier)
