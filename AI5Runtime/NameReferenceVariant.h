@@ -6,10 +6,10 @@ class NameReferenceVariant :
 {
 public:
 	static const VARIANT_TYPE TYPE = NAME_REFERENCE;
-	NameReferenceVariant(Variant* value);
+	NameReferenceVariant(const VariantReference<>& value);
 	~NameReferenceVariant(void);
-	virtual void setValue(Variant* var);
-	virtual Variant* getValue();
+	virtual void setValue(const VariantReference<>& var);
+	virtual const VariantReference<>& getValue();
 	static const int POOL_SIZE = 1024;
 };
 

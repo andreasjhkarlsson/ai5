@@ -89,6 +89,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,7 +179,6 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="CallBlock.cpp" />
     <ClCompile Include="CallInfo.cpp" />
     <ClCompile Include="COMVar.cpp" />
-    <ClCompile Include="ContainerVariant.cpp" />
     <ClCompile Include="DataStack.cpp" />
     <ClCompile Include="DefaultVariant.cpp" />
     <ClCompile Include="DllCall.cpp" />
@@ -198,9 +198,9 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="main.cpp" />
     <ClCompile Include="misc_instructions.cpp" />
     <ClCompile Include="NameReferenceVariant.cpp" />
+    <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="NameVariant.cpp" />
-    <ClCompile Include="NullVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
     <ClCompile Include="StackMachine.cpp" />
     <ClCompile Include="StackMachineThread.cpp" />
@@ -222,7 +222,6 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="CallInfo.h" />
     <ClInclude Include="comparison_instructions.h" />
     <ClInclude Include="COMVar.h" />
-    <ClInclude Include="ContainerVariant.h" />
     <ClInclude Include="DataStack.h" />
     <ClInclude Include="DefaultVariant.h" />
     <ClInclude Include="DllCall.h" />
@@ -231,6 +230,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="FloatingVariant.h" />
     <ClInclude Include="FunctionVariant.h" />
     <ClInclude Include="function_instructions.h" />
+    <ClInclude Include="GCObjectOwner.h" />
     <ClInclude Include="GeneralBlock.h" />
     <ClInclude Include="GlobalOptions.h" />
     <ClInclude Include="HandleVariant.h" />
@@ -244,11 +244,11 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="macro.h" />
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="NameReferenceVariant.h" />
+    <ClInclude Include="NullVariant.h" />
     <ClInclude Include="PooledObject.h" />
     <ClInclude Include="RuntimeError.h" />
     <ClInclude Include="Scope.h" />
     <ClInclude Include="NameVariant.h" />
-    <ClInclude Include="NullVariant.h" />
     <ClInclude Include="operators.h" />
     <ClInclude Include="ProgramLoader.h" />
     <ClInclude Include="SimplePool.h" />
@@ -261,6 +261,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="types.h" />
     <ClInclude Include="UserFunctionVariant.h" />
     <ClInclude Include="Variant.h" />
+    <ClInclude Include="VariantReference.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AI5StandardLibrary\AI5StandardLibrary.vcxproj">

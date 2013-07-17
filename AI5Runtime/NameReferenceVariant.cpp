@@ -1,7 +1,7 @@
 #include "NameReferenceVariant.h"
 
 
-NameReferenceVariant::NameReferenceVariant(Variant* value): NameVariant(value,TYPE)
+NameReferenceVariant::NameReferenceVariant(const VariantReference<>& value): NameVariant(value,TYPE)
 {
 }
 
@@ -11,19 +11,19 @@ NameReferenceVariant::~NameReferenceVariant(void)
 }
 
 
-void NameReferenceVariant::setValue(Variant* var)
+void NameReferenceVariant::setValue(const VariantReference<>& var)
 {
 
-	if(value == nullptr)
+	if(value.empty())
 	{
 		NameVariant::setValue(var);
 		return;
 	}
 
-	static_cast<NameVariant*>(value)->setValue(var);
+	value.cast<NameVariant>()->setValue(var);
 	
 }
-Variant* NameReferenceVariant::getValue()
+const VariantReference<>& NameReferenceVariant::getValue()
 {
-	return static_cast<NameVariant*>(value)->getValue();
+	return value.cast<NameVariant>()->getValue();
 }

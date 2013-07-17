@@ -7,122 +7,122 @@
 class Comparator
 {
 public:
-	virtual bool greater(Variant* var1,Variant* var2)=0;
-	virtual bool lesser(Variant* var1,Variant* var2)=0;
-	virtual bool greaterEqual(Variant* var1,Variant* var2)=0;
-	virtual bool lesserEqual(Variant* var1,Variant* var2)=0;
-	virtual bool equal(Variant* var1,Variant* var2)=0;
+	virtual bool greater(const VariantReference<>& var1,const VariantReference<>& var2)=0;
+	virtual bool lesser(const VariantReference<>& var1,const VariantReference<>& var2)=0;
+	virtual bool greaterEqual(const VariantReference<>& var1,const VariantReference<>& var2)=0;
+	virtual bool lesserEqual(const VariantReference<>& var1,const VariantReference<>& var2)=0;
+	virtual bool equal(const VariantReference<>& var1,const VariantReference<>& var2)=0;
 };
 
 class Int32Comparator: public Comparator
 {
 public:
-	virtual bool greater(Variant* var1,Variant* var2)
+	virtual bool greater(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger32() > var2->toInteger32();
+		return var1.toInteger32() > var2.toInteger32();
 	}
-	virtual bool lesser(Variant* var1,Variant* var2)
+	virtual bool lesser(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger32() < var2->toInteger32();
+		return var1.toInteger32() < var2.toInteger32();
 	}
-	virtual bool greaterEqual(Variant* var1,Variant* var2)
+	virtual bool greaterEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger32() >= var2->toInteger32();
+		return var1.toInteger32() >= var2.toInteger32();
 	}
-	virtual bool lesserEqual(Variant* var1,Variant* var2)
+	virtual bool lesserEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger32() <= var2->toInteger32();
+		return var1.toInteger32() <= var2.toInteger32();
 	}
-	virtual bool equal(Variant* var1,Variant* var2)
+	virtual bool equal(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger32() == var2->toInteger32();
+		return var1.toInteger32() == var2.toInteger32();
 	}
 };
 
 class Int64Comparator: public Comparator
 {
 public:
-	virtual bool greater(Variant* var1,Variant* var2)
+	virtual bool greater(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger64() > var2->toInteger64();
+		return var1.toInteger64() > var2.toInteger64();
 	}
-	virtual bool lesser(Variant* var1,Variant* var2)
+	virtual bool lesser(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger64() < var2->toInteger64();
+		return var1.toInteger64() < var2.toInteger64();
 	}
-	virtual bool greaterEqual(Variant* var1,Variant* var2)
+	virtual bool greaterEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger64() >= var2->toInteger64();
+		return var1.toInteger64() >= var2.toInteger64();
 	}
-	virtual bool lesserEqual(Variant* var1,Variant* var2)
+	virtual bool lesserEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger64() <= var2->toInteger64();
+		return var1.toInteger64() <= var2.toInteger64();
 	}
-	virtual bool equal(Variant* var1,Variant* var2)
+	virtual bool equal(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toInteger64() == var2->toInteger64();
+		return var1.toInteger64() == var2.toInteger64();
 	}
 };
 
 class FloatingComparator: public Comparator
 {
 public:
-	virtual bool greater(Variant* var1,Variant* var2)
+	virtual bool greater(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toFloating() > var2->toFloating();
+		return var1.toFloating() > var2.toFloating();
 	}
-	virtual bool lesser(Variant* var1,Variant* var2)
+	virtual bool lesser(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toFloating() < var2->toFloating();
+		return var1.toFloating() < var2.toFloating();
 	}
-	virtual bool greaterEqual(Variant* var1,Variant* var2)
+	virtual bool greaterEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toFloating() >= var2->toFloating();
+		return var1.toFloating() >= var2.toFloating();
 	}
-	virtual bool lesserEqual(Variant* var1,Variant* var2)
+	virtual bool lesserEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toFloating() <= var2->toFloating();
+		return var1.toFloating() <= var2.toFloating();
 	}
-	virtual bool equal(Variant* var1,Variant* var2)
+	virtual bool equal(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toFloating() == var2->toFloating();
+		return var1.toFloating() == var2.toFloating();
 	} 
 };
 
 class StringComparator: public Comparator
 {
 public:
-	virtual bool greater(Variant* var1,Variant* var2)
+	virtual bool greater(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toString()->compare(*var2->toString()) > 0;
+		return var1.toString()->compare(*var2.toString()) > 0;
 		
 	}
-	virtual bool lesser(Variant* var1,Variant* var2)
+	virtual bool lesser(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toString()->compare(*var2->toString()) < 0;
+		return var1.toString()->compare(*var2.toString()) < 0;
 	}
-	virtual bool greaterEqual(Variant* var1,Variant* var2)
+	virtual bool greaterEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toString()->compare(*var2->toString()) >= 0;
+		return var1.toString()->compare(*var2.toString()) >= 0;
 	}
-	virtual bool lesserEqual(Variant* var1,Variant* var2)
+	virtual bool lesserEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		return var1->toString()->compare(*var2->toString()) <= 0;
+		return var1.toString()->compare(*var2.toString()) <= 0;
 	}
-	virtual bool equal(Variant* var1,Variant* var2)
+	virtual bool equal(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		shared_string str1 = var1->toString();
-		shared_string str2 = var2->toString();
+		shared_string str1 = var1.toString();
+		shared_string str2 = var2.toString();
 
 		if(str1->length() != str2->length()) return false;
 
 		return str1->caseCompare(*str2,0) == 0;
 	} 
 
-	virtual bool strongEqual(Variant* var1,Variant* var2)
+	virtual bool strongEqual(const VariantReference<>& var1,const VariantReference<>& var2)
 	{
-		shared_string str1 = var1->toString();
-		shared_string str2 = var2->toString();
+		shared_string str1 = var1.toString();
+		shared_string str2 = var2.toString();
 
 		if(str1->length() != str2->length()) return false;
 
@@ -206,10 +206,10 @@ inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE ty
 {
 	static ComparisonTable table;
 	static StringComparator stringComparator;
-	Variant* operand2 = machine->getDataStack()->pop();
-	Variant* operand1 = machine->getDataStack()->pop();
+	VariantReference<> operand2 = machine->getDataStack()->pop();
+	VariantReference<> operand1 = machine->getDataStack()->pop();
 	bool result = false;
-	Comparator* comp = table.lookup(operand1->getType(),operand2->getType());
+	Comparator* comp = table.lookup(operand1.getType(),operand2.getType());
 
 	if(comp == nullptr && type != EXACTLY_EQUAL)
 	{
@@ -241,18 +241,11 @@ inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE ty
 		result = stringComparator.strongEqual(operand1,operand2);
 		break;
 	case EXACTLY_EQUAL:
-		result = operand1->equal(operand2);
+		result = operand1.equal(operand2);
 		break;
 	}
 
-	operand1->release();
-	operand2->release();
-
-	Variant* returnValue = BooleanVariant::Get(result);
-
-	returnValue->addRef();
-
-	machine->getDataStack()->push(returnValue);
+	machine->getDataStack()->push(result);
 
 	machine->advanceCounter();
 

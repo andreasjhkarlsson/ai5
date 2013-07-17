@@ -1,12 +1,12 @@
 #pragma once
-#include "containervariant.h"
 #include "types.h"
+#include "VariantReference.h"
 class NameVariant :
-	public ContainerVariant
+	public Variant
 {
 public:
 	static const VARIANT_TYPE TYPE = NAME;
-	NameVariant(Variant* value,VARIANT_TYPE type = TYPE);
+	NameVariant(const VariantReference<>& value,VARIANT_TYPE type = TYPE);
 	~NameVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -18,13 +18,10 @@ public:
 	virtual void cleanup();
 	void markAsConst();
 	bool isConstName();
-	virtual Variant* getValue();
-	virtual void setValue(Variant* variant);
-	static NameVariant* createFromFactory(VariantFactory* factory);
-	virtual int getChildContainersCount();
-	virtual ContainerVariant* getChildContainer(int index);
+	virtual const VariantReference<>& getValue();
+	virtual void setValue(const VariantReference<>& variant);
 protected:
-	Variant* value;
+	VariantReference<> value;
 private:
 	bool isConst;
 };

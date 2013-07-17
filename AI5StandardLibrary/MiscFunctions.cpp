@@ -26,7 +26,7 @@ void MiscFunctions::registerFunctions(StackMachine* machine)
 
 
 
-Variant* MiscFunctions::setError(CallInfo* callInfo)
+VariantReference<> MiscFunctions::setError(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,3);
 
@@ -38,8 +38,7 @@ Variant* MiscFunctions::setError(CallInfo* callInfo)
 
 	if(callInfo->getArgCount() >= 3)
 	{
-		Variant* ret = callInfo->getArg(2);
-		ret->addRef();
+		VariantReference<> ret = callInfo->getArg(2);
 		return ret;
 	}
 
@@ -48,7 +47,7 @@ Variant* MiscFunctions::setError(CallInfo* callInfo)
 }
 
 
-Variant* MiscFunctions::setExtended(CallInfo* callInfo)
+VariantReference<> MiscFunctions::setExtended(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 
@@ -57,8 +56,7 @@ Variant* MiscFunctions::setExtended(CallInfo* callInfo)
 
 	if(callInfo->getArgCount() >= 2)
 	{
-		Variant* ret = callInfo->getArg(1);
-		ret->addRef();
+		VariantReference<> ret = callInfo->getArg(1);
 		return ret;
 	}
 

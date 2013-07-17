@@ -1,9 +1,8 @@
 #include "DataStack.h"
-#include "NullVariant.h"
+#include "VariantReference.h"
 
 
 void DataStack::pushNull()
 {
-	NullVariant::Instance.addRef();
-	push(&NullVariant::Instance);
+	push(VariantReference<>::NullReference());
 }

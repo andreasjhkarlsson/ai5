@@ -24,19 +24,19 @@ shared_string getMacro(shared_ptr<vector<shared_ptr<StaticData>>> statics,int in
 double getFloating(shared_ptr<vector<shared_ptr<StaticData>>> statics,int index)
 {
 	StaticData* staticData = ((*statics)[index]).get();
-	return static_cast<StaticFloating*>(staticData)->getVariant()->getValue();
+	return static_cast<StaticFloating*>(staticData)->getFloating();
 }
 
 __int64 getInteger64(shared_ptr<vector<shared_ptr<StaticData>>> statics,int index)
 {
 	StaticData* staticData = ((*statics)[index]).get();
-	return static_cast<StaticInteger64*>(staticData)->getVariant()->getValue();
+	return static_cast<StaticInteger64*>(staticData)->getInt();
 }
 
 int getInteger32(shared_ptr<vector<shared_ptr<StaticData>>> statics,int index)
 {
 	StaticData* staticData =((*statics)[index]).get();
-	return static_cast<StaticInteger32*>(staticData)->getVariant()->toInteger32();
+	return static_cast<StaticInteger32*>(staticData)->getInt();
 }
 
 

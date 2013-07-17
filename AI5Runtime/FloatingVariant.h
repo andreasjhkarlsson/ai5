@@ -6,7 +6,7 @@ class FloatingVariant:
 {
 public:
 	static const VARIANT_TYPE TYPE = FLOATING;
-	FloatingVariant(double value);
+	
 	~FloatingVariant(void);
 	virtual double toFloating() const;
 	virtual __int64 toInteger64() const;
@@ -24,9 +24,9 @@ public:
 	{
 		this->value = value;
 	}
-	static FloatingVariant* createFromFactory(VariantFactory* factory,double value);
-
+	friend class VariantReference<>;
 private:
+	FloatingVariant(double value);
 	double value;
 };
 

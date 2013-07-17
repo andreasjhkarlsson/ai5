@@ -12,19 +12,18 @@ CallBlock::~CallBlock(void)
 {
 }
 
-void CallBlock::setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner)
+void CallBlock::setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,VariantReference<UserFunctionVariant>& owner)
 {
-	this->scope = Scope::createFromFactory(machine->getVariantFactory());
+	this->scope = new Scope();
 	this->returnAddress = returnAddress;
 	this->stackPosition = machine->getDataStack()->position()-(calledNumberOfArguments+1);
 	this->calledNumberOfArguments = calledNumberOfArguments;
 	this->parentFrame = parentFrame;
 	this->arguments.clear();
 	this->closures.clear();
-	this->closureScope = nullptr;
+	this->closureScope = VariantReference<Scope>();
 	this->closedNames.clear();
-	this->owner = owner;
-	this->owner->addRef();
+	this->owner = owner.cast<UserFunctionVariant>();
 }
 
 void CallBlock::leave(StackMachineThread*machine)
@@ -32,10 +31,6 @@ void CallBlock::leave(StackMachineThread*machine)
 	unwindStack(machine,stackPosition);
 
 	processClosures(machine);
-
-	scope->release();
-
-	this->owner->release();
 }
 
 // When returning from a function, there needs to be certain stuff
@@ -48,33 +43,29 @@ void CallBlock::processClosures(StackMachineThread* machine)
 {
 	// For each name that was added as a "closed name" during call
 	// add it to the closure scope.
-	for(int i=0;i<closedNames.size();i++)
+	for(size_t i=0;i<closedNames.size();i++)
 	{
 		NameIdentifier id = closedNames[i];
-		NameVariant* name = scope->getNameFromIndex(id.localId);
-		if(name != nullptr)
+		VariantReference<NameVariant>& name = scope->getNameFromIndex(id.localId);
+		if(!name.empty())
 		{
 			StaticName* staticName = static_cast<StaticName*>(machine->getStaticData(id.staticId));
 			closureScope->insertName(*staticName->getName(),id.localId,name);
 		}
 	}
 
-	if(closureScope != nullptr)
+	if(!closureScope.empty())
 	{
 		// Relink closures scope into the proper scope.
-		for(int i=0;i<closures.size();i++)
+		for(size_t i=0;i<closures.size();i++)
 		{
 			closures[i]->getEnclosingScope()->setEnclosingScope(owner->getEnclosingScope());
-			closures[i]->release();
 		}
-		// Release the closure scope.
-		// If any closure have escaped the function the scope will live on.
-		closureScope->release();
 	}
 }
 
 
-Scope* CallBlock::getScope()
+VariantReference<Scope>& CallBlock::getScope()
 {
 	return scope;
 }
@@ -108,30 +99,29 @@ void CallBlock::loadArguments(StackMachineThread* machine,int total,int required
 	{
 		Argument arg = arguments[argIndex];
 
-		Variant* varArg;
+		VariantReference<> varArg;
 
 		// Set arguments with missing value with Default.
 		// The real default value is then set by the function body.
-		if(argIndex >= calledNumberOfArguments)
+		if(argIndex >= (size_t)calledNumberOfArguments)
 		{
-			varArg = &DefaultVariant::Instance;
-			varArg->addRef();
+			varArg = VariantReference<>::DefaultReference();
 		}
 		else
 		{
 			varArg = machine->getDataStack()->pop();
 		}
 
-		if(varArg->isNameType() || varArg->isNameReferenceType())
+		if(varArg.isNameType() || varArg.isNameReferenceType())
 		{
 			if(arg.isByref)
 			{
-				NameReferenceVariant* ref = machine->getVariantFactory()->create<NameReferenceVariant,NameVariant*>(Variant::NAME_REFERENCE,static_cast<NameVariant*>(varArg));
+				NameReferenceVariant* ref = new NameReferenceVariant(varArg);
 				machine->addNameToLocalScope(arg.identifier,ref);
 			}
 			else
 			{
-				machine->setLocal(arg.identifier,static_cast<NameVariant*>(varArg)->getValue());
+				machine->setLocal(arg.identifier,varArg.cast<NameVariant>()->getValue());
 			}
 
 		}
@@ -140,14 +130,11 @@ void CallBlock::loadArguments(StackMachineThread* machine,int total,int required
 			machine->setLocal(arg.identifier,varArg);
 		}
 
-		varArg->release();
 	}
 
-	UserFunctionVariant* self = static_cast<UserFunctionVariant*>(machine->getDataStack()->pop());
+	VariantReference<UserFunctionVariant> self = machine->getDataStack()->pop().cast<UserFunctionVariant>();
 
 	this->getScope()->setEnclosingScope(self->getEnclosingScope());
-
-	self->release();
 
 }
 
@@ -157,15 +144,14 @@ void CallBlock::addClosedName(StackMachineThread* machine,NameIdentifier nameIde
 	closedNames.push_back(nameIdentifier);
 }
 
-void CallBlock::addClosure(StackMachineThread* machine,UserFunctionVariant* closure)
+void CallBlock::addClosure(StackMachineThread* machine,const VariantReference<UserFunctionVariant>& closure)
 {
-	closure->addRef();
 
-	if(closureScope == nullptr)
-		closureScope = Scope::createFromFactory(machine->getVariantFactory());
+	if(closureScope.empty())
+		closureScope = new Scope();
 
 	closureScope->setEnclosingScope(scope);
 
-	closure->setEnclosingScope(closureScope);
+	closure.cast<UserFunctionVariant>()->setEnclosingScope(closureScope);
 	closures.push_back(closure);
 }

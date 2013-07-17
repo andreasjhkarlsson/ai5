@@ -1,9 +1,10 @@
 #include "ListVariant.h"
 #include "RuntimeError.h"
+#include "VariantReference.h"
 
 ListVariant::ListVariant(void): Variant(TYPE)
 {
-	list = shared_var_list(new std::vector<Variant*>());
+	list = shared_var_list(new std::vector<VariantReference<>>());
 }
 
 
@@ -15,14 +16,9 @@ ListVariant::~ListVariant(void)
 void ListVariant::cleanup()
 {
 	Variant::cleanup();
-	if(this->list != nullptr)
-	{
-		for(int i=0;i<list->size();i++)
-		{
-			(*list)[i]->release();
-		}
-		this->list = nullptr;
-	}
+
+	this->list = nullptr;
+
 }
 
 std::wostream& ListVariant::format(std::wostream& stream) const
@@ -53,11 +49,11 @@ shared_string ListVariant::toString() const
 
 	(*str)+=L"[";
 	bool first = true;
-	for(Variant* var: *list)
+	for(VariantReference<> var: *list)
 	{
 		if(!first)
 			(*str)+=L", ";
-		(*str) += *var->toString();
+		(*str) += *var.toString();
 
 		first = false;
 	}
@@ -68,27 +64,23 @@ shared_string ListVariant::toString() const
 }
 
 
-void ListVariant::addElement(Variant* var)
+void ListVariant::addElement(const VariantReference<>& var)
 {
-	var->addRef();
 	list->push_back(var);
 }
 
-Variant* ListVariant::getElement(size_t index) const
+const VariantReference<>&ListVariant::getElement(size_t index) const
 {
 	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
 	return (*list)[index];
 }
 
-void ListVariant::setElement(size_t index,Variant* var)
+void ListVariant::setElement(size_t index,const VariantReference<>& var)
 {
 	if(index >= list->size() || index < 0)
 		throw RuntimeError(L"List index out of bounds!");
-	// Add reference to new value.
-	var->addRef();
-	// Release old value!
-	(*list)[index]->release();
+
 	// Assign new value.
 	(*list)[index] = var;
 }
@@ -116,7 +108,7 @@ bool ListVariant::equal(Variant* other)
 
 	for(size_t index = 0; index < list->size(); index++)
 	{
-		if(!(*list)[index]->equal((*otherList->list)[index]))
+		if(!(*list)[index].equal((*otherList->list)[index]))
 			return false;
 	}
 
@@ -142,9 +134,9 @@ void ListVariant::ForwardIterator::cleanup()
 }
 bool ListVariant::ForwardIterator::hasMore()
 {
-	return pos < list->size();
+	return (size_t)pos < list->size();
 }
-Variant* ListVariant::ForwardIterator::next()
+const VariantReference<>& ListVariant::ForwardIterator::next()
 {
 	return list->getElement(pos++);
 }

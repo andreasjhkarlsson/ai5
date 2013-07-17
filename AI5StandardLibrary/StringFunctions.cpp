@@ -20,7 +20,7 @@ StringFunctions::~StringFunctions(void)
 }
 
 
-Variant* StringFunctions::stringUpper(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringUpper(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	shared_string arg = callInfo->getStringArg(0);
@@ -29,7 +29,7 @@ Variant* StringFunctions::stringUpper(CallInfo* callInfo)
 }
 
 
-Variant* StringFunctions::stringLower(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringLower(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	shared_string arg = callInfo->getStringArg(0);
@@ -37,14 +37,14 @@ Variant* StringFunctions::stringLower(CallInfo* callInfo)
 	return new StringVariant(ret);
 }
 
-Variant* StringFunctions::stringLen(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringLen(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new Integer32Variant(callInfo->getStringArg(0)->length());
+	return callInfo->getStringArg(0)->length();
 }
 
 
-Variant* StringFunctions::stringLeft(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringLeft(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
@@ -54,7 +54,7 @@ Variant* StringFunctions::stringLeft(CallInfo* callInfo)
 	return new StringVariant(ret);
 }
 
-Variant* StringFunctions::stringTrimLeft(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringTrimLeft(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
@@ -65,7 +65,7 @@ Variant* StringFunctions::stringTrimLeft(CallInfo* callInfo)
 	str->extract(count,str->length()-count,*ret);
 	return new StringVariant(ret);
 }
-Variant* StringFunctions::stringRight(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringRight(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
@@ -78,7 +78,7 @@ Variant* StringFunctions::stringRight(CallInfo* callInfo)
 	str->extract(str->length()-count,count,*ret);
 	return new StringVariant(ret);
 }
-Variant* StringFunctions::stringTrimRight(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringTrimRight(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
 	shared_string str = callInfo->getStringArg(0);
@@ -93,7 +93,7 @@ Variant* StringFunctions::stringTrimRight(CallInfo* callInfo)
 }
 
 
-Variant* StringFunctions::stringIsDigit(CallInfo* callInfo)
+VariantReference<> StringFunctions::stringIsDigit(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	shared_string str = callInfo->getStringArg(0);
@@ -104,9 +104,9 @@ Variant* StringFunctions::stringIsDigit(CallInfo* callInfo)
 
 		wchar_t chr = c_str[i];
 		if(chr < L'0' || chr > L'9')
-			return BooleanVariant::Get(false,true);
+			return false;
 	}
-	return BooleanVariant::Get(true,true);
+	return true;
 }
 
 void StringFunctions::registerFunctions(StackMachine* machine)

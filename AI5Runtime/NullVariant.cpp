@@ -3,6 +3,7 @@
 
 NullVariant::NullVariant(void): Variant(TYPE)
 {
+	addRef();
 }
 
 

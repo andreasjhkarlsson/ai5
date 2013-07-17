@@ -25,7 +25,7 @@ void Block::unwindStack(StackMachineThread* machine,size_t stackPosition)
 	// for some reason (perhaps exception or RET instruction).
 	while(stack->position() > stackPosition)
 	{
-		stack->pop()->release();
+		stack->pop();
 	}
 }
 

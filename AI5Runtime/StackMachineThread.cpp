@@ -11,18 +11,14 @@ using namespace std::placeholders;
 StackMachineThread::StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program,
 	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
-	Scope* globalScope): programCounter(0),
+	VariantReference<Scope>& globalScope): programCounter(0),
 	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), macros(macros),startAddress(address),
-	currentCallBlock(nullptr), globalScope(globalScope), errorCode(new Integer32Variant(0)), extendedCode(new Integer32Variant(0))
+	currentCallBlock(nullptr), globalScope(globalScope), errorCode(0), extendedCode(0)
 {
-	globalScope->addRef();
 }
 
 StackMachineThread::~StackMachineThread(void)
 {
-	globalScope->release();
-	errorCode->release();
-	extendedCode->release();
 }
 
 void StackMachineThread::startThread()
@@ -54,7 +50,7 @@ void StackMachineThread::run()
 			
 			(*program)[programCounter]->execute(this);		
 		}
-		returnCode = dataStack.top()->toInteger32();
+		returnCode = dataStack.top().toInteger32();
 	}
 	catch(RuntimeError& error)
 	{
@@ -78,71 +74,69 @@ MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)
 }
 
 
-NameVariant* StackMachineThread::getNearestName(NameIdentifier identifier)
+VariantReference<NameVariant> StackMachineThread::getNearestName(NameIdentifier identifier)
 {
 	if(currentCallBlock != nullptr)
 	{
-		NameVariant* name = currentCallBlock->getScope()->getNameFromIndex(identifier.localId);
-		if(name != nullptr)
+		VariantReference<NameVariant> name = currentCallBlock->getScope()->getNameFromIndex(identifier.localId);
+		if(!name.empty())
 			return name;
 	}
 
-	NameVariant* name = globalScope->getNameFromIndex(identifier.globalId);
+	VariantReference<NameVariant> name = globalScope->getNameFromIndex(identifier.globalId);
 
 	// If name not found from index, do a "hard" search with the name
 	// Add it as an index afterwards so next lookup is FAST.
-	if(name == nullptr)
+	if(name.empty())
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 		name = globalScope->getNameFromString(*std::static_pointer_cast<StaticName>(staticData)->getName());
 		// If name is still nullptr, throw error!
-		globalScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
+		globalScope->createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 
 	return name;
 }
 
-NameVariant* StackMachineThread::getLocalName(NameIdentifier identifier)
+VariantReference<NameVariant> StackMachineThread::getLocalName(NameIdentifier identifier)
 {
-	Scope* scope = globalScope;
+	VariantReference<Scope>& scope = globalScope;
 	if(currentCallBlock != nullptr)
 		scope = currentCallBlock->getScope();
 	return scope->getNameFromIndex(identifier.localId);
 }
 
-NameVariant* StackMachineThread::getGlobalName(NameIdentifier identifier)
+VariantReference<NameVariant> StackMachineThread::getGlobalName(NameIdentifier identifier)
 {
-	Scope* scope = globalScope;
-	return scope->getNameFromIndex(identifier.globalId);
+	return globalScope->getNameFromIndex(identifier.globalId);
 }
 
 // This function sets the value for a name in the nearest scope where it's found.
 // If it isn't found it is added to the local scope, and if there is no local scope, to the global scope.
-void StackMachineThread::setNearest(NameIdentifier identifier,Variant* variant,bool asConst)
+void StackMachineThread::setNearest(NameIdentifier identifier,const VariantReference<>& variant,bool asConst)
 {
 	// Search for name in local and global scope.
-	NameVariant* foundName = nullptr;
+	VariantReference<NameVariant> foundName;
 	if(currentCallBlock != nullptr)
 		foundName = currentCallBlock->getScope()->getNameFromIndex(identifier.localId);
-	if(foundName == nullptr)
+	if(foundName.empty())
 		foundName = globalScope->getNameFromIndex(identifier.globalId);
 
 	// If not found, add it as a new name to the nearest scope.
-	if(foundName == nullptr)
+	if(foundName.empty())
 	{
-		Scope* targetScope = nullptr;
+		VariantReference<Scope>& targetScope = globalScope;
 		if(currentCallBlock != nullptr)
 			targetScope = currentCallBlock->getScope();
-		else
-			targetScope = globalScope;
+
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
 
 		// The name may be defined without this index. This doesn't matter as the createIndexForName will check
 		// if the name is already defined.
-		foundName = targetScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
+		foundName = targetScope->createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
 	}
 
-
+	
 	foundName->setValue(variant);
 
 	if(asConst)
@@ -152,18 +146,18 @@ void StackMachineThread::setNearest(NameIdentifier identifier,Variant* variant,b
 }
 
 
-void StackMachineThread::setLocal(NameIdentifier identifier,Variant* variant,bool asConst)
+void StackMachineThread::setLocal(NameIdentifier identifier,const VariantReference<>& variant,bool asConst)
 {
-	Scope* targetScope = globalScope;
+	VariantReference<Scope>& targetScope = globalScope;
 	if(currentCallBlock != nullptr)
-		targetScope = currentCallBlock->getScope();
+		targetScope = currentCallBlock->getScope().cast<Scope>();
 
-	NameVariant* name = targetScope->getNameFromIndex(identifier.localId);
+	VariantReference<NameVariant> name = targetScope->getNameFromIndex(identifier.localId);
 
-	if(name == nullptr)
+	if(name.empty())
 	{
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-		name = targetScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
+		name = targetScope->createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.localId);
 	}
 
 	name->setValue(variant);
@@ -174,13 +168,13 @@ void StackMachineThread::setLocal(NameIdentifier identifier,Variant* variant,boo
 	}
 
 }
-void StackMachineThread::setGlobal(NameIdentifier identifier,Variant* variant,bool asConst)
+void StackMachineThread::setGlobal(NameIdentifier identifier,const VariantReference<>& variant,bool asConst)
 {
-	NameVariant* foundName = globalScope->getNameFromIndex(identifier.globalId);
-	if(foundName == nullptr)
+	VariantReference<NameVariant> foundName = globalScope->getNameFromIndex(identifier.globalId);
+	if(foundName.empty())
 	{		
 		std::shared_ptr<StaticData> staticData = (*staticsTable)[identifier.staticId];
-		foundName = globalScope->createIndexForName(&variantFactory,*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
+		foundName = globalScope->createIndexForName(*std::static_pointer_cast<StaticName>(staticData)->getName(),identifier.globalId);
 	}
 	foundName->setValue(variant);
 
@@ -190,9 +184,9 @@ void StackMachineThread::setGlobal(NameIdentifier identifier,Variant* variant,bo
 	}
 }
 
-void StackMachineThread::addNameToLocalScope(NameIdentifier identifier,NameVariant* name)
+void StackMachineThread::addNameToLocalScope(NameIdentifier identifier,const VariantReference<NameVariant>& name)
 {
-	Scope* targetScope = globalScope;
+	VariantReference<Scope>& targetScope = globalScope;
 	if(currentCallBlock != nullptr)
 		targetScope = currentCallBlock->getScope();
 
@@ -201,29 +195,19 @@ void StackMachineThread::addNameToLocalScope(NameIdentifier identifier,NameVaria
 	targetScope->insertName(strName,identifier.localId,name);
 }
 
-
-
-Variant* StackMachineThread::getErrorCode()
+const VariantReference<>& StackMachineThread::getErrorCode() const
 {
 	return errorCode;
 }
-Variant* StackMachineThread::getExtendedCode()
+const VariantReference<>& StackMachineThread::getExtendedCode() const
 {
 	return extendedCode;
 }
-void StackMachineThread::setExtendedCode(Variant* extendedCode)
+void StackMachineThread::setExtendedCode(const VariantReference<>& extendedCode)
 {
-	if(this->extendedCode != nullptr)
-		this->extendedCode->release();
 	this->extendedCode = extendedCode;
-	if(this->extendedCode != nullptr)
-		this->extendedCode->addRef();
 }
-void StackMachineThread::setErrorCode(Variant* extendedCode)
+void StackMachineThread::setErrorCode(const VariantReference<>& errorCode)
 {
-	if(this->errorCode != nullptr)
-		this->errorCode->release();
-	this->errorCode = extendedCode;
-	if(this->errorCode != nullptr)
-		this->errorCode->addRef();
+	this->errorCode = errorCode;
 }

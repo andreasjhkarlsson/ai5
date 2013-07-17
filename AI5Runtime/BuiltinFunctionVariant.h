@@ -6,8 +6,8 @@
 #include "CallInfo.h"
 class StackMachineThread;
 
-typedef Variant* (*BuiltinFunctionPointer)(CallInfo*);
-typedef std::function<Variant*(CallInfo*)> BuiltinFunction;
+typedef VariantReference<>(*BuiltinFunctionPointer)(CallInfo*);
+typedef std::function<VariantReference<>(CallInfo*)> BuiltinFunction;
 
 class BuiltinFunctionVariant :
 	public FunctionVariant

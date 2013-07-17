@@ -39,7 +39,7 @@ void VariableFunctions::registerFunctions(StackMachine* machine)
 }
 
 
-Variant* VariableFunctions::stringToBinary(CallInfo* callInfo)
+VariantReference<> VariableFunctions::stringToBinary(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 	shared_string str = callInfo->getStringArg(0);
@@ -65,14 +65,14 @@ void VariableFunctions::swapUtf16Endiness(wchar_t* binary,int size)
 	}
 }
 
-Variant* VariableFunctions::binaryToString(CallInfo* callInfo)
+VariantReference<> VariableFunctions::binaryToString(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 
-	if(!callInfo->getArg(0)->isBinaryType())
+	if(!callInfo->getArg(0).isBinaryType())
 		throw RuntimeError(L"Type error! BinaryToString requires binary type");
 
-	shared_binary binary = callInfo->getArg(0)->cast<BinaryVariant>()->getValue();
+	shared_binary binary = callInfo->getArg(0).cast<BinaryVariant>()->getValue();
 
 	int flag = callInfo->getInt32Arg(1,1);
 
@@ -86,38 +86,38 @@ Variant* VariableFunctions::binaryToString(CallInfo* callInfo)
 
 
 
-Variant* VariableFunctions::isFloat(CallInfo* callInfo)
+VariantReference<> VariableFunctions::isFloat(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return BooleanVariant::Get(callInfo->getArg(0)->isFloatingType(),true);
+	return callInfo->getArg(0).isFloatingType();
 	
 }
-Variant* VariableFunctions::isString(CallInfo* callInfo)
+VariantReference<> VariableFunctions::isString(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return BooleanVariant::Get(callInfo->getArg(0)->isStringType(),true);
+	return callInfo->getArg(0).isStringType();
 	
 }
-Variant* VariableFunctions::isArray(CallInfo* callInfo)
+VariantReference<> VariableFunctions::isArray(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return BooleanVariant::Get(callInfo->getArg(0)->isListType(),true);
+	return callInfo->getArg(0).isListType();
 	
 }
-Variant* VariableFunctions::isHashMap(CallInfo* callInfo)
+VariantReference<> VariableFunctions::isHashMap(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return BooleanVariant::Get(callInfo->getArg(0)->isHashMap(),true);
+	return callInfo->getArg(0).isHashMap();
 	
 }
-Variant* VariableFunctions::isBool(CallInfo* callInfo)
+VariantReference<> VariableFunctions::isBool(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return BooleanVariant::Get(callInfo->getArg(0)->isBooleanType(),true);
+	return callInfo->getArg(0).isBooleanType();
 	
 }
-Variant* VariableFunctions::ToString(CallInfo* callInfo)
+VariantReference<> VariableFunctions::ToString(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new StringVariant(callInfo->getArg(0)->toString());	
+	return new StringVariant(callInfo->getArg(0).toString());	
 }

@@ -1,7 +1,7 @@
 #include "UserFunctionVariant.h"
 #include "StackMachineThread.h"
 
-UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(TYPE), enclosingScope(nullptr)
+UserFunctionVariant::UserFunctionVariant(int address): address(address), FunctionVariant(TYPE), enclosingScope()
 {
 
 
@@ -42,15 +42,12 @@ bool UserFunctionVariant::equal(Variant* other)
 }
 
 
-Scope* UserFunctionVariant::getEnclosingScope()
+VariantReference<Scope>& UserFunctionVariant::getEnclosingScope()
 {
 	return enclosingScope;
 }
 
-void UserFunctionVariant::setEnclosingScope(Scope* scope)
+void UserFunctionVariant::setEnclosingScope(const VariantReference<Scope>& scope)
 {
-	if(this->enclosingScope != nullptr)
-		enclosingScope->release();
 	this->enclosingScope = scope;
-	this->enclosingScope->addRef();
 }

@@ -14,6 +14,8 @@ public:
 	virtual bool toBoolean() const;
 	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
+	friend class VariantReference<>;
+private:
 	static DefaultVariant Instance;
 };
 

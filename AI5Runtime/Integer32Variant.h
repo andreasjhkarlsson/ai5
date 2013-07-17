@@ -5,7 +5,7 @@ class Integer32Variant :
 {
 public:
 	static const VARIANT_TYPE TYPE = INTEGER32;
-	Integer32Variant(int value);
+	
 	~Integer32Variant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -16,10 +16,11 @@ public:
 	virtual bool equal(Variant*);
 	virtual size_t hash() const;
 	friend class VariantFactory;
-	static Integer32Variant* createFromFactory(VariantFactory* factory,int value);
 	int getValue();
 	void setValue(int value);
+	friend class VariantReference<>;
 private:
+	Integer32Variant(int value);
 	int value;
 };
 

@@ -21,7 +21,7 @@ void BuiltinFunctionVariant::call(StackMachineThread* machine,int numberOfArgume
 	// Get the arguments for the function.
 	for(int i=0;i<numberOfArguments;i++)
 	{
-		Variant* arg = machine->getDataStack()->get(numberOfArguments-(i+1));
+		VariantReference<> arg = machine->getDataStack()->get(numberOfArguments-(i+1));
 		
 		callInfo.addArg(arg);
 	}
@@ -30,11 +30,10 @@ void BuiltinFunctionVariant::call(StackMachineThread* machine,int numberOfArgume
 	machine->getDataStack()->popMany(numberOfArguments+1);
 
 	// Call the function!!1!
-	Variant* result = func(&callInfo);
-	if(result == nullptr)
+	VariantReference<> result = func(&callInfo);
+	if(result.empty())
 	{
-		result = &NullVariant::Instance;
-		result->addRef();
+		result = VariantReference<>::NullReference();
 	}
 
 	machine->getDataStack()->push(result);

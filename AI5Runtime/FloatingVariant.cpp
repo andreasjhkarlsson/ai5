@@ -46,12 +46,6 @@ shared_string FloatingVariant::toString() const
 }
 
 
-FloatingVariant* FloatingVariant::createFromFactory(VariantFactory* factory,double value)
-{
-	return factory->create<FloatingVariant,double>(Variant::FLOATING,value);
-}
-
-
 bool FloatingVariant::equal(Variant* other)
 {
 	return getType() == other->getType() &&

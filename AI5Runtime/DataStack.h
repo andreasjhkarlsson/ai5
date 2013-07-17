@@ -1,9 +1,9 @@
 #pragma once
 
 #include "FastStack.h"
-#include "Variant.h"
+#include "VariantReference.h"
 
-class DataStack: public FastStack<Variant*>
+class DataStack: public FastStack<VariantReference<>>
 {
 public:
 	DataStack(int size): FastStack(size)

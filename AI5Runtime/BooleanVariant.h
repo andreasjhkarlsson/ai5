@@ -13,10 +13,11 @@ public:
 	std::wostream& format(std::wostream& stream) const;
 	static BooleanVariant True;
 	static BooleanVariant False;
-	static BooleanVariant* Get(bool value,bool increaseRefcount=false);
 	const bool value;
 	virtual shared_string toString() const;
+	friend class VariantReference<>;
 private:
+	static BooleanVariant* Get(bool value,bool increaseRefcount=false);
 	BooleanVariant(bool value);
 	~BooleanVariant(void);
 };

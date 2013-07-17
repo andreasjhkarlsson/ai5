@@ -10,8 +10,9 @@
 #include "NullVariant.h"
 #include "BinaryVariant.h"
 #include "COMVar.h"
+#include "VariantReference.h"
 
-Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(1), type(type), recycler(nullptr), isContainer(isContainer)
+Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(0), type(type), isContainer(isContainer)
 {
 }
 
@@ -20,16 +21,6 @@ Variant::~Variant(void)
 	
 }
 
-VariantFactory::VariantFactory(void)
-{
-	for(int i=0;i<Variant::NUMBER_OF_VARIANT_TYPES;i++)
-	{
-		recycleBins.push_back(new FastStack<Variant*>(VariantFactory::RECYCLE_BIN_LIMIT));
-	}
-}
-VariantFactory::~VariantFactory(void)
-{
-}
 
 void Variant::cleanup()
 {
@@ -83,37 +74,51 @@ IteratorVariant* Variant::iterate()
 }
 
 
-Variant* Variant::createFromCOMVar(const COMVar& comvar)
+
+size_t VariantKeyHasher::operator() (const VariantReference<>& k) const
+{
+	return k.hash();
+}
+
+ 
+
+bool VariantKeyComparator::operator() (const VariantReference<>& x,const VariantReference<>& y) const
+{
+	return x.equal(y);
+}
+
+
+
+VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 {
 	switch(comvar.vt)
 	{
 	case VT_BOOL:
-		return BooleanVariant::Get(comvar.boolVal != VARIANT_FALSE,true);
+		return comvar.boolVal != VARIANT_FALSE;
 		break;
 	case VT_I1:
-		return new Integer32Variant(comvar.bVal);
+		return comvar.bVal;
 		break;
 	case VT_I2:
-		return new Integer32Variant(comvar.iVal);
+		return comvar.iVal;
 		break;
 	case VT_I4:
-		return new Integer32Variant(comvar.intVal);
+		return comvar.intVal;
 		break;
 	case VT_I8:
-		return new Integer64Variant(comvar.llVal);
+		return comvar.llVal;
 		break;
 	case VT_R8:
-		return new FloatingVariant(comvar.dblVal);
+		return comvar.dblVal;
 		break;
 	case VT_R4:
-		return new FloatingVariant(comvar.fltVal);
+		return comvar.fltVal;
 		break;
 	case VT_BSTR:
 		return new StringVariant(create_shared_string(comvar.bstrVal,SysStringLen(comvar.bstrVal)));
 		break;
 	case VT_EMPTY:
-		NullVariant::Instance.addRef();
-		return &NullVariant::Instance;
+		return VariantReference<>::NullReference();
 	default:
 		throw RuntimeError(L"No conversion exists for COMVar");
 		break;

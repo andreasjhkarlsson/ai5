@@ -26,21 +26,15 @@
     <Filter Include="DllCall">
       <UniqueIdentifier>{42c28c0b-fcf9-4f9d-bc2b-5dc41f59e6fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gc">
+      <UniqueIdentifier>{bf6e0d75-b145-4137-abfe-1b4ba1eda568}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Instruction.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
     <ClCompile Include="Variant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="FloatingVariant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="BooleanVariant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="NullVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
     <ClCompile Include="FunctionVariant.cpp">
@@ -56,12 +50,6 @@
       <Filter>variants</Filter>
     </ClCompile>
     <ClCompile Include="ListVariant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="Integer64Variant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="Integer32Variant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
     <ClCompile Include="NameVariant.cpp">
@@ -92,9 +80,6 @@
       <Filter>general</Filter>
     </ClCompile>
     <ClCompile Include="NameReferenceVariant.cpp">
-      <Filter>variants</Filter>
-    </ClCompile>
-    <ClCompile Include="ContainerVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
     <ClCompile Include="Scope.cpp">
@@ -139,6 +124,24 @@
     <ClCompile Include="StackMachine.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="GlobalOptions.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="BooleanVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatingVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="Integer32Variant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="Integer64Variant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
+    <ClCompile Include="NullVariant.cpp">
+      <Filter>variants</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -153,20 +156,11 @@
     <ClInclude Include="stack_instructions.h">
       <Filter>instructions</Filter>
     </ClInclude>
-    <ClInclude Include="FloatingVariant.h">
-      <Filter>variants</Filter>
-    </ClInclude>
-    <ClInclude Include="BooleanVariant.h">
-      <Filter>variants</Filter>
-    </ClInclude>
     <ClInclude Include="misc_instructions.h">
       <Filter>instructions</Filter>
     </ClInclude>
     <ClInclude Include="jump_instructions.h">
       <Filter>instructions</Filter>
-    </ClInclude>
-    <ClInclude Include="NullVariant.h">
-      <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="FunctionVariant.h">
       <Filter>variants</Filter>
@@ -181,12 +175,6 @@
       <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="ListVariant.h">
-      <Filter>variants</Filter>
-    </ClInclude>
-    <ClInclude Include="Integer64Variant.h">
-      <Filter>variants</Filter>
-    </ClInclude>
-    <ClInclude Include="Integer32Variant.h">
       <Filter>variants</Filter>
     </ClInclude>
     <ClInclude Include="comparison_instructions.h">
@@ -246,9 +234,6 @@
     <ClInclude Include="NameReferenceVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
-    <ClInclude Include="ContainerVariant.h">
-      <Filter>variants</Filter>
-    </ClInclude>
     <ClInclude Include="Scope.h">
       <Filter>variants</Filter>
     </ClInclude>
@@ -287,6 +272,30 @@
     </ClInclude>
     <ClInclude Include="StackMachine.h">
       <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalOptions.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="GCObjectOwner.h">
+      <Filter>gc</Filter>
+    </ClInclude>
+    <ClInclude Include="BooleanVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="FloatingVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="Integer32Variant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="Integer64Variant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="NullVariant.h">
+      <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="VariantReference.h">
+      <Filter>variants</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

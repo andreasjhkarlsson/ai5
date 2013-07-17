@@ -15,7 +15,7 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 
 void StackMachine::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
 {
-	globalScope->createName(&variantFactory,name)->setValue(new BuiltinFunctionVariant(name,function));
+	globalScope.cast<Scope>()->createName(name).cast<NameVariant>()->setValue(new BuiltinFunctionVariant(name,function));
 }
 
 void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
@@ -25,7 +25,6 @@ void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
 
 StackMachine::~StackMachine(void)
 {
-	globalScope->release();
 }
 
 

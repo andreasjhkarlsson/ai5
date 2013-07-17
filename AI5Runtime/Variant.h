@@ -14,7 +14,7 @@ typedef int VARIANT_TYPE;
 class Variant
 {
 public:
-	static const VARIANT_TYPE REFERENCE			= 0;
+	static const VARIANT_TYPE UNKNOWN			= 0;
 	static const VARIANT_TYPE INTEGER64			= 1;
 	static const VARIANT_TYPE BOOLEAN			= 2;
 	static const VARIANT_TYPE FLOATING			= 3;
@@ -61,7 +61,6 @@ public:
 	inline bool isUserFunctionType() const;
 	inline bool isStringType() const;
 	inline bool isListType() const;
-	inline bool isReferenceType() const;
 	inline bool isNameType() const;
 	inline bool isDefaultType() const;
 	inline bool isNameReferenceType() const;
@@ -70,7 +69,7 @@ public:
 	inline bool isHashMap() const;
 	inline bool isIterator() const;
 
-	static Variant* createFromCOMVar(const COMVar&);
+	static VariantReference<> createFromCOMVar(const COMVar&);
 
 	template<class T>
 	T* cast()
@@ -87,107 +86,19 @@ private:
 	const VARIANT_TYPE type;
 	int refCount;
 	bool isContainer;
-	VariantFactory* recycler;
 };
 
 
 typedef struct
 {
-	size_t operator() (Variant* k) const
-	{
-		return k->hash();
-	}
+	size_t operator() (const VariantReference<>& k) const;
 } VariantKeyHasher;
  
 typedef struct
 {
-	bool operator() (Variant* x,Variant* y) const {
-		return x->equal(y);
-	}
+	bool operator() (const VariantReference<>& x,const VariantReference<>& y) const;
 } VariantKeyComparator;
 
-
-
-class VariantFactory
-{
-public:
-	VariantFactory(void);
-	~VariantFactory(void);
-	__forceinline void recycle(Variant* variant);
-
-	// TODO: Infer VARIANT_TYPE from OUTER.
-	template<typename OUTER,typename INNER>
-	inline OUTER* create(VARIANT_TYPE type,INNER data);
-	template<typename OUTER>
-	inline OUTER* createEmpty(VARIANT_TYPE type);
-private:
-	static const int RECYCLE_BIN_LIMIT = 1000;
-	std::vector<FastStack<Variant*>*> recycleBins;
-};
-
-void VariantFactory::recycle(Variant* variant)
-{
-	// Do have any place left in the recycle bin for the type??
-	if(recycleBins[variant->getType()]->size() < RECYCLE_BIN_LIMIT)
-	{
-		// Store the variant for future use.
-		recycleBins[variant->getType()]->push(variant);
-	}
-	else
-	{
-		// The limit for the bin has been used up!
-		// Do a real delete.
-		delete variant;
-	}
-}
-
-template<typename OUTER,typename INNER>
-OUTER* VariantFactory::create(VARIANT_TYPE type,INNER data)
-{
-	// Are there cached variants available?
-	if(recycleBins[type]->size() > 0)
-	{
-		OUTER* var = static_cast<OUTER*>(recycleBins[type]->pop());
-
-		// Prepare the recycled value for use.
-		//var->value = data;
-		var->setValue(data);
-		var->addRef();
-
-		return var;
-	} else
-	{
-		// No old variant found! Create new and return it.
-		OUTER* var = new OUTER(data);
-		var->scheduleRecycling(this);
-		return var;
-	}
-}
-
-template<typename OUTER>
-OUTER* VariantFactory::createEmpty(VARIANT_TYPE type)
-{
-	// Are there cached variants available?
-	if(recycleBins[type]->size() > 0)
-	{
-		OUTER* var = static_cast<OUTER*>(recycleBins[type]->pop());
-		var->addRef();
-
-		return var;
-	} else
-	{
-		// No old variant found! Create new and return it.
-		OUTER* var = new OUTER();
-		var->scheduleRecycling(this);
-		return var;
-	}
-}
-
-// Mark this object for recycling.
-void Variant::scheduleRecycling(VariantFactory* factory)
-{
-	this->recycler = factory;
-}
 
 int Variant::addRef()
 {
@@ -200,15 +111,7 @@ int Variant::release()
 	if (!(resultCount))
 	{
 		this->cleanup();
-		// Is this object used for recycling?
-		if (recycler != nullptr)
-		{
-			recycler->recycle(this);
-		}
-		else
-		{
-			delete this;
-		}
+		delete this;
 	}
 	return resultCount;
 }
@@ -262,10 +165,6 @@ bool Variant::isStringType() const
 bool Variant::isListType() const
 {
 	return type == LIST;
-}
-bool Variant::isReferenceType() const
-{
-	return type == REFERENCE;
 }
 
 bool Variant::isNameType() const

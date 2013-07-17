@@ -56,19 +56,14 @@ void COMVar::operator= (const COMVar* comVar)
 }
 
 // Assignment operator with Variant object.
-void COMVar::operator= (const Variant& vVar)
+void COMVar::operator= (const VariantReference<>& vVar)
 {
 	*this = COMVar(vVar); // Variant is turned into COMVar and then copyied into "this"
 }
 
-// Assignment operator with pointer to Variant.
-void COMVar::operator= (const Variant* pVar)
-{
-	*this = COMVar(*pVar); // Pointer to Variant is dereferenced and get object is turned into COMVar and then copyied into "this"
-}
 
 // Constructor on Variant object
-COMVar::COMVar(const Variant& vVar)
+COMVar::COMVar(const VariantReference<>& vVar)
 {
 	::VariantInit(this);  // initialize "this" variant. Memory space can be dirty and that's why VARIANT needs to be initialized
 	this->ullVal = 0;     // zero-out the whole data field (redundant actually, but results in easier possible debugging)
@@ -119,11 +114,6 @@ COMVar::COMVar(const Variant& vVar)
 	}
 }
 
-// Constructor on pointer to Variant
-COMVar::COMVar(const Variant* pVar)
-{
-	*this = COMVar(*pVar); // Pointer to Variant is dereferenced and get object is turned into COMVar and then copyied into "this"
-}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,7 +121,7 @@ COMVar::COMVar(const Variant* pVar)
 //
 // Converts Binary Variant into SafeArray and returns pointer to it
 ///////////////////////////////////////////////////////////////////////////////
-SAFEARRAY* COMVar::VariantBinaryToSafeArray(const Variant& vVar)
+SAFEARRAY* COMVar::VariantBinaryToSafeArray(const VariantReference<>& vVar)
 {
 	
 	//TODO: Add implementation
@@ -144,7 +134,7 @@ SAFEARRAY* COMVar::VariantBinaryToSafeArray(const Variant& vVar)
 //
 // Converts List Variant into SafeArray and returns pointer to it
 //////////////////////////////////////////////////////////////////////////////////////
-SAFEARRAY* COMVar::VariantListToSafeArray(const Variant& vVar)
+SAFEARRAY* COMVar::VariantListToSafeArray(const VariantReference<>& vVar)
 {
 
 	//TODO: Add implementation

@@ -36,13 +36,15 @@ T FastStack<T>::pop()
 {
 	if(position == -1)
 		throw new RuntimeError(L"Stack underflow!");
+
 	return stack[position--];
 }
 
 template<typename T>
 void FastStack<T>::popMany(size_t count)
 {
-	position-=count;
+	for(size_t i=0;i<count;i++)
+		pop();
 }
 
 template<typename T>

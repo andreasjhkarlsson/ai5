@@ -26,29 +26,29 @@ void ListFunctions::registerFunctions(StackMachine* machine)
 }
 
 
-Variant* ListFunctions::ubound(CallInfo* callInfo)
+VariantReference<> ListFunctions::ubound(CallInfo* callInfo)
 {
 
 	callInfo->validateArgCount(1,1);
 
-	Variant* var = callInfo->getArg(0);
-	Variant* result;
+	VariantReference<ListVariant> var = callInfo->getArg(0).cast<ListVariant>();
+	VariantReference<> result;
 
-	result = new Integer32Variant((int)var->cast<ListVariant>()->size());
+	result = (int)var->size();
 
 	return result;
 }
 
 
-Variant* ListFunctions::arrayadd(CallInfo* callInfo)
+VariantReference<> ListFunctions::arrayadd(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
-	ListVariant* listArg = callInfo->getArg(0)->cast<ListVariant>();
-	Variant* elementArg = callInfo->getArg(1);
+	VariantReference<ListVariant> listArg = callInfo->getArg(0).cast<ListVariant>();
+	VariantReference<> elementArg = callInfo->getArg(1);
 
 
 	listArg->addElement(elementArg);
 
-	NullVariant::Instance.addRef();
-	return &NullVariant::Instance;
+
+	return VariantReference<>::NullReference();
 }

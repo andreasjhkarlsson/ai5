@@ -21,7 +21,7 @@ TimerFunctions::~TimerFunctions(void)
 }
 
 
-Variant* TimerFunctions::sleep(CallInfo* callInfo)
+VariantReference<> TimerFunctions::sleep(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
@@ -44,21 +44,21 @@ void TimerFunctions::registerFunctions(StackMachine* machine)
 }
 
 
-Variant* TimerFunctions::timerInit(CallInfo* callInfo)
+VariantReference<> TimerFunctions::timerInit(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,0);
 	LARGE_INTEGER li;
 	QueryPerformanceCounter(&li);
-	return new Integer64Variant(li.QuadPart);
+	return li.QuadPart;
 }
 
-Variant* TimerFunctions::timerDiff(CallInfo* callInfo)
+VariantReference<> TimerFunctions::timerDiff(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	__int64 start = callInfo->getInt64Arg(0);
 	LARGE_INTEGER end;
 	QueryPerformanceCounter(&end);
 
-	return new FloatingVariant((end.QuadPart-start)/performanceCounterFrequency);
+	return (end.QuadPart-start)/performanceCounterFrequency;
 }
 

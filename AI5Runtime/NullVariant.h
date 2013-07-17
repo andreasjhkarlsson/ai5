@@ -5,7 +5,7 @@ class NullVariant :
 {
 public:
 	static const VARIANT_TYPE TYPE = NULL_VAR;
-	static NullVariant Instance;
+	
 	~NullVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -14,7 +14,9 @@ public:
 	virtual bool toBoolean() const;
 	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
+	friend class VariantReference<>;
 private:
 	NullVariant(void);
+	static NullVariant Instance;
 };
 

@@ -1,7 +1,5 @@
 #pragma once
-class Variant;
-class StackMachine;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 class TimerFunctions
 {
 public:
@@ -9,9 +7,9 @@ public:
 	~TimerFunctions(void);
 private:
 	TimerFunctions(void);
-	Variant* sleep(CallInfo* callInfo);
-	Variant* timerInit(CallInfo* callInfo);
-	Variant* timerDiff(CallInfo* callInfo);
+	VariantReference<> sleep(CallInfo* callInfo);
+	VariantReference<> timerInit(CallInfo* callInfo);
+	VariantReference<> timerDiff(CallInfo* callInfo);
 	double performanceCounterFrequency; 
 };
 

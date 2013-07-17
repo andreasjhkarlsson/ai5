@@ -1,7 +1,5 @@
 #pragma once
-class Variant;
-class StackMachine;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 class MouseFunctions
 {
 public:
@@ -9,13 +7,13 @@ public:
 	~MouseFunctions(void);
 private:
 	MouseFunctions(void);
-	Variant* mouseMove(CallInfo* callInfo);
-	Variant* mouseDown(CallInfo* callInfo);
-	Variant* mouseUp(CallInfo* callInfo);
-	Variant* mouseClick(CallInfo* callInfo);
-	Variant* mouseClickDrag(CallInfo* callInfo);
-	Variant* mouseGetPos(CallInfo* callInfo);
-	Variant* mouseWheel(CallInfo* callInfo);
-	Variant* mouseGetCursor(CallInfo* callInfo);
+	VariantReference<> mouseMove(CallInfo* callInfo);
+	VariantReference<> mouseDown(CallInfo* callInfo);
+	VariantReference<> mouseUp(CallInfo* callInfo);
+	VariantReference<> mouseClick(CallInfo* callInfo);
+	VariantReference<> mouseClickDrag(CallInfo* callInfo);
+	VariantReference<> mouseGetPos(CallInfo* callInfo);
+	VariantReference<> mouseWheel(CallInfo* callInfo);
+	VariantReference<> mouseGetCursor(CallInfo* callInfo);
 };
 

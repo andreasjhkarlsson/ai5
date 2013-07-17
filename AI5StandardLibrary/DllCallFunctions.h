@@ -1,8 +1,6 @@
 #pragma once
 
-class Variant;
-class StackMachine;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 
 class DllCallFunctions
 {
@@ -11,9 +9,9 @@ public:
 	~DllCallFunctions();
 private:
 	DllCallFunctions();
-	Variant* dllcall(CallInfo* callInfo);
-	Variant* dllcalladdress(CallInfo* callInfo);
-	Variant* dllopen(CallInfo* callInfo);
-	Variant* dllclose(CallInfo* callInfo);
+	VariantReference<> dllcall(CallInfo* callInfo);
+	VariantReference<> dllcalladdress(CallInfo* callInfo);
+	VariantReference<> dllopen(CallInfo* callInfo);
+	VariantReference<> dllclose(CallInfo* callInfo);
 };
 

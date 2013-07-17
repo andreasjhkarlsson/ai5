@@ -1,7 +1,5 @@
 #pragma once
-class StackMachine;
-class CallInfo;
-class Variant;
+#include "..\AI5Runtime\types.h"
 class MiscFunctions
 {
 public:
@@ -9,7 +7,7 @@ public:
 	~MiscFunctions(void);
 private:
 	MiscFunctions(void);
-	Variant* setError(CallInfo* callInfo);
-	Variant* setExtended(CallInfo* callInfo);
+	VariantReference<> setError(CallInfo* callInfo);
+	VariantReference<> setExtended(CallInfo* callInfo);
 };
 

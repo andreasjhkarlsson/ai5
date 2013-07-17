@@ -2,6 +2,7 @@
 
 #include "windows.h"
 #include "variant.h"
+#include "VariantReference.h"
 
 #ifndef _X64
 // 64 bit code flag
@@ -22,14 +23,12 @@ public:
 	// Other constructor(s)
 	COMVar     (const COMVar&);
 	COMVar     (const COMVar*);
-	COMVar     (const Variant&);
-	COMVar     (const Variant*);
+	COMVar     (const VariantReference<>&);
 
 	// Assignment operator
 	void operator= (const COMVar&);
 	void operator= (const COMVar*);
-	void operator= (const Variant&);
-	void operator= (const Variant*);
+	void operator= (const VariantReference<>&);
 
 	// Element types for sructures
 #ifdef _X64
@@ -40,6 +39,6 @@ public:
 	static const VARTYPE VT_StructType = VT_RECORD;
 
 protected:
-	SAFEARRAY*    VariantListToSafeArray       (const Variant&);
-	SAFEARRAY*    VariantBinaryToSafeArray     (const Variant&);
+	SAFEARRAY*    VariantListToSafeArray       (const VariantReference<>&);
+	SAFEARRAY*    VariantBinaryToSafeArray     (const VariantReference<>&);
 };

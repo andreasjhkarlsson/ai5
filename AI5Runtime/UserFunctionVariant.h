@@ -10,12 +10,12 @@ public:
 	~UserFunctionVariant(void);
 	std::wostream& format(std::wostream& stream);
 	int getAddress();
-	Scope* getEnclosingScope();
-	void setEnclosingScope(Scope* scope);
+	VariantReference<Scope>& getEnclosingScope();
+	void setEnclosingScope(const VariantReference<Scope>& scope);
 	virtual void cleanup();
 	virtual bool equal(Variant*);
 private:
 	int address;
-	Scope* enclosingScope;
+	VariantReference<Scope> enclosingScope;
 };
 			

@@ -11,11 +11,12 @@ STATIC_TYPE StaticData::getType()
 
 StaticString::StaticString(shared_string str): StaticData(STRING), strVar(str)
 {
+	
 
 }
-StringVariant* StaticString::getVariant()
+const VariantReference<StringVariant>& StaticString::getVariant()
 {
-	return &strVar;
+	return strVar;
 }
 
 StaticName::StaticName(shared_string str): StaticData(NAME),name(str)
@@ -38,32 +39,32 @@ shared_string StaticMacro::getName()
 	return name;
 }
 
-StaticInteger64::StaticInteger64(__int64 value): StaticData(INTEGER64),variant(value)
+StaticInteger64::StaticInteger64(__int64 value): StaticData(INTEGER64),i64(value)
 {
 
 }
 
-Integer64Variant* StaticInteger64::getVariant()
+__int64 StaticInteger64::getInt()
 {
-	return &variant;
+	return i64;
 }
 
-StaticInteger32::StaticInteger32(int value): StaticData(INTEGER32),variant(value)
-{
-
-}
-
-Integer32Variant* StaticInteger32::getVariant()
-{
-	return &variant;
-}
-
-StaticFloating::StaticFloating(double value): StaticData(FLOATING),variant(value)
+StaticInteger32::StaticInteger32(int value): StaticData(INTEGER32),i32(value)
 {
 
 }
 
-FloatingVariant* StaticFloating::getVariant()
+int StaticInteger32::getInt()
 {
-	return &variant;
+	return i32;
+}
+
+StaticFloating::StaticFloating(double value): StaticData(FLOATING),floating(value)
+{
+
+}
+
+double StaticFloating::getFloating()
+{
+	return floating;
 }

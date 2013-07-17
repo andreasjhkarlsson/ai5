@@ -1,9 +1,6 @@
 #pragma once
 
-
-class Variant;
-class StackMachine;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 
 class StringFunctions
 {
@@ -12,13 +9,13 @@ public:
 	~StringFunctions(void);
 private:
 	StringFunctions(void);
-	Variant* stringLower(CallInfo* callInfo);
-	Variant* stringUpper(CallInfo* callInfo);
-	Variant* stringLen(CallInfo* callInfo);
-	Variant* stringLeft(CallInfo* callInfo);
-	Variant* stringTrimLeft(CallInfo* callInfo);
-	Variant* stringRight(CallInfo* callInfo);
-	Variant* stringTrimRight(CallInfo* callInfo);
-	Variant* stringIsDigit(CallInfo* callInfo);
+	VariantReference<> stringLower(CallInfo* callInfo);
+	VariantReference<> stringUpper(CallInfo* callInfo);
+	VariantReference<> stringLen(CallInfo* callInfo);
+	VariantReference<> stringLeft(CallInfo* callInfo);
+	VariantReference<> stringTrimLeft(CallInfo* callInfo);
+	VariantReference<> stringRight(CallInfo* callInfo);
+	VariantReference<> stringTrimRight(CallInfo* callInfo);
+	VariantReference<> stringIsDigit(CallInfo* callInfo);
 };
 

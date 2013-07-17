@@ -1,8 +1,6 @@
 #pragma once
+#include "..\AI5Runtime\types.h"
 #include "..\AI5Runtime\BinaryVariant.h"
-class Variant;
-class StackMachine;
-class CallInfo;
 class VariableFunctions
 {
 public:
@@ -10,14 +8,14 @@ public:
 	static void registerFunctions(StackMachine* machine);
 private:
 	VariableFunctions(void);
-	Variant* stringToBinary(CallInfo* callInfo);
-	Variant* binaryToString(CallInfo* callInfo);
-	Variant* isFloat(CallInfo* callInfo);
-	Variant* isString(CallInfo* callInfo);
-	Variant* isArray(CallInfo* callInfo);
-	Variant* isHashMap(CallInfo* callInfo);
-	Variant* isBool(CallInfo* callInfo);
-	Variant* ToString(CallInfo* callInfo);
+	VariantReference<> stringToBinary(CallInfo* callInfo);
+	VariantReference<> binaryToString(CallInfo* callInfo);
+	VariantReference<> isFloat(CallInfo* callInfo);
+	VariantReference<> isString(CallInfo* callInfo);
+	VariantReference<> isArray(CallInfo* callInfo);
+	VariantReference<> isHashMap(CallInfo* callInfo);
+	VariantReference<> isBool(CallInfo* callInfo);
+	VariantReference<> ToString(CallInfo* callInfo);
 
 
 	void swapUtf16Endiness(wchar_t* binary,int size);

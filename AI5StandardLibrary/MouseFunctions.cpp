@@ -16,7 +16,7 @@ MouseFunctions::~MouseFunctions(void)
 {
 }
 
-Variant* MouseFunctions::mouseMove(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseMove(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,3);
 
@@ -26,23 +26,23 @@ Variant* MouseFunctions::mouseMove(CallInfo* callInfo)
 
 	long returnValue = AU3_MouseMove(x,y,speed);
 
-	return new Integer32Variant(returnValue);
+	return returnValue;
 }
 
 
-Variant* MouseFunctions::mouseDown(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseDown(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,1);
 	AU3_MouseDown(callInfo->getStringArg(0,L"left")->getTerminatedBuffer());
 	return nullptr;
 }
-Variant* MouseFunctions::mouseUp(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseUp(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,1);
 	AU3_MouseUp(callInfo->getStringArg(0,L"left")->getTerminatedBuffer());
 	return nullptr;
 }
-Variant* MouseFunctions::mouseClick(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseClick(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,5);
 	long ret = AU3_MouseClick(callInfo->getStringArg(0)->getTerminatedBuffer(),
@@ -50,9 +50,9 @@ Variant* MouseFunctions::mouseClick(CallInfo* callInfo)
 		callInfo->getInt32Arg(2,AU3_INTDEFAULT),
 		callInfo->getInt32Arg(3,1),
 		callInfo->getInt32Arg(4,-1));
-	return new Integer32Variant(ret);
+	return ret;
 }
-Variant* MouseFunctions::mouseClickDrag(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseClickDrag(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(5,6);
 	long ret = AU3_MouseClickDrag(callInfo->getStringArg(0)->getTerminatedBuffer(),
@@ -61,10 +61,10 @@ Variant* MouseFunctions::mouseClickDrag(CallInfo* callInfo)
 		callInfo->getInt32Arg(3),
 		callInfo->getInt32Arg(4),
 		callInfo->getInt32Arg(5,-1));
-	return new Integer32Variant(ret);
+	return ret;
 
 }
-Variant* MouseFunctions::mouseGetPos(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseGetPos(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,1);
 
@@ -74,18 +74,16 @@ Variant* MouseFunctions::mouseGetPos(CallInfo* callInfo)
 	switch(mode)
 	{
 	case 0:
-		return new Integer32Variant(AU3_MouseGetPosX());
+		return AU3_MouseGetPosX();
 	case 1:
-		return new Integer32Variant(AU3_MouseGetPosY());
+		return AU3_MouseGetPosY();
 	case -1:
 		{
 		ListVariant* retArr = new ListVariant();
-		Variant* xEl = new Integer32Variant(AU3_MouseGetPosX());
-		Variant* yEl = new Integer32Variant(AU3_MouseGetPosY());
+		VariantReference<> xEl = AU3_MouseGetPosX();
+		VariantReference<> yEl = AU3_MouseGetPosY();
 		retArr->addElement(xEl);
 		retArr->addElement(yEl);
-		xEl->release();
-		yEl->release();
 		return retArr;
 		}
 	default:
@@ -94,7 +92,7 @@ Variant* MouseFunctions::mouseGetPos(CallInfo* callInfo)
 
 }
 
-Variant* MouseFunctions::mouseWheel(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseWheel(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 
@@ -102,10 +100,10 @@ Variant* MouseFunctions::mouseWheel(CallInfo* callInfo)
 
 	return nullptr;
 }
-Variant* MouseFunctions::mouseGetCursor(CallInfo* callInfo)
+VariantReference<> MouseFunctions::mouseGetCursor(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,0);
-	return new Integer32Variant(AU3_MouseGetCursor());
+	return AU3_MouseGetCursor();
 }
 
 

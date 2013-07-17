@@ -46,10 +46,6 @@ double Integer64Variant::toFloating() const
 	return (double)value;
 }
 
-Integer64Variant* Integer64Variant::createFromFactory(VariantFactory* factory,__int64 value)
-{
-	return factory->create<Integer64Variant,__int64>(Variant::INTEGER64,value);
-}
 
 shared_string Integer64Variant::toString() const
 {

@@ -19,10 +19,7 @@ std::wostream& Integer32Variant::format(std::wostream& stream) const
 
 }
 
-Integer32Variant* Integer32Variant::createFromFactory(VariantFactory* factory,int value)
-{
-	return factory->create<Integer32Variant,int>(Variant::INTEGER32,value);
-}
+
 
 double Integer32Variant::toFloating() const
 {

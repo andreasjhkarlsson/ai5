@@ -1,8 +1,6 @@
 #pragma once
 
-class StackMachine;
-class Variant;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 
 class DialogFunctions
 {
@@ -11,6 +9,6 @@ public:
 	~DialogFunctions(void);
 private:
 	DialogFunctions(void);
-	Variant* msgbox(CallInfo* callInfo);
+	VariantReference<> msgbox(CallInfo* callInfo);
 };
 

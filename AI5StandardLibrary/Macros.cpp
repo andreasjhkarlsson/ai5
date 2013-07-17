@@ -32,44 +32,42 @@ void Macros::registerMacros(StackMachine* machine)
 	machine->addMacro(L"extended",&extendedCode);
 }
 
-Variant* Macros::MyPID(StackMachineThread*)
+VariantReference<> Macros::MyPID(StackMachineThread*)
 {
-	return new Integer64Variant(GetCurrentProcessId());
+	return (int)GetCurrentProcessId();
 }
 
-Variant* Macros::errorCode(StackMachineThread* machine)
+VariantReference<> Macros::errorCode(StackMachineThread* machine)
 {
-	Variant* vError = machine->getErrorCode();
-	vError->addRef();
+	VariantReference<> vError = machine->getErrorCode();
 	return vError;
 }
 
-Variant* Macros::extendedCode(StackMachineThread* machine)
+VariantReference<> Macros::extendedCode(StackMachineThread* machine)
 {
-	Variant* vExtended = machine->getExtendedCode();
-	vExtended->addRef();
+	VariantReference<> vExtended = machine->getExtendedCode();
 	return vExtended;
 }
 
-Variant* Macros::CRLF(StackMachineThread*)
+VariantReference<> Macros::CRLF(StackMachineThread*)
 {
 	static StringVariant crlf(L"\r\n");
 	crlf.addRef();
 	return &crlf;
 }
-Variant* Macros::CR(StackMachineThread*)
+VariantReference<> Macros::CR(StackMachineThread*)
 {
 	static StringVariant cr(L"\r");
 	cr.addRef();
 	return &cr;
 }
-Variant* Macros::LF(StackMachineThread*)
+VariantReference<> Macros::LF(StackMachineThread*)
 {
 	static StringVariant lf(L"\n");
 	lf.addRef();
 	return &lf;
 }
-Variant* Macros::TAB(StackMachineThread*)
+VariantReference<> Macros::TAB(StackMachineThread*)
 {
 	static StringVariant tab(L"\t");
 	tab.addRef();
@@ -77,7 +75,7 @@ Variant* Macros::TAB(StackMachineThread*)
 }
 
 
-Variant* Macros::Username(StackMachineThread*)
+VariantReference<> Macros::Username(StackMachineThread*)
 {
 	DWORD buffSize = UNLEN+1;
 	std::vector<wchar_t> buffer(buffSize);
@@ -86,14 +84,14 @@ Variant* Macros::Username(StackMachineThread*)
 
 }
 
-Variant* Macros::WorkingDirectory(StackMachineThread*)
+VariantReference<> Macros::WorkingDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetCurrentDirectoryW(MAX_PATH,&buffer[0]);
 	return new StringVariant(&buffer[0]);
 }
 
-Variant* Macros::TempDirectory(StackMachineThread*)
+VariantReference<> Macros::TempDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetTempPathW(MAX_PATH,&buffer[0]);
@@ -101,13 +99,13 @@ Variant* Macros::TempDirectory(StackMachineThread*)
 }
 
 
-Variant* Macros::SystemDirectory(StackMachineThread*)
+VariantReference<> Macros::SystemDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetSystemDirectoryW(&buffer[0],MAX_PATH);
 	return new StringVariant(&buffer[0]);
 }
-Variant* Macros::WindowsDirectory(StackMachineThread*)
+VariantReference<> Macros::WindowsDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetWindowsDirectoryW(&buffer[0],MAX_PATH);
@@ -115,52 +113,52 @@ Variant* Macros::WindowsDirectory(StackMachineThread*)
 }
 
 
-Variant* Macros::millisecond(StackMachineThread*)
+VariantReference<> Macros::millisecond(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wMilliseconds);
+	return stime.wMilliseconds;
 }
 
-Variant* Macros::second(StackMachineThread*)
+VariantReference<> Macros::second(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wSecond);
+	return stime.wSecond;
 }
-Variant* Macros::minute(StackMachineThread*)
+VariantReference<> Macros::minute(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wMinute);
+	return stime.wMinute;
 }
-Variant* Macros::hour(StackMachineThread*)
+VariantReference<> Macros::hour(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wHour);
+	return stime.wHour;
 }
-Variant* Macros::monthDay(StackMachineThread*)
+VariantReference<> Macros::monthDay(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wDay);
+	return stime.wDay;
 }
-Variant* Macros::month(StackMachineThread*)
+VariantReference<> Macros::month(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wMonth);
+	return stime.wMonth;
 }
-Variant* Macros::year(StackMachineThread*)
+VariantReference<> Macros::year(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wYear);
+	return stime.wYear;
 }
-Variant* Macros::weekDay(StackMachineThread*)
+VariantReference<> Macros::weekDay(StackMachineThread*)
 {
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
-	return new Integer32Variant(stime.wDayOfWeek);
+	return stime.wDayOfWeek;
 }

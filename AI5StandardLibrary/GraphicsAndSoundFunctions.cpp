@@ -24,7 +24,7 @@ void GraphicsAndSoundFunctions::registerFunctions(StackMachine* machine)
 
 }
 
-Variant* GraphicsAndSoundFunctions::beep(CallInfo* callInfo)
+VariantReference<> GraphicsAndSoundFunctions::beep(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,2);
 
@@ -33,5 +33,5 @@ Variant* GraphicsAndSoundFunctions::beep(CallInfo* callInfo)
 
 	Beep(freq,duration);
 
-	return new Integer32Variant(1);
+	return 1;
 }

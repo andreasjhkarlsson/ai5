@@ -1,8 +1,6 @@
 #pragma once
 #include <random>
-class Variant;
-class StackMachine;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 class MathFunctions
 {
 public:
@@ -10,22 +8,22 @@ public:
 	~MathFunctions(void);
 private:
 	MathFunctions(void);
-	Variant* absolute(CallInfo* callInfo);
-	Variant* acosine(CallInfo* callInfo);
-	Variant* asine(CallInfo* callInfo);
-	Variant* atangent(CallInfo* callInfo);
-	Variant* cosine(CallInfo* callInfo);
-	Variant* ceiling(CallInfo* callInfo);
-	Variant* exponent(CallInfo* callInfo);
-	Variant* floor(CallInfo* callInfo);
-	Variant* logarithm(CallInfo* callInfo);
-	Variant* modulus(CallInfo* callInfo);
-	Variant* random(CallInfo* callInfo);
-	Variant* _round(CallInfo* callInfo);
-	Variant* sine(CallInfo* callInfo);
-	Variant* _sqrt(CallInfo* callInfo);
-	Variant* srandom(CallInfo* callInfo);
-	Variant* tangent(CallInfo* callInfo);
+	VariantReference<> absolute(CallInfo* callInfo);
+	VariantReference<> acosine(CallInfo* callInfo);
+	VariantReference<> asine(CallInfo* callInfo);
+	VariantReference<> atangent(CallInfo* callInfo);
+	VariantReference<> cosine(CallInfo* callInfo);
+	VariantReference<> ceiling(CallInfo* callInfo);
+	VariantReference<> exponent(CallInfo* callInfo);
+	VariantReference<> floor(CallInfo* callInfo);
+	VariantReference<> logarithm(CallInfo* callInfo);
+	VariantReference<> modulus(CallInfo* callInfo);
+	VariantReference<> random(CallInfo* callInfo);
+	VariantReference<> _round(CallInfo* callInfo);
+	VariantReference<> sine(CallInfo* callInfo);
+	VariantReference<> _sqrt(CallInfo* callInfo);
+	VariantReference<> srandom(CallInfo* callInfo);
+	VariantReference<> tangent(CallInfo* callInfo);
 	std::mt19937 rng;
 };
 

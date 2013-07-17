@@ -11,7 +11,7 @@ ListVariant* createList(std::stack<unsigned int> subscripts)
 	if(subscripts.empty())
 	{
 		for(unsigned int i=0;i<count;i++)
-			list->addElement(&NullVariant::Instance);
+			list->addElement(VariantReference<>::NullReference());
 		return list;
 	}
 
@@ -25,12 +25,10 @@ ListVariant* createList(std::stack<unsigned int> subscripts)
 }
 
 
-void redimList(Variant* listVar,std::stack<unsigned int> subscripts)
+void redimList(VariantReference<ListVariant>& listVar,std::stack<unsigned int> subscripts)
 {
-	if(!listVar->isListType())
+	if(!listVar.isListType())
 		throw RuntimeError(L"Can only redim list types!");
-
-	ListVariant* list = static_cast<ListVariant*>(listVar);
 
 	unsigned int count = subscripts.top();
 	subscripts.pop();
@@ -40,19 +38,19 @@ void redimList(Variant* listVar,std::stack<unsigned int> subscripts)
 	if(subscripts.empty())
 	{
 		// SHould elements be added?
-		if(count > list->size())
+		if(count > listVar->size())
 		{
-			for(size_t i=0;i<(count-list->size()+1);i++)
+			for(size_t i=0;i<(count-listVar->size()+1);i++)
 			{
-				list->addElement(&NullVariant::Instance);
+				listVar->addElement(VariantReference<>::NullReference());
 			}
 		}
 		// Or should they be removed?
-		else if(count < list->size())
+		else if(count < listVar->size())
 		{
-			for(size_t i=list->size()-1;i >= (count);i--)
+			for(size_t i=listVar->size()-1;i >= (count);i--)
 			{
-				list->deleteAt(i);
+				listVar->deleteAt(i);
 			}
 		}
 
@@ -62,46 +60,48 @@ void redimList(Variant* listVar,std::stack<unsigned int> subscripts)
 	else
 	{
 		// Add new lists and recurse into them?
-		if(count >= list->size())
+		if(count >= listVar->size())
 		{
 			for(size_t i=0;i<count;i++)
 			{
-				if(i >= list->size())
+				if(i >= listVar->size())
 				{
-					list->addElement(new ListVariant());
+					listVar->addElement(new ListVariant());
 				}
 
 				// This indicates that we're adding at least another subscript.
-				if(subscripts.size()>=1 && !list->getElement(i)->isListType())
+				if(subscripts.size()>=1 && !listVar->getElement(i).isListType())
 				{
 					// Replace the current bastard value in this position
 					// with a new fresh list which can be populated
 					// with further subscript(s).
-					list->setElement(i,new ListVariant());
+					listVar->setElement(i,new ListVariant());
 				}
-				redimList(list->getElement(i),subscripts);
+				VariantReference<ListVariant> element = listVar->getElement(i).cast<ListVariant>();
+				redimList(element,subscripts);
 			}
 		}
 		// Remove nested lists! Only recurse into the ones still left
 		// in the structure (duh).
-		else if(count < list->size())
+		else if(count < listVar->size())
 		{
-			for(size_t i=list->size();i --> 0 ;)
+			for(size_t i=listVar->size();i --> 0 ;)
 			{
 				if(i>=count)
 				{
-					list->deleteAt(i);
+					listVar->deleteAt(i);
 					continue;
 				}
 				// This indicates that we're adding at least another subscript.
-				if(subscripts.size()>=1 && !list->getElement(i)->isListType())
+				if(subscripts.size()>=1 && !listVar->getElement(i).isListType())
 				{
 					// Replace the current bastard value in this position
 					// with a new fresh list which can be populated
 					// with further subscript(s).
-					list->setElement(i,new ListVariant());
+					listVar->setElement(i,new ListVariant());
 				}
-				redimList(list->getElement(i),subscripts);
+				VariantReference<ListVariant> element = listVar->getElement(i).cast<ListVariant>();
+				redimList(element,subscripts);
 			}
 		}
 	}

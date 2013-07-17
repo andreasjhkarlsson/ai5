@@ -26,33 +26,33 @@ FileFunctions::~FileFunctions(void)
 }
 
 
-Variant* FileFunctions::printline(CallInfo* callInfo)
+VariantReference<> FileFunctions::printline(CallInfo* callInfo)
 {
 
 	for(int i=0;i<callInfo->getArgCount();i++)
 	{
 		if(i > 0)
 			std::wcout << ", ";
-		Variant* var = callInfo->getArg(i);
-		var->format(std::wcout);
+		VariantReference<> var = callInfo->getArg(i);
+		var.format(std::wcout);
 		
 	}
 
 	std::wcout << std::endl;
 
-	NullVariant::Instance.addRef();
-	return &NullVariant::Instance;
+
+	return nullptr;
 }
 
 
-Variant* FileFunctions::fileExists(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileExists(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
 	shared_string path = callInfo->getStringArg(0);
 
 
-	return BooleanVariant::Get(PathFileExistsW(path->getTerminatedBuffer()) != 0,true);
+	return PathFileExistsW(path->getTerminatedBuffer()) != 0;
 
 }
 
@@ -74,7 +74,7 @@ void FileFunctions::registerFunctions(StackMachine* machine)
 }
 
 
-Variant* FileFunctions::consoleWrite(CallInfo* callInfo)
+VariantReference<> FileFunctions::consoleWrite(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	std::wcout << callInfo->getStringArg(0)->getTerminatedBuffer();
@@ -82,14 +82,14 @@ Variant* FileFunctions::consoleWrite(CallInfo* callInfo)
 }
 
 
-Variant* FileFunctions::consoleWriteError(CallInfo* callInfo)
+VariantReference<> FileFunctions::consoleWriteError(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	std::wcerr << callInfo->getStringArg(0)->getTerminatedBuffer();
 	return nullptr;
 }
 
-Variant* FileFunctions::consoleReadLine(CallInfo* callInfo)
+VariantReference<> FileFunctions::consoleReadLine(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,0);
 	std::wstring str;
@@ -97,7 +97,7 @@ Variant* FileFunctions::consoleReadLine(CallInfo* callInfo)
 	return new StringVariant(str.c_str());
 }
 
-Variant* FileFunctions::fileChangeDir(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileChangeDir(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
@@ -142,7 +142,7 @@ public:
 		std::string utf8_filename;
 		// TODO: Use GetShortPath to make unicode filenames work.
 		filename->toUTF8String(utf8_filename);
-		handle = u_fopen(utf8_filename.c_str(),openMode,NULL,codepage);
+		FILE* fhandle = fopen(utf8_filename.c_str(),openMode);
 
 
 		if(!handle)
@@ -150,13 +150,14 @@ public:
 			// It's an error! Do something!
 		}
 
+		handle = u_finit(fhandle,nullptr,codepage);
+
 		if(encoding == Encode::UTF8 && bom)
 		{
 			char bom[3];
-			//u_fgetc(handle);
-			FILE* f = u_fgetfile(handle);
-			fseek(f,3,SEEK_SET);
-		//	fread(bom,1,3,f);
+
+			fseek(u_fgetfile(handle),3,SEEK_SET);
+
 		}
 	}
 
@@ -178,6 +179,7 @@ public:
 		int read_length;
 		do
 		{
+
 			// If u_fgets returns nullptr, there are no more lines!
 			if(!u_fgets(buffer,buffer_size,handle))
 				break;
@@ -194,6 +196,7 @@ public:
 			{
 				str->append(buffer,read_length);
 			}
+			
 		}while(true);
 
 
@@ -234,7 +237,7 @@ public:
 		{
 			return !handle->isEOFReached();
 		}
-		virtual Variant* next()
+		virtual const VariantReference<>& next()
 		{
 			return handle->readLine();
 			
@@ -256,6 +259,7 @@ public:
 
 private:
 	UFILE* handle;
+
 	Encode::TYPE encoding;
 	MODE mode;
 	bool binary;
@@ -266,7 +270,7 @@ private:
 };
 
 
-Variant* FileFunctions::fileOpen(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileOpen(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 
@@ -321,32 +325,32 @@ Variant* FileFunctions::fileOpen(CallInfo* callInfo)
 	
 
 }
-Variant* FileFunctions::fileClose(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileClose(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
-	callInfo->getHandleArg(0)->castHandle<FileHandle>()->close();
+	callInfo->getArg(0).cast<HandleVariant>()->castHandle<FileHandle>()->close();
 
 	return nullptr;
 }
-Variant* FileFunctions::fileRead(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileRead(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 
 	int count = callInfo->getInt32Arg(1,0);
 
-	return callInfo->getHandleArg(0)->castHandle<FileHandle>()->read(count);
+	return callInfo->getArg(0).cast<HandleVariant>()->castHandle<FileHandle>()->read(count);
 
 }
 
-Variant* FileFunctions::fileReadLine(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileReadLine(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
-	return callInfo->getHandleArg(0)->castHandle<FileHandle>()->readLine();
+	return callInfo->getArg(0).cast<HandleVariant>()->castHandle<FileHandle>()->readLine();
 }
 
-Variant* FileFunctions::fileWrite(CallInfo* callInfo)
+VariantReference<> FileFunctions::fileWrite(CallInfo* callInfo)
 {
 	return nullptr;
 }

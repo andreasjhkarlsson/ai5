@@ -15,7 +15,7 @@ public:
 	DllCall                                              (HMODULE, UnicodeString&, UnicodeString&, std::vector<UnicodeString>&);
 	~DllCall                                             ();
 
-	bool                          Invoke                 (std::vector<Variant*>&, COMVar*);
+	bool                          Invoke                 (const std::vector<VariantReference<>>&, COMVar*);
 	__forceinline bool            SetFunc                (UnicodeString&);
 	void                          SetFunc                (LPVOID);
 	__forceinline void            SetRetTypeAndCC        (UnicodeString&);

@@ -76,7 +76,7 @@ void DllCall::SetParamsTypes(std::vector<UnicodeString>& sParams)
 
 // Calls function pointer. 
 // First param is vector of Variant arguments and second one is array of COMVars whose elements are set by this function byref.
-bool DllCall::Invoke(std::vector<Variant*>& vArgs, COMVar* pcvResult)
+bool DllCall::Invoke(const std::vector<VariantReference<>>& vArgs, COMVar* pcvResult)
 {
 	// Sanity check
 	if (this->pFunc && this->vtRetType != VT_ILLEGAL)

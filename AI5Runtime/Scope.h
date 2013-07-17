@@ -10,63 +10,55 @@
 class StackMachineThread;
 
 // Keeping this class optimized is VERY important.
-class Scope: public ContainerVariant
+class Scope: public Variant
 {
 public:
 	static const VARIANT_TYPE TYPE = SCOPE;
-	Scope(): ContainerVariant(TYPE), indexTable(128,0),usedIndexes(),enclosingScope(nullptr)
+	Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
 	{
 		usedIndexes.reserve(16);
 	}
 
-	__forceinline NameVariant* getNameFromString(const UnicodeString &name)
+	__forceinline VariantReference<NameVariant>& getNameFromString(const UnicodeString &name)
 	{
 		return lookup[name];
 	}
-	__forceinline NameVariant* getNameFromIndex(int index)
+	__forceinline VariantReference<NameVariant> getNameFromIndex(int index)
 	{
-		NameVariant* result = indexTable[index];
-		if(result == nullptr && enclosingScope != nullptr)
+
+		VariantReference<NameVariant> result = indexTable[index];
+		if(result.empty() && !enclosingScope.empty())
 			result = enclosingScope->getNameFromIndex(index);
 		return result;
 	}
-	NameVariant* createName(VariantFactory* factory,const UnicodeString &name);
-	NameVariant* createIndexForName(VariantFactory* factory,const UnicodeString &name,int index);
+	VariantReference<NameVariant> createName(const UnicodeString &name);
+	VariantReference<NameVariant> createIndexForName(const UnicodeString &name,int index);
 
-	void insertName(const UnicodeString& name,int index,NameVariant* nameVariant);
+	void insertName(const UnicodeString& name,int index,VariantReference<NameVariant> nameVariant);
 
-	void setEnclosingScope(Scope* scope)
+	void setEnclosingScope(VariantReference<Scope> scope)
 	{
-		if(scope != nullptr)
-			scope->addRef();
-		if(this->enclosingScope != nullptr)
-			this->enclosingScope->release();
-
 		this->enclosingScope = scope;
 	}
 
 	// Make the scope ready for reusing.
 	void cleanup();
 
-	static Scope* createFromFactory(VariantFactory* factory);
-	virtual int getChildContainersCount();
-	virtual ContainerVariant* getChildContainer(int index);
-
 private:
 
-	Scope* enclosingScope;
+	VariantReference<Scope> enclosingScope;
 
 	// The string->name lookup.
 	// All names in the scope NEEDS to be in this map.
-	std::unordered_map<UnicodeString,NameVariant*,UnicodeStringHasher,UnicodeStringComparator> lookup;
+	std::unordered_map<UnicodeString,VariantReference<NameVariant>,UnicodeStringHasher,UnicodeStringComparator> lookup;
 
 	// Used to provide super fast lookup of names in this scope.
 	// Not all names are necessarily in this table. 
-	std::vector<NameVariant*> indexTable;
+	std::vector<VariantReference<NameVariant>> indexTable;
 
 	// List of used index in this table.
 	// Used to avoid clearing the entire indexTable whenever a scope object is reused.
 	std::vector<int> usedIndexes;
 
-	void addNameToIndex(int index,NameVariant* nameVariant);
+	void addNameToIndex(size_t index,const VariantReference<NameVariant>& nameVariant);
 };

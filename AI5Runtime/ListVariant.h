@@ -17,9 +17,9 @@ public:
 	virtual bool toBoolean() const;
 	virtual bool equal(Variant*);
 	virtual shared_string toString() const;
-	void addElement(Variant* var);
-	Variant* getElement(size_t index) const;
-	void setElement(size_t index,Variant* var);
+	void addElement(const VariantReference<>& var);
+	const VariantReference<>& getElement(size_t index) const;
+	void setElement(size_t index,const VariantReference<>& var);
 	void deleteAt(size_t index);
 	size_t size() const;
 	void cleanup();
@@ -33,7 +33,7 @@ private:
 		ForwardIterator(ListVariant* list);
 		virtual void cleanup();
 		virtual bool hasMore();
-		virtual Variant* next();
+		virtual const VariantReference<>& next();
 	private:
 		int pos;
 		ListVariant* list;

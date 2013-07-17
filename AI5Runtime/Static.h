@@ -1,9 +1,7 @@
 #pragma once
 #include "types.h"
 #include "StringVariant.h"
-#include "FloatingVariant.h"
-#include "Integer64Variant.h"
-#include "Integer32Variant.h"
+#include "VariantReference.h"
 
 typedef unsigned char STATIC_TYPE;
 
@@ -29,9 +27,9 @@ class StaticString: public StaticData
 {
 public:
 	StaticString(shared_string str);
-	StringVariant* getVariant();
+	const VariantReference<StringVariant>& getVariant();
 private:
-	StringVariant strVar;
+	VariantReference<StringVariant> strVar;
 };
 
 class StaticName: public StaticData
@@ -58,9 +56,9 @@ class StaticInteger64: public StaticData
 {
 public:
 	StaticInteger64(__int64 value);
-	Integer64Variant* getVariant();
+	__int64 getInt();
 private:
-	Integer64Variant variant;
+	__int64 i64;
 };
 
 
@@ -68,9 +66,9 @@ class StaticInteger32: public StaticData
 {
 public:
 	StaticInteger32(int value);
-	Integer32Variant* getVariant();
+	int getInt();
 private:
-	Integer32Variant variant;
+	int i32;
 };
 
 
@@ -78,9 +76,9 @@ class StaticFloating: public StaticData
 {
 public:
 	StaticFloating(double value);
-	FloatingVariant* getVariant();
+	double getFloating();
 private:
-	FloatingVariant variant;
+	double floating;
 };
 
 

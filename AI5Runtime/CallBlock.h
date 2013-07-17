@@ -19,9 +19,9 @@ class CallBlock: public Block, public PooledObject<CallBlock>
 public:
 	
 	~CallBlock(void);
-	void setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,UserFunctionVariant* owner);
+	void setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,VariantReference<UserFunctionVariant>& owner);
 
-	Scope* getScope();
+	VariantReference<Scope>& getScope();
 	virtual void leave(StackMachineThread*);
 	void recycleInstance();
 	int getReturnAddress();
@@ -29,7 +29,7 @@ public:
 	void addArgument(const Argument& argument);
 	void loadArguments(StackMachineThread* machine,int total,int required);
 	void addClosedName(StackMachineThread* machine,NameIdentifier nameIdentifier);
-	void addClosure(StackMachineThread* machine,UserFunctionVariant* closure);
+	void addClosure(StackMachineThread* machine,const VariantReference<UserFunctionVariant>& closure);
 	
 	friend class PooledObject<CallBlock>;
 private:
@@ -38,13 +38,13 @@ private:
 	int calledNumberOfArguments;
 	size_t stackPosition;
 	CallBlock* parentFrame;
-	UserFunctionVariant* owner;
-	Scope* scope;
-	Scope* closureScope;
+	VariantReference<UserFunctionVariant> owner;
+	VariantReference<Scope> scope;
+	VariantReference<Scope> closureScope;
 	CallBlock();
 	static const int POOL_SIZE = 1024;
 	std::vector<Argument> arguments;
-	std::vector<UserFunctionVariant*> closures;
+	std::vector<VariantReference<UserFunctionVariant>> closures;
 	std::vector<NameIdentifier> closedNames;
 	
 };

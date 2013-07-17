@@ -6,6 +6,12 @@
 #include "unicode/unistr.h"
 
 class Variant;
+template <class T=Variant>
+class VariantReference;
+class StackMachine;
+class StackMachineThread;
+class CallInfo;
+
 
 struct NameIdentifier {
 	int globalId;
@@ -18,7 +24,7 @@ using icu::UnicodeString;
 typedef std::shared_ptr<std::vector<char>> shared_binary;
 //typedef std::shared_ptr<std::wstring> shared_string;
 typedef std::shared_ptr<UnicodeString> shared_string;
-typedef std::shared_ptr<std::vector<Variant*>> shared_var_list;
+typedef std::shared_ptr<std::vector<VariantReference<>>> shared_var_list;
 shared_string create_shared_string(const UnicodeString& string);
 shared_string create_shared_string_from_wstring(const std::wstring& string);
 shared_string create_shared_string(const wchar_t* str,int len);

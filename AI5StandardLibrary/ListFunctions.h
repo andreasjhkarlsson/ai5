@@ -1,7 +1,5 @@
 #pragma once
-class Variant;
-class StackMachine;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
 class ListFunctions
 {
 public:
@@ -9,7 +7,7 @@ public:
 	~ListFunctions(void);
 private:
 	ListFunctions(void);
-	Variant* ubound(CallInfo* callInfo);
-	Variant* arrayadd(CallInfo* callInfo);
+	VariantReference<> ubound(CallInfo* callInfo);
+	VariantReference<> arrayadd(CallInfo* callInfo);
 };
 

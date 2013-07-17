@@ -21,11 +21,10 @@ private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros;
-	Scope *globalScope;
+	VariantReference<Scope> globalScope;
 	std::unordered_map<SM_THREAD_ID,StackMachineThread*> threads;
 	StackMachineThread* mainThread;
 	SM_THREAD_ID latestThread;
 	int startAddress;
-	VariantFactory variantFactory;
 };
 

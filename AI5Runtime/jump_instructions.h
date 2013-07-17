@@ -8,19 +8,12 @@ __forceinline void jumpLongRelative(StackMachineThread* machine,unsigned int arg
 
 __forceinline void jumpLongRelativeIfFalse(StackMachineThread* machine,unsigned int arg)
 {
-	Variant *v = machine->getDataStack()->pop();
+	VariantReference<> v = machine->getDataStack()->pop();
 
-	bool cond;
-	if(v->getType() == Variant::BOOLEAN)
-		cond = ((BooleanVariant*)v)->value;
-	else
-		cond = v->toBoolean();
-
-	if(!cond)
+	if(!v.toBoolean())
 		machine->jumpRelative(arg);
 	else
 		machine->advanceCounter();
-	v->release();
 }
 
 __forceinline void jumpShortRelativeIfFalse(StackMachineThread* machine,char arg)
@@ -35,19 +28,13 @@ __forceinline void jumpShortRelative(StackMachineThread* machine,char arg)
 
 __forceinline void jumpLongRelativeIfTrue(StackMachineThread* machine,unsigned int arg)
 {
-	Variant *v = machine->getDataStack()->pop();
+	VariantReference<> v = machine->getDataStack()->pop();
 
-	bool cond;
-	if(v->getType() == Variant::BOOLEAN)
-		cond = ((BooleanVariant*)v)->value;
-	else
-		cond = v->toBoolean();
-
-	if(cond)
+	if(v.toBoolean())
 		machine->jumpRelative(arg);
 	else
 		machine->advanceCounter();
-	v->release();
+
 }
 
 

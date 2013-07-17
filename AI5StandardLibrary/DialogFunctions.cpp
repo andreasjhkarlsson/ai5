@@ -17,7 +17,7 @@ DialogFunctions::~DialogFunctions(void)
 {
 }
 
-Variant* DialogFunctions::msgbox(CallInfo* callInfo)
+VariantReference<> DialogFunctions::msgbox(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(3,5);
 
@@ -25,7 +25,7 @@ Variant* DialogFunctions::msgbox(CallInfo* callInfo)
 	shared_string title = callInfo->getStringArg(1);
 	shared_string text = callInfo->getStringArg(2);
 
-	return new Integer32Variant(MessageBoxW(NULL,text->getTerminatedBuffer(),title->getTerminatedBuffer(),flag));
+	return MessageBoxW(NULL,text->getTerminatedBuffer(),title->getTerminatedBuffer(),flag);
 }
 
 

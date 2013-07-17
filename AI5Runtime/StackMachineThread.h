@@ -34,7 +34,7 @@ public:
 	StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,
 					shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
-					Scope* globalScope);
+					VariantReference<Scope>& globalScope);
 	~StackMachineThread(void);
 
 	// These methods are called by instructions, so they need
@@ -51,7 +51,6 @@ public:
 	// Gets static data from index.
 	__forceinline StaticData* getStaticData(int index);
 	__forceinline DataStack* getDataStack();
-	__forceinline VariantFactory* getVariantFactory();
 	__forceinline BlockStack* getBlockStack();
 	inline void setCurrentCallBlock(CallBlock* frame);
 	inline CallBlock* getCurrentCallBlock();
@@ -59,21 +58,21 @@ public:
 	int join();
 	void run();
 	void terminate();
-	NameVariant* getNearestName(NameIdentifier identifier);
-	NameVariant* getGlobalName(NameIdentifier identifier);
-	NameVariant* getLocalName(NameIdentifier identifier);
+	VariantReference<NameVariant> getNearestName(NameIdentifier identifier);
+	VariantReference<NameVariant> getGlobalName(NameIdentifier identifier);
+	VariantReference<NameVariant> getLocalName(NameIdentifier identifier);
 	// Set the nearest name value (that means local name, then global). If no name is found
 	// a name is created in the local scope (if available, otherwise global).
-	void setNearest(NameIdentifier identifier,Variant* variant,bool asConst=false);
-	void setLocal(NameIdentifier identifier,Variant* variant,bool asConst=false);
-	void setGlobal(NameIdentifier identifier,Variant* variant,bool asConst=false); 
-	void addNameToLocalScope(NameIdentifier identifier,NameVariant* name);
+	void setNearest(NameIdentifier identifier,const VariantReference<>& variant,bool asConst=false);
+	void setLocal(NameIdentifier identifier,const VariantReference<>& variant,bool asConst=false);
+	void setGlobal(NameIdentifier identifier,const VariantReference<>& variant,bool asConst=false); 
+	void addNameToLocalScope(NameIdentifier identifier,const VariantReference<NameVariant>& name);
 	MACRO_FUNCTION getMacro(int staticIndex);
 
-	Variant* getErrorCode();
-	Variant* getExtendedCode();
-	void setExtendedCode(Variant*);
-	void setErrorCode(Variant*);
+	const VariantReference<>& getErrorCode() const;
+	const VariantReference<>& getExtendedCode() const;
+	void setExtendedCode(const VariantReference<>&);
+	void setErrorCode(const VariantReference<>&);
 
 private:
 	// Code and static data.
@@ -89,16 +88,15 @@ private:
 	// Macros are stored with a simple string as lookup.
 	// TODO: Lookup macros with index as well.
 	
-	Scope *globalScope;
+	VariantReference<Scope>& globalScope;
 	DataStack dataStack;
-	VariantFactory variantFactory;
 	// When set, the machine stops executing after next instruction.
 	bool terminated;
 	// Classic program counter.
 	int programCounter;
 
-	Variant* errorCode;
-	Variant* extendedCode;
+	VariantReference<> errorCode;
+	VariantReference<> extendedCode;
 
 	int returnCode;
 
@@ -133,11 +131,6 @@ BlockStack* StackMachineThread::getBlockStack()
 void StackMachineThread::advanceCounter()
 {
 	programCounter++;
-}
-
-VariantFactory* StackMachineThread::getVariantFactory()
-{
-	return &variantFactory;
 }
 
 int StackMachineThread::getCurrentAddress()

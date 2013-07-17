@@ -1,8 +1,7 @@
 #pragma once
 
-class StackMachine;
-class Variant;
-class CallInfo;
+#include "..\AI5Runtime\types.h"
+
 class GraphicsAndSoundFunctions
 {
 public:
@@ -10,6 +9,6 @@ public:
 	~GraphicsAndSoundFunctions(void);
 private:
 	GraphicsAndSoundFunctions(void);
-	Variant* beep(CallInfo* callInfo);
+	VariantReference<> beep(CallInfo* callInfo);
 };
 

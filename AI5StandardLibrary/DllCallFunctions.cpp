@@ -19,7 +19,7 @@ DllCallFunctions::~DllCallFunctions()
 
 
 
-Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
+VariantReference<> DllCallFunctions::dllcall(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(3, 3 + 2 * MAX_ARG_DLLCALL);
 
@@ -27,13 +27,13 @@ Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
 	for (int i = 3; i < callInfo->getArgCount(); ++i)
 		vParamTypes.push_back(callInfo->getStringArg(i++)->getTerminatedBuffer()); // post-increment used to get every other element
 
-	std::vector<Variant*> vArgs;
+	std::vector<VariantReference<>> vArgs;
 	for (int i = 4; i < callInfo->getArgCount(); ++i)
 		vArgs.push_back(callInfo->getArg(i++)); // post-increment used to get every other element
 
 	bool loadedModule = false;
 	HMODULE hModule = nullptr;
-	if(callInfo->getArg(0)->isStringType())
+	if(callInfo->getArg(0).isStringType())
 	{
 		hModule = ::LoadLibraryW(callInfo->getStringArg(0)->getTerminatedBuffer());
 		loadedModule = true;
@@ -41,12 +41,12 @@ Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
 	else
 	{
 		// How about this cast chain? :D If only C++ would allow virtual template methods...
-		hModule = callInfo->getHandleArg(0)->castHandle<ModuleHandle>()->getModule();
+		hModule = callInfo->getArg(0).cast<HandleVariant>()->castHandle<ModuleHandle>()->getModule();
 	}
 
 	// TODO: Check for hModule == nullptr and throw error.
 
-	auto dllcall = DllCall(hModule, *callInfo->getArg(1)->toString().get(),
+	auto dllcall = DllCall(hModule, *callInfo->getArg(1).toString().get(),
 		*callInfo->getStringArg(2), vParamTypes);
 
 	// To collect processed arguments to (some may be altered byref)
@@ -65,15 +65,14 @@ Variant* DllCallFunctions::dllcall(CallInfo* callInfo)
 	ListVariant* vRet = new ListVariant;
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
-		Variant* el = Variant::createFromCOMVar(pcvRet[i]);
+		VariantReference<> el = Variant::createFromCOMVar(pcvRet[i]);
 		vRet->addElement(el);
-		el->release();
 	}
 
 	return vRet;
 }
 
-Variant* DllCallFunctions::dllcalladdress(CallInfo* callInfo)
+VariantReference<> DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2, 3 + 2 * MAX_ARG_DLLCALL);
 
@@ -81,7 +80,7 @@ Variant* DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 	for (int i = 2; i < callInfo->getArgCount(); ++i)
 		vParamTypes.push_back(callInfo->getStringArg(i++)->getTerminatedBuffer()); // post-increment used to get every other element
 
-	std::vector<Variant*> vArgs;
+	std::vector<VariantReference<>> vArgs;
 	for (int i = 3; i < callInfo->getArgCount(); ++i)
 		vArgs.push_back(callInfo->getArg(i++)); // post-increment used to get every other element
 
@@ -89,7 +88,7 @@ Variant* DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 
 	dllcall.SetRetTypeAndCC(*callInfo->getStringArg(0));
 	dllcall.SetParamsTypes(vParamTypes);
-	dllcall.SetFunc(reinterpret_cast<LPVOID>(callInfo->getArg(1)->toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
+	dllcall.SetFunc(reinterpret_cast<LPVOID>(callInfo->getArg(1).toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
 
 	// To collect processed arguments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];
@@ -101,15 +100,14 @@ Variant* DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 	ListVariant* vRet = new ListVariant;
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
-		Variant* el = Variant::createFromCOMVar(pcvRet[i]);
+		VariantReference<> el = Variant::createFromCOMVar(pcvRet[i]);
 		vRet->addElement(el);
-		el->release();
 	}
 
 	return vRet;
 }
 
-Variant* DllCallFunctions::dllopen(CallInfo* callInfo)
+VariantReference<> DllCallFunctions::dllopen(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1, 1);
 
@@ -123,11 +121,11 @@ Variant* DllCallFunctions::dllopen(CallInfo* callInfo)
 	return new ModuleHandle(module);
 }
 
-Variant* DllCallFunctions::dllclose(CallInfo* callInfo)
+VariantReference<> DllCallFunctions::dllclose(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1, 1);
 
-	ModuleHandle* handle = callInfo->getHandleArg(0)->castHandle<ModuleHandle>();
+	ModuleHandle* handle = callInfo->getArg(0).cast<HandleVariant>()->castHandle<ModuleHandle>();
 	handle->close();
 
 	return nullptr;

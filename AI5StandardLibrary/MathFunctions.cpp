@@ -22,90 +22,90 @@ MathFunctions::~MathFunctions(void)
 
 
 
-Variant* MathFunctions::absolute(CallInfo* callInfo)
+VariantReference<> MathFunctions::absolute(CallInfo* callInfo)
 {
 
 	callInfo->validateArgCount(1,1);
-	Variant* arg = callInfo->getArg(0);
+	VariantReference<> arg = callInfo->getArg(0);
 
-	if(arg->isInteger32Type())
+	if(arg.isInteger32Type())
 	{
-		return new Integer32Variant(abs(arg->toInteger32()));
-	} else if(arg->isInteger64Type())
+		return abs(arg.toInteger32());
+	} else if(arg.isInteger64Type())
 	{
-		return new Integer64Variant(abs(arg->toInteger64()));
+		return abs(arg.toInteger64());
 	} else
 	{
-		return new FloatingVariant(abs(arg->toFloating()));
+		return abs(arg.toFloating());
 	}
 
 }
 
-Variant* MathFunctions::acosine(CallInfo* callInfo)
+VariantReference<> MathFunctions::acosine(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(acos(callInfo->getFloatingArg(0)));
+	return acos(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::asine(CallInfo* callInfo)
+VariantReference<> MathFunctions::asine(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(asin(callInfo->getFloatingArg(0)));
+	return asin(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::atangent(CallInfo* callInfo)
+VariantReference<> MathFunctions::atangent(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(atan(callInfo->getFloatingArg(0)));
+	return atan(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::cosine(CallInfo* callInfo)
+VariantReference<> MathFunctions::cosine(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(cos(callInfo->getFloatingArg(0)));
+	return cos(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::ceiling(CallInfo* callInfo)
+VariantReference<> MathFunctions::ceiling(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new Integer32Variant((int)(callInfo->getFloatingArg(0)+1));
+	return (int)(callInfo->getFloatingArg(0)+1);
 }
-Variant* MathFunctions::exponent(CallInfo* callInfo)
+VariantReference<> MathFunctions::exponent(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(exp(callInfo->getFloatingArg(0)));
+	return exp(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::floor(CallInfo* callInfo)
+VariantReference<> MathFunctions::floor(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new Integer32Variant((int)callInfo->getFloatingArg(0));
+	return (int)callInfo->getFloatingArg(0);
 }
-Variant* MathFunctions::logarithm(CallInfo* callInfo)
+VariantReference<> MathFunctions::logarithm(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(log(callInfo->getFloatingArg(0)));
+	return log(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::modulus(CallInfo* callInfo)
+VariantReference<> MathFunctions::modulus(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(2,2);
-	Variant* arg1 = callInfo->getArg(0);
-	Variant* arg2 = callInfo->getArg(1);
+	VariantReference<> arg1 = callInfo->getArg(0);
+	VariantReference<> arg2 = callInfo->getArg(1);
 
-	if(arg1->isIntegerType() && arg2->isIntegerType())
+	if(arg1.isIntegerType() && arg2.isIntegerType())
 	{
-		if(arg1->isInteger32Type() && arg2->isInteger32Type())
+		if(arg1.isInteger32Type() && arg2.isInteger32Type())
 		{
-			return new Integer32Variant(arg1->toInteger32() % arg2->toInteger32());	
+			return arg1.toInteger32() % arg2.toInteger32();	
 		}
 		else
 		{
-			return new Integer64Variant(arg1->toInteger64() % arg2->toInteger64());	
+			return arg1.toInteger64() % arg2.toInteger64();	
 		}
 	}
 	else
 	{
-		return new FloatingVariant(fmod(arg1->toFloating(),arg2->toFloating()));	
+		return fmod(arg1.toFloating(),arg2.toFloating());	
 	}
 }
 
 
-Variant* MathFunctions::_round(CallInfo* callInfo)
+VariantReference<> MathFunctions::_round(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 	if(callInfo->getArgCount() > 1)
@@ -116,32 +116,32 @@ Variant* MathFunctions::_round(CallInfo* callInfo)
 		
 		operand *= pow(10,decimals);
 		operand = ((int)(operand+0.5)) / pow(10,decimals);
-		return new FloatingVariant(operand);
+		return operand;
 	}
 	else
 	{
-		return new Integer32Variant((int)(callInfo->getFloatingArg(0)+0.5));
+		return (int)(callInfo->getFloatingArg(0)+0.5);
 	}
 }
-Variant* MathFunctions::sine(CallInfo* callInfo)
+VariantReference<> MathFunctions::sine(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(sin(callInfo->getFloatingArg(0)));
+	return sin(callInfo->getFloatingArg(0));
 }
-Variant* MathFunctions::_sqrt(CallInfo* callInfo)
+VariantReference<> MathFunctions::_sqrt(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new FloatingVariant(sqrt(callInfo->getFloatingArg(0)));
+	return sqrt(callInfo->getFloatingArg(0));
 }
 
 
-Variant* MathFunctions::tangent(CallInfo* callInfo)
+VariantReference<> MathFunctions::tangent(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-		return new FloatingVariant(tan(callInfo->getFloatingArg(0)));
+		return tan(callInfo->getFloatingArg(0));
 }
 
-Variant* MathFunctions::random(CallInfo* callInfo)
+VariantReference<> MathFunctions::random(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,3);
 	double min=0.0,max = 1.0;
@@ -162,21 +162,21 @@ Variant* MathFunctions::random(CallInfo* callInfo)
 		min = 0;
 	}
 
-	Variant* result = nullptr;
+	VariantReference<> result;
 
 	if(floating)
 	{
-		result = new FloatingVariant(std::uniform_real_distribution<>(min,max)(rng));
+		result = std::uniform_real_distribution<>(min,max)(rng);
 	}
 	else
 	{
-		result = new Integer32Variant(std::uniform_int_distribution<>((int)min,(int)max)(rng));
+		result = std::uniform_int_distribution<>((int)min,(int)max)(rng);
 	}
 
 	return result;
 }
 
-Variant* MathFunctions::srandom(CallInfo* callInfo)
+VariantReference<> MathFunctions::srandom(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 
