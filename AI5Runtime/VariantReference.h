@@ -21,6 +21,7 @@ public:
 	VariantReference(double);
 	VariantReference(__int64);
 	VariantReference(bool);
+	VariantReference(shared_string);
 	VariantReference(const VariantReference<T>&);
 	~VariantReference(void);
 	static VariantReference<Variant> NullReference();
@@ -265,6 +266,13 @@ template <class T>
 VariantReference<T>::VariantReference(__int64 value): varType(Variant::INTEGER64)
 {
 	ref.int64 = value;
+}
+
+template <class T>
+VariantReference<T>::VariantReference(shared_string str): varType(Variant::STRING)
+{
+	ref.variant = new StringVariant(str);
+	ref.variant->addRef();
 }
 
 

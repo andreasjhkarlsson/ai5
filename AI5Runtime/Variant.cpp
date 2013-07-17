@@ -1,4 +1,5 @@
 #include <iostream>
+#include "GlobalOptions.h"
 #include "Variant.h"
 #include "NameVariant.h"
 #include "IteratorVariant.h"
@@ -14,11 +15,20 @@
 
 Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(0), type(type), isContainer(isContainer)
 {
+	if (GlobalOptions::isVerbose())
+	{
+		if(type != NAME && type != NATIVE_FUNCTION)
+			std::wcout << "+ Variant of type " << VariantTypeToString(type) << " created" << std::endl;
+	}
 }
 
 Variant::~Variant(void)
 {
-	
+	if (GlobalOptions::isVerbose())
+	{
+		if(type != NAME && type != NATIVE_FUNCTION)
+			std::wcout << "- Variant of type " << VariantTypeToString(type) << " destroyed" << std::endl;	
+	}
 }
 
 
@@ -122,5 +132,70 @@ VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 	default:
 		throw RuntimeError(L"No conversion exists for COMVar");
 		break;
+	}
+}
+
+/*
+	static const VARIANT_TYPE UNKNOWN			= 0;
+	static const VARIANT_TYPE INTEGER64			= 1;
+	static const VARIANT_TYPE BOOLEAN			= 2;
+	static const VARIANT_TYPE FLOATING			= 3;
+	static const VARIANT_TYPE NULL_VAR			= 4;
+	static const VARIANT_TYPE NATIVE_FUNCTION	= 5;
+	static const VARIANT_TYPE USER_FUNCTION		= 6;
+	static const VARIANT_TYPE STRING			= 7;
+	static const VARIANT_TYPE LIST				= 8;
+	static const VARIANT_TYPE INTEGER32			= 9;
+	static const VARIANT_TYPE NAME				= 10;
+	static const VARIANT_TYPE DEFAULT			= 11;
+	static const VARIANT_TYPE NAME_REFERENCE	= 12;
+	static const VARIANT_TYPE SCOPE				= 13;
+	static const VARIANT_TYPE BINARY			= 14;
+	static const VARIANT_TYPE HASH_MAP			= 15;
+	static const VARIANT_TYPE ITERATOR			= 16;
+	static const VARIANT_TYPE HANDLE_VAR		= 17;
+	*/
+const char* Variant::VariantTypeToString(VARIANT_TYPE type)
+{
+	switch(type)
+	{
+	case UNKNOWN:
+		return "Unknown";
+	case INTEGER32:
+		return "Integer32";
+	case INTEGER64:
+		return "Integer64";
+	case BOOLEAN:
+		return "Boolean";
+	case FLOATING:
+		return "Floating";
+	case NULL_VAR:
+		return "Null";
+	case NATIVE_FUNCTION:
+		return "Native function";
+	case USER_FUNCTION:
+		return "User function";
+	case STRING:
+		return "String";
+	case LIST:
+		return "List";
+	case NAME:
+		return "Name";
+	case NAME_REFERENCE:
+		return "Name reference";
+	case SCOPE:
+		return "Scope";
+	case BINARY:
+		return "Binary";
+	case HASH_MAP:
+		return "Hash map";
+	case ITERATOR:
+		return "Iterator";
+	case HANDLE_VAR:
+		return "Handle";
+	case DEFAULT:
+		return "Default";
+	default:
+		return "ERROR TYPE";
 	}
 }

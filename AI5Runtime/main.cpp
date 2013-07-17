@@ -45,7 +45,6 @@ int main(int argc, char* argv[])
 		_setmode(_fileno(stdout), _O_U8TEXT);
 		try
 		{
-			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 			bool isVerbose = options[VERBOSE] != 0;
 			bool disassemble = options[DISASSEMBLE] != 0;
 			#if _DEBUG
@@ -54,6 +53,8 @@ int main(int argc, char* argv[])
 
 			if(isVerbose)
 				GlobalOptions::setVerbose();
+
+			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 
 			int returnCode = 0;
 

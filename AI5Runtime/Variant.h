@@ -33,6 +33,9 @@ public:
 	static const VARIANT_TYPE ITERATOR			= 16;
 	static const VARIANT_TYPE HANDLE_VAR		= 17;
 	static const int NUMBER_OF_VARIANT_TYPES	= 18;
+	static const char* VariantTypeToString(VARIANT_TYPE type);
+
+
 	Variant(const VARIANT_TYPE type,bool container=false);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
