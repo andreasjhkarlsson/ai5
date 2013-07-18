@@ -17,19 +17,17 @@ void HashMapVariant::cleanup()
 }
 void HashMapVariant::set(const VariantReference<>& key,VariantReference<>& value)
 {
-	// Todo clear old key/value.
-
 	map[key] = value;
 }
 const VariantReference<>& HashMapVariant::get(const VariantReference<>& key)
 {
 	const VariantReference<>& res = map[key];
-	/* TODO: How to check if invalid key with non-pod type???
-	if(res == nullptr)
+
+	if(res.empty())
 	{
 		throw RuntimeError(UnicodeString(L"No value found for key: ")+(*key->toString()));
 	}
-	*/
+
 	return res;
 }
 
@@ -65,16 +63,11 @@ IteratorVariant* HashMapVariant::iterate()
 	return new KeyIterator(this);
 }
 
-HashMapVariant::KeyIterator::KeyIterator(HashMapVariant* map):map(map)
+HashMapVariant::KeyIterator::KeyIterator(const VariantReference<HashMapVariant>& map):map(map)
 {
-	map->addRef();
-	it = map->map.begin();
+	it = this->map->map.begin();
+}
 
-}
-void HashMapVariant::KeyIterator::cleanup()
-{
-	map->release();
-}
 bool HashMapVariant::KeyIterator::hasMore()
 {
 	return it != map->map.end();	

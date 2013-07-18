@@ -229,9 +229,9 @@ public:
 	class LineIterator: public IteratorVariant
 	{
 	public:
-		LineIterator(FileHandle* handle): handle(handle)
+		LineIterator(const VariantReference<FileHandle>& handle): handle(handle)
 		{
-			handle->addRef();
+
 		}
 		virtual bool hasMore()
 		{
@@ -242,13 +242,8 @@ public:
 			return handle->readLine();
 			
 		}
-
-		virtual void cleanup()
-		{
-			handle->release();
-		}
 	private:
-		FileHandle* handle;
+		VariantReference<FileHandle> handle;
 	};
 	
 	virtual IteratorVariant* iterate()

@@ -2,6 +2,8 @@
 #include "variant.h"
 #include "IteratorVariant.h"
 #include <unordered_map>
+#include "VariantReference.h"
+
 class HashMapVariant :
 	public Variant
 {
@@ -23,13 +25,12 @@ private:
 	class KeyIterator: public IteratorVariant
 	{
 	public:
-		KeyIterator(HashMapVariant* map);
-		virtual void cleanup();
+		KeyIterator(const VariantReference<HashMapVariant>& map);
 		virtual bool hasMore();
 		virtual const VariantReference<>& next();
 	private:
 		VariantMap::iterator it;
-		HashMapVariant* map;
+		VariantReference<HashMapVariant> map;
 	};
 
 };

@@ -145,7 +145,7 @@ inline void buildList(StackMachineThread* machine,int count)
 
 inline void buildMap(StackMachineThread* machine,int count)
 {
-	HashMapVariant* map = new HashMapVariant();
+	VariantReference<HashMapVariant> map = new HashMapVariant();
 
 	// Since a hash map is not sorted
 	// it doesn't matter which order the arguments are popped
