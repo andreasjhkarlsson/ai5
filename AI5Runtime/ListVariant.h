@@ -24,7 +24,7 @@ public:
 	void deleteAt(size_t index);
 	size_t size() const;
 	void cleanup();
-	virtual IteratorVariant* iterate();
+	virtual VariantReference<IteratorVariant> iterate();
 private:
 	shared_var_list list;
 

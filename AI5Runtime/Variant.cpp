@@ -87,7 +87,7 @@ size_t Variant::hash() const
 }
 
 
-IteratorVariant* Variant::iterate()
+VariantReference<IteratorVariant> Variant::iterate()
 {
 	throw RuntimeError(L"Type not iterable");
 }

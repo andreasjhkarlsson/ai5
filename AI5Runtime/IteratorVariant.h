@@ -7,7 +7,7 @@ public:
 	static const VARIANT_TYPE TYPE = ITERATOR;
 	~IteratorVariant(void);
 	virtual bool hasMore()=0;
-	virtual const VariantReference<>& next()=0;
+	virtual VariantReference<> next()=0;
 protected:
 	IteratorVariant(void);
 };

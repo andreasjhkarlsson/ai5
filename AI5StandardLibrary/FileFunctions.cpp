@@ -233,11 +233,15 @@ public:
 		{
 
 		}
+		~LineIterator()
+		{
+
+		}
 		virtual bool hasMore()
 		{
 			return !handle->isEOFReached();
 		}
-		virtual const VariantReference<>& next()
+		virtual VariantReference<> next()
 		{
 			return handle->readLine();
 			
@@ -246,7 +250,7 @@ public:
 		VariantReference<FileHandle> handle;
 	};
 	
-	virtual IteratorVariant* iterate()
+	virtual VariantReference<IteratorVariant> iterate()
 	{
 		return new LineIterator(this);
 	}

@@ -47,7 +47,7 @@ public:
 	virtual bool equal(Variant*);
 	virtual void cleanup();
 	virtual size_t hash() const;
-	virtual IteratorVariant* iterate();
+	virtual VariantReference<IteratorVariant> iterate();
 	__forceinline int addRef();
 	__forceinline int release();
 	__forceinline VARIANT_TYPE getType() const;

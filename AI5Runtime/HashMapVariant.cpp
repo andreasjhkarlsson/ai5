@@ -58,7 +58,7 @@ std::wostream& HashMapVariant::format(std::wostream& stream) const
 	return stream;
 }
 
-IteratorVariant* HashMapVariant::iterate()
+VariantReference<IteratorVariant> HashMapVariant::iterate()
 {
 	return new KeyIterator(this);
 }
@@ -72,7 +72,7 @@ bool HashMapVariant::KeyIterator::hasMore()
 {
 	return it != map->map.end();	
 }
-const VariantReference<>& HashMapVariant::KeyIterator::next()
+VariantReference<> HashMapVariant::KeyIterator::next()
 {
 	return (it++)->first;
 }

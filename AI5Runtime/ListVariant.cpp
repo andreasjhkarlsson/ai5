@@ -127,7 +127,7 @@ public:
 	{
 		return (size_t)pos < list->size();
 	}
-	virtual const VariantReference<>& next()
+	virtual VariantReference<> next()
 	{
 		return list->getElement(pos++);
 	}
@@ -136,7 +136,7 @@ private:
 	VariantReference<ListVariant> list;
 };
 
-IteratorVariant* ListVariant::iterate()
+VariantReference<IteratorVariant> ListVariant::iterate()
 {
 	return new ForwardIterator(this);
 }

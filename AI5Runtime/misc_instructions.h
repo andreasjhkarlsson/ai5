@@ -155,7 +155,7 @@ inline void createClosureName(StackMachineThread* machine,NameIdentifier identif
 
 inline void getIterator(StackMachineThread* machine)
 {
-	VariantReference<IteratorVariant> arg = machine->getDataStack()->pop().cast<IteratorVariant>();
+	VariantReference<IteratorVariant> arg = machine->getDataStack()->pop()->iterate();
 	machine->getDataStack()->push(arg);
 	machine->advanceCounter();
 }
@@ -172,7 +172,8 @@ inline void iteratorHasMore(StackMachineThread* machine)
 inline void iteratorNext(StackMachineThread* machine)
 {
 	VariantReference<IteratorVariant> iter = machine->getDataStack()->pop().cast<IteratorVariant>();
-	machine->getDataStack()->push(iter->next());
+	VariantReference<> val = iter->next();
+	machine->getDataStack()->push(val);
 	machine->advanceCounter();
 
 }
