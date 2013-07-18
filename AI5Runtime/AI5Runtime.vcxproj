@@ -209,6 +209,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="types.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />
     <ClCompile Include="Variant.cpp" />
+    <ClCompile Include="gc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\hsieh_hash.h" />
@@ -230,7 +231,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="FloatingVariant.h" />
     <ClInclude Include="FunctionVariant.h" />
     <ClInclude Include="function_instructions.h" />
-    <ClInclude Include="GCObjectOwner.h" />
+    <ClInclude Include="gc.h" />
     <ClInclude Include="GeneralBlock.h" />
     <ClInclude Include="GlobalOptions.h" />
     <ClInclude Include="HandleVariant.h" />

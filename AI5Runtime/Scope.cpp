@@ -1,9 +1,10 @@
 #include "Scope.h"
 #include "StackMachine.h"
+#include "gc.h"
 
 VariantReference<NameVariant> Scope::createName(const UnicodeString& name)
 {
-	NameVariant* n = new NameVariant(nullptr);
+	VariantReference<NameVariant> n = GC::alloc<NameVariant,const VariantReference<>&>(nullptr);
 	lookup[name] = n;
 	return n;
 }
@@ -12,7 +13,7 @@ VariantReference<NameVariant> Scope::createIndexForName(const UnicodeString& nam
 {
 	if (lookup.find(name) == lookup.end())
 	{
-		lookup[name] = new NameVariant(nullptr);
+		lookup[name] = GC::alloc<NameVariant,const VariantReference<>&>(nullptr);
 	}
 
 	VariantReference<NameVariant> nameObj = lookup[name];

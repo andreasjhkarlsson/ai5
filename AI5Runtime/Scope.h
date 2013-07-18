@@ -6,6 +6,7 @@
 #include "NameVariant.h"
 #include "PooledObject.h"
 #include "types.h"
+#include "gc.h"
 
 class StackMachineThread;
 
@@ -13,6 +14,7 @@ class StackMachineThread;
 class Scope: public Variant
 {
 public:
+	friend class GC;
 	static const VARIANT_TYPE TYPE = SCOPE;
 	Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
 	{

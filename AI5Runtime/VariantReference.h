@@ -10,11 +10,13 @@
 #include "DefaultVariant.h"
 #include "ListVariant.h"
 #include <sstream>
+#include "gc.h"
 
 template <class T>
 class VariantReference
 {
 public:
+	friend class GC;
 	VariantReference(T*);
 	VariantReference(void);
 	VariantReference(int);
@@ -49,6 +51,11 @@ public:
 		return static_cast<T*>(ref.variant);
 	}
 
+	const T* get() const
+	{
+		return static_cast<T*>(ref.variant);
+	}
+
 	// All VariantReferences can automatically be converted to generic type.
 	operator VariantReference<>() const
 	{
@@ -58,8 +65,6 @@ public:
 
 	void clear()
 	{
-		if(isComplexType())
-			ref.variant->release();
 		varType = Variant::UNKNOWN;
 	}
 
@@ -181,8 +186,7 @@ VariantReference<T>::VariantReference(void): varType(Variant::UNKNOWN)
 template <class T>
 VariantReference<T>::~VariantReference(void)
 {
-	if(isComplexType())
-		ref.variant->release();
+
 }
 
 template <class T>
@@ -199,29 +203,22 @@ VariantReference<T>::VariantReference(T* variant)
 		{
 		case Variant::INTEGER32:
 			ref.int32 = variant->toInteger32();
-			variant->release();
 			break;
 		case Variant::INTEGER64:
 			ref.int64 = variant->toInteger64();
-			variant->release();
 			break;
 		case Variant::FLOATING:
 			ref.floating = variant->toFloating();
-			variant->release();
 			break;
 		case Variant::BOOLEAN:
 			ref.boolean = variant->toBoolean();
-			variant->release();
 			break;
 		case Variant::NULL_VAR:
-			variant->release();
 			break;
 		case Variant::DEFAULT:
-			variant->release();
 			break;
 		default:
 			ref.variant = variant;
-			ref.variant->addRef();
 			break;
 		}
 	}
@@ -279,8 +276,7 @@ VariantReference<T>::VariantReference(__int64 value): varType(Variant::INTEGER64
 template <class T>
 VariantReference<T>::VariantReference(shared_string str): varType(Variant::STRING)
 {
-	ref.variant = new StringVariant(str);
-	ref.variant->addRef();
+	ref.variant = StringVariant::Create(str);
 }
 
 
@@ -293,19 +289,14 @@ VariantReference<T>::VariantReference(bool value): varType(Variant::BOOLEAN)
 template <class T>
 VariantReference<T>::VariantReference(const VariantReference& other): varType(other.varType), ref(other.ref)
 {
-	if(isComplexType())
-		ref.variant->addRef();
+
 }
 
 template <class T>
 VariantReference<T>& VariantReference<T>::operator=(const VariantReference<T>& other)
 {
-	if(isComplexType())
-		this->ref.variant->release();
 	this->varType = other.varType;
 	this->ref = other.ref;
-	if(isComplexType())
-		this->ref.variant->addRef();
 	return *this;
 }
 

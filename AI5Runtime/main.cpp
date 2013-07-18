@@ -7,6 +7,8 @@
 #include "StackMachine.h"
 #include "3rdparty\optionparser.h"
 #include "GlobalOptions.h"
+#include "gc.h"
+//#include <vld.h>
 
 enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
 
@@ -23,6 +25,8 @@ const option::Descriptor usage[] =
 
 int main(int argc, char* argv[]) 
 {
+
+	GC::init();
 
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
 	option::Stats  stats(usage, argc, argv);
@@ -70,6 +74,13 @@ int main(int argc, char* argv[])
 
 			if(isVerbose)
 				std::wcout << L"Program ended with code: " << returnCode << std::endl;
+
+			if(isVerbose)
+			{
+				std::wcout << "Running garbage collector" << std::endl;
+			}
+
+			GC::collect(machine.get());
 
 			clock_t end = clock();
 			double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;

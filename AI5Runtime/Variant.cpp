@@ -14,13 +14,13 @@
 #include "VariantReference.h"
 #include <iomanip>
 
-Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(0), type(type), isContainer(isContainer)
+Variant::Variant(const VARIANT_TYPE type): type(type)
 {
 	if (GlobalOptions::isVerbose())
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
 		{
-			std::wcout << "\t+ Variant of type " << VariantTypeToString(type)
+			std::wcout << "\t+ Variant of type " << typeAsString()
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") created" << std::endl;
 			std::wcout << std::dec << std::setw(0);
 		}
@@ -33,7 +33,7 @@ Variant::~Variant(void)
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
 		{
-			std::wcout << "\t- Variant of type " << VariantTypeToString(type)
+			std::wcout << "\t- Variant of type " << typeAsString()
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") destroyed" << std::endl;
 			std::wcout << std::dec << std::setw(0);
 		}
@@ -134,7 +134,7 @@ VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 		return comvar.fltVal;
 		break;
 	case VT_BSTR:
-		return new StringVariant(create_shared_string(comvar.bstrVal,SysStringLen(comvar.bstrVal)));
+		return StringVariant::Create(create_shared_string(comvar.bstrVal,SysStringLen(comvar.bstrVal)));
 		break;
 	case VT_EMPTY:
 		return VariantReference<>::NullReference();
@@ -144,7 +144,7 @@ VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 	}
 }
 
-const char* Variant::VariantTypeToString(VARIANT_TYPE type)
+const char* Variant::typeAsString()
 {
 	switch(type)
 	{

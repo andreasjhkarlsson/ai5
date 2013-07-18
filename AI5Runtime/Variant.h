@@ -33,10 +33,10 @@ public:
 	static const VARIANT_TYPE ITERATOR			= 16;
 	static const VARIANT_TYPE HANDLE_VAR		= 17;
 	static const int NUMBER_OF_VARIANT_TYPES	= 18;
-	static const char* VariantTypeToString(VARIANT_TYPE type);
+	const char* typeAsString();
 
 
-	Variant(const VARIANT_TYPE type,bool container=false);
+	Variant(const VARIANT_TYPE type);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -48,8 +48,6 @@ public:
 	virtual void cleanup();
 	virtual size_t hash() const;
 	virtual VariantReference<IteratorVariant> iterate();
-	__forceinline int addRef();
-	__forceinline int release();
 	__forceinline VARIANT_TYPE getType() const;
 	__forceinline void scheduleRecycling(VariantFactory* factory);
 
@@ -67,7 +65,6 @@ public:
 	inline bool isNameType() const;
 	inline bool isDefaultType() const;
 	inline bool isNameReferenceType() const;
-	inline bool isContainerType() const;
 	inline bool isBinaryType() const;
 	inline bool isHashMap() const;
 	inline bool isIterator() const;
@@ -87,8 +84,6 @@ public:
 
 private:
 	const VARIANT_TYPE type;
-	int refCount;
-	bool isContainer;
 };
 
 
@@ -102,22 +97,6 @@ typedef struct
 	bool operator() (const VariantReference<>& x,const VariantReference<>& y) const;
 } VariantKeyComparator;
 
-
-int Variant::addRef()
-{
-	return ++refCount;
-}
-
-int Variant::release()
-{
-	int resultCount = --refCount;
-	if (!(resultCount))
-	{
-		this->cleanup();
-		delete this;
-	}
-	return resultCount;
-}
 
 VARIANT_TYPE Variant::getType() const
 {
@@ -183,11 +162,6 @@ bool Variant::isNameReferenceType() const
 bool Variant::isDefaultType() const
 {
 	return type == DEFAULT;
-}
-
-bool Variant::isContainerType() const
-{
-	return isContainer;
 }
 
 bool Variant::isBinaryType() const

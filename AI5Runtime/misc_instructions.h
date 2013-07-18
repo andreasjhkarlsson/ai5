@@ -3,6 +3,7 @@
 #include "ListVariant.h"
 #include "HashMapVariant.h"
 #include "BooleanVariant.h"
+#include "gc.h"
 
 __forceinline void noop(StackMachineThread* machine)
 {
@@ -96,7 +97,7 @@ __forceinline void concatStrings(StackMachineThread* machine)
 	(*result)+=*arg2.toString();
 
 
-	machine->getDataStack()->push(new StringVariant(result));
+	machine->getDataStack()->push(StringVariant::Create(result));
 
 	machine->advanceCounter();
 }

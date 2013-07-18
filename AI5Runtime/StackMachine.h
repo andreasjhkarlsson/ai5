@@ -5,9 +5,11 @@
 #include <list>
 #include "Scope.h"
 #include "StackMachineThread.h"
+#include "gc.h"
 class StackMachine
 {
 public:
+	friend class GC;
 	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress);
 	~StackMachine(void);

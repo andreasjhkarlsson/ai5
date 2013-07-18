@@ -142,6 +142,9 @@
     <ClCompile Include="NullVariant.cpp">
       <Filter>variants</Filter>
     </ClCompile>
+    <ClCompile Include="gc.cpp">
+      <Filter>gc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -276,9 +279,6 @@
     <ClInclude Include="GlobalOptions.h">
       <Filter>general</Filter>
     </ClInclude>
-    <ClInclude Include="GCObjectOwner.h">
-      <Filter>gc</Filter>
-    </ClInclude>
     <ClInclude Include="BooleanVariant.h">
       <Filter>variants</Filter>
     </ClInclude>
@@ -296,6 +296,9 @@
     </ClInclude>
     <ClInclude Include="VariantReference.h">
       <Filter>variants</Filter>
+    </ClInclude>
+    <ClInclude Include="gc.h">
+      <Filter>gc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

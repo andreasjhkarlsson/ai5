@@ -19,6 +19,11 @@ StringVariant::~StringVariant(void)
 
 }
 
+StringVariant* StringVariant::Create(shared_string str)
+{
+	return GC::alloc<StringVariant,shared_string>(str);
+}
+
 std::wostream& StringVariant::format(std::wostream& stream) const
 {
 	stream << "StringVariant: " << str->getTerminatedBuffer();

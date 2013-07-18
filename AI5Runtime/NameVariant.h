@@ -1,12 +1,14 @@
 #pragma once
 #include "types.h"
 #include "VariantReference.h"
+#include "gc.h"
 class NameVariant :
 	public Variant
 {
 public:
+	friend class GC;
 	static const VARIANT_TYPE TYPE = NAME;
-	NameVariant(const VariantReference<>& value,VARIANT_TYPE type = TYPE);
+	
 	~NameVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -22,7 +24,9 @@ public:
 	virtual void setValue(const VariantReference<>& variant);
 protected:
 	VariantReference<> value;
+	NameVariant(const VariantReference<>& value,VARIANT_TYPE type = TYPE);
 private:
+	
 	bool isConst;
 };
 

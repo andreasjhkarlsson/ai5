@@ -35,7 +35,6 @@ void VariableFunctions::registerFunctions(StackMachine* machine)
 	machine->addBuiltInFunction(L"isarray",std::bind(&isArray,instance,_1));
 	machine->addBuiltInFunction(L"ishashmap",std::bind(&isHashMap,instance,_1));
 	machine->addBuiltInFunction(L"isbool",std::bind(&isBool,instance,_1));
-	machine->addBuiltInFunction(L"isstring",std::bind(&isString,instance,_1));
 }
 
 
@@ -81,7 +80,7 @@ VariantReference<> VariableFunctions::binaryToString(CallInfo* callInfo)
 
 	shared_string result = Encode::decode(&(*binary)[0],binary->size(),flag);
 
-	return new StringVariant(result);
+	return StringVariant::Create(result);
 }
 
 
@@ -119,5 +118,5 @@ VariantReference<> VariableFunctions::isBool(CallInfo* callInfo)
 VariantReference<> VariableFunctions::ToString(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	return new StringVariant(callInfo->getArg(0).toString());	
+	return StringVariant::Create(callInfo->getArg(0).toString());	
 }

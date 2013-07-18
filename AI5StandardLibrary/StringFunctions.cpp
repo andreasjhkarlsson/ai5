@@ -25,7 +25,7 @@ VariantReference<> StringFunctions::stringUpper(CallInfo* callInfo)
 	callInfo->validateArgCount(1,1);
 	shared_string arg = callInfo->getStringArg(0);
 	shared_string ret = shared_string(new UnicodeString(arg->toUpper()));
-	return new StringVariant(ret);
+	return StringVariant::Create(ret);
 }
 
 
@@ -34,7 +34,7 @@ VariantReference<> StringFunctions::stringLower(CallInfo* callInfo)
 	callInfo->validateArgCount(1,1);
 	shared_string arg = callInfo->getStringArg(0);
 	shared_string ret = shared_string(new UnicodeString(arg->toLower()));
-	return new StringVariant(ret);
+	return StringVariant::Create(ret);
 }
 
 VariantReference<> StringFunctions::stringLen(CallInfo* callInfo)
@@ -51,7 +51,7 @@ VariantReference<> StringFunctions::stringLeft(CallInfo* callInfo)
 	int count = callInfo->getInt32Arg(1);
 	shared_string ret = shared_string(new UnicodeString(L""));
 	str->extract(0,count,*ret);
-	return new StringVariant(ret);
+	return StringVariant::Create(ret);
 }
 
 VariantReference<> StringFunctions::stringTrimLeft(CallInfo* callInfo)
@@ -63,7 +63,7 @@ VariantReference<> StringFunctions::stringTrimLeft(CallInfo* callInfo)
 		return new StringVariant(L"");
 	shared_string ret = shared_string(new UnicodeString(L""));
 	str->extract(count,str->length()-count,*ret);
-	return new StringVariant(ret);
+	return StringVariant::Create(ret);
 }
 VariantReference<> StringFunctions::stringRight(CallInfo* callInfo)
 {
@@ -72,11 +72,11 @@ VariantReference<> StringFunctions::stringRight(CallInfo* callInfo)
 	int count = callInfo->getInt32Arg(1);
 	if(count > str->length())
 	{
-		return new StringVariant(str);
+		return StringVariant::Create(str);
 	}
 	shared_string ret =  shared_string(new UnicodeString(L""));
 	str->extract(str->length()-count,count,*ret);
-	return new StringVariant(ret);
+	return StringVariant::Create(ret);
 }
 VariantReference<> StringFunctions::stringTrimRight(CallInfo* callInfo)
 {
@@ -89,7 +89,7 @@ VariantReference<> StringFunctions::stringTrimRight(CallInfo* callInfo)
 	}
 	shared_string ret = shared_string(new UnicodeString(L""));
 	str->extract(0,str->length()-count,*ret);
-	return new StringVariant(ret);
+	return StringVariant::Create(ret);
 }
 
 

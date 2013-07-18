@@ -120,7 +120,7 @@ void CallBlock::loadArguments(StackMachineThread* machine,int total,int required
 		{
 			if(arg.isByref)
 			{
-				machine->addNameToLocalScope(arg.identifier,new NameReferenceVariant(varArg));
+				machine->addNameToLocalScope(arg.identifier,GC::alloc<NameReferenceVariant,const VariantReference<>&>(nullptr));
 			}
 			else
 			{

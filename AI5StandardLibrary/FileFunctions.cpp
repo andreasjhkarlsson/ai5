@@ -222,7 +222,7 @@ public:
 			std::vector<UChar> buffer(count);
 			charsRead = u_file_read(&buffer[0],count,uhandle);
 
-			return new StringVariant(create_shared_string(&buffer[0],charsRead));
+			return StringVariant::Create(create_shared_string(&buffer[0],charsRead));
 		}
 
 
@@ -259,7 +259,7 @@ public:
 		}while(true);
 
 
-		return new StringVariant(str);
+		return StringVariant::Create(str);
 	}
 
 	virtual bool isValid() const
