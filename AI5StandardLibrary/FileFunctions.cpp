@@ -262,9 +262,10 @@ public:
 		return new StringVariant(str);
 	}
 
-	virtual bool isValid()
+	virtual bool isValid() const
 	{
-		return handle != nullptr;
+		if(binary) return handle != nullptr;
+		return uhandle != nullptr;
 	}
 	virtual void cleanup()
 	{

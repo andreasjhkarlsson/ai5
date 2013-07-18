@@ -9,7 +9,7 @@ public:
 	ModuleHandle(HMODULE module);
 	void cleanup();
 	void close();
-	virtual bool isValid();
+	virtual bool isValid() const override;
 	HMODULE getModule();
 private:
 	HMODULE module;

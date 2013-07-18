@@ -11,7 +11,7 @@ HandleVariant::~HandleVariant(void)
 }
 
 
-bool HandleVariant::toBoolean()
+bool HandleVariant::toBoolean() const
 {
 	return isValid();
 }

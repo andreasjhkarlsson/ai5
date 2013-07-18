@@ -519,6 +519,8 @@ class Compiler:
             forin = for_stmt.nodes[For.NODE_FOR_IN]
 
             compiled_init = self.compile_expression(forin.nodes[ForIn.NODE_LIST_EXPRESSION])
+            init_end_jump = JumpIfFalseInstruction(None)
+            compiled_init += [DoubleTopInstruction(),init_end_jump]
             compiled_init += [GetIteratorInstruction()]
 
             check_end_jump = JumpIfFalseInstruction(None)
@@ -533,6 +535,8 @@ class Compiler:
             compiled_end = [PopInstruction(),PopBlockInstruction()]
 
             check_end_jump.address = RelativeAddress(len(compiled_next)+len(compiled_body)+len(compiled_jump_back)+1)
+            init_end_jump.address = RelativeAddress(len(compiled_check)+len(compiled_next)+len(compiled_body)+len(compiled_jump_back)+2)
+
             jump_back.address = RelativeAddress(-(len(compiled_body)+len(compiled_next)+len(compiled_check)))
 
             

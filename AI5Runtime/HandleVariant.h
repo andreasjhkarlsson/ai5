@@ -24,8 +24,8 @@ public:
 		return static_cast<T*>(this);
 	}
 
-	virtual bool isValid()=0;
-	virtual bool toBoolean();
+	virtual bool isValid()const=0;
+	virtual bool toBoolean() const override;
 	virtual std::wostream& format(std::wostream& stream) const;
 
 private:

@@ -23,7 +23,7 @@ HMODULE ModuleHandle::getModule()
 	return module;
 }
 
-bool ModuleHandle::isValid()
+bool ModuleHandle::isValid() const
 {
 	return module != nullptr;
 }
