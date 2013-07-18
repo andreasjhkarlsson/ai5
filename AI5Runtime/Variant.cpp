@@ -20,7 +20,7 @@ Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(0), type(ty
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
 		{
-			std::wcout << "+ Variant of type " << VariantTypeToString(type)
+			std::wcout << "\t+ Variant of type " << VariantTypeToString(type)
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") created" << std::endl;
 			std::wcout << std::dec << std::setw(0);
 		}
@@ -33,7 +33,7 @@ Variant::~Variant(void)
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
 		{
-			std::wcout << "- Variant of type " << VariantTypeToString(type)
+			std::wcout << "\t- Variant of type " << VariantTypeToString(type)
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") destroyed" << std::endl;
 			std::wcout << std::dec << std::setw(0);
 		}
@@ -144,26 +144,6 @@ VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 	}
 }
 
-/*
-	static const VARIANT_TYPE UNKNOWN			= 0;
-	static const VARIANT_TYPE INTEGER64			= 1;
-	static const VARIANT_TYPE BOOLEAN			= 2;
-	static const VARIANT_TYPE FLOATING			= 3;
-	static const VARIANT_TYPE NULL_VAR			= 4;
-	static const VARIANT_TYPE NATIVE_FUNCTION	= 5;
-	static const VARIANT_TYPE USER_FUNCTION		= 6;
-	static const VARIANT_TYPE STRING			= 7;
-	static const VARIANT_TYPE LIST				= 8;
-	static const VARIANT_TYPE INTEGER32			= 9;
-	static const VARIANT_TYPE NAME				= 10;
-	static const VARIANT_TYPE DEFAULT			= 11;
-	static const VARIANT_TYPE NAME_REFERENCE	= 12;
-	static const VARIANT_TYPE SCOPE				= 13;
-	static const VARIANT_TYPE BINARY			= 14;
-	static const VARIANT_TYPE HASH_MAP			= 15;
-	static const VARIANT_TYPE ITERATOR			= 16;
-	static const VARIANT_TYPE HANDLE_VAR		= 17;
-	*/
 const char* Variant::VariantTypeToString(VARIANT_TYPE type)
 {
 	switch(type)

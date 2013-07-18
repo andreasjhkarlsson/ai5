@@ -4,6 +4,7 @@
 #include "..\AI5Runtime\BooleanVariant.h"
 #include "..\AI5Runtime\HandleVariant.h"
 #include "..\AI5Runtime\IteratorVariant.h"
+#include "..\AI5Runtime\BinaryVariant.h"
 #include <Shlwapi.h>
 #include <functional>
 #include <memory>
@@ -119,11 +120,17 @@ public:
 	static const HANDLE_TYPE HTYPE = FILE_HANDLE;
 	FileHandle(shared_string filename,MODE mode,
 		Encode::TYPE encoding,bool binary,bool bom,bool fullDetection):
-	handle(nullptr), HandleVariant(FILE_HANDLE), filename(filename),
+	handle(nullptr), HandleVariant(FILE_HANDLE), filename(filename),uhandle(nullptr),
 				mode(mode), encoding(encoding), binary(binary), bom(bom), fullDetection(fullDetection)
 	{
 
-		char* openMode;
+
+	}
+
+
+	int open()
+	{
+		std::string openMode;
 		if(mode&READ)
 			openMode = "r";
 		if(mode&WRITE)
@@ -142,35 +149,87 @@ public:
 		std::string utf8_filename;
 		// TODO: Use GetShortPath to make unicode filenames work.
 		filename->toUTF8String(utf8_filename);
-		FILE* fhandle = fopen(utf8_filename.c_str(),openMode);
 
-
-		if(!handle)
+		if(binary)
 		{
-			// It's an error! Do something!
+			openMode += "b";
+			handle = fopen(utf8_filename.c_str(),openMode.c_str());
 		}
+		else
+		{
 
-		handle = u_finit(fhandle,nullptr,codepage);
+			uhandle = u_fopen(utf8_filename.c_str(),openMode.c_str(),nullptr,codepage);
+
+			if(!uhandle)
+			{
+				return 1;
+			}
+
+		}
 
 		if(encoding == Encode::UTF8 && bom)
 		{
 			char bom[3];
 
-			fseek(u_fgetfile(handle),3,SEEK_SET);
+			fread(bom,1,3,u_fgetfile(uhandle));
 
 		}
+
+		return 0;
 	}
 
-	Variant* read(size_t count)
+	VariantReference<> read(size_t count)
 	{
-		int bytesRead;
-		std::vector<UChar> buffer(count);
-		bytesRead = u_file_read(&buffer[0],count,handle);
+		if(binary)
+		{
 
-		return new StringVariant(create_shared_string(&buffer[0],bytesRead));
+			if(count == 0)
+			{
+				// Calculate how many bytes to read.
+				int curPos = ftell(handle);
+				fseek(handle,0,SEEK_END);
+				int endPos = ftell(handle);
+				fseek(handle,SEEK_SET,curPos);
+
+				count = endPos - curPos;
+			}
+
+			shared_binary binary = shared_binary(new std::vector<char>(count));
+			fread(&(*binary)[0],1,count,handle);
+
+			return new BinaryVariant(binary);
+		}
+		else
+		{
+
+			if(count == 0)
+			{
+				const size_t bufferSize = 1024;
+				std::vector<UChar> buffer(bufferSize);
+				shared_string str = create_shared_string(L"");
+
+				while(!isEOFReached())
+				{
+					int charsRead = u_file_read(&buffer[0],bufferSize,uhandle);
+					str->append(&buffer[0],charsRead);
+				}
+
+				return str;
+			}
+
+
+			int charsRead;
+			std::vector<UChar> buffer(count);
+			charsRead = u_file_read(&buffer[0],count,uhandle);
+
+			return new StringVariant(create_shared_string(&buffer[0],charsRead));
+		}
+
+
+
 	}
 
-	Variant* readLine()
+	VariantReference<StringVariant> readLine()
 	{
 		shared_string str = create_shared_string(L"");
 		const int buffer_size = 12;
@@ -181,7 +240,7 @@ public:
 		{
 
 			// If u_fgets returns nullptr, there are no more lines!
-			if(!u_fgets(buffer,buffer_size,handle))
+			if(!u_fgets(buffer,buffer_size,uhandle))
 				break;
 			read_length = u_strlen(buffer);
 
@@ -214,16 +273,23 @@ public:
 	void close()
 	{
 		// You can close as many times as you like! :))
-		if(handle != nullptr)
+		if(handle != nullptr && binary)
 		{
-			u_fclose(handle);
+			fclose(handle);
 			handle = nullptr;
+		}
+		if(uhandle != nullptr && !binary)
+		{
+			u_fclose(uhandle);
+			uhandle = nullptr;
 		}
 	}
 
 	bool isEOFReached()
 	{
-		return u_feof(handle);
+		if(binary)
+			return feof(handle) != 0;
+		return u_feof(uhandle) != 0;
 	}
 
 	class LineIterator: public IteratorVariant
@@ -257,7 +323,8 @@ public:
 
 
 private:
-	UFILE* handle;
+	UFILE* uhandle;
+	FILE* handle;
 
 	Encode::TYPE encoding;
 	MODE mode;
@@ -320,7 +387,13 @@ VariantReference<> FileFunctions::fileOpen(CallInfo* callInfo)
 	if(flag&0x4000)
 		fullDetection = true;
 
-	return new FileHandle(filename,mode,encoding,binary_mode,bom,fullDetection);
+	VariantReference<FileHandle> fhandle = new FileHandle(filename,mode,encoding,binary_mode,bom,fullDetection);
+	int status = fhandle->open();
+	if(status == 0)
+		return fhandle;
+
+	callInfo->setError(status);
+	return -1;
 	
 
 }
