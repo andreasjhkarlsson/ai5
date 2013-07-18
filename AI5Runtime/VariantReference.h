@@ -55,6 +55,14 @@ public:
 		return cast<Variant>();
 	}
 
+
+	void clear()
+	{
+		if(isComplexType())
+			ref.variant->release();
+		varType = Variant::UNKNOWN;
+	}
+
 	int toInteger32() const;
 	__int64 toInteger64() const;
 	double toFloating() const;
@@ -444,11 +452,11 @@ bool VariantReference<T>::equal(const VariantReference<T>& other) const
 			case Variant::FLOATING:
 				return ref.variant->equal(&FloatingVariant(other.ref.floating));
 			case Variant::BOOLEAN:
-				return ref.variant->equal(ref.boolean ? &BooleanVariant::True : &BooleanVariant::False);
+				return ref.variant->equal(&BooleanVariant(ref.boolean));
 			case Variant::NULL_VAR:
-				return ref.variant->equal(&NullVariant::Instance);
+				return ref.variant->equal(&NullVariant());
 			case Variant::DEFAULT:
-				return ref.variant->equal(&DefaultVariant::Instance);
+				return ref.variant->equal(&DefaultVariant());
 			default:
 				return ref.variant->equal(other.ref.variant);
 			}
@@ -470,9 +478,9 @@ size_t VariantReference<T>::hash() const
 	case Variant::BOOLEAN:
 		return SuperFastHash((const char*)&ref.boolean,sizeof(bool));
 	case Variant::NULL_VAR:
-		return SuperFastHash((const char*)&NullVariant::Instance,sizeof(NullVariant));
+		return SuperFastHash((const char*)&NullVariant(),sizeof(NullVariant));
 	case Variant::DEFAULT:
-		return SuperFastHash((const char*)&DefaultVariant::Instance,sizeof(DefaultVariant));
+		return SuperFastHash((const char*)&DefaultVariant(),sizeof(DefaultVariant));
 	default:
 		return ref.variant->hash();
 	}

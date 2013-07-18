@@ -2,6 +2,7 @@
 #include "variant.h"
 #include "types.h"
 #include "IteratorVariant.h"
+#include "VariantReference.h"
 
 class ListVariant :
 	public Variant
@@ -27,16 +28,6 @@ public:
 private:
 	shared_var_list list;
 
-	class ForwardIterator: public IteratorVariant
-	{
-	public:
-		ForwardIterator(ListVariant* list);
-		virtual void cleanup();
-		virtual bool hasMore();
-		virtual const VariantReference<>& next();
-	private:
-		int pos;
-		ListVariant* list;
-	};
+
 };
 

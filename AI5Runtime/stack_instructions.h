@@ -101,7 +101,7 @@ __forceinline void pushFunction(StackMachineThread* machine,int address)
 	{
 		machine->getCurrentCallBlock()->addClosure(machine,fn);
 	}
-	machine->getDataStack()->push(fn.cast<Variant>());
+	machine->getDataStack()->push(fn);
 	machine->advanceCounter();
 
 }

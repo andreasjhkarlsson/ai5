@@ -12,13 +12,18 @@
 #include "BinaryVariant.h"
 #include "COMVar.h"
 #include "VariantReference.h"
+#include <iomanip>
 
 Variant::Variant(const VARIANT_TYPE type,bool isContainer): refCount(0), type(type), isContainer(isContainer)
 {
 	if (GlobalOptions::isVerbose())
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
-			std::wcout << "+ Variant of type " << VariantTypeToString(type) << " created" << std::endl;
+		{
+			std::wcout << "+ Variant of type " << VariantTypeToString(type)
+			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") created" << std::endl;
+			std::wcout << std::dec << std::setw(0);
+		}
 	}
 }
 
@@ -27,7 +32,11 @@ Variant::~Variant(void)
 	if (GlobalOptions::isVerbose())
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
-			std::wcout << "- Variant of type " << VariantTypeToString(type) << " destroyed" << std::endl;	
+		{
+			std::wcout << "- Variant of type " << VariantTypeToString(type)
+			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") destroyed" << std::endl;
+			std::wcout << std::dec << std::setw(0);
+		}
 	}
 }
 

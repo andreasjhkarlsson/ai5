@@ -25,6 +25,10 @@ void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
 
 StackMachine::~StackMachine(void)
 {
+	for(auto it = threads.begin();it != threads.end();it++)
+	{
+		delete it->second;
+	}
 }
 
 

@@ -40,6 +40,3 @@ bool DefaultVariant::equal(Variant* other)
 {
 	return other->isDefaultType();
 }
-
-
-DefaultVariant DefaultVariant::Instance;

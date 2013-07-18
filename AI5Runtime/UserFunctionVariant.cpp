@@ -29,8 +29,6 @@ void UserFunctionVariant::cleanup()
 {
 	//std::wcout << "Destroying function @" << address << std::endl;
 	Variant::cleanup();
-
-	enclosingScope = nullptr;
 	
 }
 

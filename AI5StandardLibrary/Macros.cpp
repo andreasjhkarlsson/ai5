@@ -51,27 +51,23 @@ VariantReference<> Macros::extendedCode(StackMachineThread* machine)
 
 VariantReference<> Macros::CRLF(StackMachineThread*)
 {
-	static StringVariant crlf(L"\r\n");
-	crlf.addRef();
-	return &crlf;
+	static VariantReference<StringVariant> crlf(L"\r\n");
+	return crlf;
 }
 VariantReference<> Macros::CR(StackMachineThread*)
 {
-	static StringVariant cr(L"\r");
-	cr.addRef();
-	return &cr;
+	static VariantReference<StringVariant> cr(L"\r");
+	return cr;
 }
 VariantReference<> Macros::LF(StackMachineThread*)
 {
-	static StringVariant lf(L"\n");
-	lf.addRef();
-	return &lf;
+	static VariantReference<StringVariant> lf(L"\n");
+	return lf;
 }
 VariantReference<> Macros::TAB(StackMachineThread*)
 {
-	static StringVariant tab(L"\t");
-	tab.addRef();
-	return &tab;
+	static VariantReference<StringVariant> tab(L"\t");
+	return tab;
 }
 
 

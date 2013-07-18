@@ -29,7 +29,7 @@ public:
 	void addArgument(const Argument& argument);
 	void loadArguments(StackMachineThread* machine,int total,int required);
 	void addClosedName(StackMachineThread* machine,NameIdentifier nameIdentifier);
-	void addClosure(StackMachineThread* machine,const VariantReference<UserFunctionVariant>& closure);
+	void addClosure(StackMachineThread* machine,VariantReference<UserFunctionVariant>& closure);
 	
 	friend class PooledObject<CallBlock>;
 private:

@@ -3,7 +3,6 @@
 
 NullVariant::NullVariant(void): Variant(TYPE)
 {
-	addRef();
 }
 
 
@@ -37,8 +36,6 @@ bool NullVariant::toBoolean() const
 {
 	return false;
 }
-
-NullVariant NullVariant::Instance;
 
 shared_string NullVariant::toString() const
 {

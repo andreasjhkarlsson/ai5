@@ -19,6 +19,11 @@ public:
 		usedIndexes.reserve(16);
 	}
 
+	~Scope()
+	{
+		cleanup();
+	}
+
 	__forceinline VariantReference<NameVariant>& getNameFromString(const UnicodeString &name)
 	{
 		return lookup[name];

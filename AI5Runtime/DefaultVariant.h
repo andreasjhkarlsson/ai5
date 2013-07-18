@@ -5,7 +5,6 @@ class DefaultVariant :
 {
 public:
 	static const VARIANT_TYPE TYPE = DEFAULT;
-	DefaultVariant(void);
 	~DefaultVariant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -16,6 +15,6 @@ public:
 	virtual bool equal(Variant*);
 	friend class VariantReference<>;
 private:
-	static DefaultVariant Instance;
+	DefaultVariant(void);
 };
 

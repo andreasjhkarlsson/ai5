@@ -17,6 +17,5 @@ public:
 	friend class VariantReference<>;
 private:
 	NullVariant(void);
-	static NullVariant Instance;
 };
 

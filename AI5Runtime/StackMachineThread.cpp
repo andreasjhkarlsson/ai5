@@ -31,6 +31,7 @@ void StackMachineThread::startThread()
 int StackMachineThread::join()
 {
 	myThread->join();
+	delete myThread;
 	return returnCode;
 }
 
@@ -100,7 +101,7 @@ VariantReference<NameVariant> StackMachineThread::getNearestName(NameIdentifier 
 
 VariantReference<NameVariant> StackMachineThread::getLocalName(NameIdentifier identifier)
 {
-	VariantReference<Scope>& scope = globalScope;
+	VariantReference<Scope> scope = globalScope;
 	if(currentCallBlock != nullptr)
 		scope = currentCallBlock->getScope();
 	return scope->getNameFromIndex(identifier.localId);
@@ -125,7 +126,7 @@ void StackMachineThread::setNearest(NameIdentifier identifier,const VariantRefer
 	// If not found, add it as a new name to the nearest scope.
 	if(foundName.empty())
 	{
-		VariantReference<Scope>& targetScope = globalScope;
+		VariantReference<Scope> targetScope = globalScope;
 		if(currentCallBlock != nullptr)
 			targetScope = currentCallBlock->getScope();
 
@@ -148,9 +149,9 @@ void StackMachineThread::setNearest(NameIdentifier identifier,const VariantRefer
 
 void StackMachineThread::setLocal(NameIdentifier identifier,const VariantReference<>& variant,bool asConst)
 {
-	VariantReference<Scope>& targetScope = globalScope;
+	VariantReference<Scope> targetScope = globalScope;
 	if(currentCallBlock != nullptr)
-		targetScope = currentCallBlock->getScope().cast<Scope>();
+		targetScope = currentCallBlock->getScope();
 
 	VariantReference<NameVariant> name = targetScope->getNameFromIndex(identifier.localId);
 
@@ -186,7 +187,7 @@ void StackMachineThread::setGlobal(NameIdentifier identifier,const VariantRefere
 
 void StackMachineThread::addNameToLocalScope(NameIdentifier identifier,const VariantReference<NameVariant>& name)
 {
-	VariantReference<Scope>& targetScope = globalScope;
+	VariantReference<Scope> targetScope = globalScope;
 	if(currentCallBlock != nullptr)
 		targetScope = currentCallBlock->getScope();
 

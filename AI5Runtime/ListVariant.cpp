@@ -117,26 +117,26 @@ bool ListVariant::equal(Variant* other)
 }
 
 
+class ForwardIterator: public IteratorVariant
+{
+public:
+	ForwardIterator(const VariantReference<ListVariant>& list):list(list),pos(0)
+	{
+	}
+	virtual bool hasMore()
+	{
+		return (size_t)pos < list->size();
+	}
+	virtual const VariantReference<>& next()
+	{
+		return list->getElement(pos++);
+	}
+private:
+	int pos;
+	VariantReference<ListVariant> list;
+};
+
 IteratorVariant* ListVariant::iterate()
 {
 	return new ForwardIterator(this);
-}
-
-
-ListVariant::ForwardIterator::ForwardIterator(ListVariant* list):list(list),pos(0)
-{
-	list->addRef();
-}
-void ListVariant::ForwardIterator::cleanup()
-{
-	Variant::cleanup();
-	list->release();
-}
-bool ListVariant::ForwardIterator::hasMore()
-{
-	return (size_t)pos < list->size();
-}
-const VariantReference<>& ListVariant::ForwardIterator::next()
-{
-	return list->getElement(pos++);
 }

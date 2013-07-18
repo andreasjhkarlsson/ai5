@@ -12,7 +12,7 @@ using namespace std::placeholders;
 
 MathFunctions::MathFunctions(void)
 {
-	rng.seed(time(NULL));
+	rng.seed((unsigned long)time(NULL));
 }
 
 

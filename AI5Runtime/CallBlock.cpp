@@ -31,6 +31,10 @@ void CallBlock::leave(StackMachineThread*machine)
 	unwindStack(machine,stackPosition);
 
 	processClosures(machine);
+	scope.clear();
+	closureScope.clear();
+	closures.clear();
+	owner.clear();
 }
 
 // When returning from a function, there needs to be certain stuff
@@ -144,7 +148,7 @@ void CallBlock::addClosedName(StackMachineThread* machine,NameIdentifier nameIde
 	closedNames.push_back(nameIdentifier);
 }
 
-void CallBlock::addClosure(StackMachineThread* machine,const VariantReference<UserFunctionVariant>& closure)
+void CallBlock::addClosure(StackMachineThread* machine,VariantReference<UserFunctionVariant>& closure)
 {
 
 	if(closureScope.empty())
@@ -152,6 +156,6 @@ void CallBlock::addClosure(StackMachineThread* machine,const VariantReference<Us
 
 	closureScope->setEnclosingScope(scope);
 
-	closure.cast<UserFunctionVariant>()->setEnclosingScope(closureScope);
+	closure->setEnclosingScope(closureScope);
 	closures.push_back(closure);
 }

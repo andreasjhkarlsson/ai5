@@ -40,7 +40,7 @@ __forceinline void ret(StackMachineThread* machine)
 {
 	// Temporarily pop return value from stack.
 	// This is needed because popping CallBlock will unwind
-	// anything added to the stack during calling (so it will be clean during exceptions for example9.
+	// anything added to the stack during calling (so it will be clean during exceptions for example).
 	// Don't worry, we'll add it back after the unwinding is done.
 	VariantReference<> returnValue = machine->getDataStack()->pop();
 

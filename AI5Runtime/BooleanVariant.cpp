@@ -11,8 +11,6 @@ BooleanVariant::~BooleanVariant(void)
 	int a = 10;
 }
 
-BooleanVariant BooleanVariant::True(true);
-BooleanVariant BooleanVariant::False(false);
 
 
 double BooleanVariant::toFloating() const
@@ -53,17 +51,6 @@ shared_string BooleanVariant::toString() const
 		return create_shared_string(L"true");
 	else
 		return create_shared_string(L"false");
-}
-
-BooleanVariant* BooleanVariant::Get(bool value,bool increaseRefcount)
-{
-	BooleanVariant* res;
-	res = &False;
-	if(value)
-		res = &True;
-	if(increaseRefcount)
-		res->addRef();
-	return res;
 }
 
 bool BooleanVariant::equal(Variant* other)

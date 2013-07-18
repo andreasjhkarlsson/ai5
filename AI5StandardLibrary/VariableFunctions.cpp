@@ -35,7 +35,7 @@ void VariableFunctions::registerFunctions(StackMachine* machine)
 	machine->addBuiltInFunction(L"isarray",std::bind(&isArray,instance,_1));
 	machine->addBuiltInFunction(L"ishashmap",std::bind(&isHashMap,instance,_1));
 	machine->addBuiltInFunction(L"isbool",std::bind(&isBool,instance,_1));
-	machine->addBuiltInFunction(L"string",std::bind(&isString,instance,_1));
+	machine->addBuiltInFunction(L"isstring",std::bind(&isString,instance,_1));
 }
 
 
