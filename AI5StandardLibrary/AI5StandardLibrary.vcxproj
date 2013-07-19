@@ -141,6 +141,7 @@
     <ClInclude Include="MouseFunctions.h" />
     <ClInclude Include="StandardLibrary.h" />
     <ClInclude Include="StringFunctions.h" />
+    <ClInclude Include="SystemFunctions.h" />
     <ClInclude Include="TimerFunctions.h" />
     <ClInclude Include="VariableFunctions.h" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClCompile Include="MouseFunctions.cpp" />
     <ClCompile Include="StandardLibrary.cpp" />
     <ClCompile Include="StringFunctions.cpp" />
+    <ClCompile Include="SystemFunctions.cpp" />
     <ClCompile Include="TimerFunctions.cpp" />
     <ClCompile Include="VariableFunctions.cpp" />
   </ItemGroup>

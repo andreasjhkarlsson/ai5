@@ -4,6 +4,7 @@
 #include "Variant.h"
 #include "VariantReference.h"
 #include "GlobalOptions.h"
+#include "misc.h"
 
 GC* GC::instance = nullptr;
 
@@ -72,6 +73,7 @@ void GC::trackObject(BlockHeader* object)
 
 void GC::addStaticObject(BlockHeader* object)
 {
+	object->generation = GENERATION_STATIC;
 	staticList.push_front(object);
 }
 
@@ -144,10 +146,9 @@ void GC::sweep()
 		}
 		else
 		{
-			if(GlobalOptions::isVerbose())
-			{
-				std::wcout << "GC: Found garbage of type " << current->object->typeAsString() << std::endl;
-			}
+
+			DebugOut(L"GC") << "Found garbage of type " << current->object->typeAsString();
+
 
 			BlockHeader* temp = objectList.erase(current);
 			freeObject(current);
@@ -158,8 +159,27 @@ void GC::sweep()
 
 void GC::run(StackMachine* machine)
 {
+
+	DebugOut(L"GC") << "Running cycle.";
+	// Find all roots and mark them.
+	// Roots are:
+	// * Global scope
+	// * Local scopes
+	// * Data stack
+	// * CallFrames
+	// * Static objects
+
+	BlockHeader* current = staticList.firstElement();
+	while(!current->sentinel)
+	{
+		current->mark = false;
+		mark(current);
+		current = current->next;
+	}
+
 	// Mark objects from roots.
 	VariantReference<Scope>& globalScope = machine->globalScope;
+	VarRefToBlockHead(globalScope)->mark = false;
 	mark(globalScope);
 
 	sweep();
@@ -180,10 +200,9 @@ void GC::cleanup()
 
 void GC::freeAll()
 {
-	if(GlobalOptions::isVerbose())
-	{
-		std::wcout << L"GC: Freeing all remaining objects." << std::endl;
-	}
+
+	DebugOut(L"GC") << L"Freeing all remaining objects.";
+
 
 	// Clear all dynamic objects.
 	BlockHeader* current = objectList.firstElement();

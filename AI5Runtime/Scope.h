@@ -19,11 +19,6 @@ public:
 
 	static Scope* Create();
 
-	Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
-	{
-		usedIndexes.reserve(16);
-	}
-
 	~Scope()
 	{
 	}
@@ -51,7 +46,10 @@ public:
 	}
 
 private:
-
+	Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
+	{
+		usedIndexes.reserve(16);
+	}
 	VariantReference<Scope> enclosingScope;
 
 	// The string->name lookup.

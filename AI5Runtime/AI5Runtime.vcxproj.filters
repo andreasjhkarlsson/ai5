@@ -300,5 +300,8 @@
     <ClInclude Include="gc.h">
       <Filter>gc</Filter>
     </ClInclude>
+    <ClInclude Include="misc.h">
+      <Filter>general</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

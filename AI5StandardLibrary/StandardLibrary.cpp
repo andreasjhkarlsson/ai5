@@ -11,6 +11,7 @@
 #include "DllCallFunctions.h"
 #include "MiscFunctions.h"
 #include "MouseFunctions.h"
+#include "SystemFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 #include <Windows.h>
 #include "autoit3.h"
@@ -30,5 +31,6 @@ void registerStandardLibrary(StackMachine* machine)
 	DllCallFunctions::registerFunctions(machine);
 	MiscFunctions::registerFunctions(machine);
 	MouseFunctions::registerFunctions(machine);
+	SystemFunctions::registerFunctions(machine);
 	Macros::registerMacros(machine);
 }

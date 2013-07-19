@@ -120,7 +120,6 @@ T* GC::staticAlloc()
 {
 	BlockHeader* header = allocBlockHeader<T>();
 	new (header->object) T();
-	header->generation = GENERATION_STATIC;
 	instance->addStaticObject(header);
 	return static_cast<T*>(header->object);
 }
@@ -130,7 +129,6 @@ T* GC::staticAlloc(U arg)
 {
 	BlockHeader* header = allocBlockHeader<T>();
 	new (header->object) T(arg);
-	header->generation = GENERATION_STATIC;
 	instance->addStaticObject(header);
 	return static_cast<T*>(header->object);
 }
@@ -140,7 +138,6 @@ T* GC::staticAlloc(U arg,V arg2)
 {
 	BlockHeader* header = allocBlockHeader<T>();
 	new (header->object) T(arg,arg2);
-	header->generation = GENERATION_STATIC;
 	instance->addStaticObject(header);
 	return static_cast<T*>(header->object);
 }

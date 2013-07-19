@@ -243,6 +243,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="ListVariant.h" />
     <ClInclude Include="LoopBlock.h" />
     <ClInclude Include="macro.h" />
+    <ClInclude Include="misc.h" />
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="NameReferenceVariant.h" />
     <ClInclude Include="NullVariant.h" />

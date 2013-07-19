@@ -14,7 +14,7 @@ CallBlock::~CallBlock(void)
 
 void CallBlock::setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,VariantReference<UserFunctionVariant>& owner)
 {
-	this->scope = new Scope();
+	this->scope = Scope::Create();
 	this->returnAddress = returnAddress;
 	this->stackPosition = machine->getDataStack()->position()-(calledNumberOfArguments+1);
 	this->calledNumberOfArguments = calledNumberOfArguments;
@@ -151,7 +151,7 @@ void CallBlock::addClosure(StackMachineThread* machine,VariantReference<UserFunc
 {
 
 	if(closureScope.empty())
-		closureScope = new Scope();
+		closureScope = Scope::Create();
 
 	closureScope->setEnclosingScope(scope);
 

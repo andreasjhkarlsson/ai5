@@ -8,6 +8,7 @@
 #include "3rdparty\optionparser.h"
 #include "GlobalOptions.h"
 #include "gc.h"
+#include "misc.h"
 //#include <vld.h>
 
 enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
@@ -72,13 +73,9 @@ int main(int argc, char* argv[])
 				returnCode = machine->waitForTermination();
 			}
 
-			if(isVerbose)
-				std::wcout << L"Program ended with code: " << returnCode << std::endl;
 
-			if(isVerbose)
-			{
-				std::wcout << "Running garbage collector" << std::endl;
-			}
+			DebugOut(L"Status") << "Program ended with code: " << returnCode;
+
 
 			GC::collect(machine.get());
 
@@ -86,8 +83,8 @@ int main(int argc, char* argv[])
 
 			clock_t end = clock();
 			double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-			if(isVerbose)
-				std::wcout << "Execution time: " << elapsed_secs << std::endl;
+			
+			DebugOut(L"Status") << "Execution time: " << elapsed_secs;
 
 
 			return returnCode;
@@ -95,7 +92,7 @@ int main(int argc, char* argv[])
 		}
 		catch(ProgramLoadError& error)
 		{
-			std::wcout << L"Error loading program: "+error.getMessage() << std::endl;
+			std::wcout << L"Error\t: Program load failed: "+error.getMessage() << std::endl;
 			return -1;
 		}
 	}

@@ -59,7 +59,7 @@ void StackMachine::disassembleProgram()
 	for(size_t i=0;i<program->size();i++)
 	{
 		std::wcout << i << ": ";
-		(*program)[i]->format(std::wcout,staticsTable);
+		(*program)[i]->print(staticsTable);
 		std::wcout << std::endl;
 	}
 }

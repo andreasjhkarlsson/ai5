@@ -5,6 +5,7 @@
 #include "Instruction.h"
 #include "GlobalOptions.h"
 #include <functional>
+#include "misc.h"
 
 using namespace std::placeholders;
 
@@ -44,9 +45,7 @@ void StackMachineThread::run()
 		{
 			if(GlobalOptions::isVerbose())
 			{
-				std::wcout << "Executing: ";
-				(*program)[programCounter]->format(std::wcout,staticsTable);
-				std::wcout << std::endl;
+				(*program)[programCounter]->print(staticsTable);
 			}
 			
 			(*program)[programCounter]->execute(this);		
