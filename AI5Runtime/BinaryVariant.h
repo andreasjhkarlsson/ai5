@@ -5,8 +5,9 @@ class BinaryVariant :
 	public Variant
 {
 public:
+	friend class GC;
 	static const VARIANT_TYPE TYPE = BINARY;
-	BinaryVariant(shared_binary binary);
+	static BinaryVariant* Create(shared_binary);
 	~BinaryVariant(void);
 	shared_binary getValue();
 	virtual std::wostream& format(std::wostream& stream) const;
@@ -16,5 +17,6 @@ public:
 	virtual size_t hash() const;
 private:
 	shared_binary binary;
+	BinaryVariant(shared_binary binary);
 };
 

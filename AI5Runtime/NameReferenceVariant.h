@@ -7,7 +7,7 @@ class NameReferenceVariant :
 public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = NAME_REFERENCE;
-	
+	static NameReferenceVariant* Create(const VariantReference<>&);
 	~NameReferenceVariant(void);
 	virtual void setValue(const VariantReference<>& var);
 	virtual const VariantReference<>& getValue();

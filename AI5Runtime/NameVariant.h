@@ -8,7 +8,7 @@ class NameVariant :
 public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = NAME;
-	
+	static NameVariant* Create(const VariantReference<>& value);
 	~NameVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -17,7 +17,6 @@ public:
 	virtual bool toBoolean() const;
 	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
-	virtual void cleanup();
 	void markAsConst();
 	bool isConstName();
 	virtual const VariantReference<>& getValue();

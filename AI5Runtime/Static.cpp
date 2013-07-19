@@ -9,12 +9,12 @@ STATIC_TYPE StaticData::getType()
 	return type;
 }
 
-StaticString::StaticString(shared_string str): StaticData(STRING), strVar(str)
+StaticString::StaticString(shared_string str): StaticData(STRING), strVar(StringVariant::CreateStatic(str))
 {
 	
 
 }
-const VariantReference<StringVariant>& StaticString::getVariant()
+VariantReference<StringVariant> StaticString::getVariant()
 {
 	return strVar;
 }

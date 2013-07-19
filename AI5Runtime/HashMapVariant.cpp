@@ -1,5 +1,6 @@
 #include "HashMapVariant.h"
 #include "VariantReference.h"
+#include "gc.h"
 
 HashMapVariant::HashMapVariant(void): Variant(TYPE)
 {
@@ -10,11 +11,11 @@ HashMapVariant::~HashMapVariant(void)
 {
 }
 
-
-void HashMapVariant::cleanup()
+HashMapVariant* HashMapVariant::Create()
 {
-	map.clear();
+	return GC::alloc<HashMapVariant>();
 }
+
 void HashMapVariant::set(const VariantReference<>& key,VariantReference<>& value)
 {
 	map[key] = value;

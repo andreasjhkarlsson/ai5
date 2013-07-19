@@ -50,7 +50,7 @@ VariantReference<> VariableFunctions::stringToBinary(CallInfo* callInfo)
 	
 	shared_binary res = Encode::encode(str->getTerminatedBuffer(),str->length(),flag);
 
-	return new BinaryVariant(res);
+	return BinaryVariant::Create(res);
 
 }
 

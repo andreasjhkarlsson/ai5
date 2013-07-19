@@ -13,6 +13,11 @@ UserFunctionVariant::~UserFunctionVariant(void)
 	
 }
 
+UserFunctionVariant* UserFunctionVariant::Create(int address)
+{
+	return GC::alloc<UserFunctionVariant,int>(address);
+}
+
 std::wostream& UserFunctionVariant::format(std::wostream& stream)
 {
 	stream << "UserFunction @" << address;
@@ -24,14 +29,6 @@ int UserFunctionVariant::getAddress()
 {
 	return address;
 }
-
-void UserFunctionVariant::cleanup()
-{
-	//std::wcout << "Destroying function @" << address << std::endl;
-	Variant::cleanup();
-	
-}
-
 
 bool UserFunctionVariant::equal(Variant* other)
 {

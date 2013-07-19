@@ -14,6 +14,11 @@ BuiltinFunctionVariant::~BuiltinFunctionVariant(void)
 }
 
 
+BuiltinFunctionVariant* BuiltinFunctionVariant::CreateStatic(const UnicodeString &name,BuiltinFunction func)
+{
+	return GC::staticAlloc<BuiltinFunctionVariant,const UnicodeString&,BuiltinFunction>(name,func);
+}
+
 void BuiltinFunctionVariant::call(StackMachineThread* machine,int numberOfArguments)
 {
 	CallInfo callInfo(machine);

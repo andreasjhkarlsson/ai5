@@ -7,12 +7,18 @@
 
 GC* GC::instance = nullptr;
 
-GC::BlockHeader::BlockHeader(BlockHeader* previous,BlockHeader* next):previous(previous),next(next),mark(false),generation(0),referencedFrom(-1)
+void GC::init()
+{
+	instance = new GC();
+}
+
+
+GC::BlockHeader::BlockHeader(BlockHeader* previous,BlockHeader* next):previous(previous),next(next),mark(false),generation(0),referencedFrom(-1), sentinel(false)
 {
 
 }
 
-GC::BlockHeader::BlockHeader(): previous(nullptr), next(nullptr),mark(false),generation(0),referencedFrom(-1)
+GC::BlockHeader::BlockHeader(): previous(nullptr), next(nullptr),mark(false),generation(0),referencedFrom(-1), sentinel(false)
 {
 	
 }
@@ -25,7 +31,10 @@ void GC::collect(StackMachine* machine)
 GC::DoubleLinkedList::DoubleLinkedList()
 {
 	start = new BlockHeader();
+	start->sentinel = true;
 	end = new BlockHeader();
+	end->sentinel = true;
+
 	start->next = end;
 	end->previous = start;
 }
@@ -54,11 +63,17 @@ GC::BlockHeader* GC::DoubleLinkedList::firstElement()
 	return start->next;
 }
 
+
 void GC::trackObject(BlockHeader* object)
 {
 	objectList.push_back(object);
 }
 
+
+void GC::addStaticObject(BlockHeader* object)
+{
+	staticList.push_front(object);
+}
 
 void GC::mark(BlockHeader* header)
 {
@@ -66,21 +81,42 @@ void GC::mark(BlockHeader* header)
 
 	if(header == nullptr || header->mark)
 	{
-		// This object has already been visited. Return.
+		// This object should not be processed.
 		return;
 	}
 	header->mark = true;
 	switch(header->object->getType())
 	{
+	case Variant::NAME_REFERENCE:
 	case Variant::NAME:
 		mark(header->object->cast<NameVariant>()->value);
 		break;
+	case Variant::LIST:
+		{
+			ListVariant* listVar = header->object->cast<ListVariant>();
+			for(size_t i=0;i<listVar->list->size();i++)
+			{
+				mark((*listVar->list)[i]);
+			}
+		}
+	case Variant::HASH_MAP:
+		{
+			HashMapVariant* hashMapVar = header->object->cast<HashMapVariant>();
+			for(auto it = hashMapVar->map.begin();it != hashMapVar->map.end();it++)
+			{
+				mark(it->first);
+				mark(it->second);
+			}
+
+		}
 	case Variant::SCOPE:
 		{
 			Scope* scope = header->object->cast<Scope>();
+			int i=0;
 			for(auto it = scope->lookup.begin();it!=scope->lookup.end();it++)
 			{
 				mark(it->second);
+
 			}
 		}
 		break;
@@ -97,7 +133,7 @@ void GC::mark(const VariantReference<>&ref)
 void GC::sweep()
 {
 	BlockHeader* current = objectList.firstElement();
-	while(current != nullptr)
+	while(!current->sentinel)
 	{
 		if(current->next == nullptr)
 			break;
@@ -109,17 +145,15 @@ void GC::sweep()
 		else
 		{
 			if(GlobalOptions::isVerbose())
-				std::wcout << "\t! GC found garbage of type: " << current->object->typeAsString() << std::endl;
-			current->object->~Variant();
+			{
+				std::wcout << "GC: Found garbage of type " << current->object->typeAsString() << std::endl;
+			}
 
 			BlockHeader* temp = objectList.erase(current);
-			free(current);
+			freeObject(current);
 			current = temp;
 		}
-
-		
 	}
-
 }
 
 void GC::run(StackMachine* machine)
@@ -137,4 +171,42 @@ GC::BlockHeader* GC::VarRefToBlockHead(const VariantReference<>&ref)
 	if(!ref.isComplexType())
 		return nullptr;
 	return reinterpret_cast<BlockHeader*>(((char*)ref.ref.variant)-BLOCKHEADER_ALIGNED_SIZE);
+}
+
+void GC::cleanup()
+{
+	instance->freeAll();
+}
+
+void GC::freeAll()
+{
+	if(GlobalOptions::isVerbose())
+	{
+		std::wcout << L"GC: Freeing all remaining objects." << std::endl;
+	}
+
+	// Clear all dynamic objects.
+	BlockHeader* current = objectList.firstElement();
+	while(!current->sentinel)
+	{
+		BlockHeader* next = current->next;
+		freeObject(current);
+		current = next;
+	}
+
+	// Clear all static objects.
+	current = staticList.firstElement();
+	while(!current->sentinel)
+	{
+		BlockHeader* next = current->next;
+		freeObject(current);
+		current = next;
+	}
+
+}
+
+void GC::freeObject(BlockHeader* header)
+{
+	header->object->~Variant();
+	free(header);
 }

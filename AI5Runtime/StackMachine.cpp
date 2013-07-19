@@ -8,14 +8,14 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress): latestThread(0),staticsTable(statics),program(program),
-					startAddress(startAddress), globalScope(GC::alloc<Scope>()), macros(new std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>)
+					startAddress(startAddress), globalScope(GC::staticAlloc<Scope>()), macros(new std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>)
 {
 	registerStandardLibrary(this);
 }
 
 void StackMachine::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
 {
-	globalScope.cast<Scope>()->createName(name).cast<NameVariant>()->setValue(new BuiltinFunctionVariant(name,function));
+	globalScope.cast<Scope>()->createName(name).cast<NameVariant>()->setValue(BuiltinFunctionVariant::CreateStatic(name,function));
 }
 
 void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)

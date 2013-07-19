@@ -8,11 +8,11 @@ class HashMapVariant :
 	public Variant
 {
 public:
+	friend class GC;
 	typedef std::unordered_map<VariantReference<>,VariantReference<>,VariantKeyHasher,VariantKeyComparator> VariantMap;
 	static const VARIANT_TYPE TYPE = HASH_MAP;
-	HashMapVariant(void);
+	static HashMapVariant* Create();
 	~HashMapVariant(void);
-	virtual void cleanup();
 	virtual shared_string toString() const;
 	virtual std::wostream& format(std::wostream& stream) const;
 	void set(const VariantReference<>& key,VariantReference<>& value);
@@ -20,6 +20,7 @@ public:
 	virtual VariantReference<IteratorVariant> iterate();
 	std::unordered_map<VariantReference<>,VariantReference<>>* getMap();
 private:
+	HashMapVariant(void);
 	VariantMap map;
 
 	class KeyIterator: public IteratorVariant

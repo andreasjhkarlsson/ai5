@@ -45,7 +45,6 @@ public:
 	virtual bool toBoolean() const;
 	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
-	virtual void cleanup();
 	virtual size_t hash() const;
 	virtual VariantReference<IteratorVariant> iterate();
 	__forceinline VARIANT_TYPE getType() const;

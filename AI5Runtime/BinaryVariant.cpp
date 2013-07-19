@@ -3,6 +3,7 @@
 #include <string>
 #include <iomanip>
 #include "3rdparty\hsieh_hash.h"
+#include "gc.h"
 
 BinaryVariant::BinaryVariant(shared_binary binary): binary(binary), Variant(TYPE)
 {
@@ -19,6 +20,13 @@ shared_binary BinaryVariant::getValue()
 	return binary;
 }
 
+
+BinaryVariant* BinaryVariant::Create(shared_binary bin)
+{
+
+	return GC::alloc<BinaryVariant,shared_binary>(bin);
+
+}
 
 std::wostream& BinaryVariant::format(std::wostream& stream) const
 {

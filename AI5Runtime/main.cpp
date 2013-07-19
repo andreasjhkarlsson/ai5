@@ -82,10 +82,13 @@ int main(int argc, char* argv[])
 
 			GC::collect(machine.get());
 
+			GC::cleanup();
+
 			clock_t end = clock();
 			double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 			if(isVerbose)
 				std::wcout << "Execution time: " << elapsed_secs << std::endl;
+
 
 			return returnCode;
 

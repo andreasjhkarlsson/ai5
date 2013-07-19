@@ -10,7 +10,12 @@ NameVariant::NameVariant(const VariantReference<>& value,VARIANT_TYPE type): Var
 
 NameVariant::~NameVariant(void)
 {
-	cleanup();
+}
+
+
+NameVariant* NameVariant::Create(const VariantReference<>& value)
+{
+	return GC::alloc<NameVariant,const VariantReference<>&>(value);
 }
 
 std::wostream& NameVariant::format(std::wostream& stream) const
@@ -45,11 +50,6 @@ shared_string NameVariant::toString() const
 {
 	return shared_string(new UnicodeString(L""));
 
-}
-
-void NameVariant::cleanup()
-{
-	Variant::cleanup();
 }
 
 const VariantReference<>& NameVariant::getValue()

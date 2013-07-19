@@ -10,15 +10,12 @@ ListVariant::ListVariant(void): Variant(TYPE)
 
 ListVariant::~ListVariant(void)
 {
-	cleanup();
 }
 
-void ListVariant::cleanup()
+
+ListVariant* ListVariant::Create()
 {
-	Variant::cleanup();
-
-	this->list = nullptr;
-
+	return GC::alloc<ListVariant>();
 }
 
 std::wostream& ListVariant::format(std::wostream& stream) const

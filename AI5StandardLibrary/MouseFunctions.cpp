@@ -79,7 +79,7 @@ VariantReference<> MouseFunctions::mouseGetPos(CallInfo* callInfo)
 		return AU3_MouseGetPosY();
 	case -1:
 		{
-		ListVariant* retArr = new ListVariant();
+		ListVariant* retArr = ListVariant::Create();
 		VariantReference<> xEl = AU3_MouseGetPosX();
 		VariantReference<> yEl = AU3_MouseGetPosY();
 		retArr->addElement(xEl);

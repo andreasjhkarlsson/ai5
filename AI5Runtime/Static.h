@@ -27,9 +27,9 @@ class StaticString: public StaticData
 {
 public:
 	StaticString(shared_string str);
-	const VariantReference<StringVariant>& getVariant();
+	VariantReference<StringVariant> getVariant();
 private:
-	VariantReference<StringVariant> strVar;
+	StringVariant* strVar;
 };
 
 class StaticName: public StaticData

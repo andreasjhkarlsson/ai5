@@ -7,7 +7,7 @@ class ModuleHandle: public HandleVariant
 public:
 	static const HANDLE_TYPE HTYPE = MODULE_HANDLE;
 	ModuleHandle(HMODULE module);
-	void cleanup();
+	~ModuleHandle();
 	void close();
 	virtual bool isValid() const override;
 	HMODULE getModule();

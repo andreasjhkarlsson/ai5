@@ -10,6 +10,10 @@ NameReferenceVariant::~NameReferenceVariant(void)
 {
 }
 
+NameReferenceVariant* NameReferenceVariant::Create(const VariantReference<>& value)
+{
+	return GC::alloc<NameReferenceVariant,const VariantReference<>&>(value);
+}
 
 void NameReferenceVariant::setValue(const VariantReference<>& var)
 {

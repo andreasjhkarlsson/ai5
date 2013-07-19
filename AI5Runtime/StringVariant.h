@@ -8,9 +8,11 @@ class StringVariant :
 public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = STRING;
-	
-	StringVariant(const UnicodeString& str);
-	~StringVariant(void);
+	static StringVariant* Create(shared_string);
+	static StringVariant* Create(const UnicodeString& str);
+	static StringVariant* CreateStatic(shared_string);
+	static StringVariant* CreateStatic(const UnicodeString& str);
+
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
 	virtual __int64 toInteger64() const;
@@ -19,9 +21,9 @@ public:
 	virtual shared_string toString() const;
 	virtual bool equal(Variant*);
 	virtual size_t hash() const;
-	static StringVariant* Create(shared_string);
 private:
 	shared_string str;
 	StringVariant(shared_string str);
+	~StringVariant(void);
 };
 

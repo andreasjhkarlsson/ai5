@@ -44,7 +44,7 @@ void StackMachineThread::run()
 		{
 			if(GlobalOptions::isVerbose())
 			{
-				std::wcout << "\t";
+				std::wcout << "Executing: ";
 				(*program)[programCounter]->format(std::wcout,staticsTable);
 				std::wcout << std::endl;
 			}

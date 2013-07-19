@@ -95,7 +95,7 @@ VariantReference<> FileFunctions::consoleReadLine(CallInfo* callInfo)
 	callInfo->validateArgCount(0,0);
 	std::wstring str;
 	std::getline(std::wcin,str);
-	return new StringVariant(str.c_str());
+	return StringVariant::Create(str.c_str());
 }
 
 VariantReference<> FileFunctions::fileChangeDir(CallInfo* callInfo)
@@ -127,6 +127,10 @@ public:
 
 	}
 
+	~FileHandle()
+	{
+		close();
+	}
 
 	int open()
 	{
@@ -197,7 +201,7 @@ public:
 			shared_binary binary = shared_binary(new std::vector<char>(count));
 			fread(&(*binary)[0],1,count,handle);
 
-			return new BinaryVariant(binary);
+			return BinaryVariant::Create(binary);
 		}
 		else
 		{
@@ -214,7 +218,7 @@ public:
 					str->append(&buffer[0],charsRead);
 				}
 
-				return str;
+				return StringVariant::Create(str);
 			}
 
 
@@ -267,10 +271,7 @@ public:
 		if(binary) return handle != nullptr;
 		return uhandle != nullptr;
 	}
-	virtual void cleanup()
-	{
-		close();
-	}
+
 	void close()
 	{
 		// You can close as many times as you like! :))

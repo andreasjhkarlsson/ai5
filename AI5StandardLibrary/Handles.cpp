@@ -6,15 +6,15 @@ ModuleHandle::ModuleHandle(HMODULE module): HandleVariant(HTYPE), module(module)
 
 }
 
-void ModuleHandle::cleanup()
+ModuleHandle::~ModuleHandle()
 {
-	if(module)
-		close();
+	close();
 }
 
 void ModuleHandle::close()
 {
-	FreeLibrary(module);
+	if(module != nullptr)
+		FreeLibrary(module);
 	module = nullptr;
 }
 

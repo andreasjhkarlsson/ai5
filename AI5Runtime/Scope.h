@@ -16,6 +16,9 @@ class Scope: public Variant
 public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = SCOPE;
+
+	static Scope* Create();
+
 	Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
 	{
 		usedIndexes.reserve(16);
@@ -23,7 +26,6 @@ public:
 
 	~Scope()
 	{
-		cleanup();
 	}
 
 	__forceinline VariantReference<NameVariant>& getNameFromString(const UnicodeString &name)
@@ -47,9 +49,6 @@ public:
 	{
 		this->enclosingScope = scope;
 	}
-
-	// Make the scope ready for reusing.
-	void cleanup();
 
 private:
 

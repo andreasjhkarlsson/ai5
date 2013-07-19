@@ -7,7 +7,7 @@ ListVariant* createList(std::stack<unsigned int> subscripts)
 	unsigned int count = subscripts.top();
 	subscripts.pop();
 
-	ListVariant* list = new ListVariant();
+	ListVariant* list = ListVariant::Create();
 	if(subscripts.empty())
 	{
 		for(unsigned int i=0;i<count;i++)
@@ -66,7 +66,7 @@ void redimList(VariantReference<ListVariant>& listVar,std::stack<unsigned int> s
 			{
 				if(i >= listVar->size())
 				{
-					listVar->addElement(new ListVariant());
+					listVar->addElement(ListVariant::Create());
 				}
 
 				// This indicates that we're adding at least another subscript.
@@ -75,7 +75,7 @@ void redimList(VariantReference<ListVariant>& listVar,std::stack<unsigned int> s
 					// Replace the current bastard value in this position
 					// with a new fresh list which can be populated
 					// with further subscript(s).
-					listVar->setElement(i,new ListVariant());
+					listVar->setElement(i,ListVariant::Create());
 				}
 				VariantReference<ListVariant> element = listVar->getElement(i).cast<ListVariant>();
 				redimList(element,subscripts);
@@ -98,7 +98,7 @@ void redimList(VariantReference<ListVariant>& listVar,std::stack<unsigned int> s
 					// Replace the current bastard value in this position
 					// with a new fresh list which can be populated
 					// with further subscript(s).
-					listVar->setElement(i,new ListVariant());
+					listVar->setElement(i,ListVariant::Create());
 				}
 				VariantReference<ListVariant> element = listVar->getElement(i).cast<ListVariant>();
 				redimList(element,subscripts);

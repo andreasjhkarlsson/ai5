@@ -9,6 +9,12 @@ VariantReference<NameVariant> Scope::createName(const UnicodeString& name)
 	return n;
 }
 
+
+Scope* Scope::Create()
+{
+	return GC::alloc<Scope>();
+}
+
 VariantReference<NameVariant> Scope::createIndexForName(const UnicodeString& name,int index)
 {
 	if (lookup.find(name) == lookup.end())
@@ -21,20 +27,6 @@ VariantReference<NameVariant> Scope::createIndexForName(const UnicodeString& nam
 	addNameToIndex(index,nameObj);
 
 	return nameObj;
-}
-
-void Scope::cleanup()
-{
-	Variant::cleanup();
-
-	// Make sure the indexTable is all null's.
-	for(size_t i=0;i<usedIndexes.size();i++)
-	{
-		indexTable[usedIndexes[i]] = VariantReference<NameVariant>();
-	}
-
-	lookup.clear();
-	usedIndexes.clear();
 }
 
 void Scope::insertName(const UnicodeString& name,int index,VariantReference<NameVariant> nameVariant)

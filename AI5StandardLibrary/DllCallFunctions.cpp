@@ -62,7 +62,7 @@ VariantReference<> DllCallFunctions::dllcall(CallInfo* callInfo)
 	if (bRet == false)
 		return nullptr; // TODO: Set error.
 
-	ListVariant* vRet = new ListVariant;
+	ListVariant* vRet = ListVariant::Create();
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
 		VariantReference<> el = Variant::createFromCOMVar(pcvRet[i]);
@@ -97,7 +97,7 @@ VariantReference<> DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 	if (!!!dllcall.Invoke(vArgs, pcvRet))
 		return nullptr; // TODO: Set error.
 
-	ListVariant* vRet = new ListVariant;
+	ListVariant* vRet = ListVariant::Create();
 	for (size_t i = 0; i < vArgs.size()+1; ++i)
 	{
 		VariantReference<> el = Variant::createFromCOMVar(pcvRet[i]);

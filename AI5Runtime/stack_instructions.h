@@ -96,7 +96,7 @@ __forceinline void pushName(StackMachineThread* machine,NameIdentifier nameId)
 
 __forceinline void pushFunction(StackMachineThread* machine,int address)
 {
-	VariantReference<UserFunctionVariant> fn = new UserFunctionVariant(address);
+	VariantReference<UserFunctionVariant> fn = UserFunctionVariant::Create(address);
 	if(machine->getCurrentCallBlock() != nullptr)
 	{
 		machine->getCurrentCallBlock()->addClosure(machine,fn);
@@ -128,7 +128,7 @@ __forceinline void pushBoolean(StackMachineThread* machine,char arg)
 inline void buildList(StackMachineThread* machine,int count)
 {
 
-	ListVariant* list = new ListVariant();
+	ListVariant* list = ListVariant::Create();
 
 	for(int i=count-1;i>=0;i--)
 	{
@@ -145,7 +145,7 @@ inline void buildList(StackMachineThread* machine,int count)
 
 inline void buildMap(StackMachineThread* machine,int count)
 {
-	VariantReference<HashMapVariant> map = new HashMapVariant();
+	VariantReference<HashMapVariant> map = HashMapVariant::Create();
 
 	// Since a hash map is not sorted
 	// it doesn't matter which order the arguments are popped

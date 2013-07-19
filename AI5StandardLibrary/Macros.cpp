@@ -51,22 +51,22 @@ VariantReference<> Macros::extendedCode(StackMachineThread* machine)
 
 VariantReference<> Macros::CRLF(StackMachineThread*)
 {
-	static VariantReference<StringVariant> crlf(L"\r\n");
+	static StringVariant* crlf = StringVariant::CreateStatic(L"\r\n");
 	return crlf;
 }
 VariantReference<> Macros::CR(StackMachineThread*)
 {
-	static VariantReference<StringVariant> cr(L"\r");
+	static StringVariant* cr = StringVariant::CreateStatic(L"\r");
 	return cr;
 }
 VariantReference<> Macros::LF(StackMachineThread*)
 {
-	static VariantReference<StringVariant> lf(L"\n");
+	static StringVariant* lf = StringVariant::CreateStatic(L"\n");
 	return lf;
 }
 VariantReference<> Macros::TAB(StackMachineThread*)
 {
-	static VariantReference<StringVariant> tab(L"\t");
+	static StringVariant* tab = StringVariant::CreateStatic(L"\t");
 	return tab;
 }
 
@@ -76,7 +76,7 @@ VariantReference<> Macros::Username(StackMachineThread*)
 	DWORD buffSize = UNLEN+1;
 	std::vector<wchar_t> buffer(buffSize);
 	GetUserNameW(&buffer[0],&buffSize);
-	return new StringVariant(&buffer[0]);
+	return StringVariant::Create(&buffer[0]);
 
 }
 
@@ -84,14 +84,14 @@ VariantReference<> Macros::WorkingDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetCurrentDirectoryW(MAX_PATH,&buffer[0]);
-	return new StringVariant(&buffer[0]);
+	return StringVariant::Create(&buffer[0]);
 }
 
 VariantReference<> Macros::TempDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetTempPathW(MAX_PATH,&buffer[0]);
-	return new StringVariant(&buffer[0]);
+	return StringVariant::Create(&buffer[0]);
 }
 
 
@@ -99,13 +99,13 @@ VariantReference<> Macros::SystemDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetSystemDirectoryW(&buffer[0],MAX_PATH);
-	return new StringVariant(&buffer[0]);
+	return StringVariant::Create(&buffer[0]);
 }
 VariantReference<> Macros::WindowsDirectory(StackMachineThread*)
 {
 	std::vector<wchar_t> buffer(MAX_PATH);
 	GetWindowsDirectoryW(&buffer[0],MAX_PATH);
-	return new StringVariant(&buffer[0]);
+	return StringVariant::Create(&buffer[0]);
 }
 
 

@@ -9,11 +9,6 @@ StringVariant::StringVariant(shared_string str): Variant(TYPE), str(str)
 
 }
 
-StringVariant::StringVariant(const UnicodeString& str): Variant(STRING)
-{
-	this->str = create_shared_string(str);
-}
-
 StringVariant::~StringVariant(void)
 {
 
@@ -23,6 +18,23 @@ StringVariant* StringVariant::Create(shared_string str)
 {
 	return GC::alloc<StringVariant,shared_string>(str);
 }
+
+StringVariant* StringVariant::Create(const UnicodeString& str)
+{
+	return GC::alloc<StringVariant,shared_string>(create_shared_string(str));
+}
+
+
+StringVariant* StringVariant::CreateStatic(shared_string str)
+{
+	return GC::staticAlloc<StringVariant,shared_string>(str);
+}
+
+StringVariant* StringVariant::CreateStatic(const UnicodeString& str)
+{
+	return GC::staticAlloc<StringVariant,shared_string>(create_shared_string(str));
+}
+
 
 std::wostream& StringVariant::format(std::wostream& stream) const
 {

@@ -60,7 +60,7 @@ VariantReference<> StringFunctions::stringTrimLeft(CallInfo* callInfo)
 	shared_string str = callInfo->getStringArg(0);
 	int count = callInfo->getInt32Arg(1);
 	if(count > str->countChar32())
-		return new StringVariant(L"");
+		return StringVariant::Create(L"");
 	shared_string ret = shared_string(new UnicodeString(L""));
 	str->extract(count,str->length()-count,*ret);
 	return StringVariant::Create(ret);
@@ -85,7 +85,7 @@ VariantReference<> StringFunctions::stringTrimRight(CallInfo* callInfo)
 	int count = callInfo->getInt32Arg(1);
 	if(count > str->length())
 	{
-		return new StringVariant(L"");
+		return StringVariant::Create(L"");
 	}
 	shared_string ret = shared_string(new UnicodeString(L""));
 	str->extract(0,str->length()-count,*ret);

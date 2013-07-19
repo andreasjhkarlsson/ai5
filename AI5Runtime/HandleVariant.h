@@ -12,7 +12,7 @@ public:
 	static const HANDLE_TYPE MODULE_HANDLE = 0;
 	static const HANDLE_TYPE FILE_HANDLE = 1;
 
-	HandleVariant(HANDLE_TYPE handleType);
+	
 	~HandleVariant(void);
 	template<class T>
 	T* castHandle()
@@ -27,7 +27,8 @@ public:
 	virtual bool isValid()const=0;
 	virtual bool toBoolean() const override;
 	virtual std::wostream& format(std::wostream& stream) const;
-
+protected:
+	HandleVariant(HANDLE_TYPE handleType);
 private:
 	HANDLE_TYPE handleType;
 };

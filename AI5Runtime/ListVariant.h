@@ -8,8 +8,9 @@ class ListVariant :
 	public Variant
 {
 public:
+	friend class GC;
 	static const VARIANT_TYPE TYPE = LIST;
-	ListVariant(void);
+	static ListVariant* Create();
 	~ListVariant(void);
 	std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -23,9 +24,9 @@ public:
 	void setElement(size_t index,const VariantReference<>& var);
 	void deleteAt(size_t index);
 	size_t size() const;
-	void cleanup();
 	virtual VariantReference<IteratorVariant> iterate();
 private:
+	ListVariant(void);
 	shared_var_list list;
 
 
