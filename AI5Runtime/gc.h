@@ -1,14 +1,21 @@
 #pragma once
 
 #include "types.h"
+#include "Semaphore.h"
+#include <queue>
+#include <thread>
+#include "ProduceConsumeQueue.h"
 
 class GC
 {
 private:
 	static GC* instance;
 
-
 	static const char GENERATION_STATIC = -1;
+
+	static const int MESSAGE_START_CYCLE = 0;
+	static const int MESSAGE_STOP = 1;
+
 
 	struct BlockHeader
 	{
@@ -21,7 +28,11 @@ private:
 		bool mark;
 		char generation;
 		char referencedFrom; 
-		
+	};
+
+	struct Message
+	{
+
 	};
 
 	static const size_t BLOCKHEADER_ALIGNED_SIZE = sizeof(BlockHeader) + (sizeof(BlockHeader)%sizeof(BlockHeader*));
@@ -30,7 +41,8 @@ private:
 	static BlockHeader* allocBlockHeader();
 
 public:
-	static void init();
+	static void init(StackMachine*);
+	static void shutdown();
 	template <class T>
 	static T* alloc();
 	template <class T,class U>
@@ -43,7 +55,7 @@ public:
 	static T* staticAlloc(U arg);
 	template <class T,class U,class V>
 	static T* staticAlloc(U arg,V arg2);
-	static void collect(StackMachine*);
+	static void collect(bool wait);
 	static void cleanup();
 private:
 
@@ -62,9 +74,20 @@ private:
 	};
 	DoubleLinkedList objectList;
 	DoubleLinkedList staticList;
+
+	GC(StackMachine*);
+
+	std::thread markAndSweepThread;
+	ProduceConsumeQueue<int> messageQueue;
+	Semaphore cycleComplete;
+
+	volatile bool killThread;
+
+	StackMachine* machine;
+
 	void trackObject(BlockHeader*);
 	void addStaticObject(BlockHeader*);
-	void run(StackMachine*);
+	void run();
 	void mark(BlockHeader*);
 	void mark(const VariantReference<>&ref);
 	void sweep();

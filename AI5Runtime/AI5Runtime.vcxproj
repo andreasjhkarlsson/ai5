@@ -202,6 +202,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
+    <ClCompile Include="Semaphore.cpp" />
     <ClCompile Include="StackMachine.cpp" />
     <ClCompile Include="StackMachineThread.cpp" />
     <ClCompile Include="Static.cpp" />
@@ -248,11 +249,13 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="NameReferenceVariant.h" />
     <ClInclude Include="NullVariant.h" />
     <ClInclude Include="PooledObject.h" />
+    <ClInclude Include="ProduceConsumeQueue.h" />
     <ClInclude Include="RuntimeError.h" />
     <ClInclude Include="Scope.h" />
     <ClInclude Include="NameVariant.h" />
     <ClInclude Include="operators.h" />
     <ClInclude Include="ProgramLoader.h" />
+    <ClInclude Include="Semaphore.h" />
     <ClInclude Include="SimplePool.h" />
     <ClInclude Include="StackMachine.h" />
     <ClInclude Include="stack_instructions.h" />

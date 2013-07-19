@@ -145,6 +145,9 @@
     <ClCompile Include="gc.cpp">
       <Filter>gc</Filter>
     </ClCompile>
+    <ClCompile Include="Semaphore.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -301,6 +304,12 @@
       <Filter>gc</Filter>
     </ClInclude>
     <ClInclude Include="misc.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="Semaphore.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="ProduceConsumeQueue.h">
       <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>

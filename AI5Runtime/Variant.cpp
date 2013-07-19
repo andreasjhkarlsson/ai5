@@ -34,7 +34,7 @@ Variant::~Variant(void)
 	{
 		if(type != NAME && type != NATIVE_FUNCTION)
 		{
-			DebugOut(L"Variant") <<  typeAsString()
+			DebugOut(L"Variant") << typeAsString() << ""
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") destroyed.";
 			std::wcout << std::dec << std::setw(0);
 		}

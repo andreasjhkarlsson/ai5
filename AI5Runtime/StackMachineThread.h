@@ -31,6 +31,9 @@ private:
 	static const int BLOCK_STACK_SIZE		= 8192;
 	static const int DATA_STACK_SIZE		= 32768;
 public:
+
+	friend class GC;
+
 	StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,
 					shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,

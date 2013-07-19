@@ -27,7 +27,7 @@ const option::Descriptor usage[] =
 int main(int argc, char* argv[]) 
 {
 
-	GC::init();
+	
 
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
 	option::Stats  stats(usage, argc, argv);
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 			DebugOut(L"Status") << "Program ended with code: " << returnCode;
 
 
-			GC::collect(machine.get());
+			GC::collect(true);
 
 			GC::cleanup();
 

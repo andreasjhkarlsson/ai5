@@ -8,8 +8,11 @@
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress): latestThread(0),staticsTable(statics),program(program),
-					startAddress(startAddress), globalScope(GC::staticAlloc<Scope>()), macros(new std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>)
+					startAddress(startAddress), macros(new std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>)
 {
+	
+	GC::init(this);
+	globalScope = GC::staticAlloc<Scope>();
 	registerStandardLibrary(this);
 }
 

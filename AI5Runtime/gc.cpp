@@ -5,12 +5,27 @@
 #include "VariantReference.h"
 #include "GlobalOptions.h"
 #include "misc.h"
+#include <functional>
 
 GC* GC::instance = nullptr;
 
-void GC::init()
+void GC::init(StackMachine* machine)
 {
-	instance = new GC();
+	instance = new GC(machine);
+}
+
+
+void GC::shutdown()
+{
+	instance->messageQueue.push(MESSAGE_STOP);
+	instance->markAndSweepThread.join();
+}
+
+GC::GC(StackMachine* machine):  killThread(false), machine(machine), cycleComplete(0)
+{
+	markAndSweepThread = std::thread(std::bind(&GC::run,this));
+
+
 }
 
 
@@ -24,9 +39,10 @@ GC::BlockHeader::BlockHeader(): previous(nullptr), next(nullptr),mark(false),gen
 	
 }
 
-void GC::collect(StackMachine* machine)
+void GC::collect(bool wait)
 {
-	instance->run(machine);
+	instance->messageQueue.push(MESSAGE_START_CYCLE);
+	instance->cycleComplete.wait();
 }
 
 GC::DoubleLinkedList::DoubleLinkedList()
@@ -80,7 +96,6 @@ void GC::addStaticObject(BlockHeader* object)
 void GC::mark(BlockHeader* header)
 {
 
-
 	if(header == nullptr || header->mark)
 	{
 		// This object should not be processed.
@@ -101,6 +116,7 @@ void GC::mark(BlockHeader* header)
 				mark((*listVar->list)[i]);
 			}
 		}
+		break;
 	case Variant::HASH_MAP:
 		{
 			HashMapVariant* hashMapVar = header->object->cast<HashMapVariant>();
@@ -111,6 +127,15 @@ void GC::mark(BlockHeader* header)
 			}
 
 		}
+		break;
+	case Variant::USER_FUNCTION:
+		{
+			UserFunctionVariant* ufVar = header->object->cast<UserFunctionVariant>();
+			if(!ufVar->enclosingScope.empty())
+				mark(ufVar->enclosingScope);
+
+		}
+		break;
 	case Variant::SCOPE:
 		{
 			Scope* scope = header->object->cast<Scope>();
@@ -120,6 +145,13 @@ void GC::mark(BlockHeader* header)
 				mark(it->second);
 
 			}
+
+
+			if(!scope->enclosingScope.empty())
+			{
+				mark(scope->enclosingScope);
+			}
+
 		}
 		break;
 	}
@@ -157,34 +189,55 @@ void GC::sweep()
 	}
 }
 
-void GC::run(StackMachine* machine)
+void GC::run()
 {
-
-	DebugOut(L"GC") << "Running cycle.";
-	// Find all roots and mark them.
-	// Roots are:
-	// * Global scope
-	// * Local scopes
-	// * Data stack
-	// * CallFrames
-	// * Static objects
-
-	BlockHeader* current = staticList.firstElement();
-	while(!current->sentinel)
+	while(true)
 	{
-		current->mark = false;
-		mark(current);
-		current = current->next;
+		int msg = messageQueue.pop();
+
+		if(msg == MESSAGE_STOP)
+			return;
+
+		if(msg == MESSAGE_START_CYCLE)
+		{
+			DebugOut(L"GC") << "Running cycle.";
+			// Find all roots and mark them.
+			// Roots are:
+			// * Global scope
+			// * Local scopes
+			// * Data stack
+			// * CallFrames
+			// * Static objects
+
+			BlockHeader* current = staticList.firstElement();
+			while(!current->sentinel)
+			{
+				current->mark = false;
+				mark(current);
+				current = current->next;
+			}
+
+			// Mark objects from roots.
+			VariantReference<Scope>& globalScope = machine->globalScope;
+			VarRefToBlockHead(globalScope)->mark = false;
+			mark(globalScope);
+
+			BlockStack* stack = &machine->mainThread->blockStack;
+			for(int i=0;i<=stack->position;i++)
+			{
+				if(stack->stack[i]->isCallBlock())
+				{
+					mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
+				}
+			}
+		
+
+			sweep();
+
+			cycleComplete.signal();
+		}
 	}
-
-	// Mark objects from roots.
-	VariantReference<Scope>& globalScope = machine->globalScope;
-	VarRefToBlockHead(globalScope)->mark = false;
-	mark(globalScope);
-
-	sweep();
 }
-
 
 GC::BlockHeader* GC::VarRefToBlockHead(const VariantReference<>&ref)
 {
