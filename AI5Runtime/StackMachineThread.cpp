@@ -92,7 +92,7 @@ void StackMachineThread::run()
 	{
 		while (!terminated) 
 		{
-			if(GlobalOptions::isVerbose())
+			if(GlobalOptions::shouldPrintInstructions())
 			{
 				(*program)[programCounter]->print(staticsTable);
 			}

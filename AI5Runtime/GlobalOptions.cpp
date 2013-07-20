@@ -12,3 +12,15 @@ void GlobalOptions::setVerbose()
 }
 
 bool GlobalOptions::verbose;
+
+bool GlobalOptions::shouldPrintInstructions()
+{
+	return printInstructions;
+}
+
+void GlobalOptions::setPrintInstructions()
+{
+	printInstructions = true;
+}
+
+bool GlobalOptions::printInstructions;

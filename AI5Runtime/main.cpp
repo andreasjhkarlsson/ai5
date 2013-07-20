@@ -11,7 +11,7 @@
 #include "misc.h"
 //#include <vld.h>
 
-enum  optionIndex { UNKNOWN, HELP, VERBOSE, DEBUG, DISASSEMBLE };
+enum  optionIndex { UNKNOWN, HELP, VERBOSE,PRINT_INSTRUCTIONS, DEBUG, DISASSEMBLE };
 
 const option::Descriptor usage[] =
 {
@@ -19,6 +19,7 @@ const option::Descriptor usage[] =
 	"Options:" },
 	{HELP,    0,"" , "help",option::Arg::None, "  --help  \tPrint usage and exit." },
 	{VERBOSE,    0,"v", "verbose",option::Arg::None, "  --verbose, -v  \tWrite information about the current executing instruction and other info during execution." },
+	{PRINT_INSTRUCTIONS,    0,"p", "printinstructions",option::Arg::None, "  --printinstructions, -p  \tPrint human readable of instructions as they are executed." },
 	{DEBUG,    0,"d", "debug",option::Arg::None, "  --debug, -d  \tMake runtime accept connections from debuggers." },
 	{DISASSEMBLE,    0,"q", "disassemble",option::Arg::None, "  --disassamble, -q  \tDisassemble and write all instructions to stdout." },
 	{0,0,0,0,0,0}
@@ -52,12 +53,16 @@ int main(int argc, char* argv[])
 		{
 			bool isVerbose = options[VERBOSE] != 0;
 			bool disassemble = options[DISASSEMBLE] != 0;
+			bool printInstructions = options[PRINT_INSTRUCTIONS] != 0;
 			#if _DEBUG
 			isVerbose = true;
 			#endif
 
 			if(isVerbose)
 				GlobalOptions::setVerbose();
+
+			if(printInstructions)
+				GlobalOptions::setPrintInstructions();
 
 			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
 
