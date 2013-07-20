@@ -9,11 +9,30 @@
 
 GC* GC::instance = nullptr;
 
+// MSVC2012 doesn't support thread_local :(
+__declspec(thread) GC::ThreadContext* currentThread;
+
 void GC::init(StackMachine* machine)
 {
 	instance = new GC(machine);
 }
 
+void GC::initThread(StackMachineThread* machineThread)
+{
+	currentThread = new ThreadContext();
+	currentThread->machineThread = machineThread;
+	currentThread->gen0 = new DoubleLinkedList<BlockHeader>();
+	std::lock_guard<std::mutex> guard(instance->threadsLock);
+	instance->threads.push_back(currentThread);
+}
+
+void GC::uninitThread()
+{
+	// TODO Splice objectList into shared list (or maybe gen1?).
+	std::lock_guard<std::mutex> guard(instance->threadsLock);
+	instance->threads.erase(currentThread);
+	delete currentThread;
+}
 
 void GC::shutdown()
 {
@@ -29,12 +48,8 @@ GC::GC(StackMachine* machine):  killThread(false), machine(machine), cycleComple
 }
 
 
-GC::BlockHeader::BlockHeader(BlockHeader* previous,BlockHeader* next):previous(previous),next(next),mark(false),generation(0),referencedFrom(-1), sentinel(false)
-{
 
-}
-
-GC::BlockHeader::BlockHeader(): previous(nullptr), next(nullptr),mark(false),generation(0),referencedFrom(-1), sentinel(false)
+GC::BlockHeader::BlockHeader(): mark(false),generation(0),referencedFrom(-1)
 {
 	
 }
@@ -45,45 +60,10 @@ void GC::collect(bool wait)
 	instance->cycleComplete.wait();
 }
 
-GC::DoubleLinkedList::DoubleLinkedList()
-{
-	start = new BlockHeader();
-	start->sentinel = true;
-	end = new BlockHeader();
-	end->sentinel = true;
-
-	start->next = end;
-	end->previous = start;
-}
-void GC::DoubleLinkedList::push_back(BlockHeader* block)
-{
-	block->previous = end->previous;
-	block->next = end;
-	end->previous->next = block;
-	end->previous = block;
-}
-void GC::DoubleLinkedList::push_front(BlockHeader* block)
-{
-	block->previous = start;
-	block->next = start->next;
-	start->next = block;
-}
-GC::BlockHeader* GC::DoubleLinkedList::erase(BlockHeader* block)
-{
-	block->previous->next = block->next;
-	block->next->previous = block->previous;
-	return block->next;
-}
-
-GC::BlockHeader* GC::DoubleLinkedList::firstElement()
-{
-	return start->next;
-}
-
 
 void GC::trackObject(BlockHeader* object)
 {
-	objectList.push_back(object);
+	currentThread->gen0->push_back(object);
 }
 
 
@@ -154,7 +134,32 @@ void GC::mark(BlockHeader* header)
 
 		}
 		break;
+	case Variant::HANDLE_VAR:
+		{
+			if(header->object->cast<HandleVariant>()->handleType == HandleVariant::THREAD_HANDLE)
+			{
+				StackMachineThread* machineThread = header->object->cast<HandleVariant>()->castHandle<ThreadHandle>()->getMachineThread();
+				// Mark active scopes by examining call (block) stack.
+				BlockStack* stack = &machineThread->blockStack;
+				for(int i=0;i<=stack->position;i++)
+				{
+					if(stack->stack[i]->isCallBlock())
+					{
+						mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
+					}
+				}
+					
+				// Mark current working set in datastack.
+				DataStack* dataStack = &machineThread->dataStack;
+				for(int i=0;i<=dataStack->position;i++)
+				{
+					mark(dataStack->stack[i]);
+				}
+
+			}
+		}
 	}
+
 }
 
 void GC::mark(const VariantReference<>&ref)
@@ -164,9 +169,9 @@ void GC::mark(const VariantReference<>&ref)
 }
 
 
-void GC::sweep()
+void GC::sweep(DoubleLinkedList<BlockHeader>* objects)
 {
-	BlockHeader* current = objectList.firstElement();
+	BlockHeader* current = objects->firstElement();
 	while(!current->sentinel)
 	{
 		if(current->next == nullptr)
@@ -178,11 +183,9 @@ void GC::sweep()
 		}
 		else
 		{
-
 			DebugOut(L"GC") << "Found garbage of type " << current->object->typeAsString();
 
-
-			BlockHeader* temp = objectList.erase(current);
+			BlockHeader* temp = objects->erase(current);
 			freeObject(current);
 			current = temp;
 		}
@@ -200,6 +203,7 @@ void GC::run()
 
 		if(msg == MESSAGE_START_CYCLE)
 		{
+			std::lock_guard<std::mutex> guard(instance->threadsLock);
 			DebugOut(L"GC") << "Running cycle.";
 			// Find all roots and mark them.
 			// Roots are:
@@ -209,6 +213,7 @@ void GC::run()
 			// * CallFrames
 			// * Static objects
 
+			// Mark statics.
 			BlockHeader* current = staticList.firstElement();
 			while(!current->sentinel)
 			{
@@ -217,22 +222,24 @@ void GC::run()
 				current = current->next;
 			}
 
-			// Mark objects from roots.
+			// Mark global scope.
 			VariantReference<Scope>& globalScope = machine->globalScope;
 			VarRefToBlockHead(globalScope)->mark = false;
 			mark(globalScope);
 
-			BlockStack* stack = &machine->mainThread->blockStack;
-			for(int i=0;i<=stack->position;i++)
+			for(auto it = machine->threads.begin(); it != machine->threads.end(); it++)
 			{
-				if(stack->stack[i]->isCallBlock())
-				{
-					mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
-				}
+				VarRefToBlockHead(it->second)->mark = false;
+				mark(it->second);
 			}
-		
 
-			sweep();
+			// Sweep all heaps.
+			ThreadContext* thread = threads.firstElement();
+			while(!thread->sentinel)
+			{
+				sweep(thread->gen0);
+				thread = thread->next;
+			}
 
 			cycleComplete.signal();
 		}
@@ -256,9 +263,10 @@ void GC::freeAll()
 
 	DebugOut(L"GC") << L"Freeing all remaining objects.";
 
-
+	// TODO clear orphan list.
+/*
 	// Clear all dynamic objects.
-	BlockHeader* current = objectList.firstElement();
+	BlockHeader* current = objectList->firstElement();
 	while(!current->sentinel)
 	{
 		BlockHeader* next = current->next;
@@ -266,8 +274,10 @@ void GC::freeAll()
 		current = next;
 	}
 
+*/
+
 	// Clear all static objects.
-	current = staticList.firstElement();
+	BlockHeader* current = staticList.firstElement();
 	while(!current->sentinel)
 	{
 		BlockHeader* next = current->next;

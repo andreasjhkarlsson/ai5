@@ -30,6 +30,8 @@ public:
 	void loadArguments(StackMachineThread* machine,int total,int required);
 	void addClosedName(StackMachineThread* machine,NameIdentifier nameIdentifier);
 	void addClosure(StackMachineThread* machine,VariantReference<UserFunctionVariant>& closure);
+
+	void terminateOnReturn();
 	
 	friend class PooledObject<CallBlock>;
 private:
@@ -46,6 +48,7 @@ private:
 	std::vector<Argument> arguments;
 	std::vector<VariantReference<UserFunctionVariant>> closures;
 	std::vector<NameIdentifier> closedNames;
+	bool shouldTerminateOnReturn;
 	
 };
 

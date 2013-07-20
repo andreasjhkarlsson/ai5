@@ -12,7 +12,7 @@ __forceinline void noop(StackMachineThread* machine)
 
 __forceinline void terminate(StackMachineThread* machine)
 {
-	machine->terminate();
+	machine->terminate(machine->getDataStack()->pop().toInteger32());
 }
 
 __forceinline void assignGlobal(StackMachineThread* machine, NameIdentifier arg)

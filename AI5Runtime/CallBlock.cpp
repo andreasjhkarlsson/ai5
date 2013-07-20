@@ -16,7 +16,7 @@ void CallBlock::setup(StackMachineThread* machine,int returnAddress,int calledNu
 {
 	this->scope = Scope::Create();
 	this->returnAddress = returnAddress;
-	this->stackPosition = machine->getDataStack()->position()-(calledNumberOfArguments+1);
+	this->stackPosition = machine->getDataStack()->size()-(calledNumberOfArguments+1);
 	this->calledNumberOfArguments = calledNumberOfArguments;
 	this->parentFrame = parentFrame;
 	this->arguments.clear();
@@ -24,6 +24,13 @@ void CallBlock::setup(StackMachineThread* machine,int returnAddress,int calledNu
 	this->closureScope = VariantReference<Scope>();
 	this->closedNames.clear();
 	this->owner = owner.cast<UserFunctionVariant>();
+	this->shouldTerminateOnReturn = false;
+}
+
+
+void CallBlock::terminateOnReturn()
+{
+	this->shouldTerminateOnReturn = true;
 }
 
 void CallBlock::leave(StackMachineThread*machine)
@@ -35,6 +42,11 @@ void CallBlock::leave(StackMachineThread*machine)
 	closureScope.clear();
 	closures.clear();
 	owner.clear();
+	if(shouldTerminateOnReturn)
+	{
+		// TODO: Find real value here somehow.
+		machine->terminate(0);
+	}
 }
 
 // When returning from a function, there needs to be certain stuff

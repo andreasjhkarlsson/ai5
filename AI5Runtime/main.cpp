@@ -71,6 +71,8 @@ int main(int argc, char* argv[])
 			{
 				machine->startMainThread();
 				returnCode = machine->waitForTermination();
+				// Terminate all remaining threads.
+				machine->terminateAllThreads();
 			}
 
 

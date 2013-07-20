@@ -29,6 +29,7 @@ public:
 	StaticString(shared_string str);
 	const VariantReference<StringVariant>& getVariant();
 private:
+	VariantReference<StringVariant> strVar;
 	shared_string str;
 };
 

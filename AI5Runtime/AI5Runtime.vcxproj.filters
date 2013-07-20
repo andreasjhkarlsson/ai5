@@ -148,6 +148,9 @@
     <ClCompile Include="Semaphore.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="comparison_instructions.cpp">
+      <Filter>instructions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -310,6 +313,9 @@
       <Filter>general</Filter>
     </ClInclude>
     <ClInclude Include="ProduceConsumeQueue.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="DoubleLinkedList.h">
       <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>

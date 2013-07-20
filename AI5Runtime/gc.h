@@ -5,9 +5,28 @@
 #include <queue>
 #include <thread>
 #include "ProduceConsumeQueue.h"
+#include "DoubleLinkedList.h"
+#include <mutex>
 
 class GC
 {
+public:
+	struct BlockHeader: public DoubleLinkedList<BlockHeader>::Node
+	{
+		BlockHeader();
+		Variant* object;
+		bool mark;
+		char generation;
+		char referencedFrom; 
+	};
+
+	struct ThreadContext: public DoubleLinkedList<ThreadContext>::Node
+	{
+		ThreadContext(){}
+		StackMachineThread* machineThread;
+		DoubleLinkedList<BlockHeader>* gen0;
+
+	};
 private:
 	static GC* instance;
 
@@ -16,25 +35,6 @@ private:
 	static const int MESSAGE_START_CYCLE = 0;
 	static const int MESSAGE_STOP = 1;
 
-
-	struct BlockHeader
-	{
-		BlockHeader(BlockHeader*,BlockHeader*);
-		BlockHeader();
-		BlockHeader* previous;
-		BlockHeader* next;
-		Variant* object;
-		bool sentinel;
-		bool mark;
-		char generation;
-		char referencedFrom; 
-	};
-
-	struct Message
-	{
-
-	};
-
 	static const size_t BLOCKHEADER_ALIGNED_SIZE = sizeof(BlockHeader) + (sizeof(BlockHeader)%sizeof(BlockHeader*));
 
 	template <class T>
@@ -42,6 +42,8 @@ private:
 
 public:
 	static void init(StackMachine*);
+	static void initThread(StackMachineThread*);
+	static void uninitThread();
 	static void shutdown();
 	template <class T>
 	static T* alloc();
@@ -57,23 +59,15 @@ public:
 	static T* staticAlloc(U arg,V arg2);
 	static void collect(bool wait);
 	static void cleanup();
+public:
+
+
+
 private:
 
-
-	class DoubleLinkedList
-	{
-	public:
-		DoubleLinkedList();
-		void push_back(BlockHeader*);
-		void push_front(BlockHeader*);
-		BlockHeader* erase(BlockHeader*);
-		BlockHeader* firstElement();
-	private:
-		BlockHeader* start;
-		BlockHeader* end;
-	};
-	DoubleLinkedList objectList;
-	DoubleLinkedList staticList;
+	DoubleLinkedList<BlockHeader> staticList;
+	std::mutex threadsLock;
+	DoubleLinkedList<ThreadContext> threads;
 
 	GC(StackMachine*);
 
@@ -90,7 +84,7 @@ private:
 	void run();
 	void mark(BlockHeader*);
 	void mark(const VariantReference<>&ref);
-	void sweep();
+	void sweep(DoubleLinkedList<BlockHeader>* objects);
 	void freeAll();
 	void freeObject(BlockHeader*);
 	BlockHeader* VarRefToBlockHead(const VariantReference<>&ref);

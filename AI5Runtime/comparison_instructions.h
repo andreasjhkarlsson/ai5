@@ -202,10 +202,12 @@ enum COMPARISON_TYPE
 	EXACTLY_EQUAL
 };
 
+extern "C" ComparisonTable table;
+extern "C" StringComparator stringComparator;
+
 inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE type)
 {
-	static ComparisonTable table;
-	static StringComparator stringComparator;
+
 	VariantReference<> operand2 = machine->getDataStack()->pop();
 	VariantReference<> operand1 = machine->getDataStack()->pop();
 	bool result = false;

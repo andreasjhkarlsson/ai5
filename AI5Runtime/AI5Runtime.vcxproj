@@ -178,6 +178,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="BuiltinFunctionVariant.cpp" />
     <ClCompile Include="CallBlock.cpp" />
     <ClCompile Include="CallInfo.cpp" />
+    <ClCompile Include="comparison_instructions.cpp" />
     <ClCompile Include="COMVar.cpp" />
     <ClCompile Include="DataStack.cpp" />
     <ClCompile Include="DefaultVariant.cpp" />
@@ -227,6 +228,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="DataStack.h" />
     <ClInclude Include="DefaultVariant.h" />
     <ClInclude Include="DllCall.h" />
+    <ClInclude Include="DoubleLinkedList.h" />
     <ClInclude Include="encode.h" />
     <ClInclude Include="FastStack.h" />
     <ClInclude Include="FloatingVariant.h" />

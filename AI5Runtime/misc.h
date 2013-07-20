@@ -11,15 +11,22 @@ public:
 
 	DebugOut(const std::wstring &type)
 	{
-		std::wcout << type;
-		for(int i=type.length();i<COLUMN_WIDTH;i++)
-			std::wcout << " ";
-		std::wcout << ": ";
+		if(GlobalOptions::isVerbose())
+		{
+			std::wcout << type;
+			for(int i=type.length();i<COLUMN_WIDTH;i++)
+				std::wcout << " ";
+			std::wcout << ": ";
+		}
+
 	}
 
 	~DebugOut()
 	{
-		std::wcout << std::endl;
+		if(GlobalOptions::isVerbose())
+		{
+			std::wcout << std::endl;
+		}
 	}
 
 	template <typename T>

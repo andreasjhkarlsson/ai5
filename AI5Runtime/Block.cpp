@@ -14,7 +14,7 @@ void Block::unwindStack(StackMachineThread* machine,size_t stackPosition)
 {
 	DataStack* stack = machine->getDataStack();
 
-	if(stack->position() < stackPosition)
+	if(stack->size() < stackPosition)
 	{
 		throw RuntimeError(L"Stack corruption detected!");
 	}
@@ -23,7 +23,7 @@ void Block::unwindStack(StackMachineThread* machine,size_t stackPosition)
 	// Note that this does not indicate that the block is
 	// errorous, but rather that it quit in the middle
 	// for some reason (perhaps exception or RET instruction).
-	while(stack->position() > stackPosition)
+	while(stack->size() > stackPosition)
 	{
 		stack->pop();
 	}

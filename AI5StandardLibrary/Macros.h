@@ -25,5 +25,6 @@ private:
 	static VariantReference<> weekDay(StackMachineThread*);
 	static VariantReference<> errorCode(StackMachineThread*);
 	static VariantReference<> extendedCode(StackMachineThread*);
+	static VariantReference<> threadId(StackMachineThread*);
 };
 

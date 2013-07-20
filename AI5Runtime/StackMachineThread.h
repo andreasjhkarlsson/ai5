@@ -14,6 +14,7 @@
 #include "SimplePool.h"
 #include "BlockStack.h"
 #include "BuiltinFunctionVariant.h"
+#include "HandleVariant.h"
 #include <thread>
 
 class Instruction;
@@ -22,6 +23,23 @@ using std::shared_ptr;
 using std::vector;
 
 typedef unsigned int SM_THREAD_ID;
+
+
+
+class ThreadHandle: public HandleVariant
+{
+public:
+	static const HANDLE_TYPE HTYPE = THREAD_HANDLE;
+	friend class GC;
+	StackMachineThread* getMachineThread();
+	bool isValid() const override;
+private:
+	ThreadHandle(StackMachine*,StackMachineThread*);
+	~ThreadHandle();
+	StackMachineThread* machineThread;
+	StackMachine* machine;
+};
+
 
 // This represents the virtual machine.
 // It controls program counter, stacks, tables, scopes and memory allocation.
@@ -34,7 +52,7 @@ public:
 
 	friend class GC;
 
-	StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
+	StackMachineThread(StackMachine*,SM_THREAD_ID,shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,
 					shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
 					VariantReference<Scope>& globalScope);
@@ -58,9 +76,12 @@ public:
 	inline void setCurrentCallBlock(CallBlock* frame);
 	inline CallBlock* getCurrentCallBlock();
 	void startThread();
+	void startThread(const VariantReference<UserFunctionVariant>& entryPoint);
 	int join();
 	void run();
-	void terminate();
+	void terminate(int code);
+	void forceKill();
+	SM_THREAD_ID getThreadId();
 	VariantReference<NameVariant> getNearestName(NameIdentifier identifier);
 	VariantReference<NameVariant> getGlobalName(NameIdentifier identifier);
 	VariantReference<NameVariant> getLocalName(NameIdentifier identifier);
@@ -76,6 +97,11 @@ public:
 	const VariantReference<>& getExtendedCode() const;
 	void setExtendedCode(const VariantReference<>&);
 	void setErrorCode(const VariantReference<>&);
+
+	int getReturnCode()
+	{
+		return returnCode;
+	}
 
 private:
 	// Code and static data.
@@ -105,7 +131,11 @@ private:
 
 	std::thread* myThread;
 
-	int startAddress;
+	VariantReference<UserFunctionVariant> myThreadFunc;
+
+	SM_THREAD_ID myId;
+
+	StackMachine* owner;
 };
 
 void StackMachineThread::jumpRelative(int offset)

@@ -30,6 +30,7 @@ void Macros::registerMacros(StackMachine* machine)
 	machine->addMacro(L"wday",&weekDay);
 	machine->addMacro(L"error",&errorCode);
 	machine->addMacro(L"extended",&extendedCode);
+	machine->addMacro(L"threadid",&threadId);
 }
 
 VariantReference<> Macros::MyPID(StackMachineThread*)
@@ -157,4 +158,9 @@ VariantReference<> Macros::weekDay(StackMachineThread*)
 	SYSTEMTIME stime;
 	GetLocalTime(&stime);
 	return stime.wDayOfWeek;
+}
+
+VariantReference<> Macros::threadId(StackMachineThread* machine)
+{
+	return (int)machine->getThreadId();
 }

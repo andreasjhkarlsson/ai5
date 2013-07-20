@@ -6,25 +6,68 @@
 #include "GlobalOptions.h"
 #include <functional>
 #include "misc.h"
+#include "function_instructions.h"
+#include "StackMachine.h"
+#include <Windows.h>
 
 using namespace std::placeholders;
 
-StackMachineThread::StackMachineThread(int address,shared_ptr<vector<shared_ptr<StaticData>>> statics,
+StackMachineThread::StackMachineThread(StackMachine* owner,SM_THREAD_ID myId,shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	shared_ptr<vector<shared_ptr<Instruction>>> program,
 	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
 	VariantReference<Scope>& globalScope): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), macros(macros),startAddress(address),
-	currentCallBlock(nullptr), globalScope(globalScope), errorCode(0), extendedCode(0)
+	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), macros(macros),
+	currentCallBlock(nullptr), globalScope(globalScope), errorCode(0), extendedCode(0), myId(myId), owner(owner)
 {
+	
+}
+
+
+ThreadHandle::ThreadHandle(StackMachine* machine,StackMachineThread* machineThread):
+	HandleVariant(THREAD_HANDLE), machineThread(machineThread), machine(machine)
+{
+
+}
+ThreadHandle::~ThreadHandle()
+{
+	delete machineThread;
+}
+StackMachineThread* ThreadHandle::getMachineThread()
+{
+	return machineThread;
+}
+
+bool ThreadHandle::isValid() const
+{
+	return machineThread != nullptr;
 }
 
 StackMachineThread::~StackMachineThread(void)
 {
+	
 }
 
 void StackMachineThread::startThread()
 {
 	
+	myThread = new std::thread(std::bind(&StackMachineThread::run,this));
+}
+
+
+
+void StackMachineThread::startThread(const VariantReference<UserFunctionVariant>& func)
+{
+	myThreadFunc = func;
+
+	// Call func by manually invoking instruction.
+	// Note that the callFunction instruction will
+	// only setup environment for function call, no real work is done.
+	dataStack.push(func);
+	callFunction(this,0);
+
+	// CurrentCallBlock should be set by above instruction.
+	currentCallBlock->terminateOnReturn();
+
 	myThread = new std::thread(std::bind(&StackMachineThread::run,this));
 }
 
@@ -36,8 +79,14 @@ int StackMachineThread::join()
 	return returnCode;
 }
 
+SM_THREAD_ID StackMachineThread::getThreadId()
+{
+	return myId;
+}
+
 void StackMachineThread::run()
 {
+	GC::initThread(this);
 	terminated = false;
 	try
 	{
@@ -50,7 +99,6 @@ void StackMachineThread::run()
 			
 			(*program)[programCounter]->execute(this);		
 		}
-		returnCode = dataStack.top().toInteger32();
 	}
 	catch(RuntimeError& error)
 	{
@@ -58,12 +106,20 @@ void StackMachineThread::run()
 			std::endl << "The program will now terminate." << std::endl;
 		returnCode = -1;
 	}
+	GC::uninitThread();
+	owner->reportThreadTermination(myId);
 
 }
 
-void StackMachineThread::terminate()
+void StackMachineThread::terminate(int code)
 {
 	terminated = true;
+	returnCode = code;
+}
+
+void StackMachineThread::forceKill()
+{
+	TerminateThread(myThread->native_handle(),-1);
 }
 
 

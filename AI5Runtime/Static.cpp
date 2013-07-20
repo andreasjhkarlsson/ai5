@@ -16,7 +16,14 @@ StaticString::StaticString(shared_string str): StaticData(STRING), str(str)
 }
 const VariantReference<StringVariant>& StaticString::getVariant()
 {
-	static VariantReference<StringVariant> strVar = StringVariant::CreateStatic(str);
+	// TODO THIS IS NOT THREAD SAFE!!!
+	// Problem is that StringVariant::CreateStatic cannot be
+	// called in constructor since GC isn't initialized yet.
+	// Solve with lock or by initiating GC earlier.
+	if(strVar.empty())
+	{
+		strVar = StringVariant::CreateStatic(str);
+	}
 	return strVar;
 }
 

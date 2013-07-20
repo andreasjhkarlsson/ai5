@@ -5,6 +5,7 @@
 #include "encode.h"
 #include <memory>
 #include "..\AI5StandardLibrary\StandardLibrary.h"
+#include "misc.h"
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress): latestThread(0),staticsTable(statics),program(program),
@@ -12,8 +13,10 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 {
 	
 	GC::init(this);
+	GC::initThread(nullptr);
 	globalScope = GC::staticAlloc<Scope>();
 	registerStandardLibrary(this);
+	
 }
 
 void StackMachine::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
@@ -28,32 +31,65 @@ void StackMachine::addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc)
 
 StackMachine::~StackMachine(void)
 {
-	for(auto it = threads.begin();it != threads.end();it++)
-	{
-		delete it->second;
-	}
-}
 
+}
 
 void StackMachine::startMainThread()
 {
-	mainThread = createThread(startAddress);
-	mainThread->startThread();
+	mainThread = createThread();
+	mainThread->getMachineThread()->jumpAbsolute(startAddress);
+	mainThread->getMachineThread()->startThread();
 }
 
-StackMachineThread* StackMachine::createThread(int address)
+VariantReference<ThreadHandle> StackMachine::createThread()
 {
-	StackMachineThread* thread = new StackMachineThread(address,staticsTable,program,macros,globalScope);
+	std::lock_guard<std::mutex> guard(threadsLock);
+
 	SM_THREAD_ID id = latestThread++;
+	StackMachineThread* thread = new StackMachineThread(this,id,staticsTable,program,macros,globalScope);
 
-	threads[id] = thread;
+	VariantReference<ThreadHandle> threadRef = GC::alloc<ThreadHandle,StackMachine*,StackMachineThread*>(this,thread);
 
-	return thread;
+	threads[id] = threadRef;
+
+	return threadRef;
 }
 
 int StackMachine::waitForTermination()
 {
-	return mainThread->join();
+	int retCode = mainThread->getMachineThread()->join();
+
+	return retCode;
+}
+
+
+void StackMachine::terminateAllThreads()
+{
+	threadsLock.lock();
+	for(auto it = threads.begin();it != threads.end();it++)
+	{
+
+		it->second->getMachineThread()->terminate(-1);
+	}
+	threadsLock.unlock();
+	// Give the threads some time to terminate by themselves.
+	Sleep(50);
+
+	// Threads still in ::threads have still not terminated. Kill them with fire!
+	threadsLock.lock();
+	for(auto it= threads.begin();it != threads.end(); it++)
+	{
+		DebugOut(L"Virtual machine") << L"Forcefully killing thread with id: " << it->first;
+		it->second->getMachineThread()->forceKill();
+	}
+	threads.clear();
+	threadsLock.unlock();
+}
+
+void StackMachine::reportThreadTermination(SM_THREAD_ID threadId)
+{
+	std::lock_guard<std::mutex> guard(threadsLock);
+	threads.erase(threadId);
 }
 
 
