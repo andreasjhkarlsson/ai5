@@ -43,11 +43,7 @@ void GC::shutdown()
 GC::GC(StackMachine* machine):  killThread(false), machine(machine), cycleComplete(0)
 {
 	markAndSweepThread = std::thread(std::bind(&GC::run,this));
-
-
 }
-
-
 
 GC::BlockHeader::BlockHeader(): mark(false),generation(0),referencedFrom(-1)
 {
@@ -73,9 +69,79 @@ void GC::addStaticObject(BlockHeader* object)
 	staticList.push_front(object);
 }
 
+
+void GC::mark(ListVariant* list)
+{
+	for(size_t i=0;i<list->list->size();i++)
+	{
+		mark((*list->list)[i]);
+	}
+}
+
+void GC::mark(HashMapVariant* hashMap)
+{
+	for(auto it = hashMap->map.begin();it != hashMap->map.end();it++)
+	{
+		mark(it->first);
+		mark(it->second);
+	}
+}
+void GC::mark(Scope* scope)
+{
+	for(auto it = scope->lookup.begin();it!=scope->lookup.end();it++)
+		mark(it->second);
+
+	if(!scope->enclosingScope.empty())
+		mark(scope->enclosingScope);
+}
+
+
+void GC::mark(ThreadHandle* threadHandle)
+{
+	StackMachineThread* machineThread = threadHandle->getMachineThread();
+	// Mark active scopes by examining call (block) stack.
+	BlockStack* stack = &machineThread->blockStack;
+	for(int i=0;i<=stack->position;i++)
+	{
+		if(stack->stack[i]->isCallBlock())
+		{
+			mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
+		}
+	}
+					
+	// Mark current working set in datastack.
+	DataStack* dataStack = &machineThread->dataStack;
+	for(int i=0;i<=dataStack->position;i++)
+	{
+		mark(dataStack->stack[i]);
+	}
+
+}
+
+void GC::mark(HandleVariant* handle)
+{
+	if(handle->handleType == HandleVariant::THREAD_HANDLE)
+	{
+		mark(handle->castHandle<ThreadHandle>());
+	}
+}
+void GC::mark(NameVariant* name)
+{
+	mark(name->value);
+}
+void GC::mark(NameReferenceVariant* nameReference)
+{
+	mark(nameReference->value);
+}
+
+void GC::mark(UserFunctionVariant* userFunc)
+{
+	if(!userFunc->enclosingScope.empty())
+		mark(userFunc->enclosingScope);
+}
+
 void GC::mark(BlockHeader* header)
 {
-
 	if(header == nullptr || header->mark)
 	{
 		// This object should not be processed.
@@ -85,81 +151,27 @@ void GC::mark(BlockHeader* header)
 	switch(header->object->getType())
 	{
 	case Variant::NAME_REFERENCE:
+		mark(header->object->cast<NameReferenceVariant>());
+		break;
 	case Variant::NAME:
-		mark(header->object->cast<NameVariant>()->value);
+		mark(header->object->cast<NameVariant>());
 		break;
 	case Variant::LIST:
-		{
-			ListVariant* listVar = header->object->cast<ListVariant>();
-			for(size_t i=0;i<listVar->list->size();i++)
-			{
-				mark((*listVar->list)[i]);
-			}
-		}
+		mark(header->object->cast<ListVariant>());
 		break;
 	case Variant::HASH_MAP:
-		{
-			HashMapVariant* hashMapVar = header->object->cast<HashMapVariant>();
-			for(auto it = hashMapVar->map.begin();it != hashMapVar->map.end();it++)
-			{
-				mark(it->first);
-				mark(it->second);
-			}
-
-		}
+		mark(header->object->cast<HashMapVariant>());
 		break;
 	case Variant::USER_FUNCTION:
-		{
-			UserFunctionVariant* ufVar = header->object->cast<UserFunctionVariant>();
-			if(!ufVar->enclosingScope.empty())
-				mark(ufVar->enclosingScope);
-
-		}
+		mark(header->object->cast<UserFunctionVariant>());
 		break;
 	case Variant::SCOPE:
-		{
-			Scope* scope = header->object->cast<Scope>();
-			int i=0;
-			for(auto it = scope->lookup.begin();it!=scope->lookup.end();it++)
-			{
-				mark(it->second);
-
-			}
-
-
-			if(!scope->enclosingScope.empty())
-			{
-				mark(scope->enclosingScope);
-			}
-
-		}
+		mark(header->object->cast<Scope>());
 		break;
 	case Variant::HANDLE_VAR:
-		{
-			if(header->object->cast<HandleVariant>()->handleType == HandleVariant::THREAD_HANDLE)
-			{
-				StackMachineThread* machineThread = header->object->cast<HandleVariant>()->castHandle<ThreadHandle>()->getMachineThread();
-				// Mark active scopes by examining call (block) stack.
-				BlockStack* stack = &machineThread->blockStack;
-				for(int i=0;i<=stack->position;i++)
-				{
-					if(stack->stack[i]->isCallBlock())
-					{
-						mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
-					}
-				}
-					
-				// Mark current working set in datastack.
-				DataStack* dataStack = &machineThread->dataStack;
-				for(int i=0;i<=dataStack->position;i++)
-				{
-					mark(dataStack->stack[i]);
-				}
-
-			}
-		}
+		mark(header->object->cast<HandleVariant>());
+		break;
 	}
-
 }
 
 void GC::mark(const VariantReference<>&ref)
@@ -203,8 +215,9 @@ void GC::run()
 
 		if(msg == MESSAGE_START_CYCLE)
 		{
-			std::lock_guard<std::mutex> guard(instance->threadsLock);
+
 			DebugOut(L"GC") << "Running cycle.";
+
 			// Find all roots and mark them.
 			// Roots are:
 			// * Global scope
@@ -260,21 +273,7 @@ void GC::cleanup()
 
 void GC::freeAll()
 {
-
 	DebugOut(L"GC") << L"Freeing all remaining objects.";
-
-	// TODO clear orphan list.
-/*
-	// Clear all dynamic objects.
-	BlockHeader* current = objectList->firstElement();
-	while(!current->sentinel)
-	{
-		BlockHeader* next = current->next;
-		freeObject(current);
-		current = next;
-	}
-
-*/
 
 	// Clear all static objects.
 	BlockHeader* current = staticList.firstElement();
@@ -284,7 +283,6 @@ void GC::freeAll()
 		freeObject(current);
 		current = next;
 	}
-
 }
 
 void GC::freeObject(BlockHeader* header)

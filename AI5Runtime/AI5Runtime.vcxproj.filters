@@ -14,9 +14,6 @@
     <Filter Include="blocks">
       <UniqueIdentifier>{67935067-c1bc-4155-8cd3-f4ec4dd44726}</UniqueIdentifier>
     </Filter>
-    <Filter Include="stacks">
-      <UniqueIdentifier>{bbe8336a-5967-4f3b-a680-d924af5cdf74}</UniqueIdentifier>
-    </Filter>
     <Filter Include="general">
       <UniqueIdentifier>{5eac65d7-3c21-4c35-9b96-b5e2edc72c49}</UniqueIdentifier>
     </Filter>
@@ -28,6 +25,9 @@
     </Filter>
     <Filter Include="gc">
       <UniqueIdentifier>{bf6e0d75-b145-4137-abfe-1b4ba1eda568}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="data structures">
+      <UniqueIdentifier>{bbe8336a-5967-4f3b-a680-d924af5cdf74}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,7 +65,7 @@
       <Filter>blocks</Filter>
     </ClCompile>
     <ClCompile Include="DataStack.cpp">
-      <Filter>stacks</Filter>
+      <Filter>data structures</Filter>
     </ClCompile>
     <ClCompile Include="DefaultVariant.cpp">
       <Filter>variants</Filter>
@@ -199,13 +199,13 @@
       <Filter>blocks</Filter>
     </ClInclude>
     <ClInclude Include="FastStack.h">
-      <Filter>stacks</Filter>
+      <Filter>data structures</Filter>
     </ClInclude>
     <ClInclude Include="DataStack.h">
-      <Filter>stacks</Filter>
+      <Filter>data structures</Filter>
     </ClInclude>
     <ClInclude Include="BlockStack.h">
-      <Filter>stacks</Filter>
+      <Filter>data structures</Filter>
     </ClInclude>
     <ClInclude Include="function_instructions.h">
       <Filter>instructions</Filter>
@@ -229,9 +229,6 @@
       <Filter>general</Filter>
     </ClInclude>
     <ClInclude Include="RuntimeError.h">
-      <Filter>general</Filter>
-    </ClInclude>
-    <ClInclude Include="SimplePool.h">
       <Filter>general</Filter>
     </ClInclude>
     <ClInclude Include="Static.h">
@@ -312,11 +309,14 @@
     <ClInclude Include="Semaphore.h">
       <Filter>general</Filter>
     </ClInclude>
+    <ClInclude Include="SimplePool.h">
+      <Filter>data structures</Filter>
+    </ClInclude>
     <ClInclude Include="ProduceConsumeQueue.h">
-      <Filter>general</Filter>
+      <Filter>data structures</Filter>
     </ClInclude>
     <ClInclude Include="DoubleLinkedList.h">
-      <Filter>general</Filter>
+      <Filter>data structures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

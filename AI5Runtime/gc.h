@@ -1,16 +1,32 @@
 #pragma once
 
+#include <queue>
+#include <mutex>
+#include <thread>
 #include "types.h"
 #include "Semaphore.h"
-#include <queue>
-#include <thread>
 #include "ProduceConsumeQueue.h"
 #include "DoubleLinkedList.h"
-#include <mutex>
+
+class ListVariant;
+class HashMapVariant;
+class HandleVariant;
+class Scope;
+class NameVariant;
+class NameReferenceVariant;
+class UserFunctionVariant;
+class ThreadHandle;
 
 class GC
 {
 public:
+
+	// This represents info for a allocated variant. The memory layout looks like this:
+	/*
+		BlockHeader
+		(padding to make sure variant is nicely aligned)
+		Variant
+	*/
 	struct BlockHeader: public DoubleLinkedList<BlockHeader>::Node
 	{
 		BlockHeader();
@@ -25,26 +41,15 @@ public:
 		ThreadContext(){}
 		StackMachineThread* machineThread;
 		DoubleLinkedList<BlockHeader>* gen0;
-
 	};
-private:
-	static GC* instance;
 
-	static const char GENERATION_STATIC = -1;
-
-	static const int MESSAGE_START_CYCLE = 0;
-	static const int MESSAGE_STOP = 1;
-
-	static const size_t BLOCKHEADER_ALIGNED_SIZE = sizeof(BlockHeader) + (sizeof(BlockHeader)%sizeof(BlockHeader*));
-
-	template <class T>
-	static BlockHeader* allocBlockHeader();
-
-public:
+	// Public interface for users.
 	static void init(StackMachine*);
 	static void initThread(StackMachineThread*);
 	static void uninitThread();
 	static void shutdown();
+	static void collect(bool wait);
+	static void cleanup();
 	template <class T>
 	static T* alloc();
 	template <class T,class U>
@@ -57,37 +62,47 @@ public:
 	static T* staticAlloc(U arg);
 	template <class T,class U,class V>
 	static T* staticAlloc(U arg,V arg2);
-	static void collect(bool wait);
-	static void cleanup();
-public:
-
-
 
 private:
+	static const char GENERATION_STATIC = -1;
+	static const int MESSAGE_START_CYCLE = 0;
+	static const int MESSAGE_STOP = 1;
+	static GC* instance;
+	static const size_t BLOCKHEADER_ALIGNED_SIZE = sizeof(BlockHeader) + (sizeof(BlockHeader)%sizeof(BlockHeader*));
 
-	DoubleLinkedList<BlockHeader> staticList;
-	std::mutex threadsLock;
-	DoubleLinkedList<ThreadContext> threads;
+
+	template <class T>
+	static BlockHeader* allocBlockHeader();
+	static BlockHeader* VarRefToBlockHead(const VariantReference<>&ref);
 
 	GC(StackMachine*);
-
-	std::thread markAndSweepThread;
-	ProduceConsumeQueue<int> messageQueue;
-	Semaphore cycleComplete;
-
-	volatile bool killThread;
-
-	StackMachine* machine;
-
 	void trackObject(BlockHeader*);
 	void addStaticObject(BlockHeader*);
 	void run();
 	void mark(BlockHeader*);
 	void mark(const VariantReference<>&ref);
+	void mark(ListVariant* list);
+	void mark(HashMapVariant* hashMap);
+	void mark(Scope* scope);
+	void mark(HandleVariant* handle);
+	void mark(NameVariant* name);
+	void mark(NameReferenceVariant* nameReference);
+	void mark(UserFunctionVariant* userFunc);
+	void mark(ThreadHandle* threadHandle);
 	void sweep(DoubleLinkedList<BlockHeader>* objects);
 	void freeAll();
 	void freeObject(BlockHeader*);
-	BlockHeader* VarRefToBlockHead(const VariantReference<>&ref);
+
+	DoubleLinkedList<BlockHeader> staticList;
+	DoubleLinkedList<ThreadContext> threads;
+	std::mutex threadsLock;
+	
+	std::thread markAndSweepThread;
+	Semaphore cycleComplete;
+	ProduceConsumeQueue<int> messageQueue;
+	volatile bool killThread;
+
+	StackMachine* machine;
 };
 
 

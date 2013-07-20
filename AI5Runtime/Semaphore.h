@@ -13,4 +13,3 @@ class Semaphore {
 	void wait();
 	void signal();
 };
-
