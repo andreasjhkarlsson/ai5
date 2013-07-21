@@ -28,9 +28,11 @@ void GC::initThread(StackMachineThread* machineThread)
 
 void GC::uninitThread()
 {
-	// TODO Splice objectList into shared list (or maybe gen1?).
 	std::lock_guard<std::mutex> guard(instance->threadsLock);
 	instance->threads.erase(currentThread);
+
+	instance->orphans.splice(currentThread->gen0);
+
 	delete currentThread;
 }
 
@@ -253,6 +255,8 @@ void GC::run()
 				sweep(thread->gen0);
 				thread = thread->next;
 			}
+
+			sweep(&orphans);
 
 			cycleComplete.signal();
 		}

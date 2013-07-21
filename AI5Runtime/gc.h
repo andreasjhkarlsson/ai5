@@ -94,6 +94,7 @@ private:
 	void freeObject(BlockHeader*);
 
 	DoubleLinkedList<BlockHeader> staticList;
+	DoubleLinkedList<BlockHeader> orphans;
 	DoubleLinkedList<ThreadContext> threads;
 	std::mutex threadsLock;
 	

@@ -30,6 +30,11 @@ public:
 		end->previous = start;
 	}
 
+	bool empty()
+	{
+		return this->firstElement()->sentinel;
+	}
+
 	// Adds node to the end of list.
 	void push_back(T* node)
 	{
@@ -56,8 +61,48 @@ public:
 	T* firstElement()
 	{
 		return start->next;
-
 	}
+
+	T* lastElement()
+	{
+		return end->previous;
+	}
+
+	// Take ownership of all nodes in other by inserting them into this list
+	// and removing them from other. Since it's a double linked list
+	void splice(DoubleLinkedList* other)
+	{
+		// Other list is empty. No point in splicing.
+		if(other->empty())
+			return;
+
+		// If this list is empty we insert a "dummy" node
+		// into the list so the list can be spliced properly.
+		// The dummy is erased afterwards. A bit of a hack but it works.
+		T* dummy = nullptr;
+		if(this->empty())
+		{
+			dummy = new T();
+			this->push_back(dummy);
+		}
+
+		// Relink nodes.
+		this->lastElement()->next = other->firstElement();
+		other->firstElement()->previous = this->lastElement();
+		this->end->previous = other->lastElement();
+		other->lastElement()->next = this->end;
+
+		// Make other list empty.
+		other->start->next = other->end;
+		other->end->previous = other->start;
+
+		if(dummy != nullptr)
+		{
+			this->erase(dummy);
+			delete dummy;
+		}
+	}
+
 private:
 	T* start;
 	T* end;
