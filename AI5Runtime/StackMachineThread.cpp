@@ -12,50 +12,26 @@
 
 using namespace std::placeholders;
 
-StackMachineThread::StackMachineThread(StackMachine* owner,SM_THREAD_ID myId,shared_ptr<vector<shared_ptr<StaticData>>> statics,
-	shared_ptr<vector<shared_ptr<Instruction>>> program,
-	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
-	VariantReference<Scope>& globalScope): programCounter(0),
-	dataStack(DATA_STACK_SIZE),staticsTable(statics),program(program), blockStack(BLOCK_STACK_SIZE), macros(macros),
-	currentCallBlock(nullptr), globalScope(globalScope), errorCode(0), extendedCode(0), myId(myId), owner(owner)
+StackMachineThread::StackMachineThread(StackMachine* machine): programCounter(0),
+	dataStack(DATA_STACK_SIZE),staticsTable(machine->getStatics()),program(machine->getCode()), blockStack(BLOCK_STACK_SIZE), macros(machine->getMacros()),
+	currentCallBlock(nullptr), globalScope(machine->getGlobalScope()), errorCode(0), extendedCode(0), parent(machine)
 {
 	
 }
 
-
-ThreadHandle::ThreadHandle(StackMachine* machine,StackMachineThread* machineThread):
-	HandleVariant(THREAD_HANDLE), machineThread(machineThread), machine(machine)
-{
-
-}
-ThreadHandle::~ThreadHandle()
-{
-	delete machineThread;
-}
-StackMachineThread* ThreadHandle::getMachineThread()
-{
-	return machineThread;
-}
-
-bool ThreadHandle::isValid() const
-{
-	return machineThread != nullptr;
-}
 
 StackMachineThread::~StackMachineThread(void)
 {
 	
 }
 
-void StackMachineThread::startThread()
+void StackMachineThread::setThreadContext(ThreadContext* context)
 {
-	
-	myThread = new std::thread(std::bind(&StackMachineThread::run,this));
+	this->myContext = context;
 }
 
 
-
-void StackMachineThread::startThread(const VariantReference<UserFunctionVariant>& func)
+void StackMachineThread::setStartFunction(const VariantReference<UserFunctionVariant>& func)
 {
 	myThreadFunc = func;
 
@@ -67,28 +43,12 @@ void StackMachineThread::startThread(const VariantReference<UserFunctionVariant>
 
 	// CurrentCallBlock should be set by above instruction.
 	currentCallBlock->terminateOnReturn();
-
-	myThread = new std::thread(std::bind(&StackMachineThread::run,this));
-}
-
-
-int StackMachineThread::join()
-{
-	myThread->join();
-	delete myThread;
-	return returnCode;
-}
-
-SM_THREAD_ID StackMachineThread::getThreadId()
-{
-	return myId;
 }
 
 void StackMachineThread::run()
 {
-	GC::initThread(this);
 	terminated = false;
-	DebugOut(L"Thread") << "Thread with name " << this->name->getTerminatedBuffer() << " created.";
+	//DebugOut(L"Thread") << "Thread with name " << this->name->getTerminatedBuffer() << " created.";
 	try
 	{
 		while (!terminated) 
@@ -97,7 +57,8 @@ void StackMachineThread::run()
 			{
 				(*program)[programCounter]->print(staticsTable);
 			}
-			GC::enterSafePoint(this);
+			// TODO: Avoid tls. (store thread context in stackmachinethread)
+			myContext->safePoint.check();
 			(*program)[programCounter]->execute(this);		
 		}
 	}
@@ -107,10 +68,6 @@ void StackMachineThread::run()
 			std::endl << "The program will now terminate." << std::endl;
 		returnCode = -1;
 	}
-	DebugOut(L"Thread") << "Thread with name " << this->name->getTerminatedBuffer() << " terminated.";
-	GC::uninitThread();
-	owner->reportThreadTermination(myId);
-
 }
 
 void StackMachineThread::terminate(int code)
@@ -119,20 +76,10 @@ void StackMachineThread::terminate(int code)
 	returnCode = code;
 }
 
-void StackMachineThread::forceKill()
+bool StackMachineThread::isTerminated()
 {
-	TerminateThread(myThread->native_handle(),-1);
+	return terminated;
 }
-
-void StackMachineThread::setThreadName(shared_string newName)
-{
-	name = newName;
-}
-shared_string StackMachineThread::getThreadName()
-{
-	return name;
-}
-
 
 MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)
 {

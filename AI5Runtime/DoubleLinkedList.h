@@ -17,7 +17,7 @@ public:
 		bool sentinel;
 	};
 
-	DoubleLinkedList()
+	DoubleLinkedList(): count(0)
 	{
 		// Create sentinel nodes.
 		start = new T();
@@ -42,6 +42,7 @@ public:
 		node->next = end;
 		end->previous->next = node;
 		end->previous = node;
+		++count;
 	}
 	// Adds node to front of list.
 	void push_front(T* node)
@@ -49,12 +50,14 @@ public:
 		node->previous = start;
 		node->next = start->next;
 		start->next = node;
+		++count;
 	}
 	// Erases node from list and returns pointer to next node.
 	T* erase(T* node)
 	{
 		node->previous->next = node->next;
 		node->next->previous = node->previous;
+		--count;
 		return node->next;
 	}
 	// Returns pointer to the first real node in list.
@@ -96,6 +99,9 @@ public:
 		other->start->next = other->end;
 		other->end->previous = other->start;
 
+		this->count += other->count;
+		other->count = 0;
+
 		if(dummy != nullptr)
 		{
 			this->erase(dummy);
@@ -106,4 +112,5 @@ public:
 private:
 	T* start;
 	T* end;
+	int count;
 };

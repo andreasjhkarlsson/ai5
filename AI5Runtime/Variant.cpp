@@ -176,6 +176,8 @@ const char* Variant::typeAsString()
 		return "Handle";
 	case DEFAULT:
 		return "Default";
+	case THREAD_VAR:
+		return "Thread";
 	default:
 		return "ERROR TYPE";
 	}

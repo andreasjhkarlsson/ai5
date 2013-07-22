@@ -27,7 +27,7 @@ VariantReference<> TimerFunctions::sleep(CallInfo* callInfo)
 
 	int sleepDelay = callInfo->getInt32Arg(0);
 
-	BLOCKING_SYSCALL(Sleep(sleepDelay));
+	SAFE_REGION(Sleep(sleepDelay));
 	
 	return nullptr;
 }

@@ -36,17 +36,20 @@ void SystemFunctions::registerFunctions(StackMachine* machine)
 VariantReference<> SystemFunctions::startThread(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
-	VariantReference<ThreadHandle> thread = machine->createThread();
-	thread->getMachineThread()->setThreadName(callInfo->getStringArg(1));
-	thread->getMachineThread()->startThread(callInfo->getArg(0)->cast<UserFunctionVariant>());
+
+	VariantReference<ThreadContext> thread = machine->getThreadManager()->createThread(machine);
+	thread->getVirtualThread()->setStartFunction(callInfo->getArg(0)->cast<UserFunctionVariant>());
+	thread->setThreadName(callInfo->getStringArg(1));
+	thread->start();
+
 	return thread;
 }
 
 VariantReference<> SystemFunctions::joinThread(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
-	// Yiiihaaa! Crazy chain coming up!
-	StackMachineThread* machineThread = callInfo->getArg(0).cast<HandleVariant>()->castHandle<ThreadHandle>()->getMachineThread();
-	BLOCKING_SYSCALL(machineThread->join());
-	return 0;
+	VariantReference<ThreadContext> thread = callInfo->getArg(0).cast<ThreadContext>();
+	SAFE_REGION(
+		return thread->join();
+	);
 }

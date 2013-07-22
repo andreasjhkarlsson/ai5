@@ -11,98 +11,22 @@
 
 GC* GC::instance = nullptr;
 
-// MSVC2012 doesn't support thread_local :(
-__declspec(thread) GC::ThreadContext* currentThread;
-
 void GC::init(StackMachine* machine)
 {
 	instance = new GC(machine);
 }
 
-void GC::initThread(StackMachineThread* machineThread)
+void GC::initThread(ThreadContext* context)
 {
-	currentThread = new ThreadContext();
-	currentThread->machineThread = machineThread;
-	currentThread->gen0 = new DoubleLinkedList<BlockHeader>();
-	if(machineThread != nullptr)
-		machineThread->threadContext = currentThread;
-	std::lock_guard<std::mutex> guard(instance->threadsLock);
-	instance->threads.push_back(currentThread);
+	context->gcInfo = new ThreadInfo();
 }
 
-void GC::uninitThread()
+void GC::uninitThread(ThreadContext* context)
 {
-	std::lock_guard<std::mutex> guard(instance->threadsLock);
-	instance->threads.erase(currentThread);
-
-	instance->orphans.splice(currentThread->gen0);
-
-	delete currentThread;
+	instance->orphans.splice(&context->gcInfo->gen0);
+	delete context->gcInfo;
 }
 
-
-void GC::enterSafePoint()
-{
-	currentThread->safePoint.check();
-}
-
-void GC::enterSafePoint(StackMachineThread* machineThread)
-{
-	machineThread->threadContext->safePoint.check();
-}
-
-GC::ThreadContext::SafePoint::SafePoint(): stop(false), stopped(false)
-{
-
-}
-
-void GC::ThreadContext::SafePoint::check()
-{
-	if(stop)
-	{
-		stopped = true;
-		std::lock_guard<std::mutex> guard(lock);
-		stopped = false;
-	}
-}
-
-void GC::ThreadContext::SafePoint::signalStop()
-{
-	lock.lock();
-	stop = true;
-}
-void GC::ThreadContext::SafePoint::release()
-{
-	stop = false;
-	lock.unlock();
-}
-
-GC::SafeRegion::SafeRegion(StackMachineThread* machineThread): exited(false), sp(&machineThread->threadContext->safePoint)
-{
-	sp->stopped = true;
-	DebugOut(L"Thread") << "SafeRegion entered";
-}
-
-GC::SafeRegion::SafeRegion(void): exited(false), sp(&currentThread->safePoint)
-{
-	sp->stopped = true;
-	DebugOut(L"Thread") << "SafeRegion entered";
-}
-
-GC::SafeRegion::~SafeRegion()
-{
-	leave();
-}
-
-void GC::SafeRegion::leave()
-{
-	if(!exited)
-	{
-		DebugOut(L"Thread") << "SafeRegion exited";
-		sp->check();
-		exited = true;
-	}
-}
 
 void GC::shutdown()
 {
@@ -122,14 +46,25 @@ GC::BlockHeader::BlockHeader(): mark(false),generation(0),referencedFrom(-1)
 
 void GC::collect(bool wait)
 {
-	instance->messageQueue.push(MESSAGE_START_CYCLE);
+	
 	if(wait)
+	{
+		instance->messageQueue.push(MESSAGE_START_SYNCHRONOUS_CYCLE);
 		instance->cycleComplete.wait();
+	}
+	else
+	{
+		instance->messageQueue.push(MESSAGE_START_ASYNCHRONOUS_CYCLE);
+	}
 }
 
 void GC::trackObject(BlockHeader* object)
 {
-	currentThread->gen0->push_back(object);
+	ThreadContext* context = ThreadContext::current();
+	if(context)
+		context->gcInfo->gen0.push_back(object);
+	else
+		orphans.push_back(object);
 }
 
 void GC::addStaticObject(BlockHeader* object)
@@ -164,9 +99,9 @@ void GC::mark(Scope* scope)
 		mark(scope->enclosingScope);
 }
 
-void GC::mark(ThreadHandle* threadHandle)
+void GC::mark(ThreadContext* threadContext)
 {
-	StackMachineThread* machineThread = threadHandle->getMachineThread();
+	StackMachineThread* machineThread = threadContext->getVirtualThread();
 	// Mark active scopes by examining call (block) stack.
 	BlockStack* stack = &machineThread->blockStack;
 	for(int i=0;i<=stack->position;i++)
@@ -182,14 +117,6 @@ void GC::mark(ThreadHandle* threadHandle)
 	for(int i=0;i<=dataStack->position;i++)
 	{
 		mark(dataStack->stack[i]);
-	}
-}
-
-void GC::mark(HandleVariant* handle)
-{
-	if(handle->handleType == HandleVariant::THREAD_HANDLE)
-	{
-		mark(handle->castHandle<ThreadHandle>());
 	}
 }
 
@@ -237,8 +164,8 @@ void GC::mark(BlockHeader* header)
 	case Variant::SCOPE:
 		mark(header->object->cast<Scope>());
 		break;
-	case Variant::HANDLE_VAR:
-		mark(header->object->cast<HandleVariant>());
+	case Variant::THREAD_VAR:
+		mark(header->object->cast<ThreadContext>());
 		break;
 	}
 }
@@ -281,7 +208,7 @@ void GC::run()
 		if(msg == MESSAGE_STOP)
 			return;
 
-		if(msg == MESSAGE_START_CYCLE)
+		if(msg == MESSAGE_START_ASYNCHRONOUS_CYCLE || msg == MESSAGE_START_SYNCHRONOUS_CYCLE)
 		{
 
 			DebugOut(L"GC") << "Running cycle.";
@@ -309,26 +236,30 @@ void GC::run()
 			VariantReference<Scope>& globalScope = machine->globalScope;
 			VarRefToBlockHead(globalScope)->mark = false;
 			mark(globalScope);
+			
 
-			for(auto it = machine->threads.begin(); it != machine->threads.end(); it++)
+			ThreadContext* context = machine->getThreadManager()->threads.firstElement();
+			while(!context->sentinel)
 			{
-				VarRefToBlockHead(it->second)->mark = false;
-				mark(it->second);
+				VarRefToBlockHead(context)->mark = false;
+				mark(VarRefToBlockHead(context));
+				context = context->next;
 			}
 
-			// Sweep all heaps.
-			ThreadContext* thread = threads.firstElement();
-			while(!thread->sentinel)
+			context = machine->getThreadManager()->threads.firstElement();
+			while(!context->sentinel)
 			{
-				sweep(thread->gen0);
-				thread = thread->next;
+				sweep(&context->gcInfo->gen0);
+				context = context->next;
 			}
+			
 
 			sweep(&orphans);
 
 			resumeTheWorld();
 
-			cycleComplete.signal();
+			if(msg == MESSAGE_START_SYNCHRONOUS_CYCLE)
+				cycleComplete.signal();
 		}
 	}
 }
@@ -342,62 +273,13 @@ GC::BlockHeader* GC::VarRefToBlockHead(const VariantReference<>&ref)
 
 void GC::stopTheWorld()
 {
-	// Threads have 25 ms to stop!
-	const __int64 TIME_LIMIT = 2500;
-	std::lock_guard<std::mutex> guard(threadsLock);
-	
-	DebugOut(L"GC") << "Signaling all threads to stop!";
+	machine->getThreadManager()->suspendAll();
 
-	// Tell all threads to stop!!
-	ThreadContext* context = threads.firstElement();
-	while(!context->sentinel)
-	{
-		context->safePoint.signalStop();
-		context = context->next;
-	}
-
-	typedef std::chrono::high_resolution_clock Clock;
-    typedef std::chrono::milliseconds milliseconds;
-	// Give the threads some time to stop.
-	auto startTime = Clock::now();
-
-	while(true)
-	{
-		__int64 diff = std::chrono::duration_cast<milliseconds>(Clock::now() - startTime).count();
-		bool allStopped = true; // A flag. Gross!
-		context = threads.firstElement();
-		while(!context->sentinel)
-		{
-			if(!context->safePoint.stopped)
-			{
-				if(diff > TIME_LIMIT)
-				{
-					// TODO: Suspend thread!
-					DebugOut(L"GC") << "Thread did not respond in time!!";
-				}
-				else
-				{
-					allStopped = false;
-				}
-			}
-			context = context->next;
-		}
-		if(allStopped)
-			break;
-	}
-
-	DebugOut(L"GC") << "All threads stopped!";
 }
 
 void GC::resumeTheWorld()
 {
-	DebugOut(L"GC") << "Signaling all threads to resume!";
-	ThreadContext* context = threads.firstElement();
-	while(!context->sentinel)
-	{
-		context->safePoint.release();
-		context = context->next;
-	}
+	machine->getThreadManager()->resumeAll();
 }
 
 void GC::cleanup()
@@ -411,6 +293,15 @@ void GC::freeAll()
 
 	// Clear all static objects.
 	BlockHeader* current = staticList.firstElement();
+	while(!current->sentinel)
+	{
+		BlockHeader* next = current->next;
+		freeObject(current);
+		current = next;
+	}
+
+	// Clear all orphans (should be all remaining objects!)
+	current = orphans.firstElement();
 	while(!current->sentinel)
 	{
 		BlockHeader* next = current->next;

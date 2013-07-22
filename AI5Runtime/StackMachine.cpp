@@ -8,12 +8,11 @@
 #include "misc.h"
 
 StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
-					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress): latestThread(0),staticsTable(statics),program(program),
+					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress): staticsTable(statics),program(program),
 					startAddress(startAddress), macros(new std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>)
 {
 	
 	GC::init(this);
-	GC::initThread(nullptr);
 	globalScope = GC::staticAlloc<Scope>();
 	registerStandardLibrary(this);
 	
@@ -36,62 +35,22 @@ StackMachine::~StackMachine(void)
 
 void StackMachine::startMainThread()
 {
-	mainThread = createThread();
-	mainThread->getMachineThread()->setThreadName(create_shared_string(L"main"));
-	mainThread->getMachineThread()->jumpAbsolute(startAddress);
-	mainThread->getMachineThread()->startThread();
+	StackMachineThread* virtualThread = new StackMachineThread(this);
+	virtualThread->jumpAbsolute(startAddress);
+	mainThread = threadManager.createThread(this);
+	mainThread->setThreadName(create_shared_string(L"main"));
+	mainThread->start();
 }
 
-VariantReference<ThreadHandle> StackMachine::createThread()
-{
-	std::lock_guard<std::mutex> guard(threadsLock);
 
-	SM_THREAD_ID id = latestThread++;
-	StackMachineThread* thread = new StackMachineThread(this,id,staticsTable,program,macros,globalScope);
-
-	VariantReference<ThreadHandle> threadRef = GC::alloc<ThreadHandle,StackMachine*,StackMachineThread*>(this,thread);
-
-	threads[id] = threadRef;
-
-	return threadRef;
-}
 
 int StackMachine::waitForTermination()
 {
-	int retCode = mainThread->getMachineThread()->join();
+	int retCode = mainThread->join();
 
 	return retCode;
 }
 
-
-void StackMachine::terminateAllThreads()
-{
-	threadsLock.lock();
-	for(auto it = threads.begin();it != threads.end();it++)
-	{
-
-		it->second->getMachineThread()->terminate(-1);
-	}
-	threadsLock.unlock();
-	// Give the threads some time to terminate by themselves.
-	Sleep(50);
-
-	// Threads still in ::threads have still not terminated. Kill them with fire!
-	threadsLock.lock();
-	for(auto it= threads.begin();it != threads.end(); it++)
-	{
-		DebugOut(L"Virtual machine") << L"Forcefully killing thread with id: " << it->first;
-		it->second->getMachineThread()->forceKill();
-	}
-	threads.clear();
-	threadsLock.unlock();
-}
-
-void StackMachine::reportThreadTermination(SM_THREAD_ID threadId)
-{
-	std::lock_guard<std::mutex> guard(threadsLock);
-	threads.erase(threadId);
-}
 
 
 void StackMachine::disassembleProgram()
@@ -102,4 +61,28 @@ void StackMachine::disassembleProgram()
 		(*program)[i]->print(staticsTable);
 		std::wcout << std::endl;
 	}
+}
+
+
+ThreadManager* StackMachine::getThreadManager()
+{
+	return &threadManager;
+}
+
+
+VariantReference<Scope>& StackMachine::getGlobalScope()
+{
+	return globalScope;
+}
+shared_ptr<vector<shared_ptr<Instruction>>> StackMachine::getCode()
+{
+	return program;
+}
+shared_ptr<vector<shared_ptr<StaticData>>> StackMachine::getStatics()
+{
+	return staticsTable;
+}
+shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> StackMachine::getMacros()
+{
+	return macros;
 }

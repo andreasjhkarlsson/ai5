@@ -22,23 +22,6 @@ class Instruction;
 using std::shared_ptr;
 using std::vector;
 
-typedef unsigned int SM_THREAD_ID;
-
-
-
-class ThreadHandle: public HandleVariant
-{
-public:
-	static const HANDLE_TYPE HTYPE = THREAD_HANDLE;
-	friend class GC;
-	StackMachineThread* getMachineThread();
-	bool isValid() const override;
-private:
-	ThreadHandle(StackMachine*,StackMachineThread*);
-	~ThreadHandle();
-	StackMachineThread* machineThread;
-	StackMachine* machine;
-};
 
 
 // This represents the virtual machine.
@@ -51,11 +34,7 @@ private:
 public:
 
 	friend class GC;
-
-	StackMachineThread(StackMachine*,SM_THREAD_ID,shared_ptr<vector<shared_ptr<StaticData>>> statics,
-					shared_ptr<vector<shared_ptr<Instruction>>> program,
-					shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros,
-					VariantReference<Scope>& globalScope);
+	StackMachineThread(StackMachine*);
 	~StackMachineThread(void);
 
 	// These methods are called by instructions, so they need
@@ -75,13 +54,10 @@ public:
 	__forceinline BlockStack* getBlockStack();
 	inline void setCurrentCallBlock(CallBlock* frame);
 	inline CallBlock* getCurrentCallBlock();
-	void startThread();
-	void startThread(const VariantReference<UserFunctionVariant>& entryPoint);
-	int join();
+	void setStartFunction(const VariantReference<UserFunctionVariant>& entryPoint);
 	void run();
 	void terminate(int code);
-	void forceKill();
-	SM_THREAD_ID getThreadId();
+	bool isTerminated();
 	VariantReference<NameVariant> getNearestName(NameIdentifier identifier);
 	VariantReference<NameVariant> getGlobalName(NameIdentifier identifier);
 	VariantReference<NameVariant> getLocalName(NameIdentifier identifier);
@@ -103,10 +79,7 @@ public:
 		return returnCode;
 	}
 
-	void setThreadName(shared_string);
-	shared_string getThreadName();
-
-	GC::ThreadContext* threadContext;
+	void setThreadContext(ThreadContext*);
 
 private:
 	// Code and static data.
@@ -134,15 +107,10 @@ private:
 
 	int returnCode;
 
-	std::thread* myThread;
-
 	VariantReference<UserFunctionVariant> myThreadFunc;
 
-	SM_THREAD_ID myId;
-
-	StackMachine* owner;
-
-	shared_string name;
+	ThreadContext* myContext;
+	StackMachine* parent;
 };
 
 void StackMachineThread::jumpRelative(int offset)

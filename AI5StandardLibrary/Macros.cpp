@@ -162,5 +162,5 @@ VariantReference<> Macros::weekDay(StackMachineThread*)
 
 VariantReference<> Macros::threadId(StackMachineThread* machine)
 {
-	return (int)machine->getThreadId();
+	return (int)0; // TODO!
 }

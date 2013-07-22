@@ -7,6 +7,8 @@
 #include "StackMachineThread.h"
 #include "gc.h"
 #include <mutex>
+#include "ThreadManager.h"
+
 class StackMachine
 {
 public:
@@ -14,22 +16,27 @@ public:
 	StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress);
 	~StackMachine(void);
-	VariantReference<ThreadHandle> createThread();
-	void reportThreadTermination(SM_THREAD_ID);
+	
+	VariantReference<Scope>& getGlobalScope();
+	shared_ptr<vector<shared_ptr<Instruction>>> getCode();
+	shared_ptr<vector<shared_ptr<StaticData>>> getStatics();
+	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> getMacros();
+	
 	void startMainThread();
 	int waitForTermination();
-	void terminateAllThreads();
 	void disassembleProgram();
 	void addBuiltInFunction(const UnicodeString &name,BuiltinFunction function);
 	void addMacro(const UnicodeString &name,MACRO_FUNCTION macroFunc);
+	ThreadManager* getThreadManager();
 private:
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
 	shared_ptr<vector<shared_ptr<StaticData>>> staticsTable;
 	shared_ptr<std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>> macros;
 	VariantReference<Scope> globalScope;
-	std::unordered_map<SM_THREAD_ID,VariantReference<ThreadHandle>> threads;
-	VariantReference<ThreadHandle> mainThread;
-	SM_THREAD_ID latestThread;
+	
+	ThreadContext* mainThread;
+	ThreadManager threadManager;
+	
 	int startAddress;
 	std::mutex threadsLock;
 };

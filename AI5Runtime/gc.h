@@ -15,7 +15,7 @@ class Scope;
 class NameVariant;
 class NameReferenceVariant;
 class UserFunctionVariant;
-class ThreadHandle;
+class ThreadContext;
 
 class GC
 {
@@ -36,45 +36,19 @@ public:
 		char referencedFrom; 
 	};
 
-	struct ThreadContext: public DoubleLinkedList<ThreadContext>::Node
-	{
-		ThreadContext(){}
-		StackMachineThread* machineThread;
-		DoubleLinkedList<BlockHeader>* gen0;
-		struct SafePoint
-		{
-			SafePoint();
-			void check();
-			void signalStop();
-			void release();
-			volatile bool stop;
-			volatile bool stopped;
-			std::mutex lock;
-		} safePoint;
 
-	};
-
-	class SafeRegion
+	struct ThreadInfo
 	{
-	public:
-		SafeRegion(StackMachineThread*);
-		SafeRegion(void);
-		~SafeRegion();
-		void leave();
-	private:
-		ThreadContext::SafePoint* sp;
-		bool exited;
+		DoubleLinkedList<BlockHeader> gen0;
 	};
 
 	// Public interface for users.
 	static void init(StackMachine*);
-	static void initThread(StackMachineThread*);
-	static void uninitThread();
+	static void initThread(ThreadContext*);
+	static void uninitThread(ThreadContext*);
 	static void shutdown();
 	static void collect(bool wait);
 	static void cleanup();
-	static void enterSafePoint();
-	static void enterSafePoint(StackMachineThread*);
 	template <class T>
 	static T* alloc();
 	template <class T,class U>
@@ -90,8 +64,9 @@ public:
 
 private:
 	static const char GENERATION_STATIC = -1;
-	static const int MESSAGE_START_CYCLE = 0;
-	static const int MESSAGE_STOP = 1;
+	static const int MESSAGE_START_SYNCHRONOUS_CYCLE = 0;
+	static const int MESSAGE_START_ASYNCHRONOUS_CYCLE = 1;
+	static const int MESSAGE_STOP = 2;
 	static GC* instance;
 	static const size_t BLOCKHEADER_ALIGNED_SIZE = sizeof(BlockHeader) + (sizeof(BlockHeader)%sizeof(BlockHeader*));
 
@@ -113,7 +88,7 @@ private:
 	void mark(NameVariant* name);
 	void mark(NameReferenceVariant* nameReference);
 	void mark(UserFunctionVariant* userFunc);
-	void mark(ThreadHandle* threadHandle);
+	void mark(ThreadContext* tContext);
 	void sweep(DoubleLinkedList<BlockHeader>* objects);
 	void freeAll();
 	void freeObject(BlockHeader*);
@@ -122,8 +97,6 @@ private:
 
 	DoubleLinkedList<BlockHeader> staticList;
 	DoubleLinkedList<BlockHeader> orphans;
-	DoubleLinkedList<ThreadContext> threads;
-	std::mutex threadsLock;
 	
 	std::thread markAndSweepThread;
 	Semaphore cycleComplete;

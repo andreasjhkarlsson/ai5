@@ -12,7 +12,6 @@ public:
 
 	static const HANDLE_TYPE MODULE_HANDLE = 0;
 	static const HANDLE_TYPE FILE_HANDLE = 1;
-	static const HANDLE_TYPE THREAD_HANDLE = 2;
 
 	
 	~HandleVariant(void);

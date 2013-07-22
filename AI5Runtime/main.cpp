@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 				GlobalOptions::setPrintInstructions();
 
 			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
-			GC::SafeRegion safeRegion;
+			
 			int returnCode = 0;
 			
 			if(disassemble)
@@ -75,12 +75,11 @@ int main(int argc, char* argv[])
 				machine->startMainThread();
 				returnCode = machine->waitForTermination();
 				// Terminate all remaining threads.
-				machine->terminateAllThreads();
+				machine->getThreadManager()->killAll();
 			}
 
 
 			DebugOut(L"Status") << "Program ended with code: " << returnCode;
-
 
 			GC::collect(true);
 

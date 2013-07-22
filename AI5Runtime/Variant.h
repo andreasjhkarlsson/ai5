@@ -32,7 +32,8 @@ public:
 	static const VARIANT_TYPE HASH_MAP			= 15;
 	static const VARIANT_TYPE ITERATOR			= 16;
 	static const VARIANT_TYPE HANDLE_VAR		= 17;
-	static const int NUMBER_OF_VARIANT_TYPES	= 18;
+	static const VARIANT_TYPE THREAD_VAR		= 18;
+	static const int NUMBER_OF_VARIANT_TYPES	= 19;
 	const char* typeAsString();
 
 

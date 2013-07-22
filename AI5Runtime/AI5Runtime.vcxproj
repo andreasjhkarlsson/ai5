@@ -200,6 +200,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="misc_instructions.cpp" />
     <ClCompile Include="NameReferenceVariant.cpp" />
     <ClCompile Include="NullVariant.cpp" />
+    <ClCompile Include="platform.cpp" />
     <ClCompile Include="Scope.cpp" />
     <ClCompile Include="NameVariant.cpp" />
     <ClCompile Include="ProgramLoader.cpp" />
@@ -208,6 +209,8 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClCompile Include="StackMachineThread.cpp" />
     <ClCompile Include="Static.cpp" />
     <ClCompile Include="StringVariant.cpp" />
+    <ClCompile Include="ThreadContext.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
     <ClCompile Include="types.cpp" />
     <ClCompile Include="UserFunctionVariant.cpp" />
     <ClCompile Include="Variant.cpp" />
@@ -250,6 +253,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="misc_instructions.h" />
     <ClInclude Include="NameReferenceVariant.h" />
     <ClInclude Include="NullVariant.h" />
+    <ClInclude Include="platform.h" />
     <ClInclude Include="PooledObject.h" />
     <ClInclude Include="ProduceConsumeQueue.h" />
     <ClInclude Include="RuntimeError.h" />
@@ -265,6 +269,8 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51.dll $(OutDir)\icuin51.dll</Comma
     <ClInclude Include="Instruction.h" />
     <ClInclude Include="StackMachineThread.h" />
     <ClInclude Include="StringVariant.h" />
+    <ClInclude Include="ThreadContext.h" />
+    <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="types.h" />
     <ClInclude Include="UserFunctionVariant.h" />
     <ClInclude Include="Variant.h" />
