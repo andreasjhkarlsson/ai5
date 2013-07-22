@@ -151,9 +151,13 @@
     <ClCompile Include="comparison_instructions.cpp">
       <Filter>instructions</Filter>
     </ClCompile>
-    <ClCompile Include="ThreadManager.cpp" />
-    <ClCompile Include="ThreadContext.cpp" />
     <ClCompile Include="platform.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadContext.cpp">
+      <Filter>general</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadManager.cpp">
       <Filter>general</Filter>
     </ClCompile>
   </ItemGroup>
@@ -323,9 +327,13 @@
     <ClInclude Include="DoubleLinkedList.h">
       <Filter>data structures</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadManager.h" />
-    <ClInclude Include="ThreadContext.h" />
     <ClInclude Include="platform.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager.h">
+      <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadContext.h">
       <Filter>general</Filter>
     </ClInclude>
   </ItemGroup>

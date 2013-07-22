@@ -57,6 +57,10 @@ void CallBlock::leave(StackMachineThread*machine)
 // and makes sure variable not used by closures are freed immeditely.
 void CallBlock::processClosures(StackMachineThread* machine)
 {
+
+	if(closureScope.empty())
+		return;
+
 	// For each name that was added as a "closed name" during call
 	// add it to the closure scope.
 	for(size_t i=0;i<closedNames.size();i++)
@@ -70,14 +74,13 @@ void CallBlock::processClosures(StackMachineThread* machine)
 		}
 	}
 
-	if(!closureScope.empty())
+
+	// Relink closures scope into the proper scope.
+	for(size_t i=0;i<closures.size();i++)
 	{
-		// Relink closures scope into the proper scope.
-		for(size_t i=0;i<closures.size();i++)
-		{
-			closures[i]->getEnclosingScope()->setEnclosingScope(owner->getEnclosingScope());
-		}
+		closures[i]->getEnclosingScope()->setEnclosingScope(owner->getEnclosingScope());
 	}
+
 }
 
 
