@@ -27,7 +27,7 @@ VariantReference<> TimerFunctions::sleep(CallInfo* callInfo)
 
 	int sleepDelay = callInfo->getInt32Arg(0);
 
-	Sleep(sleepDelay);
+	BLOCKING_SYSCALL(Sleep(sleepDelay));
 	
 	return nullptr;
 }

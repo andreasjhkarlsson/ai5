@@ -37,6 +37,7 @@ StackMachine::~StackMachine(void)
 void StackMachine::startMainThread()
 {
 	mainThread = createThread();
+	mainThread->getMachineThread()->setThreadName(create_shared_string(L"main"));
 	mainThread->getMachineThread()->jumpAbsolute(startAddress);
 	mainThread->getMachineThread()->startThread();
 }

@@ -29,7 +29,7 @@ FileFunctions::~FileFunctions(void)
 
 VariantReference<> FileFunctions::printline(CallInfo* callInfo)
 {
-
+	std::lock_guard<std::recursive_mutex> guard(printLock);
 	for(int i=0;i<callInfo->getArgCount();i++)
 	{
 		if(i > 0)

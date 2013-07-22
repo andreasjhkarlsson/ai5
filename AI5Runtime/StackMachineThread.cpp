@@ -88,6 +88,7 @@ void StackMachineThread::run()
 {
 	GC::initThread(this);
 	terminated = false;
+	DebugOut(L"Thread") << "Thread with name " << this->name->getTerminatedBuffer() << " created.";
 	try
 	{
 		while (!terminated) 
@@ -96,7 +97,7 @@ void StackMachineThread::run()
 			{
 				(*program)[programCounter]->print(staticsTable);
 			}
-			
+			GC::enterSafePoint(this);
 			(*program)[programCounter]->execute(this);		
 		}
 	}
@@ -106,6 +107,7 @@ void StackMachineThread::run()
 			std::endl << "The program will now terminate." << std::endl;
 		returnCode = -1;
 	}
+	DebugOut(L"Thread") << "Thread with name " << this->name->getTerminatedBuffer() << " terminated.";
 	GC::uninitThread();
 	owner->reportThreadTermination(myId);
 
@@ -122,6 +124,14 @@ void StackMachineThread::forceKill()
 	TerminateThread(myThread->native_handle(),-1);
 }
 
+void StackMachineThread::setThreadName(shared_string newName)
+{
+	name = newName;
+}
+shared_string StackMachineThread::getThreadName()
+{
+	return name;
+}
 
 
 MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)

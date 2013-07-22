@@ -1,5 +1,6 @@
 #pragma once
 #include "..\AI5Runtime\types.h"
+#include <mutex>
 
 class FileFunctions
 {
@@ -19,5 +20,6 @@ private:
 	VariantReference<> fileRead(CallInfo* callInfo);
 	VariantReference<> fileWrite(CallInfo* callInfo);
 	VariantReference<> fileReadLine(CallInfo* callInfo);
+	std::recursive_mutex printLock;
 };
 

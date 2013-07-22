@@ -41,6 +41,29 @@ public:
 		ThreadContext(){}
 		StackMachineThread* machineThread;
 		DoubleLinkedList<BlockHeader>* gen0;
+		struct SafePoint
+		{
+			SafePoint();
+			void check();
+			void signalStop();
+			void release();
+			volatile bool stop;
+			volatile bool stopped;
+			std::mutex lock;
+		} safePoint;
+
+	};
+
+	class SafeRegion
+	{
+	public:
+		SafeRegion(StackMachineThread*);
+		SafeRegion(void);
+		~SafeRegion();
+		void leave();
+	private:
+		ThreadContext::SafePoint* sp;
+		bool exited;
 	};
 
 	// Public interface for users.
@@ -50,6 +73,8 @@ public:
 	static void shutdown();
 	static void collect(bool wait);
 	static void cleanup();
+	static void enterSafePoint();
+	static void enterSafePoint(StackMachineThread*);
 	template <class T>
 	static T* alloc();
 	template <class T,class U>
@@ -92,6 +117,8 @@ private:
 	void sweep(DoubleLinkedList<BlockHeader>* objects);
 	void freeAll();
 	void freeObject(BlockHeader*);
+	void stopTheWorld();
+	void resumeTheWorld();
 
 	DoubleLinkedList<BlockHeader> staticList;
 	DoubleLinkedList<BlockHeader> orphans;

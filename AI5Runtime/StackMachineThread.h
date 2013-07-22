@@ -103,6 +103,11 @@ public:
 		return returnCode;
 	}
 
+	void setThreadName(shared_string);
+	shared_string getThreadName();
+
+	GC::ThreadContext* threadContext;
+
 private:
 	// Code and static data.
 	shared_ptr<vector<shared_ptr<Instruction>>> program;
@@ -136,6 +141,8 @@ private:
 	SM_THREAD_ID myId;
 
 	StackMachine* owner;
+
+	shared_string name;
 };
 
 void StackMachineThread::jumpRelative(int offset)

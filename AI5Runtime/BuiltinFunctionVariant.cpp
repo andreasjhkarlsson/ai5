@@ -31,15 +31,16 @@ void BuiltinFunctionVariant::call(StackMachineThread* machine,int numberOfArgume
 		callInfo.addArg(arg);
 	}
 
-	// Pop of the arguments + the function object (this), which resides below the arguments.
-	machine->getDataStack()->popMany(numberOfArguments+1);
-
 	// Call the function!!1!
 	VariantReference<> result = func(&callInfo);
 	if(result.empty())
 	{
 		result = VariantReference<>::NullReference();
 	}
+
+
+	// Pop of the arguments + the function object (this), which resides below the arguments.
+	machine->getDataStack()->popMany(numberOfArguments+1);
 
 	machine->getDataStack()->push(result);
 	machine->advanceCounter();

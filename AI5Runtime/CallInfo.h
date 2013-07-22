@@ -26,3 +26,4 @@ private:
 	StackMachineThread* machine;
 };
 
+#define BLOCKING_SYSCALL(call) {GC::SafeRegion safeRegion; call; safeRegion.leave();}

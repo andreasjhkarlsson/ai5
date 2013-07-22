@@ -16,9 +16,9 @@ SystemFunctions::~SystemFunctions(void)
 
 VariantReference<> SystemFunctions::runGC(CallInfo* callInfo)
 {
-	callInfo->validateArgCount(0,0);
+	callInfo->validateArgCount(0,1);
 
-	GC::collect(true);
+	GC::collect(callInfo->getBoolArg(0,false));
 	
 	return nullptr;
 }
@@ -35,10 +35,10 @@ void SystemFunctions::registerFunctions(StackMachine* machine)
 
 VariantReference<> SystemFunctions::startThread(CallInfo* callInfo)
 {
-	callInfo->validateArgCount(1,1);
+	callInfo->validateArgCount(1,2);
 	VariantReference<ThreadHandle> thread = machine->createThread();
+	thread->getMachineThread()->setThreadName(callInfo->getStringArg(1));
 	thread->getMachineThread()->startThread(callInfo->getArg(0)->cast<UserFunctionVariant>());
-
 	return thread;
 }
 
@@ -46,5 +46,7 @@ VariantReference<> SystemFunctions::joinThread(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	// Yiiihaaa! Crazy chain coming up!
-	return callInfo->getArg(0).cast<HandleVariant>()->castHandle<ThreadHandle>()->getMachineThread()->join();
+	StackMachineThread* machineThread = callInfo->getArg(0).cast<HandleVariant>()->castHandle<ThreadHandle>()->getMachineThread();
+	BLOCKING_SYSCALL(machineThread->join());
+	return 0;
 }

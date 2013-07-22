@@ -1,11 +1,13 @@
 #pragma once
+#include <functional>
+#include <chrono>
 #include "gc.h"
 #include "StackMachine.h"
 #include "Variant.h"
 #include "VariantReference.h"
 #include "GlobalOptions.h"
 #include "misc.h"
-#include <functional>
+
 
 GC* GC::instance = nullptr;
 
@@ -22,6 +24,8 @@ void GC::initThread(StackMachineThread* machineThread)
 	currentThread = new ThreadContext();
 	currentThread->machineThread = machineThread;
 	currentThread->gen0 = new DoubleLinkedList<BlockHeader>();
+	if(machineThread != nullptr)
+		machineThread->threadContext = currentThread;
 	std::lock_guard<std::mutex> guard(instance->threadsLock);
 	instance->threads.push_back(currentThread);
 }
@@ -34,6 +38,70 @@ void GC::uninitThread()
 	instance->orphans.splice(currentThread->gen0);
 
 	delete currentThread;
+}
+
+
+void GC::enterSafePoint()
+{
+	currentThread->safePoint.check();
+}
+
+void GC::enterSafePoint(StackMachineThread* machineThread)
+{
+	machineThread->threadContext->safePoint.check();
+}
+
+GC::ThreadContext::SafePoint::SafePoint(): stop(false), stopped(false)
+{
+
+}
+
+void GC::ThreadContext::SafePoint::check()
+{
+	if(stop)
+	{
+		stopped = true;
+		std::lock_guard<std::mutex> guard(lock);
+		stopped = false;
+	}
+}
+
+void GC::ThreadContext::SafePoint::signalStop()
+{
+	lock.lock();
+	stop = true;
+}
+void GC::ThreadContext::SafePoint::release()
+{
+	stop = false;
+	lock.unlock();
+}
+
+GC::SafeRegion::SafeRegion(StackMachineThread* machineThread): exited(false), sp(&machineThread->threadContext->safePoint)
+{
+	sp->stopped = true;
+	DebugOut(L"Thread") << "SafeRegion entered";
+}
+
+GC::SafeRegion::SafeRegion(void): exited(false), sp(&currentThread->safePoint)
+{
+	sp->stopped = true;
+	DebugOut(L"Thread") << "SafeRegion entered";
+}
+
+GC::SafeRegion::~SafeRegion()
+{
+	leave();
+}
+
+void GC::SafeRegion::leave()
+{
+	if(!exited)
+	{
+		DebugOut(L"Thread") << "SafeRegion exited";
+		sp->check();
+		exited = true;
+	}
 }
 
 void GC::shutdown()
@@ -55,22 +123,20 @@ GC::BlockHeader::BlockHeader(): mark(false),generation(0),referencedFrom(-1)
 void GC::collect(bool wait)
 {
 	instance->messageQueue.push(MESSAGE_START_CYCLE);
-	instance->cycleComplete.wait();
+	if(wait)
+		instance->cycleComplete.wait();
 }
-
 
 void GC::trackObject(BlockHeader* object)
 {
 	currentThread->gen0->push_back(object);
 }
 
-
 void GC::addStaticObject(BlockHeader* object)
 {
 	object->generation = GENERATION_STATIC;
 	staticList.push_front(object);
 }
-
 
 void GC::mark(ListVariant* list)
 {
@@ -88,6 +154,7 @@ void GC::mark(HashMapVariant* hashMap)
 		mark(it->second);
 	}
 }
+
 void GC::mark(Scope* scope)
 {
 	for(auto it = scope->lookup.begin();it!=scope->lookup.end();it++)
@@ -96,7 +163,6 @@ void GC::mark(Scope* scope)
 	if(!scope->enclosingScope.empty())
 		mark(scope->enclosingScope);
 }
-
 
 void GC::mark(ThreadHandle* threadHandle)
 {
@@ -117,7 +183,6 @@ void GC::mark(ThreadHandle* threadHandle)
 	{
 		mark(dataStack->stack[i]);
 	}
-
 }
 
 void GC::mark(HandleVariant* handle)
@@ -127,10 +192,12 @@ void GC::mark(HandleVariant* handle)
 		mark(handle->castHandle<ThreadHandle>());
 	}
 }
+
 void GC::mark(NameVariant* name)
 {
 	mark(name->value);
 }
+
 void GC::mark(NameReferenceVariant* nameReference)
 {
 	mark(nameReference->value);
@@ -182,7 +249,6 @@ void GC::mark(const VariantReference<>&ref)
 	mark(head);
 }
 
-
 void GC::sweep(DoubleLinkedList<BlockHeader>* objects)
 {
 	BlockHeader* current = objects->firstElement();
@@ -219,6 +285,8 @@ void GC::run()
 		{
 
 			DebugOut(L"GC") << "Running cycle.";
+
+			stopTheWorld();
 
 			// Find all roots and mark them.
 			// Roots are:
@@ -258,6 +326,8 @@ void GC::run()
 
 			sweep(&orphans);
 
+			resumeTheWorld();
+
 			cycleComplete.signal();
 		}
 	}
@@ -268,6 +338,66 @@ GC::BlockHeader* GC::VarRefToBlockHead(const VariantReference<>&ref)
 	if(!ref.isComplexType())
 		return nullptr;
 	return reinterpret_cast<BlockHeader*>(((char*)ref.ref.variant)-BLOCKHEADER_ALIGNED_SIZE);
+}
+
+void GC::stopTheWorld()
+{
+	// Threads have 25 ms to stop!
+	const __int64 TIME_LIMIT = 2500;
+	std::lock_guard<std::mutex> guard(threadsLock);
+	
+	DebugOut(L"GC") << "Signaling all threads to stop!";
+
+	// Tell all threads to stop!!
+	ThreadContext* context = threads.firstElement();
+	while(!context->sentinel)
+	{
+		context->safePoint.signalStop();
+		context = context->next;
+	}
+
+	typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::milliseconds milliseconds;
+	// Give the threads some time to stop.
+	auto startTime = Clock::now();
+
+	while(true)
+	{
+		__int64 diff = std::chrono::duration_cast<milliseconds>(Clock::now() - startTime).count();
+		bool allStopped = true; // A flag. Gross!
+		context = threads.firstElement();
+		while(!context->sentinel)
+		{
+			if(!context->safePoint.stopped)
+			{
+				if(diff > TIME_LIMIT)
+				{
+					// TODO: Suspend thread!
+					DebugOut(L"GC") << "Thread did not respond in time!!";
+				}
+				else
+				{
+					allStopped = false;
+				}
+			}
+			context = context->next;
+		}
+		if(allStopped)
+			break;
+	}
+
+	DebugOut(L"GC") << "All threads stopped!";
+}
+
+void GC::resumeTheWorld()
+{
+	DebugOut(L"GC") << "Signaling all threads to resume!";
+	ThreadContext* context = threads.firstElement();
+	while(!context->sentinel)
+	{
+		context->safePoint.release();
+		context = context->next;
+	}
 }
 
 void GC::cleanup()

@@ -27,9 +27,6 @@ const option::Descriptor usage[] =
 
 int main(int argc, char* argv[]) 
 {
-
-	
-
 	argc-=(argc>0); argv+=(argc>0); // skip program name argv[0] if present
 	option::Stats  stats(usage, argc, argv);
 	option::Option options[128], buffer[129];
@@ -45,6 +42,7 @@ int main(int argc, char* argv[])
 
 	if(parse.nonOptionsCount() > 0)
 	{
+
 		clock_t begin = clock();
 
 		// Make console UTF-16 aware.
@@ -65,9 +63,9 @@ int main(int argc, char* argv[])
 				GlobalOptions::setPrintInstructions();
 
 			std::shared_ptr<StackMachine> machine = ProgramLoader::LoadFromFile(parse.nonOption(0));
-
+			GC::SafeRegion safeRegion;
 			int returnCode = 0;
-
+			
 			if(disassemble)
 			{
 				machine->disassembleProgram();
@@ -92,7 +90,6 @@ int main(int argc, char* argv[])
 			double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 			
 			DebugOut(L"Status") << "Execution time: " << elapsed_secs;
-
 
 			return returnCode;
 
