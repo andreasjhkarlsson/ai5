@@ -17,7 +17,8 @@ public:
 	virtual std::wostream& format(std::wostream& stream) const;
 	void set(const VariantReference<>& key,VariantReference<>& value);
 	const VariantReference<>& get(const VariantReference<>& key);
-	virtual VariantReference<IteratorVariant> iterate();
+	virtual VariantReference<IteratorVariant> iterate() override;
+	virtual bool toBoolean() const;
 	std::unordered_map<VariantReference<>,VariantReference<>>* getMap();
 private:
 	HashMapVariant(void);

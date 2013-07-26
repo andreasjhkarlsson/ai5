@@ -78,3 +78,7 @@ VariantReference<> HashMapVariant::KeyIterator::next()
 	return (it++)->first;
 }
 
+bool HashMapVariant::toBoolean() const
+{
+	return this->map.size() > 0;
+}
