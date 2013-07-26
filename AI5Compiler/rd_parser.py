@@ -163,6 +163,8 @@ class Parser:
     # Expect token of newline type.
     def expectNewline(self):
         self.expect(Token.NEWLINE)
+    def acceptNewline(self):
+        self.accept(Token.NEWLINE)
     # Check if next token is EOF without consuming token.
     def isNextEOF(self):
         self.next()
@@ -939,12 +941,14 @@ class InlineList(Rule):
             return None
         nodes = {}
         expressions = []
+        parser.acceptNewline()
         if parser.acceptRule(Expression):
             expressions.append(parser.matched_rule)
             while parser.accept(Token.COMMA):
+                parser.acceptNewline()
                 expressions.append(parser.expectRule(Expression))
         nodes[InlineList.NODE_ELEMENTS] = expressions
-
+        parser.acceptNewline()
         parser.expect(Token.RIGHT_BRACKET)
         return InlineList(nodes)
         
@@ -1046,10 +1050,13 @@ class InlineMap(Rule):
         if not parser.accept(Token.LEFT_CURLY_BRACKET):
             return None
         key_values = []
+        parser.acceptNewline()
         if parser.acceptRule(KeyValue):
             key_values += [parser.matched_rule]
             while parser.accept(Token.COMMA):
+                parser.acceptNewline()
                 key_values += [parser.expectRule(KeyValue)]
+        parser.acceptNewline()
         parser.expect(Token.RIGHT_CURLY_BRACKET)
         return InlineMap({InlineMap.NODE_KEY_VALUES: key_values})
 
@@ -1063,6 +1070,7 @@ class KeyValue(Rule):
             return None
         key = parser.matched_rule
         parser.expect(Token.COLON)
+        parser.acceptNewline()
         value = parser.expectRule(Expression)
         return KeyValue({KeyValue.NODE_KEY: key, KeyValue.NODE_VALUE: value})
     
