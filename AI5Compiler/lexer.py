@@ -2,8 +2,6 @@ import re
 import os
 import codecs
 
-COMPILER_INCLUDE_DIRECTORY = "C:\\Program Files (x86)\\AutoIt3\\Include\\"
-
 class Source:
     def __init__(self,filename,line_number):
         self.filename = filename
@@ -317,8 +315,9 @@ class Lexer:
                     LeftCurlyBracketToken,RightCurlyBracketToken,ColonToken, KeywordToken,
                      FloatingToken,DotToken,MacroToken,CommentToken,DirectiveToken,NewlineToken,WhitespaceToken,
                      OperatorToken,IntegerToken,StringToken,BooleanToken,IdentifierToken]
-    def __init__(self):
+    def __init__(self,compiler_include_directory):
         self.file_skip_filter = set()
+        self.compiler_include_directory = compiler_include_directory
 
     def get_script_directory(self,filename):
         dir = os.path.dirname(filename)
@@ -328,7 +327,7 @@ class Lexer:
 
     def get_included_file(self,source_file,include_file):
         if include_file.type == IncludeFile.COMPILER_RELATIVE:
-            full_path = COMPILER_INCLUDE_DIRECTORY + include_file.path
+            full_path = self.compiler_include_directory + include_file.path
         else:
             full_path = self.get_script_directory(source_file) + include_file.path
         include_file_handle = codecs.open(full_path,"r","utf-8")

@@ -1,0 +1,28 @@
+#include-once
+
+Global _testing_name
+
+Func TestCase(name,fn)
+	consoleWrite(@tab&@tab&@tab&name&@CRLF)
+	_testing_name = name 
+	fn()
+EndFunc
+
+Func RunTests(map)
+	For key in map
+		TestCase(key,map[key])
+	Next
+EndFunc
+
+Func TestFailed(msg)
+	consoleWrite(msg&@CRLF)
+	Exit 1
+EndFunc
+
+Func AssertEqual(a,b)
+	If a<>b Then TestFailed("Assert failure: "&a&" != "&b)
+EndFunc
+
+Func Assert(a)
+	If not a Then TestFailed("Assert failure: value not true")
+EndFunc

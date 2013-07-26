@@ -33,8 +33,8 @@ try:
     input = fhandle.read()
     fhandle.close()
 
-    lexer = Lexer()
-    tokens = lexer.lex_string(input,"inline_buffer")
+    lexer = Lexer(os.path.dirname(sys.argv[0] )+"/ai5-include/")
+    tokens = lexer.lex_string(input,input_file)
 
     parser = Parser(tokens)
     ast = parser.parse_program()
@@ -47,13 +47,13 @@ try:
 
     statics_table = compiler.static_table
     #statics_table.dump()
-    for index,instruction in enumerate(instructions):
-       print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
+    #for index,instruction in enumerate(instructions):
+    #   print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
     
 
     CompiledFile(statics_table,instructions).write_to_file(open(output_file,"wb"))
 
-    print("Compiled program written to file "+output_file+" without problems.")
+    #print("Compiled program written to file "+output_file+" without problems.")
 except (LexError,ParseError,CompileError) as error:
     print("Error compiling program:\n\tin file: "+error.source.filename+" at line "+str(error.source.line_number)+": "+error.message)
     sys.exit(1)
