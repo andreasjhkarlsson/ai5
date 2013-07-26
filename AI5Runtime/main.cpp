@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 		catch(ProgramLoadError& error)
 		{
 			std::wcout << L"Error\t: Program load failed: "+error.getMessage() << std::endl;
-			return -1;
+			return 2;
 		}
 	}
 	else

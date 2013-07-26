@@ -1,0 +1,58 @@
+#include <testing.ai5>
+
+func echo(str)
+	return str
+endfunc
+
+func doubleUp(n)
+	return n*2
+endfunc
+
+func byreffunc(byref a, byref b)
+	a += b
+	b = 0
+endfunc
+
+func fib(n)
+	if n <= 1 then return 1
+	return fib(n-1) + fib(n-2)
+endfunc
+
+Func partial(fn,arg)
+	Func inner()
+		return fn(arg)
+	EndFunc
+	Return inner
+Endfunc
+
+Func TestParamReturn()
+	assertEqual(echo("foo"),"foo")
+	assertEqual(doubleUp(10),20)
+EndFunc
+
+Func TestByRef()
+	foo = 10
+	bar = 15
+	byreffunc(foo,bar)
+	assertEqual(foo,25)
+	assertEqual(bar,0)
+EndFunc
+
+Func TestRecursion()
+	assertEqual(fib(5),8)
+EndFunc
+
+Func TestClosure()
+	closure = partial(doubleUp,10)
+	assertEqual(closure(),20)
+EndFunc
+
+RunTests({
+			"Parameters and return values": TestParamReturn,
+			"ByRef": TestByRef,
+			"Recursion": TestRecursion,
+			"Closures": TestClosure
+			})
+
+
+
