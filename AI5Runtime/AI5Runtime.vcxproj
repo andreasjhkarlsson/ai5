@@ -142,7 +142,7 @@ copy /Y $(SolutionDir)..\shared\icu\bin\icuin51d.dll $(OutDir)\icuin51d.dll</Com
       <AdditionalDependencies>icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll
+      <Command>copy /Y $(SolutionDir)..\shared\autoitx\AutoItX3.dll $(OutDir)\AutoItX3.dll
 copy /Y $(SolutionDir)..\shared\icu\bin\icuuc51.dll $(OutDir)\icuuc51.dll
 copy /Y $(SolutionDir)..\shared\icu\bin\icuio51.dll $(OutDir)\icuio51.dll
 copy /Y $(SolutionDir)..\shared\icu\bin\icudt51.dll $(OutDir)\icudt51.dll
