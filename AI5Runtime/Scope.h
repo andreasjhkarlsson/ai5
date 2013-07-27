@@ -7,49 +7,42 @@
 #include "PooledObject.h"
 #include "types.h"
 #include "gc.h"
+#include "platform.h"
 
 class StackMachineThread;
 
 // Keeping this class optimized is VERY important.
 class Scope: public Variant
 {
+private:
+	typedef std::shared_ptr<std::lock_guard<std::mutex>> guard_ptr;
 public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = SCOPE;
-
 	static Scope* Create();
 
-	~Scope()
-	{
-	}
+	~Scope();
 
-	__forceinline VariantReference<NameVariant>& getNameFromString(const UnicodeString &name)
-	{
-		return lookup[name];
-	}
-	__forceinline VariantReference<NameVariant> getNameFromIndex(int index)
-	{
-
-		VariantReference<NameVariant> result = indexTable[index];
-		if(result.empty() && !enclosingScope.empty())
-			result = enclosingScope->getNameFromIndex(index);
-		return result;
-	}
+	VariantReference<NameVariant>& getNameFromString(const UnicodeString &name);
+	VariantReference<NameVariant> getNameFromIndex(int index);
 	VariantReference<NameVariant> createName(const UnicodeString &name);
 	VariantReference<NameVariant> createIndexForName(const UnicodeString &name,int index);
-
 	void insertName(const UnicodeString& name,int index,VariantReference<NameVariant> nameVariant);
-
-	void setEnclosingScope(VariantReference<Scope> scope)
-	{
-		this->enclosingScope = scope;
-	}
+	void setEnclosingScope(VariantReference<Scope> scope);
 
 private:
-	Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
+	Scope();
+	void addNameToIndex(size_t index,const VariantReference<NameVariant>& nameVariant);
+
+	class ScopeGuard
 	{
-		usedIndexes.reserve(16);
-	}
+	public:
+		ScopeGuard(Scope*);
+		~ScopeGuard();
+	private:
+		Scope* scope;
+	};
+
 	VariantReference<Scope> enclosingScope;
 
 	// The string->name lookup.
@@ -64,5 +57,5 @@ private:
 	// Used to avoid clearing the entire indexTable whenever a scope object is reused.
 	std::vector<int> usedIndexes;
 
-	void addNameToIndex(size_t index,const VariantReference<NameVariant>& nameVariant);
+	LightWeightMutex lock;
 };

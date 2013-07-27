@@ -11,9 +11,10 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 					shared_ptr<vector<shared_ptr<Instruction>>> program,int startAddress): staticsTable(statics),program(program),
 					startAddress(startAddress), macros(new std::unordered_map<UnicodeString,MACRO_FUNCTION,UnicodeStringHasher,UnicodeStringComparator>)
 {
-	
+	DebugOut(L"Virtual machine") << "Initializing GC";
 	GC::init(this);
 	globalScope = GC::staticAlloc<Scope>();
+	DebugOut(L"Virtual machine") << "Loading standard library";
 	registerStandardLibrary(this);
 	
 }
