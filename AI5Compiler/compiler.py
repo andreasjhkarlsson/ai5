@@ -127,18 +127,13 @@ class Compiler:
                 instruction.exit_address = resolve_address(instruction.exit_address)
 
 
-    def resolve_loop_jump_address(self,code,start_pos,end_pos):
-        for index,instruction in enumerate(code):
-            if not hasattr(instruction,"address"): continue
-            address = instruction.address
-            if address.type == Address.UNRESOLVED_LOOP_JUMP:
-                if address.pop_level() == 0:
-                    instruction.address = address.resolve(index,start_pos,end_pos)
-
     def compile_function(self,function):
 
+        function_entry = generate_symbol()
+        beyond_function = generate_symbol()
+
         self.push_local_scope(function.scope)
-        compiled_body = []
+        compiled_body = [NoopInstruction().add_symbol(function_entry)]
         arguments = function.nodes[Function.NODE_ARGUMENTS].nodes[ArgumentList.NODE_ARGUMENT_LIST]
         for argument in arguments:
             is_byref = Argument.NODE_BYREF in argument.nodes
@@ -171,7 +166,7 @@ class Compiler:
                 if default_value_found:
                     raise CompileError("Function definition error!")
 
-        compiled_body += [LoadArgumentsInstruction(len(arguments),without_default)]   + compiled_arguments_init        
+        compiled_body += [LoadArgumentsInstruction(len(arguments),without_default)]  + compiled_arguments_init        
 
         if Function.NODE_BODY in function.nodes:
             compiled_body += self.compile_block(function.nodes[Function.NODE_BODY])
@@ -184,14 +179,14 @@ class Compiler:
         if Function.NODE_NAME in function.nodes:
             function_offset += 1
         
-        code = [PushFunctionInstruction(UnresolvedAbsoluteAddress(function_offset))]
+        code = [PushFunctionInstruction(SymbolicAddress(function_entry))]
 
         if Function.NODE_NAME in function.nodes:
             code += [AssignNearestInstruction(self.get_identifier(function.nodes[Function.NODE_NAME].value))]
 
-        code += [JumpInstruction(RelativeAddress(len(compiled_body)+1))]
+        code += [JumpInstruction(SymbolicAddress(beyond_function))]
         code += compiled_body
-        
+        code += [NoopInstruction().add_symbol(beyond_function)]
         
 
         return code
