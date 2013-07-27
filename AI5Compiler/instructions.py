@@ -32,13 +32,16 @@ class AbsoluteAddress(Address):
     def __init__(self,position):
         self.value = position
 
+
+__symbol__ = 0
+def generate_symbol():
+    global __symbol__
+    __symbol__ += 1
+    return __symbol__
+
+
 class SymbolicAddress(Address):
     type = Address.SYMBOLIC
-    symbol = 0
-    @staticmethod
-    def generate():
-        SymbolicAddress.symbol += 1
-        return SymbolicAddress(SymbolicAddress.symbol)
     def __init__(self,symbol):
         self.symbol = symbol
 

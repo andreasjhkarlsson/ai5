@@ -471,10 +471,8 @@ class Compiler:
         return code
 
     def compile_for(self,for_stmt):
-        # The loop variable.
-        loop_var = for_stmt.nodes[For.NODE_LOOP_VARIABLE]
-
-        loop_var_id = self.get_identifier(loop_var.value)
+        # The loop variable id.
+        loop_var_id = self.get_identifier(for_stmt.nodes[For.NODE_LOOP_VARIABLE].value)
 
         # Compile body.
         compiled_body = []
@@ -485,11 +483,6 @@ class Compiler:
         # We only support for variable = init to end [step int] atm.
         if For.NODE_FOR_TO in for_stmt.nodes:
             forto = for_stmt.nodes[For.NODE_FOR_TO]
-
-            # Compile init value and assign it. This code is only executed once!
-            compiled_init = self.compile_expression(forto.nodes[ForTo.NODE_INIT_EXPRESSION])
-            compiled_init += [AssignLocalInstruction(loop_var_id)]
-            compiled_init += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])
 
             # Get the step value.
             # Due to the difference in comparison operator
@@ -502,59 +495,66 @@ class Compiler:
                     step_value = -number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
                 else:
                     step_value = number_terminal.nodes[NumberTerminal.NODE_NUMBER].value
-
-            # Compile check to see if loop should continue.
-            compiled_check=[DoubleTopInstruction()]
-            compiled_check += [PushNameValueInstruction(loop_var_id)]
-            
+            # What comparison instruction to use in condition?
+            comparison_instruction = None
             if step_value > 0:
-                compiled_check += [GreaterEqualInstruction()]
+                comparison_instruction = GreaterEqualInstruction()
             elif step_value <0:
-                compiled_check += [LesserEqualInstruction()]
+                comparison_instruction = LesserEqualInstruction()
             else:
                 raise CompileError("Invalid step value!")
-            compiled_check += [JumpIfFalseInstruction(RelativeAddress(None))]
 
-            # Compilation of code to increment (or decrement) loop variable.
-            compiled_increment = [PushNameValueInstruction(loop_var_id)]
-            compiled_increment += [PushInteger32Instruction(self.static_table.get_integer32_id(step_value))]
-            compiled_increment += [AdditionInstruction()]
-            compiled_increment += [AssignLocalInstruction(loop_var_id)]
-            compiled_increment += [JumpInstruction(RelativeAddress(None))]
+            # Symbols used by for..to loop.
+            block_end = generate_symbol()
+            next = generate_symbol()
+            end = generate_symbol()
 
-            # Calculate some addresses (sorry about this).
-            compiled_check[-1].address.value = len(compiled_body)+len(compiled_increment)+1
-            compiled_increment[-1].address.value = -(len(compiled_increment)+len(compiled_body)+len(compiled_check)-1)
+            code = [PushLoopBlockInstruction(SymbolicAddress(next),
+                                             SymbolicAddress(block_end))]               # Push loop block.
+            code += self.compile_expression(forto.nodes[ForTo.NODE_INIT_EXPRESSION])    # Initialization expression
+            code += [AssignLocalInstruction(loop_var_id)]                               # Assign init value to loop var.
+            code += self.compile_expression(forto.nodes[ForTo.NODE_END_EXPRESSION])     # End condition expression.
+            code += [DoubleTopInstruction().add_symbol(next),                           # Double end condition
+                    PushNameValueInstruction(loop_var_id)]                              # Push loop var value.
+            code += [comparison_instruction]                                            # Execute comparison instruction.
+            code += [JumpIfFalseInstruction(SymbolicAddress(end))]                      # If false, exit loop.
+            code += compiled_body                                                       # Loop body!
+            code += [PushNameValueInstruction(loop_var_id)]                             # Push loop var value.
+            code += [PushInteger32Instruction(                                          #
+                      self.static_table.get_integer32_id(step_value))]                  # Push step value.
+            code += [AdditionInstruction()]                                             # Add step value to loop var (could be negative).
+            code += [AssignLocalInstruction(loop_var_id)]                               # Assign new value to loop var.
+            code += [JumpInstruction(SymbolicAddress(next))]                            # Repeat loop.
+            code += [PopInstruction().add_symbol(end),                                  # Pop off end condition.
+                     PopBlockInstruction(),                                             # Pop off block.
+                     NoopInstruction().add_symbol(block_end)]                           # Dummy instruction.
 
-            # Glue it all together!
-            code = compiled_init + compiled_check + compiled_body + compiled_increment + [PopInstruction(),PopBlockInstruction()]
-            code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(code)-len(compiled_increment)-1),
-                                             UnresolvedAbsoluteAddress(len(code)+1))] + code
         elif For.NODE_FOR_IN in for_stmt.nodes:
             forin = for_stmt.nodes[For.NODE_FOR_IN]
 
             # Different addresses used by for..in loop.
-            block_end_address = SymbolicAddress.generate()
-            next_address = SymbolicAddress.generate()
-            end_address = SymbolicAddress.generate()
+            block_end = generate_symbol()
+            next = generate_symbol()
+            end = generate_symbol()
 
 
-            code = [PushLoopBlockInstruction(next_address,block_end_address)]        # Push loop block
+            code = [PushLoopBlockInstruction(SymbolicAddress(next),
+                                             SymbolicAddress(block_end))]            # Push loop block
             code += self.compile_expression(forin.nodes[ForIn.NODE_LIST_EXPRESSION]) # Expression that results in iterable.
             code += [DoubleTopInstruction(),                                         # Double iterable so we can test it.
-                     JumpIfFalseInstruction(end_address),                            # If result was FALSE, exit loop.
+                     JumpIfFalseInstruction(SymbolicAddress(end)),                   # If result was FALSE, exit loop.
                      GetIteratorInstruction(),                                       # Transform iterable on TOS to iterator.
-                     DoubleTopInstruction().add_symbol(next_address.symbol),         #
+                     DoubleTopInstruction().add_symbol(next),                        #
                      IteratorHasMoreInstruction(),                                   # Check if there are items ready in iterator.  
-                     JumpIfFalseInstruction(end_address),                            # If not, exit loop.
+                     JumpIfFalseInstruction(SymbolicAddress(end)),                   # If not, exit loop.
                      DoubleTopInstruction(),                                         # Make sure we have a iterator ref to next cycle.
                      IteratorNextInstruction(),                                      # Get next item.
                      AssignNearestInstruction(loop_var_id)]                          # Assign value to loop var.
             code += compiled_body                                                    # Splice loop body.
-            code +=  [JumpInstruction(next_address),                                 # Jump to code for fetching next value.
-                     PopInstruction().add_symbol(end_address.symbol),                # Pop off iterator.
+            code +=  [JumpInstruction(SymbolicAddress(next)),                        # Jump to code for fetching next value.
+                     PopInstruction().add_symbol(end),                               # Pop off iterator.
                      PopBlockInstruction(),                                          # Pop block!
-                     NoopInstruction().add_symbol(block_end_address.symbol)]         # Dummy instruction.
+                     NoopInstruction().add_symbol(block_end)]                        # Dummy instruction.
 
         return code
 
@@ -752,25 +752,23 @@ class Compiler:
     
     def compile_while_statement(self,while_statement):
 
-        loop_start_address = SymbolicAddress.generate()
-        loop_end_address = SymbolicAddress.generate()
-        loop_block_end_address = SymbolicAddress.generate()
+        # Symbols used.
+        start = generate_symbol()
+        end = generate_symbol()
+        block_end = generate_symbol()
 
-        
-        compiled_condition = self.compile_expression(while_statement.nodes[While.NODE_CONDITION])
-        compiled_condition[0].add_symbol(loop_start_address.symbol)
         compiled_body = []
         if While.NODE_BODY in while_statement.nodes:
             compiled_body = self.compile_block(while_statement.nodes[While.NODE_BODY])
         
-        code = [PushLoopBlockInstruction(loop_start_address,loop_block_end_address)]
-        code += compiled_condition
-        code += [JumpIfFalseInstruction(loop_end_address)]
-        code += compiled_body
-        code += [JumpInstruction(loop_start_address)]
-        code += [PopBlockInstruction().add_symbol(loop_end_address.symbol)]
-        code += [NoopInstruction().add_symbol(loop_block_end_address.symbol)]
-
+        code = [PushLoopBlockInstruction(SymbolicAddress(start),SymbolicAddress(block_end))]    # Push loop block.
+        code += [NoopInstruction().add_symbol(start)]                                           # Dummy instruction for symbol.
+        code += self.compile_expression(while_statement.nodes[While.NODE_CONDITION])            # Condition!
+        code += [JumpIfFalseInstruction(SymbolicAddress(end))]                                  # Check condition
+        code += compiled_body                                                                   # Bo-o-o-dy!
+        code += [JumpInstruction(SymbolicAddress(start))]                                       # Jump to start for next iteration.
+        code += [PopBlockInstruction().add_symbol(end)]                                         # This is the end.
+        code += [NoopInstruction().add_symbol(block_end)]                                       # Dummy instruction.
 
         return code
     
