@@ -37,7 +37,7 @@ public:
 	const char* typeAsString();
 
 
-	Variant(const VARIANT_TYPE type);
+	Variant(const VARIANT_TYPE type,bool verbosePrint=true);
 	virtual ~Variant(void);
 	virtual std::wostream& format(std::wostream& stream) const;
 	virtual double toFloating() const;
@@ -84,6 +84,7 @@ public:
 
 private:
 	const VARIANT_TYPE type;
+	bool verbosePrint;
 };
 
 

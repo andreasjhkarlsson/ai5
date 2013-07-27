@@ -7,7 +7,7 @@ class DebugOut
 {
 public:
 
-	static const int COLUMN_WIDTH = 12;
+	static const int COLUMN_WIDTH = 15;
 
 	DebugOut(const std::wstring &type)
 	{

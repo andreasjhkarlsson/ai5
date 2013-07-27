@@ -57,7 +57,7 @@ ThreadContext::ThreadContext(StackMachine* machine): Variant(TYPE), virtualThrea
 	virtualThread->setThreadContext(this);	
 }
 
-ThreadContext::ThreadContext(): Variant(TYPE), virtualThread(nullptr), threadHandle(nullptr)
+ThreadContext::ThreadContext(): Variant(TYPE,false), virtualThread(nullptr), threadHandle(nullptr)
 {
 
 }

@@ -5,7 +5,7 @@ class FunctionVariant :
 	public Variant
 {
 public:
-	FunctionVariant(VARIANT_TYPE type);
+	FunctionVariant(VARIANT_TYPE type,bool verbosePrint=true);
 	~FunctionVariant(void);
 	virtual double toFloating() const
 	{

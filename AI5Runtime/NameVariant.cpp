@@ -3,7 +3,7 @@
 #include "RuntimeError.h"
 #include "VariantReference.h"
 
-NameVariant::NameVariant(const VariantReference<>& value,VARIANT_TYPE type): Variant(type), isConst(false),value(value)
+NameVariant::NameVariant(const VariantReference<>& value,VARIANT_TYPE type): Variant(type,false), isConst(false),value(value)
 {
 	this->setValue(value);
 }

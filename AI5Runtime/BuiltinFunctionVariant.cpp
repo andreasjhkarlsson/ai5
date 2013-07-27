@@ -4,7 +4,7 @@
 #include "CallInfo.h"
 
 BuiltinFunctionVariant::BuiltinFunctionVariant(const UnicodeString &name,BuiltinFunction func): name(name),
-	func(func),FunctionVariant(TYPE)
+	func(func),FunctionVariant(TYPE,false)
 {
 }
 

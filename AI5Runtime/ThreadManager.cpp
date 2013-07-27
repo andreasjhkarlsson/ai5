@@ -12,10 +12,13 @@ ThreadManager::~ThreadManager(void)
 {
 }
 
-ThreadContext* ThreadManager::createThread(StackMachine* machine)
+ThreadContext* ThreadManager::createThread(StackMachine* machine,shared_string name)
 {
+	DebugOut(L"ThreadManager") << "Creating thread" << 
+		((name->length()!=0) ? (std::wstring(L" (")+name->getTerminatedBuffer()+L")"): L"");
 	std::lock_guard<std::mutex> guard(threadsLock);
 	ThreadContext* context = GC::alloc<ThreadContext,StackMachine*>(machine);
+	context->setThreadName(name);
 	threads.push_back(context);
 	return context;
 }

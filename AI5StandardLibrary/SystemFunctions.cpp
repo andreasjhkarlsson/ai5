@@ -37,9 +37,8 @@ VariantReference<> SystemFunctions::startThread(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,2);
 
-	VariantReference<ThreadContext> thread = machine->getThreadManager()->createThread(machine);
+	VariantReference<ThreadContext> thread = machine->getThreadManager()->createThread(machine,callInfo->getStringArg(1));
 	thread->getVirtualThread()->setStartFunction(callInfo->getArg(0)->cast<UserFunctionVariant>());
-	thread->setThreadName(callInfo->getStringArg(1));
 	thread->start();
 
 	return thread;

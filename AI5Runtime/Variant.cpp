@@ -15,11 +15,11 @@
 #include <iomanip>
 #include "misc.h"
 
-Variant::Variant(const VARIANT_TYPE type): type(type)
+Variant::Variant(const VARIANT_TYPE type,bool verbosePrint): type(type), verbosePrint(verbosePrint)
 {
 	if (GlobalOptions::isVerbose())
 	{
-		if(type != NAME && type != NATIVE_FUNCTION)
+		if(verbosePrint)
 		{
 			DebugOut(L"Variant") << typeAsString() << ""
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") created.";
@@ -32,7 +32,7 @@ Variant::~Variant(void)
 {
 	if (GlobalOptions::isVerbose())
 	{
-		if(type != NAME && type != NATIVE_FUNCTION)
+		if(verbosePrint)
 		{
 			DebugOut(L"Variant") << typeAsString() << ""
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") destroyed.";
