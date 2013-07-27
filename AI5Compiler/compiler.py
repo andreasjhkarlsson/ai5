@@ -87,6 +87,19 @@ class Compiler:
         static_id = self.static_table.get_name_id(name)
         return Identifier(name_obj.global_id,name_obj.local_id,static_id)
 
+
+    def resolve_symbolic_addresses(self,code):
+        symbols = {}
+        for index,instruction in enumerate(code):
+            if hasattr(instruction,"symbol"):
+                symbols[instruction.symbol] = index
+        for instruction in code:
+            if hasattr(instruction,"address") and instruction.address.type == Address.SYMBOLIC:
+                instruction.address = AbsoluteAddress(symbols[instruction.address.symbol])
+            if hasattr(instruction,"continue_address") and instruction.continue_address.type == Address.SYMBOLIC:
+                instruction.continue_address = AbsoluteAddress(symbols[instruction.continue_address.symbol])
+            if hasattr(instruction,"exit_address") and instruction.exit_address.type == Address.SYMBOLIC:
+                instruction.exit_address = AbsoluteAddress(symbols[instruction.exit_address.symbol])
     
     def set_global_scope(self,scope):
         self.global_scope = scope
@@ -741,22 +754,25 @@ class Compiler:
     
     def compile_while_statement(self,while_statement):
 
+        loop_start_address = SymbolicAddress.generate()
+        loop_end_address = SymbolicAddress.generate()
+        loop_block_end_address = SymbolicAddress.generate()
+
         
         compiled_condition = self.compile_expression(while_statement.nodes[While.NODE_CONDITION])
+        compiled_condition[0].set_symbol(loop_start_address.symbol)
         compiled_body = []
         if While.NODE_BODY in while_statement.nodes:
             compiled_body = self.compile_block(while_statement.nodes[While.NODE_BODY])
         
-        code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(1),None)]
+        code = [PushLoopBlockInstruction(loop_start_address,loop_block_end_address)]
         code += compiled_condition
-        code += [JumpIfFalseInstruction(RelativeAddress(len(compiled_body)+2))]
+        code += [JumpIfFalseInstruction(loop_end_address)]
         code += compiled_body
-        code += [JumpInstruction(RelativeAddress(-(len(compiled_body)+len(compiled_condition)+1)))]
-        code += [PopBlockInstruction()]
+        code += [JumpInstruction(loop_start_address)]
+        code += [PopBlockInstruction().set_symbol(loop_end_address.symbol)]
+        code += [NoopInstruction().set_symbol(loop_block_end_address.symbol)]
 
-        code[0].exit_address = UnresolvedAbsoluteAddress(len(code))
-
-        self.resolve_loop_jump_address(code,0,len(code))
 
         return code
     
@@ -885,6 +901,7 @@ class Compiler:
     def compile_program(self,program):
         self.set_global_scope(program.scope)
         code = self.compile_block(program.nodes[Program.NODE_BLOCK]) + [PushInteger32Instruction(self.static_table.get_integer32_id(0)),TerminateInstruction()]
+        self.resolve_symbolic_addresses(code)
         self.resolve_addresses(code)
         return code
     

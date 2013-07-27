@@ -139,7 +139,7 @@ void Instruction::print(shared_ptr<vector<shared_ptr<StaticData>>> statics)
 		DebugOut(L"Instruction") << "JUMP_LONG_ABSOLUTE_IF_TRUE" << " " << this->arg.integer;
 		break;
 	case Instruction::JUMP_SHORT_ABSOLUTE_IF_FALSE:
-		DebugOut(L"Instruction") << "JUMP_SHORT_ABSOLUTE_IF_TRUE" << " " <<  (int)this->arg.byte;
+		DebugOut(L"Instruction") << "JUMP_SHORT_ABSOLUTE_IF_FALSE" << " " <<  (int)this->arg.byte;
 		break;
 	case Instruction::JUMP_LONG_RELATIVE_IF_FALSE:
 		DebugOut(L"Instruction") << "JUMP_LONG_RELATIVE_IF_FALSE" << " " << this->arg.integer;

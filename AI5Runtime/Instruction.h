@@ -146,8 +146,20 @@ void Instruction::execute(StackMachineThread* machine)
 	case JUMP_SHORT_RELATIVE_IF_FALSE:
 		jumpShortRelativeIfFalse(machine,arg.byte);
 		break;
+	case JUMP_SHORT_ABSOLUTE_IF_FALSE:
+		jumpShortAbsoluteIfFalse(machine,arg.byte);
+		break;
+	case JUMP_LONG_ABSOLUTE_IF_FALSE:
+		jumpLongAbsoluteIfFalse(machine,arg.integer);
+		break;
 	case JUMP_SHORT_RELATIVE:
 		jumpShortRelative(machine,arg.byte);
+		break;
+	case JUMP_SHORT_ABSOLUTE:
+		jumpShortAbsolute(machine,arg.byte);
+		break;
+	case JUMP_LONG_ABSOLUTE:
+		jumpLongAbsolute(machine,arg.integer);
 		break;
 	case PUSH_INTEGER64:
 		pushInteger64(machine,arg.integer);

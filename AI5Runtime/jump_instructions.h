@@ -21,6 +21,21 @@ __forceinline void jumpShortRelativeIfFalse(StackMachineThread* machine,char arg
 	jumpLongRelativeIfFalse(machine,arg);
 }
 
+__forceinline void jumpLongAbsoluteIfFalse(StackMachineThread* machine,unsigned int arg)
+{
+	VariantReference<> v = machine->getDataStack()->pop();
+
+	if(!v.toBoolean())
+		machine->jumpAbsolute(arg);
+	else
+		machine->advanceCounter();
+}
+
+__forceinline void jumpShortAbsoluteIfFalse(StackMachineThread* machine,char arg)
+{
+	jumpLongAbsoluteIfFalse(machine,arg);
+}
+
 __forceinline void jumpShortRelative(StackMachineThread* machine,char arg)
 {
 	jumpLongRelative(machine,arg);
@@ -37,6 +52,15 @@ __forceinline void jumpLongRelativeIfTrue(StackMachineThread* machine,unsigned i
 
 }
 
+__forceinline void jumpLongAbsolute(StackMachineThread* machine,unsigned int arg)
+{	
+	machine->jumpAbsolute(arg);
+}
+
+__forceinline void jumpShortAbsolute(StackMachineThread* machine,char arg)
+{
+	jumpLongAbsolute(machine,arg);
+}
 
 enum LOOP_JUMP_TYPE
 {

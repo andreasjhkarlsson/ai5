@@ -28,6 +28,7 @@ else:
 
 try:
 
+    PRINT_OUTPUT = False
 
     fhandle = codecs.open(input_file,"r","utf-8")
     input = fhandle.read()
@@ -44,11 +45,12 @@ try:
     compiler = Compiler()
 
     instructions = compiler.compile_program(ast)
-
+    
     statics_table = compiler.static_table
-    #statics_table.dump()
-    #for index,instruction in enumerate(instructions):
-    #   print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
+    if PRINT_OUTPUT:
+        statics_table.dump()
+        for index,instruction in enumerate(instructions):
+           print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
     
 
     CompiledFile(statics_table,instructions).write_to_file(open(output_file,"wb"))

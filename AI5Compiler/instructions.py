@@ -16,6 +16,7 @@ class Identifier:
 class Address:
     RELATIVE = "relative"
     ABSOLUTE = "absolute"
+    SYMBOLIC = "symbolic"
     UNRESOLVED_ABSOLUTE = "unresolved absolute"
     UNRESOLVED_LOOP_JUMP = "unresolved loop jump"
     def __repr__(self):
@@ -30,6 +31,16 @@ class AbsoluteAddress(Address):
     type = Address.ABSOLUTE
     def __init__(self,position):
         self.value = position
+
+class SymbolicAddress(Address):
+    type = Address.SYMBOLIC
+    symbol = 0
+    @staticmethod
+    def generate():
+        SymbolicAddress.symbol += 1
+        return SymbolicAddress(SymbolicAddress.symbol)
+    def __init__(self,symbol):
+        self.symbol = symbol
 
 
 # Can be used as a placeholder when absolute address is needed but absolute address
@@ -61,6 +72,9 @@ class UnresolvedLoopJumpAddress(Address):
 
 
 class Instruction:
+    def set_symbol(self,symbol):
+        self.symbol = symbol
+        return self
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.__dict__)
     def to_binary_without_arg(self,type):
@@ -395,3 +409,7 @@ class IteratorHasMoreInstruction(Instruction):
 class IteratorNextInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.ITERATOR_NEXT)
+
+class NoopInstruction(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.NOOP)
