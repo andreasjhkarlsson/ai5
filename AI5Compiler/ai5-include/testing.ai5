@@ -26,3 +26,7 @@ EndFunc
 Func Assert(a)
 	If not a Then TestFailed("Assert failure: value not true")
 EndFunc
+
+Func Fail()
+	TestFailed("The test case signaled failure")
+EndFunc

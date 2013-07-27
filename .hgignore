@@ -26,3 +26,4 @@ shared/icu/readme.html
 shared/icu/icu4c.css
 shared/icu/APIChangeReport.html
 integration_tests/tests/*.aic
+integration_tests/build/*
