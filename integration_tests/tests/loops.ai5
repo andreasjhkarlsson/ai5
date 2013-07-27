@@ -33,9 +33,21 @@ Func TestForTo()
 	assertEqual(sum,10)
 EndFunc
 
+Func TestNested()
+	sum = 0
+	for i in [1,2]
+		for j in [1,2]
+			sum += i+j
+		next
+	next
+	assertEqual(sum,12)
+endfunc
+			
+
 RunTests({
 	"while": TestWhile,
 	"do": TestDo,
 	"for .. in": TestForIn,
-	"for .. to": TestForTo
+	"for .. to": TestForTo,
+	"nested": TestNested
 	})

@@ -91,8 +91,9 @@ class Compiler:
     def resolve_symbolic_addresses(self,code):
         symbols = {}
         for index,instruction in enumerate(code):
-            if hasattr(instruction,"symbol"):
-                symbols[instruction.symbol] = index
+            if hasattr(instruction,"symbols"):
+                for symbol in instruction.symbols:
+                    symbols[symbol] = index
         for instruction in code:
             if hasattr(instruction,"address") and instruction.address.type == Address.SYMBOLIC:
                 instruction.address = AbsoluteAddress(symbols[instruction.address.symbol])
@@ -484,6 +485,7 @@ class Compiler:
         # We only support for variable = init to end [step int] atm.
         if For.NODE_FOR_TO in for_stmt.nodes:
             forto = for_stmt.nodes[For.NODE_FOR_TO]
+
             # Compile init value and assign it. This code is only executed once!
             compiled_init = self.compile_expression(forto.nodes[ForTo.NODE_INIT_EXPRESSION])
             compiled_init += [AssignLocalInstruction(loop_var_id)]
@@ -531,32 +533,28 @@ class Compiler:
         elif For.NODE_FOR_IN in for_stmt.nodes:
             forin = for_stmt.nodes[For.NODE_FOR_IN]
 
-            compiled_init = self.compile_expression(forin.nodes[ForIn.NODE_LIST_EXPRESSION])
-            init_end_jump = JumpIfFalseInstruction(None)
-            compiled_init += [DoubleTopInstruction(),init_end_jump]
-            compiled_init += [GetIteratorInstruction()]
-
-            check_end_jump = JumpIfFalseInstruction(None)
-            compiled_check = [DoubleTopInstruction(),IteratorHasMoreInstruction(),check_end_jump]
-
-            compiled_next = [DoubleTopInstruction(), IteratorNextInstruction(), AssignNearestInstruction(loop_var_id)]
+            # Different addresses used by for..in loop.
+            block_end_address = SymbolicAddress.generate()
+            next_address = SymbolicAddress.generate()
+            end_address = SymbolicAddress.generate()
 
 
-            jump_back = JumpInstruction(None)
-            compiled_jump_back = [jump_back]
-
-            compiled_end = [PopInstruction(),PopBlockInstruction()]
-
-            check_end_jump.address = RelativeAddress(len(compiled_next)+len(compiled_body)+len(compiled_jump_back)+1)
-            init_end_jump.address = RelativeAddress(len(compiled_check)+len(compiled_next)+len(compiled_body)+len(compiled_jump_back)+2)
-
-            jump_back.address = RelativeAddress(-(len(compiled_body)+len(compiled_next)+len(compiled_check)))
-
-            
-            code = compiled_init + compiled_check + compiled_next + compiled_body + compiled_jump_back + compiled_end
-            code = [PushLoopBlockInstruction(UnresolvedAbsoluteAddress(len(compiled_init)+1),
-                                             UnresolvedAbsoluteAddress(len(code)+1))]+ code
-
+            code = [PushLoopBlockInstruction(next_address,block_end_address)]        # Push loop block
+            code += self.compile_expression(forin.nodes[ForIn.NODE_LIST_EXPRESSION]) # Expression that results in iterable.
+            code += [DoubleTopInstruction(),                                         # Double iterable so we can test it.
+                     JumpIfFalseInstruction(end_address),                            # If result was FALSE, exit loop.
+                     GetIteratorInstruction(),                                       # Transform iterable on TOS to iterator.
+                     DoubleTopInstruction().add_symbol(next_address.symbol),         #
+                     IteratorHasMoreInstruction(),                                   # Check if there are items ready in iterator.  
+                     JumpIfFalseInstruction(end_address),                            # If not, exit loop.
+                     DoubleTopInstruction(),                                         # Make sure we have a iterator ref to next cycle.
+                     IteratorNextInstruction(),                                      # Get next item.
+                     AssignNearestInstruction(loop_var_id)]                          # Assign value to loop var.
+            code += compiled_body                                                    # Splice loop body.
+            code +=  [JumpInstruction(next_address),                                 # Jump to code for fetching next value.
+                     PopInstruction().add_symbol(end_address.symbol),                # Pop off iterator.
+                     PopBlockInstruction(),                                          # Pop block!
+                     NoopInstruction().add_symbol(block_end_address.symbol)]         # Dummy instruction.
 
         return code
 
@@ -760,7 +758,7 @@ class Compiler:
 
         
         compiled_condition = self.compile_expression(while_statement.nodes[While.NODE_CONDITION])
-        compiled_condition[0].set_symbol(loop_start_address.symbol)
+        compiled_condition[0].add_symbol(loop_start_address.symbol)
         compiled_body = []
         if While.NODE_BODY in while_statement.nodes:
             compiled_body = self.compile_block(while_statement.nodes[While.NODE_BODY])
@@ -770,8 +768,8 @@ class Compiler:
         code += [JumpIfFalseInstruction(loop_end_address)]
         code += compiled_body
         code += [JumpInstruction(loop_start_address)]
-        code += [PopBlockInstruction().set_symbol(loop_end_address.symbol)]
-        code += [NoopInstruction().set_symbol(loop_block_end_address.symbol)]
+        code += [PopBlockInstruction().add_symbol(loop_end_address.symbol)]
+        code += [NoopInstruction().add_symbol(loop_block_end_address.symbol)]
 
 
         return code

@@ -72,8 +72,9 @@ class UnresolvedLoopJumpAddress(Address):
 
 
 class Instruction:
-    def set_symbol(self,symbol):
-        self.symbol = symbol
+    def add_symbol(self,symbol):
+        if not hasattr(self,"symbols"): self.symbols = []
+        self.symbols.append(symbol)
         return self
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, self.__dict__)
