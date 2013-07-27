@@ -23,11 +23,11 @@ public:
 
 	~Scope();
 
-	VariantReference<NameVariant>& getNameFromString(const UnicodeString &name);
+	VariantReference<NameVariant> getNameFromString(const UnicodeString &name);
 	VariantReference<NameVariant> getNameFromIndex(int index);
 	VariantReference<NameVariant> createName(const UnicodeString &name);
 	VariantReference<NameVariant> createIndexForName(const UnicodeString &name,int index);
-	void insertName(const UnicodeString& name,int index,VariantReference<NameVariant> nameVariant);
+	void insertName(const UnicodeString& name,int index,const VariantReference<NameVariant>& nameVariant);
 	void setEnclosingScope(VariantReference<Scope> scope);
 
 private:

@@ -208,8 +208,8 @@ extern "C" StringComparator stringComparator;
 inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE type)
 {
 
-	VariantReference<> operand2 = machine->getDataStack()->pop();
-	VariantReference<> operand1 = machine->getDataStack()->pop();
+	VariantReference<>& operand2 = machine->getDataStack()->pop();
+	VariantReference<>& operand1 = machine->getDataStack()->pop();
 	bool result = false;
 	Comparator* comp = table.lookup(operand1.getType(),operand2.getType());
 

@@ -50,7 +50,7 @@ VariantReference<NameVariant> Scope::createIndexForName(const UnicodeString& nam
 	return nameObj;
 }
 
-void Scope::insertName(const UnicodeString& name,int index,VariantReference<NameVariant> nameVariant)
+void Scope::insertName(const UnicodeString& name,int index,const VariantReference<NameVariant>& nameVariant)
 {
 	ScopeGuard guard(this);
 	lookup[name] = nameVariant;
@@ -72,7 +72,7 @@ void Scope::addNameToIndex(size_t index,const VariantReference<NameVariant>& nam
 
 }
 
-VariantReference<NameVariant>& Scope::getNameFromString(const UnicodeString &name)
+VariantReference<NameVariant> Scope::getNameFromString(const UnicodeString &name)
 {
 	ScopeGuard guard(this);
 	return lookup[name];
@@ -83,7 +83,7 @@ VariantReference<NameVariant> Scope::getNameFromIndex(int index)
 	ScopeGuard guard(this);
 	VariantReference<NameVariant> result = indexTable[index];
 	if(result.empty() && !enclosingScope.empty())
-		result = enclosingScope->getNameFromIndex(index);
+		return enclosingScope->getNameFromIndex(index);
 	return result;
 }
 
