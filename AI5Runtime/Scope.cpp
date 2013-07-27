@@ -61,7 +61,7 @@ void Scope::insertName(const UnicodeString& name,int index,VariantReference<Name
 
 void Scope::addNameToIndex(size_t index,const VariantReference<NameVariant>& nameVariant)
 {
-	ScopeGuard guard(this);
+	// No locking needed as this is a private method that should already be locked.
 	if((index) >= indexTable.size())
 	{
 		indexTable.resize(index+1);

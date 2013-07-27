@@ -11,10 +11,10 @@ public:
 	friend class GC;
 	FastStack(const size_t limit);
 	~FastStack(void);
-	__forceinline void push(T element);
-	__forceinline T pop();
+	__forceinline void push(const T& element);
+	__forceinline T& pop();
 	__forceinline void popMany(size_t count);
-	__forceinline T top();
+	__forceinline T& top();
 	__forceinline T& get(size_t offset_from_top);
 	__forceinline size_t size();
 	__forceinline bool empty();
@@ -26,7 +26,7 @@ private:
 };
 
 template<typename T>
-void FastStack<T>::push(T element)
+void FastStack<T>::push(const T& element)
 {
 	if(full())
 		throw RuntimeError(L"Stack overflow!");
@@ -34,7 +34,7 @@ void FastStack<T>::push(T element)
 }
 
 template<typename T>
-T FastStack<T>::pop()
+T& FastStack<T>::pop()
 {
 	if(position == -1)
 		throw new RuntimeError(L"Stack underflow!");
@@ -45,8 +45,7 @@ T FastStack<T>::pop()
 template<typename T>
 void FastStack<T>::popMany(size_t count)
 {
-	for(size_t i=0;i<count;i++)
-		pop();
+	position -= count;
 }
 
 template<typename T>
@@ -62,7 +61,7 @@ size_t FastStack<T>::size()
 }
 
 template<typename T>
-T FastStack<T>::top()
+T& FastStack<T>::top()
 {
 	return stack[position];
 }
