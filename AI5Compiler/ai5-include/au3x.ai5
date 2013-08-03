@@ -1,0 +1,63 @@
+#include-once
+
+_au3x_int_default = -2147483647
+Global _au3x_dll = 0
+
+Func _au3x_lazyload()
+	If _au3x_dll then return
+	Global _au3x_dll = DllOpen("AutoItX3.dll")
+	if not _au3x_dll then throw "Could not open AU3X dll!"
+EndFunc
+
+Func MouseMove(x,y,speed=_au3x_int_default)
+	_au3x_lazyload()
+	return DllCall(_au3x_dll,"long:stdcall","AU3_MouseMove","long",x,"long",y,"long",speed)[0]
+EndFunc
+
+Func MouseClick(button="left",x=_au3x_int_default,y=_au3x_int_default,clicks=1,speed=_au3x_int_default)
+	_au3x_lazyload()
+	return DllCall(_au3x_dll,"long:stdcall","AU3_MouseClick","wstr",button,"long",x,"long",y,"long",clicks,"long",speed)[0]
+EndFunc
+
+Func MouseClickDrag(button,x1,y1,x2,y2,speed=_au3x_int_default)
+	_au3x_lazyload()
+	return DllCall(_au3x_dll,"long:stdcall","AU3_MouseClickDrag","long",x1,"long",y1,"long",x2,"long",y2,"long",speed)[0]
+EndFunc
+
+Func MouseDown(button="left")
+	_au3x_lazyload()
+	DllCall(_au3x_dll,"none:stdcall","AU3_MouseDown","wstr",button)
+EndFunc
+
+Func MouseUp(button="left")
+	_au3x_lazyload()
+	DllCall(_au3x_dll,"none:stdcall","AU3_MouseUp","wstr",button)
+EndFunc
+
+Func MouseGetCursor()
+	_au3x_lazyload()
+	return DllCall(_au3x_dll,"long:stdcall","AU3_MouseGetCursor")[0]
+EndFunc
+
+Func MouseGetPos(dimension=-1)
+	_au3x_lazyload()
+	Func GetX()
+		return DllCall(_au3x_dll,"long:stdcall","AU3_MouseGetPosX")[0]
+	EndFunc
+	Func GetY()
+		return DllCall(_au3x_dll,"long:stdcall","AU3_MouseGetPosY")[0]
+	EndFunc
+	if dimension = -1 then return [GetX(),GetY()]
+	if dimension = 0 then return GetX()
+	if dimension = 1 then return GetY()
+EndFunc
+
+Func MouseMove(x,y,speed=_au3x_int_default)
+	_au3x_lazyload()
+	return DllCall(_au3x_dll,"long:stdcall","AU3_MouseMove","long",x,"long",y,"long",speed)[0]
+EndFunc
+
+Func MouseWheel(direction,clicks=1)
+	_au3x_lazyload()
+	return DllCall(_au3x_dll,"none:stdcall","wstr",direction,"long",clicks)[0]
+EndFunc

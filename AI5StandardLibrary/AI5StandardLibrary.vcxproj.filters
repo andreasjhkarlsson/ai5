@@ -54,9 +54,6 @@
     <ClInclude Include="MiscFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MouseFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SystemFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,9 +96,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MiscFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SystemFunctions.cpp">
