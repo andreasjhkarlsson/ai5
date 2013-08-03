@@ -1,5 +1,7 @@
+#pragma once
 #include "StackMachineThread.h"
 #include "UserFunctionVariant.h"
+#include "LoopBlock.h"
 
 __forceinline void jumpLongRelative(StackMachineThread* machine,unsigned int arg)
 {
@@ -76,7 +78,7 @@ inline void loopJump(LOOP_JUMP_TYPE type,StackMachineThread* machine,int level)
 	// Pop all the blocks until encountering loop block at the correct level.
 	while(true)
 	{
-		Block* block = stack->top();
+		Block* block = stack->pop();
 
 		if(block->isCallBlock())
 		{
@@ -86,19 +88,31 @@ inline void loopJump(LOOP_JUMP_TYPE type,StackMachineThread* machine,int level)
 		// Some other block. leave it!
 		if(!block->isLoopBlock() || --level > 0)
 		{
+
+			if(block->isFinallyBlock())
+			{
+				FinallyBlock* finallyBlock = static_cast<FinallyBlock*>(block);
+				if(type == CONTINUE)
+					finallyBlock->setContinueLoopAction(level);
+				else
+					finallyBlock->setExitLoopAction(level);
+				finallyBlock->execute(machine);
+				return;
+			}
+
+
 			block->leave(machine);
 			block->recycleInstance();
-			stack->pop();
 			continue;
 		}
 
 		if(type == CONTINUE)
 		{
+			stack->push(block);
 			machine->jumpAbsolute(static_cast<LoopBlock*>(block)->getContinueAddress());
 		}
 		else if( type == BREAK)
 		{
-			stack->pop();
 			block->leave(machine);
 			block->recycleInstance();
 			machine->jumpAbsolute(static_cast<LoopBlock*>(block)->getExitAddress());

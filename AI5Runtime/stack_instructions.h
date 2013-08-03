@@ -6,6 +6,8 @@
 #include "LoopBlock.h"
 #include "DefaultVariant.h"
 #include "GeneralBlock.h"
+#include "CatchBlock.h"
+#include "FinallyBlock.h"
 #include "NameReferenceVariant.h"
 #include "HashMapVariant.h"
 
@@ -202,9 +204,23 @@ __forceinline void pushLoopBlock(StackMachineThread* machine,int continueAddress
 
 __forceinline void popBlock(StackMachineThread* machine)
 {
-	machine->getBlockStack()->top()->leave(machine);
-	machine->getBlockStack()->pop()->recycleInstance();
-	machine->advanceCounter();
+	Block* block = machine->getBlockStack()->pop();
+
+	if(block->isFinallyBlock())
+	{
+		FinallyBlock* finallyBlock = static_cast<FinallyBlock*>(block);
+		finallyBlock->setJumpToAction(machine->getCurrentAddress()+1);
+		finallyBlock->execute(machine);
+		return;
+	}
+	else
+	{
+		block->leave(machine);
+		block->recycleInstance();
+		machine->advanceCounter();
+	}
+
+
 }
 
 __forceinline void pushGeneralBlock(StackMachineThread* machine)
@@ -216,6 +232,23 @@ __forceinline void pushGeneralBlock(StackMachineThread* machine)
 
 	machine->advanceCounter();
 }
+
+inline void pushCatchBlock(StackMachineThread* machine,int address)
+{
+	CatchBlock* block = CatchBlock::getInstance();
+	block->setup(machine,address);
+	machine->getBlockStack()->push(block);
+	machine->advanceCounter();
+}
+
+inline void pushFinallyBlock(StackMachineThread* machine,int address)
+{
+	FinallyBlock* block = FinallyBlock::getInstance();
+	block->setup(machine,address);
+	machine->getBlockStack()->push(block);
+	machine->advanceCounter();	
+}
+
 
 __forceinline void swapTop(StackMachineThread* machine)
 {

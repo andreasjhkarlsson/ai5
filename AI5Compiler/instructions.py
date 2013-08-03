@@ -73,7 +73,6 @@ class UnresolvedLoopJumpAddress(Address):
             return RelativeAddress((-position)+end_pos)
 
 
-
 class Instruction:
     def add_symbol(self,symbol):
         if not hasattr(self,"symbols"): self.symbols = []
@@ -389,6 +388,30 @@ class PopBlockInstruction(Instruction):
 class PushGeneralBlockInstruction(Instruction):
     def to_binary(self):
         return self.to_binary_without_arg(InstructionType.PUSH_GENERAL_BLOCK)
+
+class PushCatchBlock(Instruction):
+    def __init__(self,address):
+        self.address = address
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_CATCH_BLOCK, self.address.value)
+
+class PushFinallyBlock(Instruction):
+    def __init__(self,address):
+        self.address = address
+    def to_binary(self):
+        return self.to_binary_with_int_arg(InstructionType.PUSH_FINALLY_BLOCK, self.address.value)
+
+class PushCurrentException(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.PUSH_CURRENT_EXCEPTION)
+
+class ExitFinally(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.EXIT_FINALLY)
+
+class ThrowException(Instruction):
+    def to_binary(self):
+        return self.to_binary_without_arg(InstructionType.THROW_EXCEPTION)
 
 class BreakLoopInstruction(Instruction):
     def __init__(self,level):

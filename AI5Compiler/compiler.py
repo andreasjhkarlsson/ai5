@@ -622,7 +622,51 @@ class Compiler:
                 code += [const_instruction(ident)]
             value = step_function(value)
         return code
-            
+
+    def compile_throw(self,statement):
+        code = []
+        code += self.compile_expression(statement.nodes[Throw.NODE_EXPRESSION])
+        code += [ThrowException()]
+        return code
+
+    def compile_try(self,statement):
+        
+        catch_entry = generate_symbol()
+        finally_entry = generate_symbol()
+        end = generate_symbol()
+        cleanup_entry = generate_symbol()
+        
+
+        has_catch = Try.NODE_CATCH in statement.nodes
+        has_finally = Try.NODE_FINALLY in statement.nodes
+
+        code = []
+        if has_finally: code += [PushFinallyBlock(SymbolicAddress(finally_entry))]
+        if has_catch: code += [PushCatchBlock(SymbolicAddress(catch_entry))]
+        code += [PushGeneralBlockInstruction()]
+        code += self.compile_block(statement.nodes[Try.NODE_BODY])
+        code += [JumpInstruction(SymbolicAddress(cleanup_entry))]
+
+        if has_catch:
+            catch_node = statement.nodes[Try.NODE_CATCH]
+            code += [PushCurrentException().add_symbol(catch_entry)]
+            code += [AssignLocalInstruction(self.get_identifier(catch_node.nodes[Catch.NODE_VARIABLE].value))]
+            code += self.compile_block(catch_node.nodes[Catch.NODE_BODY])
+            code += [JumpInstruction(SymbolicAddress(end))]
+        if has_finally:
+            finally_node = statement.nodes[Try.NODE_FINALLY]
+            code += [NoopInstruction().add_symbol(finally_entry)]
+            code += self.compile_block(finally_node.nodes[Finally.NODE_BODY])
+            code += [ExitFinally()]
+        code += [PopBlockInstruction().add_symbol(cleanup_entry)]
+        if has_catch: code += [PopBlockInstruction()]
+        if has_finally:
+            code += [PopBlockInstruction().add_symbol(end),
+                     NoopInstruction()]
+        else:
+            code += [NoopInstruction().add_symbol(end)]
+
+        return code            
 
     def compile_statement(self,statement):
         substatement = statement.nodes[Statement.NODE_SUBSTATEMENT]
@@ -656,6 +700,10 @@ class Compiler:
             return self.compile_select(substatement)
         if substatement.type == Rule.SWITCH:
             return self.compile_switch(substatement)
+        if substatement.type == Rule.TRY:
+            return self.compile_try(substatement)
+        if substatement.type == Rule.THROW:
+            return self.compile_throw(substatement)
         warn("No compiler found for statement: "+substatement.type)
         return []
                 

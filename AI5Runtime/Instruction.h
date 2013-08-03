@@ -53,9 +53,6 @@ public:
 	static const INSTRUCTION_TYPE SWAP_TOP						= 0x1F;
 	static const INSTRUCTION_TYPE DOUBLE_TOP					= 0x20;
 	static const INSTRUCTION_TYPE RET							= 0x21;
-	static const INSTRUCTION_TYPE PUSH_EXCEPTION_HANDLER		= 0x22;
-	static const INSTRUCTION_TYPE POP_EXCEPTION_HANDLER			= 0x23;
-	static const INSTRUCTION_TYPE RAISE_EXCEPTION				= 0x24;
 	static const INSTRUCTION_TYPE BOOLEAN_NOT					= 0x25;
 	static const INSTRUCTION_TYPE BOOLEAN_OR					= 0x26;
 	static const INSTRUCTION_TYPE BOOLEAN_AND					= 0x27;
@@ -97,6 +94,11 @@ public:
 	static const INSTRUCTION_TYPE GET_ITERATOR					= 0x56;
 	static const INSTRUCTION_TYPE ITERATOR_HAS_MORE				= 0x57;
 	static const INSTRUCTION_TYPE ITERATOR_NEXT					= 0x58;
+    static const INSTRUCTION_TYPE THROW_EXCEPTION               = 0x59;
+    static const INSTRUCTION_TYPE PUSH_CATCH_BLOCK              = 0x60;
+    static const INSTRUCTION_TYPE PUSH_FINALLY_BLOCK            = 0x61;
+    static const INSTRUCTION_TYPE PUSH_CURRENT_EXCEPTION        = 0x62;
+    static const INSTRUCTION_TYPE EXIT_FINALLY                  = 0x63;
 
 	Instruction(unsigned char type): type(type){}
 	__forceinline void execute(StackMachineThread* machine);
@@ -340,6 +342,21 @@ void Instruction::execute(StackMachineThread* machine)
 		break;
 	case ITERATOR_NEXT:
 		iteratorNext(machine);
+		break;
+	case PUSH_FINALLY_BLOCK:
+		pushFinallyBlock(machine,arg.integer);
+		break;
+	case PUSH_CATCH_BLOCK:
+		pushCatchBlock(machine,arg.integer);
+		break;
+	case PUSH_CURRENT_EXCEPTION:
+		pushCurrentException(machine);
+		break;
+	case THROW_EXCEPTION:
+		throwException(machine);
+		break;
+	case EXIT_FINALLY:
+		exitFinallyBlock(machine);
 		break;
 	default:
 		throw RuntimeError(L"Unknown instruction detected!");

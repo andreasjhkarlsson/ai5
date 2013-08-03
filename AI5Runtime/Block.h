@@ -13,9 +13,12 @@ class Block
 public:
 	virtual void leave(StackMachineThread*)=0;
 	virtual void recycleInstance()=0;
-	bool isCallBlock();
-	bool isLoopBlock();
-	BLOCK_TYPE getType();
+	bool isCallBlock() const;
+	bool isLoopBlock() const;
+	bool isGeneralBlock() const;
+	bool isCatchBlock() const;
+	bool isFinallyBlock() const;
+	BLOCK_TYPE getType() const;
 protected:
 	Block(BLOCK_TYPE type);
 	void unwindStack(StackMachineThread*,size_t stackPosition);
@@ -25,4 +28,6 @@ public:
 	static const BLOCK_TYPE CALL_BLOCK = 0;
 	static const BLOCK_TYPE LOOP_BLOCK = 1;
 	static const BLOCK_TYPE GENERAL_BLOCK = 2;
+	static const BLOCK_TYPE FINALLY_BLOCK = 3;
+	static const BLOCK_TYPE CATCH_BLOCK = 4;
 };

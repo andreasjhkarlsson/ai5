@@ -6,7 +6,6 @@
 #include "Scope.h"
 #include "StackMachineThread.h"
 #include "gc.h"
-#include <mutex>
 #include "ThreadManager.h"
 
 class StackMachine
@@ -38,6 +37,5 @@ private:
 	ThreadManager threadManager;
 	
 	int startAddress;
-	std::mutex threadsLock;
 };
 

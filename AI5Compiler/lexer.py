@@ -288,11 +288,18 @@ class KeywordToken(Token):
     WITH = "WITH".lower()
     ENDWITH = "ENDWITH".lower()
     BYREF = "BYREF".lower()
+    TRY = "TRY".lower()
+    CATCH = "CATCH".lower()
+    FINALLY = "FINALLY".lower()
+    ENDTRY = "ENDTRY".lower()
+    THROW = "THROW".lower()
     regex = "("
     keywords = [CONTINUECASE,CONTINUELOOP,DEFAULT,DIM,GLOBAL,LOCAL,CONST,
                     DO,UNTIL,ENUM,EXIT,EXITLOOP,FOR,TO,STEP,NEXT,IN,FUNC,
                     RETURN,ENDFUNC,IF,THEN,ELSE,ELSEIF,ENDIF,REDIM,
-                    SELECT,CASE,ENDSELECT,STATIC,SWITCH,ENDSWITCH,WHILE,WEND,WITH,ENDWITH,BYREF]
+                    SELECT,CASE,ENDSELECT,STATIC,SWITCH,ENDSWITCH,
+                    WHILE,WEND,WITH,ENDWITH,BYREF,TRY,CATCH,FINALLY,
+                    ENDTRY,THROW]
     
     keywords.sort(key=lambda x:len(x), reverse=True)
     for keyword in keywords:

@@ -162,14 +162,20 @@ void Instruction::print(shared_ptr<vector<shared_ptr<StaticData>>> statics)
 	case Instruction::RET:
 		DebugOut(L"Instruction") << "RET";
 		break;
-	case Instruction::PUSH_EXCEPTION_HANDLER:
-		DebugOut(L"Instruction") << "PUSH_EXCEPTION_HANDLER";
+	case Instruction::PUSH_CATCH_BLOCK:
+		DebugOut(L"Instruction") << "PUSH_CATCH_BLOCK";
 		break;
-	case Instruction::POP_EXCEPTION_HANDLER:
-		DebugOut(L"Instruction") << "POP_EXCEPTION_HANDLER";
+	case Instruction::PUSH_FINALLY_BLOCK:
+		DebugOut(L"Instruction") << "PUSH_FINALLY_BLOCK";
 		break;
-	case Instruction::RAISE_EXCEPTION:
-		DebugOut(L"Instruction") << "RAISE_EXCEPTION";
+	case Instruction::PUSH_CURRENT_EXCEPTION:
+		DebugOut(L"Instruction") << "PUSH_CURRENT_EXCEPTION";
+		break;
+	case Instruction::THROW_EXCEPTION:
+		DebugOut(L"Instruction") << "THROW_EXCEPTION";
+		break;
+	case Instruction::EXIT_FINALLY:
+		DebugOut(L"Instruction") << "EXIT_FINALLY";
 		break;
 	case Instruction::BOOLEAN_NOT:
 		DebugOut(L"Instruction") << "BOOLEAN_NOT";

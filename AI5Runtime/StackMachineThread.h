@@ -74,6 +74,9 @@ public:
 	void setExtendedCode(const VariantReference<>&);
 	void setErrorCode(const VariantReference<>&);
 
+	void setCurrentException(const VariantReference<>&);
+	const VariantReference<>& getCurrentException();
+
 	int getReturnCode()
 	{
 		return returnCode;
@@ -106,6 +109,8 @@ private:
 	VariantReference<> extendedCode;
 
 	int returnCode;
+
+	VariantReference<> currentException;
 
 	VariantReference<UserFunctionVariant> myThreadFunc;
 

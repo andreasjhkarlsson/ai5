@@ -16,7 +16,6 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 	globalScope = GC::staticAlloc<Scope>();
 	DebugOut(L"Virtual machine") << "Loading standard library";
 	registerStandardLibrary(this);
-	
 }
 
 void StackMachine::addBuiltInFunction(const UnicodeString &name,BuiltinFunction function)
@@ -42,8 +41,6 @@ void StackMachine::startMainThread()
 	mainThread->start();
 }
 
-
-
 int StackMachine::waitForTermination()
 {
 	int retCode = mainThread->join();
@@ -51,24 +48,19 @@ int StackMachine::waitForTermination()
 	return retCode;
 }
 
-
-
 void StackMachine::disassembleProgram()
 {
 	for(size_t i=0;i<program->size();i++)
 	{
 		std::wcout << i << ": ";
 		(*program)[i]->print(staticsTable);
-		std::wcout << std::endl;
 	}
 }
-
 
 ThreadManager* StackMachine::getThreadManager()
 {
 	return &threadManager;
 }
-
 
 VariantReference<Scope>& StackMachine::getGlobalScope()
 {

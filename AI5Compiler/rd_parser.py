@@ -226,9 +226,14 @@ class Rule:
     SELECT = "rule_select"
     SELECT_CASE = "rule_select_case"
     ANONYMOUS_FUNCTION = "rule_anonymous_function"
-    INLINE_MAP = "inline map"
-    KEY_VALUE = "key value"
-    
+    INLINE_MAP = "rule_inline_map"
+    KEY_VALUE = "rule_key_value"
+    THROW = "rule_throw"
+    TRY = "rule_try"
+    CATCH = "rule_catch"
+    FINALLY = "rule_finally"
+
+
     def __init__(self,nodes):
         self.nodes = nodes
     def __repr__(self):
@@ -473,13 +478,77 @@ class SelectCase(Rule):
         return SelectCase(nodes)
         
 
+class Throw(Rule):
+    type = Rule.THROW
+    NODE_EXPRESSION = "expression"
+    @classmethod
+    def match(cls,parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.THROW):
+            return None
+        nodes = {Throw.NODE_EXPRESSION: parser.expectRule(Expression)}
+        return Throw(nodes)
+
+class Try(Rule):
+    type = Rule.TRY
+    NODE_BODY = "body"
+    NODE_CATCH = "catch"
+    NODE_FINALLY = "finally"
+    @classmethod
+    def match(cls,parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.TRY):
+            return None
+        nodes = {}
+        nodes[Try.NODE_BODY] = parser.expectRule(Block)
+
+        catch_node = parser.acceptRule(Catch)
+        finally_node = parser.acceptRule(Finally)
+
+        if not catch_node and not finally_node:
+            raise ParseError("No catch or finally block found in try block",parser.current.source)
+
+        if catch_node:
+            nodes[Try.NODE_CATCH] = catch_node
+        if finally_node:
+            nodes[Try.NODE_FINALLY] = finally_node
+
+        parser.expect(Token.KEYWORD,KeywordToken.ENDTRY)
+
+        return Try(nodes)
+
+class Catch(Rule):
+    type = Rule.CATCH
+    NODE_VARIABLE = "variable"
+    NODE_BODY = "body"
+    @classmethod
+    def match(cls,parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.CATCH):
+            return None
+        nodes = {}
+
+        nodes[Catch.NODE_VARIABLE] = parser.expect(Token.IDENTIFIER)
+        if parser.acceptRule(Block):
+            nodes[Catch.NODE_BODY] = parser.matched_rule
+        parser.report_name_declaration(nodes[Catch.NODE_VARIABLE].value)
+        return Catch(nodes)
+
+class Finally(Rule):
+    type = Rule.FINALLY
+    NODE_BODY = "body"
+    @classmethod
+    def match(cls,parser):
+        if not parser.accept(Token.KEYWORD,KeywordToken.FINALLY):
+            return None
+        return Finally({Finally.NODE_BODY: parser.expectRule(Block)})
 
 class Statement(Rule):
     type = Rule.STATEMENT
     NODE_SUBSTATEMENT = "substatement"
     @classmethod
     def match(cls,parser):
-        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,For,Directive,Exit,ExitLoop,ContinueLoop,Declaration,Function,While,If,Switch,Select,LineStatement]):
+        if parser.acceptAnyRule([With,ReDim,Enum,Return,DoUntil,
+                                 For,Directive,Exit,ExitLoop,ContinueLoop,
+                                 Declaration,Function,While,If,Switch,Select,
+                                 LineStatement,Throw, Try]):
             return Statement({Statement.NODE_SUBSTATEMENT:parser.matched_rule})
         #if parser.acceptRule(Expression):
         #    return Statement([parser.matched_rule])

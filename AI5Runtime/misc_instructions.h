@@ -1,9 +1,14 @@
+#pragma once
 #include <stack>
 #include "StackMachineThread.h"
 #include "ListVariant.h"
 #include "HashMapVariant.h"
 #include "BooleanVariant.h"
 #include "gc.h"
+#include "function_instructions.h"
+#include "CatchBlock.h"
+#include "FinallyBlock.h"
+#include "jump_instructions.h"
 
 __forceinline void noop(StackMachineThread* machine)
 {
@@ -177,4 +182,79 @@ inline void iteratorNext(StackMachineThread* machine)
 	machine->getDataStack()->push(val);
 	machine->advanceCounter();
 
+}
+
+inline void throwException(StackMachineThread* machine)
+{
+	machine->setCurrentException(machine->getDataStack()->pop());
+	
+	BlockStack* bStack = machine->getBlockStack();
+
+	while(true)
+	{
+
+		if(bStack->empty())
+		{
+			// No catch handler found for exception!! 
+			throw RuntimeError(UnicodeString(L"Uncaught exception: ")+(*machine->getCurrentException()->toString()));
+		}
+
+		
+		if(bStack->top()->isCatchBlock())
+			break;
+
+		Block* block = bStack->pop();
+
+		if(block->isFinallyBlock())
+		{
+			static_cast<FinallyBlock*>(block)->setRethrowAction(machine->getCurrentException());
+			static_cast<FinallyBlock*>(block)->execute(machine);
+			return;
+		}
+
+		if(block->isCallBlock())
+		{
+			machine->setCurrentCallBlock(static_cast<CallBlock*>(block)->getParentFrame());
+
+		}
+		block->leave(machine);
+		block->recycleInstance();
+
+	}
+
+	machine->jumpAbsolute(static_cast<CatchBlock*>(bStack->pop())->getAddress());
+}
+
+inline void pushCurrentException(StackMachineThread* machine)
+{
+	machine->getDataStack()->push(machine->getCurrentException());
+	machine->advanceCounter();
+}
+
+inline void exitFinallyBlock(StackMachineThread* machine)
+{
+	FinallyBlock* block = static_cast<FinallyBlock*>(machine->getBlockStack()->pop());
+	const FinallyBlock::ReturnInfo& returnInfo = block->getReturnInfo();
+	block->leave(machine);
+	switch(returnInfo.action)
+	{
+	case FinallyBlock::ReturnInfo::JUMP_TO:
+		machine->jumpAbsolute(returnInfo.returnAddress);
+		break;
+	case FinallyBlock::ReturnInfo::THROW_EXCEPTION:
+		machine->getDataStack()->push(returnInfo.exceptionToThrow);
+		throwException(machine);
+		break;
+	case FinallyBlock::ReturnInfo::RETURN_FROM_FUNC:
+		machine->getDataStack()->push(returnInfo.returnValue);
+		ret(machine);
+		break;
+	case FinallyBlock::ReturnInfo::EXITLOOP:
+		loopJump(LOOP_JUMP_TYPE::BREAK,machine,returnInfo.level);
+		break;
+	case FinallyBlock::ReturnInfo::CONTINUELOOP:
+		loopJump(LOOP_JUMP_TYPE::CONTINUE,machine,returnInfo.level);
+		break;
+	}
+	block->recycleInstance();
 }

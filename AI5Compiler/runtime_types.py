@@ -34,9 +34,6 @@ class InstructionType:
     SWAP_TOP                            = 0x1F;
     DOUBLE_TOP                          = 0x20;
     RET                                 = 0x21;
-    PUSH_EXCEPTION_HANDLER              = 0x22;
-    POP_EXCEPTION_HANDLER               = 0x23;
-    RAISE_EXCEPTION                     = 0x24;
     BOOLEAN_NOT                         = 0x25;
     BOOLEAN_OR                          = 0x26;
     BOOLEAN_AND                         = 0x27;
@@ -78,6 +75,11 @@ class InstructionType:
     GET_ITERATOR                        = 0x56;
     ITERATOR_HAS_MORE                   = 0x57;
     ITERATOR_NEXT                       = 0x58;
+    THROW_EXCEPTION                     = 0x59;
+    PUSH_CATCH_BLOCK                    = 0x60;
+    PUSH_FINALLY_BLOCK                  = 0x61;
+    PUSH_CURRENT_EXCEPTION              = 0x62;
+    EXIT_FINALLY                        = 0x63;
 
 class StaticType:
     STRING      = 0x0

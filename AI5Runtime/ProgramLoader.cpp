@@ -103,8 +103,9 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::DOUBLE_TOP_TWO				:
 		case Instruction::RET							:
 		case Instruction::ASSIGN_INDEX					:
-		case Instruction::POP_EXCEPTION_HANDLER			:
-		case Instruction::RAISE_EXCEPTION				:
+		case Instruction::THROW_EXCEPTION				:
+		case Instruction::PUSH_CURRENT_EXCEPTION		:
+		case Instruction::EXIT_FINALLY					:
 		case Instruction::POP_BLOCK						:
 		case Instruction::EXACTLY_EQUAL					:
 		case Instruction::PUSH_GENERAL_BLOCK			:
@@ -118,7 +119,8 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 		case Instruction::BUILD_LIST					:
 		case Instruction::PUSH_STRING					:
 		case Instruction::PUSH_FUNCTION					:
-		case Instruction::PUSH_EXCEPTION_HANDLER		:
+		case Instruction::PUSH_CATCH_BLOCK				:
+		case Instruction::PUSH_FINALLY_BLOCK			:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_FALSE	:
 		case Instruction::JUMP_LONG_ABSOLUTE_IF_TRUE	:
 		case Instruction::JUMP_LONG_ABSOLUTE			:

@@ -4,6 +4,7 @@
 #include "StackMachineThread.h"
 #include "UserFunctionVariant.h"
 #include "CallBlock.h"
+#include "FinallyBlock.h"
 
 __forceinline void callFunction(StackMachineThread* machine,unsigned int numberOfArgs)
 {
@@ -48,8 +49,19 @@ __forceinline void ret(StackMachineThread* machine)
 
 	while(!blockStack->top()->isCallBlock())
 	{
-		blockStack->top()->leave(machine);
-		blockStack->pop()->recycleInstance();
+
+		Block* block = blockStack->pop();
+
+		if(block->isFinallyBlock())
+		{
+			FinallyBlock* finallyBlock = static_cast<FinallyBlock*>(block);
+			finallyBlock->setFunctionReturnAction(returnValue);
+			finallyBlock->execute(machine);
+			return;
+		}
+
+		block->leave(machine);
+		block->recycleInstance();
 	}
 
 	CallBlock* frame = static_cast<CallBlock*>(blockStack->pop());

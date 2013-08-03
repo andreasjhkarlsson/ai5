@@ -224,3 +224,12 @@ void StackMachineThread::setErrorCode(const VariantReference<>& errorCode)
 {
 	this->errorCode = errorCode;
 }
+
+void StackMachineThread::setCurrentException(const VariantReference<>& ex)
+{
+	this->currentException = ex;
+}
+const VariantReference<>& StackMachineThread::getCurrentException()
+{
+	return this->currentException;
+}

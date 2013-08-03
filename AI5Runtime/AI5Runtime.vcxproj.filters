@@ -160,6 +160,12 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>general</Filter>
     </ClCompile>
+    <ClCompile Include="FinallyBlock.cpp">
+      <Filter>blocks</Filter>
+    </ClCompile>
+    <ClCompile Include="CatchBlock.cpp">
+      <Filter>blocks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -335,6 +341,12 @@
     </ClInclude>
     <ClInclude Include="ThreadContext.h">
       <Filter>general</Filter>
+    </ClInclude>
+    <ClInclude Include="FinallyBlock.h">
+      <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="CatchBlock.h">
+      <Filter>blocks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

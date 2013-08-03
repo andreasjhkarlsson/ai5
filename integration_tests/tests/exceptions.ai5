@@ -1,0 +1,68 @@
+#include <testing.ai5>
+
+Func TestSimple()
+	g = 0
+	try
+		throw 123
+		assert(false)
+	catch e
+		assertEqual(e,123)
+		g = 20
+	endtry
+	assertEqual(g,20)
+EndFunc
+
+Func TestFinally()
+	g = 0
+	try
+		a = 1+1
+	finally
+		g += 1
+	endtry
+	try
+		throw "foo"
+	catch e
+		
+	finally
+		g += 1
+	endtry
+	assertEqual(g,2)
+EndFunc
+
+Func TestReThrow()
+	local g
+	try
+		try
+			throw "foobar"
+		catch e
+			throw e
+		endtry
+	catch f
+		g = f
+	endtry
+	assertEqual(g,"foobar")
+EndFunc
+
+Func Thrower(e)
+	throw e
+EndFunc
+
+Func TestNested()
+	g = 0
+	try
+		thrower(100)
+	catch e
+		g += e
+	finally
+		g += 50
+	endtry
+	assertEqual(g,150)
+EndFunc
+
+
+RunTests({
+	"simple": TestSimple,
+	"finally": TestFinally,
+	"rethrow": TestReThrow,
+	"nested": TestNested
+	})

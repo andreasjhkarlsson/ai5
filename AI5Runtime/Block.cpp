@@ -30,17 +30,32 @@ void Block::unwindStack(StackMachineThread* machine,size_t stackPosition)
 }
 
 
-bool Block::isCallBlock()
+bool Block::isCallBlock() const
 {
 	return type == Block::CALL_BLOCK;
 }
 
-bool Block::isLoopBlock()
+bool Block::isLoopBlock() const
 {
 	return type == Block::LOOP_BLOCK;
 }
 
-BLOCK_TYPE Block::getType()
+bool Block::isCatchBlock() const
+{
+	return type == Block::CATCH_BLOCK;
+}
+
+bool Block::isGeneralBlock() const
+{
+	return type == Block::GENERAL_BLOCK;
+}
+
+bool Block::isFinallyBlock() const
+{
+	return type == Block::FINALLY_BLOCK;
+}
+
+BLOCK_TYPE Block::getType() const
 {
 	return type;
 }
