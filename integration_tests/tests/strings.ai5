@@ -1,0 +1,35 @@
+#include <testing.ai5>
+
+Func TestConcat()
+	AssertEqual("foobar","foo"&"bar")
+EndFunc
+
+Func TestUpper()
+	AssertEqual("FOOBAR",StringUpper("fOObaR"))
+EndFunc
+
+Func TestLower()
+	AssertEqual("foobar",StringLower("FOObar"))
+EndFunc
+
+Func TestLength()
+	AssertEqual(6,StringLen("foobar"))
+EndFunc
+
+Func TestIsDigits()
+	Assert(StringIsDigit("1234"))
+	Assert(Not StringIsDigit("123g567"))
+EndFunc
+
+Func TestUnicode()
+	AssertEqual("åäö","åäö")
+	AssertEqual(5,StringLen("åÅåÅå"))
+	AssertEqual("ÖÖÖÄÄÄÅÅÅ",StringUpper("öööäääååå"))
+EndFUnc
+
+RunTests({"concat": TestConcat,
+			"uppercase":TestUpper,
+			"lowercase":TestLower,
+			"length":TestLength,
+			"isdigits":TestIsDigits,
+			"unicode":TestUnicode})

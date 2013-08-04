@@ -48,10 +48,10 @@ Func TestClosure()
 EndFunc
 
 RunTests({
-			"Parameters and return values": TestParamReturn,
-			"ByRef": TestByRef,
-			"Recursion": TestRecursion,
-			"Closures": TestClosure
+			"parameters and return values": TestParamReturn,
+			"byref": TestByRef,
+			"recursion": TestRecursion,
+			"closures": TestClosure
 			})
 
 
