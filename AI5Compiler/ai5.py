@@ -9,17 +9,20 @@ import codecs
 
 args = sys.argv[1:]
 
-if len(args) == 0:
-    print("Usage: ai5 <input_file> [<output_file>]")
+PRINT_OUTPUT = False
+
+if len(args) <= 1:
+    print("Usage: ai5 [-v] <input_file> [<output_file>]")
     sys.exit(0)
 
-if len(args) < 1 or len(args) > 2:
-    print("Wrong number of arguments to compiler")
-    sys.exit(1)
+for opt in args[:-2]:
+    if opt == "-v" or opt == "--verbose":
+        PRINT_OUTPUT = True
 
-input_file = args[0]
-if len(args) == 2:
-    output_file = args[1]
+input_file = args[-2]
+if len(args) >= 2:
+
+    output_file = args[-1]
 else:
     fileName, fileExtension = os.path.splitext(input_file)
     output_file = fileName + ".aic"
@@ -27,8 +30,6 @@ else:
 
 
 try:
-
-    PRINT_OUTPUT = False
 
     fhandle = codecs.open(input_file,"r","utf-8")
     input = fhandle.read()
@@ -40,8 +41,6 @@ try:
     parser = Parser(tokens)
     ast = parser.parse_program()
 
-
-
     compiler = Compiler()
 
     instructions = compiler.compile_program(ast)
@@ -52,10 +51,11 @@ try:
         for index,instruction in enumerate(instructions):
            print(index,":",instruction,binascii.hexlify(instruction.to_binary()))
     
-
     CompiledFile(statics_table,instructions).write_to_file(open(output_file,"wb"))
 
-    #print("Compiled program written to file "+output_file+" without problems.")
+    if PRINT_OUTPUT:
+        print("Compiled program written to file "+output_file+" without problems.")
+
 except (LexError,ParseError,CompileError) as error:
     print("Error compiling program:\n\tin file: "+error.source.filename+" at line "+str(error.source.line_number)+": "+error.message)
     sys.exit(1)
