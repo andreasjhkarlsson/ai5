@@ -7,6 +7,7 @@
 #include "Semaphore.h"
 #include "ProduceConsumeQueue.h"
 #include "DoubleLinkedList.h"
+#include "platform.h"
 
 class ListVariant;
 class HashMapVariant;
@@ -96,7 +97,9 @@ private:
 	void resumeTheWorld();
 
 	DoubleLinkedList<BlockHeader> staticList;
+	LightWeightMutex staticsLock;
 	DoubleLinkedList<BlockHeader> orphans;
+	LightWeightMutex orphansLock;
 	
 	std::thread markAndSweepThread;
 	Semaphore cycleComplete;

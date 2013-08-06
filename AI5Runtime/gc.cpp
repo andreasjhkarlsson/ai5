@@ -14,6 +14,8 @@ GC* GC::instance = nullptr;
 void GC::init(StackMachine* machine)
 {
 	instance = new GC(machine);
+	InitializeLightWeightMutex(&instance->orphansLock);
+	InitializeLightWeightMutex(&instance->staticsLock);
 }
 
 void GC::initThread(ThreadContext* context)
@@ -23,8 +25,10 @@ void GC::initThread(ThreadContext* context)
 
 void GC::uninitThread(ThreadContext* context)
 {
+	LockLightWeightMutex(&instance->orphansLock);
 	instance->orphans.splice(&context->gcInfo->gen0);
 	delete context->gcInfo;
+	UnlockLightWeightMutex(&instance->orphansLock);
 }
 
 
@@ -62,15 +66,23 @@ void GC::trackObject(BlockHeader* object)
 {
 	ThreadContext* context = ThreadContext::current();
 	if(context)
+	{
 		context->gcInfo->gen0.push_back(object);
+	}
 	else
+	{
+		LockLightWeightMutex(&orphansLock);
 		orphans.push_back(object);
+		UnlockLightWeightMutex(&orphansLock);
+	}
 }
 
 void GC::addStaticObject(BlockHeader* object)
 {
+	LockLightWeightMutex(&staticsLock);
 	object->generation = GENERATION_STATIC;
 	staticList.push_front(object);
+	UnlockLightWeightMutex(&staticsLock);
 }
 
 void GC::mark(ListVariant* list)
@@ -110,7 +122,20 @@ void GC::mark(ThreadContext* threadContext)
 		{
 			mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
 		}
+		else if (stack->stack[0]->isFinallyBlock())
+		{
+			// Finally block may hold references to objects. Enumerate them.
+			const FinallyBlock::ReturnInfo& info = static_cast<FinallyBlock*>(stack->stack[i])->getReturnInfo();
+			
+			if(info.action == FinallyBlock::ReturnInfo::THROW_EXCEPTION)
+				mark(info.exceptionToThrow);
+			else if(info.action == FinallyBlock::ReturnInfo::RETURN_FROM_FUNC)
+				mark(info.returnValue);
+		}
 	}
+
+	// Mark current exception.
+	mark(machineThread->currentException);
 					
 	// Mark current working set in datastack.
 	DataStack* dataStack = &machineThread->dataStack;
