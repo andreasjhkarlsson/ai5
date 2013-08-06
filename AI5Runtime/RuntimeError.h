@@ -27,7 +27,7 @@ private:
 	UnicodeString message;
 };
 
-class InvalidArgumentCountError: RuntimeError
+class InvalidArgumentCountError: public RuntimeError
 {
 public:
 	InvalidArgumentCountError(int got,int required,int max)
