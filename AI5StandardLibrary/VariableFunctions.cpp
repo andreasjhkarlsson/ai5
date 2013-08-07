@@ -35,6 +35,8 @@ void VariableFunctions::registerFunctions(StackMachine* machine)
 	machine->addBuiltInFunction(L"isarray",std::bind(&isArray,instance,_1));
 	machine->addBuiltInFunction(L"ishashmap",std::bind(&isHashMap,instance,_1));
 	machine->addBuiltInFunction(L"isbool",std::bind(&isBool,instance,_1));
+	machine->addBuiltInFunction(L"string",std::bind(&toString,instance,_1));
+	machine->addBuiltInFunction(L"ptr",std::bind(&toPointer,instance,_1));
 }
 
 
@@ -115,8 +117,27 @@ VariantReference<> VariableFunctions::isBool(CallInfo* callInfo)
 	return callInfo->getArg(0).isBooleanType();
 	
 }
-VariantReference<> VariableFunctions::ToString(CallInfo* callInfo)
+VariantReference<> VariableFunctions::toString(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	return StringVariant::Create(callInfo->getArg(0).toString());	
+}
+
+VariantReference<> VariableFunctions::toPointer(CallInfo* callInfo)
+{
+	void* ptr = nullptr;
+	if(sizeof(void*) == 8)
+	{
+		ptr = reinterpret_cast<void*>(callInfo->getInt64Arg(0));
+	}
+	else if(sizeof(void*) == 4)
+	{
+		ptr = reinterpret_cast<void*>(callInfo->getInt32Arg(0));
+	}
+	else
+	{
+		throw RuntimeError(L"Unknown pointer platform!!"); // What?
+	}
+
+	return VariantReference<>::PointerReference(ptr);
 }

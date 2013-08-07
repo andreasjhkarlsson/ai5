@@ -88,7 +88,7 @@ VariantReference<> DllCallFunctions::dllcalladdress(CallInfo* callInfo)
 
 	dllcall.SetRetTypeAndCC(*callInfo->getStringArg(0));
 	dllcall.SetParamsTypes(vParamTypes);
-	dllcall.SetFunc(reinterpret_cast<LPVOID>(callInfo->getArg(1).toInteger64())); // !!! Yes, that's right, it sucks! Do something. 
+	dllcall.SetFunc(callInfo->getArg(1).toPointer()); 
 
 	// To collect processed arguments to (some may be altered byref)
 	COMVar pcvRet[MAX_ARG_DLLCALL + 1];

@@ -15,7 +15,8 @@ private:
 	VariantReference<> isArray(CallInfo* callInfo);
 	VariantReference<> isHashMap(CallInfo* callInfo);
 	VariantReference<> isBool(CallInfo* callInfo);
-	VariantReference<> ToString(CallInfo* callInfo);
+	VariantReference<> toString(CallInfo* callInfo);
+	VariantReference<> toPointer(CallInfo* callInfo);
 
 
 	void swapUtf16Endiness(wchar_t* binary,int size);
