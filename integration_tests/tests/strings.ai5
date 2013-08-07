@@ -27,9 +27,15 @@ Func TestUnicode()
 	AssertEqual("ÖÖÖÄÄÄÅÅÅ",StringUpper("öööäääååå"))
 EndFUnc
 
+
+Func TestEmpty()
+	AssertEqual(StringLen(""),0)
+EndFunc
+
 RunTests({"concat": TestConcat,
 			"uppercase":TestUpper,
 			"lowercase":TestLower,
 			"length":TestLength,
 			"isdigits":TestIsDigits,
-			"unicode":TestUnicode})
+			"unicode":TestUnicode,
+			"empty": TestEmpty})

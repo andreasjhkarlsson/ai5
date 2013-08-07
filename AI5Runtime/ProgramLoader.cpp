@@ -231,8 +231,9 @@ std::shared_ptr<StackMachine> ProgramLoader::LoadFromFile(const std::string&file
 				index++;
 				unsigned int strsize = *(unsigned int*)&staticsBuffer[index];
 				index += sizeof(unsigned int);
-				shared_string str;
-				str = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
+				shared_string str = create_shared_string(L"");
+				if(strsize > 0)
+					str = Encode::utf8_to_utf16((const char*)&staticsBuffer[index],strsize);
 				index += strsize;
 				statics->push_back(StaticData::PTR(new StaticString(str)));
 				
