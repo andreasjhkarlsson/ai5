@@ -106,33 +106,26 @@ VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 	{
 	case VT_BOOL:
 		return comvar.boolVal != VARIANT_FALSE;
-		break;
 	case VT_I1:
 		return comvar.bVal;
-		break;
 	case VT_I2:
 		return comvar.iVal;
-		break;
+	case VT_UI4:
+		return (int)comvar.uintVal;
 	case VT_I4:
 		return comvar.intVal;
-		break;
 	case VT_I8:
 		return comvar.llVal;
-		break;
 	case VT_R8:
 		return comvar.dblVal;
-		break;
 	case VT_R4:
 		return comvar.fltVal;
-		break;
 	case VT_BSTR:
 		return StringVariant::Create(create_shared_string(comvar.bstrVal,SysStringLen(comvar.bstrVal)));
-		break;
 	case VT_EMPTY:
 		return VariantReference<>::NullReference();
 	default:
 		throw RuntimeError(L"No conversion exists for COMVar");
-		break;
 	}
 }
 

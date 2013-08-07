@@ -187,7 +187,12 @@ __forceinline void derefIndex(StackMachineThread* machine)
 
 __forceinline void pushMacro(StackMachineThread* machine,int arg)
 {
-	machine->getDataStack()->push(machine->getMacro(arg)(machine));
+	MACRO_FUNCTION macro = machine->getMacro(arg);
+	if(!macro)
+	{
+		throw RuntimeError(L"Invalid macro name!");
+	}
+	machine->getDataStack()->push(macro(machine));
 	machine->advanceCounter();
 }
 

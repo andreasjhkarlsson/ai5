@@ -83,7 +83,8 @@ bool StackMachineThread::isTerminated()
 
 MACRO_FUNCTION StackMachineThread::getMacro(int staticIndex)
 {
-	return (*macros)[*std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName()];
+	shared_string macroName = std::static_pointer_cast<StaticMacro>((*staticsTable)[staticIndex])->getName();
+	return (*macros)[*macroName];
 }
 
 

@@ -31,6 +31,7 @@ void Macros::registerMacros(StackMachine* machine)
 	machine->addMacro(L"error",&errorCode);
 	machine->addMacro(L"extended",&extendedCode);
 	machine->addMacro(L"threadid",&threadId);
+	machine->addMacro(L"osversion",&osVersion);
 }
 
 VariantReference<> Macros::MyPID(StackMachineThread*)
@@ -163,4 +164,10 @@ VariantReference<> Macros::weekDay(StackMachineThread*)
 VariantReference<> Macros::threadId(StackMachineThread* machine)
 {
 	return (int)0; // TODO!
+}
+
+VariantReference<> Macros::osVersion(StackMachineThread*)
+{
+	// TODO...
+	return L"WIN_7";
 }

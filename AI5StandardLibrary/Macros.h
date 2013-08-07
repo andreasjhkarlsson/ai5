@@ -26,5 +26,6 @@ private:
 	static VariantReference<> errorCode(StackMachineThread*);
 	static VariantReference<> extendedCode(StackMachineThread*);
 	static VariantReference<> threadId(StackMachineThread*);
+	static VariantReference<> osVersion(StackMachineThread*);
 };
 
