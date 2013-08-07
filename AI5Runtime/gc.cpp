@@ -42,6 +42,7 @@ void GC::shutdown()
 GC::GC(StackMachine* machine):  killThread(false), machine(machine), cycleComplete(0)
 {
 	markAndSweepThread = std::thread(std::bind(&GC::run,this));
+	renameNativeThread(markAndSweepThread,"GC");
 }
 
 GC::BlockHeader::BlockHeader(): mark(false),generation(0),referencedFrom(-1)

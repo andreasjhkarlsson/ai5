@@ -11,6 +11,7 @@ typedef CRITICAL_SECTION LightWeightMutex;
 void KillNativeThread(std::thread&);
 void SuspendNativeThread(std::thread&);
 void ResumeNativeThread(std::thread&);
+void renameNativeThread(std::thread&, const char*);
 void LockLightWeightMutex(LightWeightMutex*);
 void UnlockLightWeightMutex(LightWeightMutex*);
 void InitializeLightWeightMutex(LightWeightMutex*);
