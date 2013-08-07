@@ -13,7 +13,7 @@ StackMachine::StackMachine(shared_ptr<vector<shared_ptr<StaticData>>> statics,
 {
 	DebugOut(L"Virtual machine") << "Initializing GC";
 	GC::init(this);
-	globalScope = GC::staticAlloc<Scope>();
+	globalScope = GC::staticAlloc<Scope,const wchar_t*>(L"global");
 	DebugOut(L"Virtual machine") << "Loading standard library";
 	registerStandardLibrary(this);
 }

@@ -7,6 +7,7 @@
 #include "VariantReference.h"
 #include "GlobalOptions.h"
 #include "misc.h"
+#include "ThreadContext.h"
 
 
 GC* GC::instance = nullptr;
@@ -245,8 +246,10 @@ void GC::run()
 			// * Global scope
 			// * Local scopes
 			// * Data stack
-			// * CallFrames
 			// * Static objects
+			// * Blocks (Call, Finally) and exceptions
+
+			
 
 			// Mark statics.
 			BlockHeader* current = staticList.firstElement();
@@ -262,7 +265,7 @@ void GC::run()
 			VarRefToBlockHead(globalScope)->mark = false;
 			mark(globalScope);
 			
-
+			// Mark virtual threads.
 			ThreadContext* context = machine->getThreadManager()->threads.firstElement();
 			while(!context->sentinel)
 			{
@@ -271,6 +274,7 @@ void GC::run()
 				context = context->next;
 			}
 
+			// Sweep gen 0.
 			context = machine->getThreadManager()->threads.firstElement();
 			while(!context->sentinel)
 			{

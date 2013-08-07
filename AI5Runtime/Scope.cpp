@@ -2,7 +2,7 @@
 #include "StackMachine.h"
 #include "gc.h"
 
-Scope::Scope(): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE)
+Scope::Scope(const wchar_t* name): indexTable(128,VariantReference<NameVariant>()),usedIndexes(),enclosingScope(), Variant(TYPE), name(name)
 {
 	usedIndexes.reserve(16);
 	InitializeLightWeightMutex(&lock);
@@ -30,9 +30,15 @@ VariantReference<NameVariant> Scope::createName(const UnicodeString& name)
 	return n;
 }
 
-Scope* Scope::Create()
+std::wostream& Scope::format(std::wostream& stream) const
 {
-	return GC::alloc<Scope>();
+	stream << "Scope: " << name;
+	return stream;
+}
+
+Scope* Scope::Create(const wchar_t* name)
+{
+	return GC::alloc<Scope,const wchar_t*>(name);
 }
 
 VariantReference<NameVariant> Scope::createIndexForName(const UnicodeString& name,int index)

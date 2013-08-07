@@ -49,7 +49,6 @@ public:
 	virtual size_t hash() const;
 	virtual VariantReference<IteratorVariant> iterate();
 	__forceinline VARIANT_TYPE getType() const;
-	__forceinline void scheduleRecycling(VariantFactory* factory);
 
 	inline bool isIntegerType() const;
 	inline bool isInteger32Type() const;

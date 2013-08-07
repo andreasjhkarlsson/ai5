@@ -19,7 +19,7 @@ private:
 public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = SCOPE;
-	static Scope* Create();
+	static Scope* Create(const wchar_t*);
 
 	~Scope();
 
@@ -29,9 +29,10 @@ public:
 	VariantReference<NameVariant> createIndexForName(const UnicodeString &name,int index);
 	void insertName(const UnicodeString& name,int index,const VariantReference<NameVariant>& nameVariant);
 	void setEnclosingScope(VariantReference<Scope> scope);
+	std::wostream& format(std::wostream& stream) const;
 
 private:
-	Scope();
+	Scope(const wchar_t* name);
 	void addNameToIndex(size_t index,const VariantReference<NameVariant>& nameVariant);
 
 	class ScopeGuard
@@ -58,4 +59,6 @@ private:
 	std::vector<int> usedIndexes;
 
 	LightWeightMutex lock;
+
+	const wchar_t* name;
 };
