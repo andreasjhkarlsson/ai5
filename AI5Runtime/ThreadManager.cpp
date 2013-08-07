@@ -12,13 +12,12 @@ ThreadManager::~ThreadManager(void)
 {
 }
 
-ThreadContext* ThreadManager::createThread(StackMachine* machine,shared_string name)
+ThreadContext* ThreadManager::createThread(StackMachine* machine)
 {
-	DebugOut(L"ThreadManager") << "Creating thread" << 
-		((name->length()!=0) ? (std::wstring(L" (")+name->getTerminatedBuffer()+L")"): L"");
+//	DebugOut(L"ThreadManager") << "Creating thread" << 
+//		((name->length()!=0) ? (std::wstring(L" (")+name->getTerminatedBuffer()+L")"): L"");
 	std::lock_guard<std::mutex> guard(threadsLock);
 	ThreadContext* context = GC::alloc<ThreadContext,StackMachine*>(machine);
-	context->setThreadName(name);
 	threads.push_back(context);
 	return context;
 }
@@ -32,19 +31,34 @@ void ThreadManager::reportTermination(ThreadContext* threadContext)
 
 void ThreadManager::killAll()
 {
-	std::lock_guard<std::mutex> guard(threadsLock);
-	ThreadContext* context = threads.firstElement();
-	while(!context->sentinel)
+	DebugOut(L"ThreadManager") << "Killing all threads!";
+	
+	// During thread termination, threads will try to
+	// take the threadLock. This will deadlock if we hold onto it.
+	// We therefore make a copy of the list and then release the lock.
+	std::vector<ThreadContext*> threadsCopy;
 	{
+		std::lock_guard<std::mutex> guard(threadsLock);
+		ThreadContext* context = threads.firstElement();
+		while(!context->sentinel)
+		{
+			threadsCopy.push_back(context);
+			context = context->next;
+		}
+	}
+
+	for(ThreadContext* context: threadsCopy)
+	{
+		DebugOut(L"ThreadManager") << "Signalling death...";
 		context->kill();
-		context = context->next;
 	}
-	context = threads.firstElement();
-	while(!context->sentinel)
+
+	for(ThreadContext* context: threadsCopy)
 	{
+		DebugOut(L"ThreadManager") << "Joining...";
 		context->join();
-		context = context->next;
 	}
+	DebugOut(L"ThreadManager") << "All threads killed!";
 }
 
 void ThreadManager::suspendAll()

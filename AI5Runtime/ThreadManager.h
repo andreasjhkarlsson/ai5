@@ -13,7 +13,7 @@ public:
 	friend class GC;
 	ThreadManager(void);
 	~ThreadManager(void);
-	ThreadContext* createThread(StackMachine* machine,shared_string name);
+	ThreadContext* createThread(StackMachine* machine);
 	void reportTermination(ThreadContext* threadContext);
 	void killAll();
 	void suspendAll();

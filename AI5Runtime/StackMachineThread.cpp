@@ -14,7 +14,7 @@ using namespace std::placeholders;
 
 StackMachineThread::StackMachineThread(StackMachine* machine): programCounter(0),
 	dataStack(DATA_STACK_SIZE),staticsTable(machine->getStatics()),program(machine->getCode()), blockStack(BLOCK_STACK_SIZE), macros(machine->getMacros()),
-	currentCallBlock(nullptr), globalScope(machine->getGlobalScope()), errorCode(0), extendedCode(0), parent(machine)
+	currentCallBlock(nullptr), globalScope(machine->getGlobalScope()), errorCode(0), extendedCode(0), parent(machine), shouldTerminate(false)
 {
 	
 }
@@ -48,10 +48,11 @@ void StackMachineThread::setStartFunction(const VariantReference<UserFunctionVar
 void StackMachineThread::run()
 {
 	terminated = false;
+	shouldTerminate = false;
 	//DebugOut(L"Thread") << "Thread with name " << this->name->getTerminatedBuffer() << " created.";
 	try
 	{
-		while (!terminated) 
+		while (!shouldTerminate) 
 		{
 			if(GlobalOptions::shouldPrintInstructions())
 			{
@@ -68,11 +69,12 @@ void StackMachineThread::run()
 			std::endl << "The program will now terminate." << std::endl;
 		returnCode = -1;
 	}
+	terminated = true;
 }
 
 void StackMachineThread::terminate(int code)
 {
-	terminated = true;
+	shouldTerminate = true;
 	returnCode = code;
 }
 

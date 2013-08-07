@@ -101,6 +101,7 @@ private:
 	VariantReference<Scope>& globalScope;
 	DataStack dataStack;
 	// When set, the machine stops executing after next instruction.
+	bool shouldTerminate;
 	bool terminated;
 	// Classic program counter.
 	int programCounter;

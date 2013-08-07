@@ -67,11 +67,18 @@ ThreadContext::~ThreadContext()
 	if(virtualThread)
 		delete virtualThread;
 	if(threadHandle)
+	{
+		if(threadHandle->joinable())
+			threadHandle->detach();
 		delete threadHandle;
+	}
 }
 
 void ThreadContext::setThreadName(shared_string name)
 {
+	std::string utf8;
+	name->toUTF8String(utf8);
+	renameNativeThread(*threadHandle,utf8.c_str());
 	this->name = name;
 }
 
@@ -82,6 +89,7 @@ void ThreadContext::threadFunction()
 	virtualThread->run();
 	GC::uninitThread(this);
 	machine->getThreadManager()->reportTermination(this);
+	std::wcout << name->getTerminatedBuffer() << " quitted." << std::endl;
 }
 
 
@@ -92,11 +100,15 @@ void ThreadContext::start()
 
 void ThreadContext::kill()
 {
+	if(virtualThread->isTerminated())
+		return;
 	virtualThread->terminate(-1);
-	std::this_thread::sleep_for(std::chrono::milliseconds(25));
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	if(!virtualThread->isTerminated())
 	{
+		DebugOut(L"Thread") << "Forcefully killing thread.";
 		KillNativeThread(*threadHandle);
+		this->threadHandle->detach();
 	}
 }
 
@@ -107,7 +119,8 @@ shared_string ThreadContext::getThreadName()
 
 int ThreadContext::join()
 {
-	this->threadHandle->join();
+	if(this->threadHandle->joinable())
+		this->threadHandle->join();
 	return virtualThread->getReturnCode();
 }
 

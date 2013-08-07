@@ -37,8 +37,9 @@ void StackMachine::startMainThread()
 {
 	StackMachineThread* virtualThread = new StackMachineThread(this);
 	virtualThread->jumpAbsolute(startAddress);
-	mainThread = threadManager.createThread(this,create_shared_string(L"main"));
+	mainThread = threadManager.createThread(this);
 	mainThread->start();
+	mainThread->setThreadName(create_shared_string(L"ai5 main"));
 }
 
 int StackMachine::waitForTermination()
