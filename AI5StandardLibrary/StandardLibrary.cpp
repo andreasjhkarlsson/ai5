@@ -11,6 +11,7 @@
 #include "DllCallFunctions.h"
 #include "MiscFunctions.h"
 #include "SystemFunctions.h"
+#include "ThreadFunctions.h"
 #include "..\AI5Runtime\StackMachine.h"
 #include <Windows.h>
 
@@ -28,5 +29,6 @@ void registerStandardLibrary(StackMachine* machine)
 	DllCallFunctions::registerFunctions(machine);
 	MiscFunctions::registerFunctions(machine);
 	SystemFunctions::registerFunctions(machine);
+	ThreadFunctions::registerFunctions(machine);
 	Macros::registerMacros(machine);
 }

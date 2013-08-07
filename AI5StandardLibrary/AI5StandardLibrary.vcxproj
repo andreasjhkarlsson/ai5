@@ -141,6 +141,7 @@
     <ClInclude Include="StandardLibrary.h" />
     <ClInclude Include="StringFunctions.h" />
     <ClInclude Include="SystemFunctions.h" />
+    <ClInclude Include="ThreadFunctions.h" />
     <ClInclude Include="TimerFunctions.h" />
     <ClInclude Include="VariableFunctions.h" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClCompile Include="StandardLibrary.cpp" />
     <ClCompile Include="StringFunctions.cpp" />
     <ClCompile Include="SystemFunctions.cpp" />
+    <ClCompile Include="ThreadFunctions.cpp" />
     <ClCompile Include="TimerFunctions.cpp" />
     <ClCompile Include="VariableFunctions.cpp" />
   </ItemGroup>
