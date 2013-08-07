@@ -217,7 +217,7 @@ void GC::sweep(DoubleLinkedList<BlockHeader>* objects)
 		}
 		else
 		{
-			DebugOut(L"GC") << "Found garbage of type " << current->object->typeAsString();
+			DebugOut(L"GC") << "Found garbage of type " << Variant::typeAsString(current->object->getType());
 
 			BlockHeader* temp = objects->erase(current);
 			freeObject(current);

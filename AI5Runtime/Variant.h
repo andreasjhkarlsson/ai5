@@ -33,8 +33,11 @@ public:
 	static const VARIANT_TYPE ITERATOR			= 16;
 	static const VARIANT_TYPE HANDLE_VAR		= 17;
 	static const VARIANT_TYPE THREAD_VAR		= 18;
-	static const int NUMBER_OF_VARIANT_TYPES	= 19;
-	const char* typeAsString();
+	static const VARIANT_TYPE POINTER			= 19;
+	static const VARIANT_TYPE GENERIC			= 20;
+	static const int NUMBER_OF_VARIANT_TYPES	= 21;
+	static const char* typeAsString(VARIANT_TYPE);
+	static const VARIANT_TYPE TYPE = GENERIC;
 
 
 	Variant(const VARIANT_TYPE type,bool verbosePrint=true);

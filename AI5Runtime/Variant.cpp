@@ -21,7 +21,7 @@ Variant::Variant(const VARIANT_TYPE type,bool verbosePrint): type(type), verbose
 	{
 		if(verbosePrint)
 		{
-			DebugOut(L"Variant") << typeAsString() << ""
+			DebugOut(L"Variant") << typeAsString(type) << ""
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") created.";
 			std::wcout << std::dec << std::setw(0);
 		}
@@ -34,7 +34,7 @@ Variant::~Variant(void)
 	{
 		if(verbosePrint)
 		{
-			DebugOut(L"Variant") << typeAsString() << ""
+			DebugOut(L"Variant") << typeAsString(type) << ""
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") destroyed.";
 			std::wcout << std::dec << std::setw(0);
 		}
@@ -129,7 +129,7 @@ VariantReference<> Variant::createFromCOMVar(const COMVar& comvar)
 	}
 }
 
-const char* Variant::typeAsString()
+const char* Variant::typeAsString(VARIANT_TYPE type)
 {
 	switch(type)
 	{

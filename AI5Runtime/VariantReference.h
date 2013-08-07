@@ -32,26 +32,38 @@ public:
 	template <typename U>
 	VariantReference<U> cast() const
 	{
+		if(this->varType != U::TYPE && U::TYPE != Variant::GENERIC)
+		{
+			throw RuntimeError(UnicodeString(L"Expected ")+Variant::typeAsString(U::TYPE)+L", but got "+Variant::typeAsString(varType));
+		}
 		return VariantReference<U>(static_cast<U*>(ref.variant));
 	}
 
 	T* operator->()
 	{
+		if(!this->isComplexType())
+			throw RuntimeError(L"Pointer to non-complex type not allowed");
 		return static_cast<T*>(ref.variant);
 	}
 
 	const T* operator->() const
 	{
+		if(!this->isComplexType())
+			throw RuntimeError(L"Pointer to non-complex type not allowed");
 		return static_cast<const T*>(ref.variant);
 	}
 
 	T* get()
 	{
+		if(!this->isComplexType())
+			throw RuntimeError(L"Pointer to non-complex type not allowed");
 		return static_cast<T*>(ref.variant);
 	}
 
 	const T* get() const
 	{
+		if(!this->isComplexType())
+			throw RuntimeError(L"Pointer to non-complex type not allowed");
 		return static_cast<T*>(ref.variant);
 	}
 
