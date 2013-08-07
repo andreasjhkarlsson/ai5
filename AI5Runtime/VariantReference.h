@@ -421,6 +421,8 @@ bool VariantReference<T>::equal(const VariantReference<T>& other) const
 	case Variant::BOOLEAN:
 		return ref.boolean == other.toBoolean();
 	case Variant::NULL_VAR:
+		if(other.varType == Variant::INTEGER32 || other.varType == Variant::INTEGER64)
+			return other.toInteger32() == 0;
 		return other.varType == Variant::NULL_VAR;
 	case Variant::DEFAULT:
 		return other.varType == Variant::DEFAULT;

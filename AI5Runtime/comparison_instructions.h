@@ -213,9 +213,9 @@ inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE ty
 	bool result = false;
 	Comparator* comp = table.lookup(operand1.getType(),operand2.getType());
 
-	if(comp == nullptr && type != EXACTLY_EQUAL)
+	if(comp == nullptr && (type != EXACTLY_EQUAL && type != EQUAL))
 	{
-		throw new RuntimeError(L"No suitable comparator found for values");
+		throw RuntimeError(L"No suitable comparator found for values");
 	}
 
 
@@ -234,7 +234,10 @@ inline void comparisonInstruction(StackMachineThread* machine,COMPARISON_TYPE ty
 		result = comp->lesserEqual(operand1,operand2);
 		break;
 	case EQUAL:
-		result = comp->equal(operand1,operand2);
+		if(comp != nullptr)
+			result = comp->equal(operand1,operand2);
+		else
+			result = operand1.equal(operand2);
 		break;
 	case NOT_EQUAL:
 		result = !comp->equal(operand1,operand2);
