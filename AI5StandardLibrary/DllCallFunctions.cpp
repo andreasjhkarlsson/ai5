@@ -118,7 +118,7 @@ VariantReference<> DllCallFunctions::dllopen(CallInfo* callInfo)
 	if(!module)
 		return nullptr; // TODO: Set error.
 
-	return new ModuleHandle(module);
+	return GC::alloc<ModuleHandle,HMODULE>(module);
 }
 
 VariantReference<> DllCallFunctions::dllclose(CallInfo* callInfo)

@@ -8,6 +8,7 @@ ModuleHandle::ModuleHandle(HMODULE module): HandleVariant(HTYPE), module(module)
 
 ModuleHandle::~ModuleHandle()
 {
+	std::wcout << "Module handle destroyed" << std::endl;
 	close();
 }
 

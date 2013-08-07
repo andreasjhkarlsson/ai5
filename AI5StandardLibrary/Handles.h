@@ -5,13 +5,14 @@
 class ModuleHandle: public HandleVariant
 {
 public:
+	friend class GC;
 	static const HANDLE_TYPE HTYPE = MODULE_HANDLE;
-	ModuleHandle(HMODULE module);
 	~ModuleHandle();
 	void close();
 	virtual bool isValid() const override;
 	HMODULE getModule();
 private:
+	ModuleHandle(HMODULE module);
 	HMODULE module;
 };
 

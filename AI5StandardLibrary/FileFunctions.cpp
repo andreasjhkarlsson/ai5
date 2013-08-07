@@ -116,24 +116,27 @@ public:
 	static const MODE READ = 1; 
 	static const MODE WRITE = 2; // Implies READ
 	static const MODE WRITE_APPEND = 4; // Implies READ
+	friend class GC;
 
 	static const HANDLE_TYPE HTYPE = FILE_HANDLE;
-	FileHandle(shared_string filename,MODE mode,
-		Encode::TYPE encoding,bool binary,bool bom,bool fullDetection):
-	handle(nullptr), HandleVariant(FILE_HANDLE), filename(filename),uhandle(nullptr),
-				mode(mode), encoding(encoding), binary(binary), bom(bom), fullDetection(fullDetection)
-	{
-
-
-	}
 
 	~FileHandle()
 	{
 		close();
 	}
 
-	int open()
+	int open(shared_string filename,MODE mode,
+		Encode::TYPE encoding,bool binary,bool bom,bool fullDetection)
 	{
+
+		this->filename = filename;
+		this->mode = mode;
+		this->encoding = encoding;
+		this->binary = binary;
+		this->bom = bom;
+		this->fullDetection = fullDetection;
+
+
 		std::string openMode;
 		if(mode&READ)
 			openMode = "r";
@@ -325,6 +328,11 @@ public:
 
 
 private:
+	FileHandle(): handle(nullptr), HandleVariant(FILE_HANDLE),uhandle(nullptr)
+	{
+
+
+	}
 	UFILE* uhandle;
 	FILE* handle;
 
@@ -389,8 +397,8 @@ VariantReference<> FileFunctions::fileOpen(CallInfo* callInfo)
 	if(flag&0x4000)
 		fullDetection = true;
 
-	VariantReference<FileHandle> fhandle = new FileHandle(filename,mode,encoding,binary_mode,bom,fullDetection);
-	int status = fhandle->open();
+	VariantReference<FileHandle> fhandle = GC::alloc<FileHandle>();
+	int status = fhandle->open(filename,mode,encoding,binary_mode,bom,fullDetection);
 	if(status == 0)
 		return fhandle;
 

@@ -57,5 +57,5 @@ private:
 
 };
 
-
+// Allows whole code regions to be guarded by a safe region.
 #define SAFE_REGION(code) { SafeRegion region(ThreadContext::current()); code; }
