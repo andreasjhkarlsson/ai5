@@ -79,6 +79,7 @@ VariantReference<> FileFunctions::consoleWrite(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(1,1);
 	std::wcout << callInfo->getStringArg(0)->getTerminatedBuffer();
+	std::wcout.flush();
 	return nullptr;
 }
 
