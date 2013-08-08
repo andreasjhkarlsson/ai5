@@ -11,23 +11,25 @@ args = sys.argv[1:]
 
 PRINT_OUTPUT = False
 
-if len(args) <= 1:
+if len(args) < 1:
     print("Usage: ai5 [-v] <input_file> [<output_file>]")
     sys.exit(0)
 
-for opt in args[:-2]:
+for opt in args:
     if opt == "-v" or opt == "--verbose":
         PRINT_OUTPUT = True
 
-input_file = args[-2]
-if len(args) >= 2:
+if args[0] == "-v" or args[0] == "--verbose":
+    PRINT_OUTPUT = True
+    args = args[1:]
 
-    output_file = args[-1]
+
+input_file = args[0]
+if len(args) == 2:
+    output_file = args[1]
 else:
     fileName, fileExtension = os.path.splitext(input_file)
     output_file = fileName + ".aic"
-
-
 
 try:
 
