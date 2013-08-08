@@ -54,6 +54,7 @@ private:
 	void threadFunction();
 	std::thread* threadHandle;
 	StackMachine* machine;
+	std::mutex nameLock;
 
 };
 

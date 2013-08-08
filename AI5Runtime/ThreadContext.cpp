@@ -52,7 +52,7 @@ void SafeRegion::leave()
 	}
 }
 
-ThreadContext::ThreadContext(StackMachine* machine): Variant(TYPE), virtualThread(new StackMachineThread(machine)), machine(machine), threadHandle(nullptr)
+ThreadContext::ThreadContext(StackMachine* machine): Variant(TYPE), virtualThread(new StackMachineThread(machine)), machine(machine), threadHandle(nullptr), name(create_shared_string(""))
 {
 	virtualThread->setThreadContext(this);	
 }
@@ -76,6 +76,7 @@ ThreadContext::~ThreadContext()
 
 void ThreadContext::setThreadName(shared_string name)
 {
+	std::lock_guard<std::mutex> guard(nameLock);
 	std::string utf8;
 	name->toUTF8String(utf8);
 	renameNativeThread(*threadHandle,utf8.c_str());
@@ -89,7 +90,11 @@ void ThreadContext::threadFunction()
 	virtualThread->run();
 	GC::uninitThread(this);
 	machine->getThreadManager()->reportTermination(this);
-	std::wcout << name->getTerminatedBuffer() << " quitted." << std::endl;
+	
+	{
+		std::lock_guard<std::mutex> guard(nameLock);
+		DebugOut(L"Thread") << name->getTerminatedBuffer() << " quitted.";
+	}
 }
 
 
