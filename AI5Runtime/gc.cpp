@@ -122,7 +122,9 @@ void GC::mark(ThreadContext* threadContext)
 	{
 		if(stack->stack[i]->isCallBlock())
 		{
-			mark(static_cast<CallBlock*>(stack->stack[i])->getScope());
+			mark(static_cast<CallBlock*>(stack->stack[i])->scope);
+			mark(static_cast<CallBlock*>(stack->stack[i])->closureScope);
+			mark(static_cast<CallBlock*>(stack->stack[i])->owner);
 		}
 		else if (stack->stack[0]->isFinallyBlock())
 		{

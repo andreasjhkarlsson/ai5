@@ -17,10 +17,9 @@ struct Argument
 class CallBlock: public Block, public PooledObject<CallBlock> 
 {
 public:
-	
+	friend class GC;
 	~CallBlock(void);
 	void setup(StackMachineThread* machine,int returnAddress,int calledNumberOfArguments,CallBlock* parentFrame,VariantReference<UserFunctionVariant>& owner);
-
 	VariantReference<Scope>& getScope();
 	virtual void leave(StackMachineThread*);
 	void recycleInstance();
