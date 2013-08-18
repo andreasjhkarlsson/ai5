@@ -63,7 +63,7 @@ shared_string ListVariant::toString() const
 
 void ListVariant::addElement(const VariantReference<>& var)
 {
-	list->push_back(var);
+	list->push_back(GC::persistReference(this,var));
 }
 
 const VariantReference<>&ListVariant::getElement(size_t index) const
@@ -79,7 +79,7 @@ void ListVariant::setElement(size_t index,const VariantReference<>& var)
 		throw RuntimeError(L"List index out of bounds!");
 
 	// Assign new value.
-	(*list)[index] = var;
+	(*list)[index] = GC::persistReference(this,var);
 }
 
 

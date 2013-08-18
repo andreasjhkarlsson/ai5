@@ -6,9 +6,7 @@
 class DebugOut
 {
 public:
-
 	static const int COLUMN_WIDTH = 15;
-
 	DebugOut(const std::wstring &type)
 	{
 		if(GlobalOptions::isVerbose())
@@ -18,7 +16,6 @@ public:
 				std::wcout << " ";
 			std::wcout << ": ";
 		}
-
 	}
 
 	~DebugOut()
@@ -28,7 +25,6 @@ public:
 			std::wcout << std::endl;
 		}
 	}
-
 	template <typename T>
 	friend DebugOut& operator<<(DebugOut& out,T i)
 	{
@@ -36,5 +32,4 @@ public:
 			std::wcout << i;
 		return out;
 	}
-
 };

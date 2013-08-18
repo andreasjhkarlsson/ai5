@@ -19,6 +19,7 @@ HashMapVariant* HashMapVariant::Create()
 void HashMapVariant::set(const VariantReference<>& key,VariantReference<>& value)
 {
 	map[key] = value;
+	GC::persistReference(this,value);
 }
 const VariantReference<>& HashMapVariant::get(const VariantReference<>& key)
 {
@@ -66,6 +67,7 @@ VariantReference<IteratorVariant> HashMapVariant::iterate()
 
 HashMapVariant::KeyIterator::KeyIterator(const VariantReference<HashMapVariant>& map):map(map)
 {
+	GC::persistReference(this,map);
 	it = this->map->map.begin();
 }
 

@@ -44,5 +44,5 @@ VariantReference<Scope>& UserFunctionVariant::getEnclosingScope()
 
 void UserFunctionVariant::setEnclosingScope(const VariantReference<Scope>& scope)
 {
-	this->enclosingScope = scope;
+	this->enclosingScope = GC::persistReference(this,scope);
 }

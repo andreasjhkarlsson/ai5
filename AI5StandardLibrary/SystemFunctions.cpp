@@ -18,7 +18,7 @@ VariantReference<> SystemFunctions::runGC(CallInfo* callInfo)
 {
 	callInfo->validateArgCount(0,1);
 
-	GC::collect(callInfo->getBoolArg(0,false));
+	SAFE_REGION(GC::collect(callInfo->getBoolArg(0,false)));
 	
 	return nullptr;
 }

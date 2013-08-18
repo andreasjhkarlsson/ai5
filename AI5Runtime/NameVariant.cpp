@@ -68,7 +68,7 @@ void NameVariant::setValue(const VariantReference<>& newVariant)
 	{
 		throw RuntimeError(L"Cannot set value of const name!");
 	}
-
+	GC::persistReference(this,newVariant);
 	value = newVariant;	
 }
 

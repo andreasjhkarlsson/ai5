@@ -32,6 +32,7 @@ public:
 	{
 		BlockHeader();
 		Variant* object;
+		size_t totalSize;
 		bool mark;
 		char generation;
 		char referencedFrom; 
@@ -40,7 +41,7 @@ public:
 
 	struct ThreadInfo
 	{
-		DoubleLinkedList<BlockHeader> gen0;
+		//DoubleLinkedList<BlockHeader> gen0;
 	};
 
 	// Public interface for users.
@@ -50,6 +51,8 @@ public:
 	static void shutdown();
 	static void collect(bool wait);
 	static void cleanup();
+	template <class T>
+	static const VariantReference<T>& persistReference(Variant* owner,const VariantReference<T>& object);
 	template <class T>
 	static T* alloc();
 	template <class T,class U>
@@ -64,47 +67,59 @@ public:
 	static T* staticAlloc(U arg,V arg2);
 
 private:
-	static const char GENERATION_STATIC = -1;
+
+	static const int GEN_COUNT = 3;
+	static const char STATIC_GEN = -1;
+
 	static const int MESSAGE_START_SYNCHRONOUS_CYCLE = 0;
 	static const int MESSAGE_START_ASYNCHRONOUS_CYCLE = 1;
 	static const int MESSAGE_STOP = 2;
 	static GC* instance;
 	static const size_t BLOCKHEADER_ALIGNED_SIZE = sizeof(BlockHeader) + (sizeof(BlockHeader)%sizeof(BlockHeader*));
 
+	struct CycleStats
+	{
+		CycleStats(): instancesFreed(0),bytesFreed(0)
+		{ }
+		size_t instancesFreed;
+		size_t bytesFreed;
+	};
 
 	template <class T>
 	static BlockHeader* allocBlockHeader();
 	static BlockHeader* VarRefToBlockHead(const VariantReference<>&ref);
+	static BlockHeader* VarPtrToBlockHead(Variant*);
 
 	GC(StackMachine*);
 	void trackObject(BlockHeader*);
-	void addStaticObject(BlockHeader*);
+	void trackStaticObject(BlockHeader*);
 	void run();
-	void mark(BlockHeader*);
-	void mark(const VariantReference<>&ref);
-	void mark(ListVariant* list);
-	void mark(HashMapVariant* hashMap);
-	void mark(Scope* scope);
-	void mark(HandleVariant* handle);
-	void mark(NameVariant* name);
-	void mark(NameReferenceVariant* nameReference);
-	void mark(UserFunctionVariant* userFunc);
-	void mark(ThreadContext* tContext);
-	void sweep(DoubleLinkedList<BlockHeader>* objects);
+	void mark(BlockHeader*,int gen,bool root=false);
+	void mark(const VariantReference<>&ref,int gen);
+	void mark(ListVariant* list,int gen);
+	void mark(HashMapVariant* hashMap,int gen);
+	void mark(Scope* scope,int gen);
+	void mark(HandleVariant* handle,int gen);
+	void mark(NameVariant* name,int gen);
+	void mark(NameReferenceVariant* nameReference,int gen);
+	void mark(UserFunctionVariant* userFunc,int gen);
+	void mark(ThreadContext* tContext,int gen);
+	void sweep(DoubleLinkedList<BlockHeader>* objects,CycleStats&,int gen);
 	void freeAll();
+	void freeBlockList(DoubleLinkedList<BlockHeader>*);
 	void freeObject(BlockHeader*);
 	void stopTheWorld();
 	void resumeTheWorld();
 
-	DoubleLinkedList<BlockHeader> staticList;
-	LightWeightMutex staticsLock;
-	DoubleLinkedList<BlockHeader> orphans;
-	LightWeightMutex orphansLock;
+	LightWeightMutex heapLock;
 	
 	std::thread markAndSweepThread;
 	Semaphore cycleComplete;
 	ProduceConsumeQueue<int> messageQueue;
 	volatile bool killThread;
+
+	DoubleLinkedList<BlockHeader> gens[GEN_COUNT];
+	DoubleLinkedList<BlockHeader> statics;
 
 	StackMachine* machine;
 };
@@ -113,10 +128,12 @@ private:
 template <class T>
 GC::BlockHeader* GC::allocBlockHeader()
 {
-	void* memory = malloc(BLOCKHEADER_ALIGNED_SIZE + sizeof(T));
+	const size_t allocSize = BLOCKHEADER_ALIGNED_SIZE + sizeof(T);
+	void* memory = malloc(allocSize);
 	BlockHeader* header = static_cast<BlockHeader*>(memory);
 	new (header) BlockHeader();
 	header->object = reinterpret_cast<Variant*>(((char*)memory)+BLOCKHEADER_ALIGNED_SIZE);
+	header->totalSize = allocSize;
 	return header;
 }
 
@@ -156,7 +173,7 @@ T* GC::staticAlloc()
 {
 	BlockHeader* header = allocBlockHeader<T>();
 	new (header->object) T();
-	instance->addStaticObject(header);
+	instance->trackStaticObject(header);
 	return static_cast<T*>(header->object);
 }
 
@@ -165,7 +182,7 @@ T* GC::staticAlloc(U arg)
 {
 	BlockHeader* header = allocBlockHeader<T>();
 	new (header->object) T(arg);
-	instance->addStaticObject(header);
+	instance->trackStaticObject(header);
 	return static_cast<T*>(header->object);
 }
 
@@ -174,8 +191,26 @@ T* GC::staticAlloc(U arg,V arg2)
 {
 	BlockHeader* header = allocBlockHeader<T>();
 	new (header->object) T(arg,arg2);
-	instance->addStaticObject(header);
+	instance->trackStaticObject(header);
 	return static_cast<T*>(header->object);
 }
 
 // </BAD DRY>
+
+template<class T>
+const VariantReference<T>& GC::persistReference(Variant* owner,const VariantReference<T>& object)
+{
+	LockLightWeightMutex(&instance->heapLock);
+	int ownerGen = VarPtrToBlockHead(owner)->generation;
+	BlockHeader* block = VarRefToBlockHead(object);
+
+	if(block != nullptr && ownerGen > block->generation && ownerGen > block->referencedFrom)
+	{
+		// This means that an old object references a new object!! 
+		block->referencedFrom = ownerGen;
+	}
+
+	UnlockLightWeightMutex(&instance->heapLock);
+
+	return object;
+}

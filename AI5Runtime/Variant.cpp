@@ -19,7 +19,7 @@ Variant::Variant(const VARIANT_TYPE type,bool verbosePrint): type(type), verbose
 {
 	if (GlobalOptions::isVerbose())
 	{
-		if(verbosePrint)
+		if(verbosePrint && false)
 		{
 			DebugOut(L"Variant") << typeAsString(type) << ""
 			<< "(0x"<< std::hex << std::setw(sizeof(void*)*2) << std::setfill(L'0') << (long)this << ") created.";
@@ -30,7 +30,7 @@ Variant::Variant(const VARIANT_TYPE type,bool verbosePrint): type(type), verbose
 
 Variant::~Variant(void)
 {
-	if (GlobalOptions::isVerbose())
+	if (GlobalOptions::isVerbose() && false)
 	{
 		if(verbosePrint)
 		{

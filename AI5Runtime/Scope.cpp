@@ -26,6 +26,7 @@ VariantReference<NameVariant> Scope::createName(const UnicodeString& name)
 {
 	ScopeGuard guard(this);
 	VariantReference<NameVariant> n = GC::alloc<NameVariant,const VariantReference<>&>(nullptr);
+	GC::persistReference(this,n);
 	lookup[name] = n;
 	return n;
 }
@@ -50,6 +51,7 @@ VariantReference<NameVariant> Scope::createIndexForName(const UnicodeString& nam
 	}
 
 	VariantReference<NameVariant> nameObj = lookup[name];
+	GC::persistReference(this,nameObj);
 
 	addNameToIndex(index,nameObj);
 
@@ -62,6 +64,7 @@ void Scope::insertName(const UnicodeString& name,int index,const VariantReferenc
 	lookup[name] = nameVariant;
 
 	addNameToIndex(index,nameVariant);
+	
 
 }
 
@@ -75,6 +78,8 @@ void Scope::addNameToIndex(size_t index,const VariantReference<NameVariant>& nam
 	indexTable[index] = nameVariant;
 
 	usedIndexes.push_back(index);
+
+	GC::persistReference(this,nameVariant);
 
 }
 
@@ -97,4 +102,5 @@ void Scope::setEnclosingScope(VariantReference<Scope> scope)
 {
 	ScopeGuard guard(this);
 	this->enclosingScope = scope;
+	GC::persistReference(this,scope);
 }
