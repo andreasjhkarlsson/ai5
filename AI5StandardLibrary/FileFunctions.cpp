@@ -161,7 +161,9 @@ public:
 		if(binary)
 		{
 			openMode += "b";
-			handle = fopen(utf8_filename.c_str(),openMode.c_str());
+			errno_t err = fopen_s(&handle,utf8_filename.c_str(),openMode.c_str());
+			if(err)
+				return 1;
 		}
 		else
 		{
