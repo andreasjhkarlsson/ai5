@@ -1,0 +1,24 @@
+#include <testing.ai5>
+
+Func TestInline()
+	h = {"a":1,"b":2,"c":3}
+	assertEqual(h["b"],2)
+EndFunc
+
+Func TestDotSyntax()
+	h = {}
+	h.test = 100
+	assertEqual(h.test,100)
+EndFunc
+
+Func TestIteration()
+	h = {"a":1,"b":2,"c":3}
+	sum = 0
+	for key in h
+		sum += h[key]
+	next
+	assertEqual(sum,6)
+EndFunc
+		
+
+RunTests({"inline": TestInline,"dot":TestDotSyntax,"iteration":TestIteration})

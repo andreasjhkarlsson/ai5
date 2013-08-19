@@ -713,11 +713,19 @@ class Compiler:
         code += [IndexInstruction()]
         return code
 
+    def compile_property_indexing(self,property):
+        code = []
+        code += [PushStringInstruction(self.static_table.get_string_id(property.nodes[Property.NODE_NAME].value))]
+        code += [IndexInstruction()]
+        return code
+
     def compile_qualifier(self,qualifier):
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.CALL:
             return self.compile_call(qualifier.nodes[Qualifier.NODE_SUBQUALIFIER])
         if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.LIST_INDEXING:
             return self.compile_list_indexing(qualifier.nodes[Qualifier.NODE_SUBQUALIFIER])
+        if qualifier.nodes[Qualifier.NODE_SUBQUALIFIER].type == Rule.PROPERTY:
+            return self.compile_property_indexing(qualifier.nodes[Qualifier.NODE_SUBQUALIFIER])
         
     def compile_call(self,call):
         code = []
