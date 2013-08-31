@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Windows.h>
 #include "3rdparty\hsieh_hash.h"
+#include "misc.h"
 
 StringVariant::StringVariant(shared_string str): Variant(TYPE), str(str)
 {

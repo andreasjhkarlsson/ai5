@@ -5,7 +5,6 @@
 
 #include <Windows.h>
 typedef CRITICAL_SECTION LightWeightMutex;
-
 #endif
 
 void KillNativeThread(std::thread&);
@@ -15,3 +14,4 @@ void renameNativeThread(std::thread&, const char*);
 void LockLightWeightMutex(LightWeightMutex*);
 void UnlockLightWeightMutex(LightWeightMutex*);
 void InitializeLightWeightMutex(LightWeightMutex*);
+

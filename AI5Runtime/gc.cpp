@@ -34,7 +34,7 @@ void GC::shutdown()
 	instance->markAndSweepThread.join();
 }
 
-GC::GC(StackMachine* machine):  killThread(false), machine(machine), cycleComplete(0)
+GC::GC(StackMachine* machine):  killThread(false), machine(machine), cycleComplete(0), heap(1024*1024), gen0Size(0), totalSize(0), cycle(0)
 {
 	InitializeLightWeightMutex(&heapLock);
 	markAndSweepThread = std::thread(std::bind(&GC::run,this));
@@ -60,10 +60,38 @@ void GC::collect(bool wait)
 	}
 }
 
+void GC::checkHeapLimit()
+{
+	if((totalSize) > HEAP_LIMIT)
+	{
+		DebugOut(L"GC") << "Heap limit reached! Forcing full collection";
+		cycle = 0;
+		SAFE_REGION(collect(true));
+
+		if(totalSize > HEAP_LIMIT)
+		{
+			throw RuntimeError("Out of memory!");
+		}
+
+	}
+}
+
 void GC::trackObject(BlockHeader* object)
 {
 	LockLightWeightMutex(&heapLock);
+
 	gens[0].push_back(object);
+	gen0Size += object->totalSize;
+	totalSize += object->totalSize;
+
+	checkHeapLimit();
+
+	if(gen0Size > GEN0_LIMIT)
+	{
+		SAFE_REGION(instance->collect(true));
+	}
+
+
 	UnlockLightWeightMutex(&heapLock);
 }
 
@@ -72,6 +100,7 @@ void GC::trackStaticObject(BlockHeader* object)
 	LockLightWeightMutex(&heapLock);
 	object->generation = STATIC_GEN;
 	statics.push_front(object);
+	checkHeapLimit();
 	UnlockLightWeightMutex(&heapLock);
 }
 
@@ -241,9 +270,14 @@ void GC::run()
 
 			DebugOut(L"GC") << "Running cycle.";
 
-			static int targetGen = -1;// GEN_COUNT-1;
-			targetGen = (targetGen+1)%3;
-			DebugOut(L"GC") << "Generation: " << targetGen;
+			int targetGen = 0;
+			for(int gen=1;gen<GEN_COUNT;gen++)
+			{
+				if(((cycle)%((GEN_CYCLE_INTERVAL*(gen*gen)))) == 0)
+					targetGen = gen;
+			}
+			cycle++;
+			DebugOut(L"GC") << "Collecting generation 0 - " << targetGen;
 
 			stopTheWorld();
 
@@ -294,6 +328,8 @@ void GC::run()
 					gens[i+1].splice(&gens[i]);
 				}
 			}
+
+			gen0Size = 0;
 
 			DebugOut(L"GC") << "Cycle complete";
 			DebugOut(L"GC") << "Freed " << stats.instancesFreed << ", total size: " << stats.bytesFreed/1024.0 << " kB.";
@@ -366,6 +402,9 @@ void GC::freeAll()
 
 void GC::freeObject(BlockHeader* header)
 {
+//	LockLightWeightMutex(&heapLock);
+	totalSize -= header->totalSize;
 	header->object->~Variant();
-	free(header);
+	heap.free(header);
+//	UnlockLightWeightMutex(&heapLock);
 }

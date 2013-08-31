@@ -46,7 +46,7 @@ void SafeRegion::leave()
 {
 	if(!exited)
 	{
-		DebugOut(L"Thread") << "SafeRegion exited";
+		//DebugOut(L"Thread") << "SafeRegion exited";
 		sp->check();
 		exited = true;
 	}

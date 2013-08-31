@@ -8,6 +8,7 @@
 #include "ProduceConsumeQueue.h"
 #include "DoubleLinkedList.h"
 #include "platform.h"
+#include "Heap.h"
 
 class ListVariant;
 class HashMapVariant;
@@ -38,6 +39,9 @@ public:
 		char referencedFrom; 
 	};
 
+	static const size_t GEN0_LIMIT = 2*1024*1024; // 16 MB
+	static const size_t HEAP_LIMIT = 901024*1024; // 90 MB
+	static const int GEN_CYCLE_INTERVAL = 6;
 
 	struct ThreadInfo
 	{
@@ -110,6 +114,8 @@ private:
 	void freeObject(BlockHeader*);
 	void stopTheWorld();
 	void resumeTheWorld();
+	void checkHeapLimit();
+
 
 	LightWeightMutex heapLock;
 	
@@ -122,6 +128,13 @@ private:
 	DoubleLinkedList<BlockHeader> statics;
 
 	StackMachine* machine;
+
+	Heap heap;
+
+	size_t gen0Size;
+	size_t totalSize;
+	size_t cycle;
+
 };
 
 
@@ -129,7 +142,7 @@ template <class T>
 GC::BlockHeader* GC::allocBlockHeader()
 {
 	const size_t allocSize = BLOCKHEADER_ALIGNED_SIZE + sizeof(T);
-	void* memory = malloc(allocSize);
+	void* memory = instance->heap.alloc(allocSize);
 	BlockHeader* header = static_cast<BlockHeader*>(memory);
 	new (header) BlockHeader();
 	header->object = reinterpret_cast<Variant*>(((char*)memory)+BLOCKHEADER_ALIGNED_SIZE);

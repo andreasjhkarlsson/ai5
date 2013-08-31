@@ -192,6 +192,7 @@ copy /Y "$(SolutionDir)..\shared\icu\bin\icuin51.dll" "$(OutDir)\icuin51.dll"</C
     <ClCompile Include="GlobalOptions.cpp" />
     <ClCompile Include="HandleVariant.cpp" />
     <ClCompile Include="HashMapVariant.cpp" />
+    <ClCompile Include="Heap.cpp" />
     <ClCompile Include="Instruction.cpp" />
     <ClCompile Include="Integer32Variant.cpp" />
     <ClCompile Include="Integer64Variant.cpp" />
@@ -246,6 +247,7 @@ copy /Y "$(SolutionDir)..\shared\icu\bin\icuin51.dll" "$(OutDir)\icuin51.dll"</C
     <ClInclude Include="GlobalOptions.h" />
     <ClInclude Include="HandleVariant.h" />
     <ClInclude Include="HashMapVariant.h" />
+    <ClInclude Include="Heap.h" />
     <ClInclude Include="Integer32Variant.h" />
     <ClInclude Include="Integer64Variant.h" />
     <ClInclude Include="IteratorVariant.h" />

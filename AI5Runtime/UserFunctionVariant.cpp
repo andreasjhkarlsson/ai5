@@ -18,7 +18,7 @@ UserFunctionVariant* UserFunctionVariant::Create(int address)
 	return GC::alloc<UserFunctionVariant,int>(address);
 }
 
-std::wostream& UserFunctionVariant::format(std::wostream& stream)
+std::wostream& UserFunctionVariant::format(std::wostream& stream) const
 {
 	stream << "UserFunction @" << address;
 	return stream;

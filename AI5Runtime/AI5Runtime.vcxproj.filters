@@ -166,6 +166,9 @@
     <ClCompile Include="CatchBlock.cpp">
       <Filter>blocks</Filter>
     </ClCompile>
+    <ClCompile Include="Heap.cpp">
+      <Filter>gc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operators.h">
@@ -347,6 +350,9 @@
     </ClInclude>
     <ClInclude Include="CatchBlock.h">
       <Filter>blocks</Filter>
+    </ClInclude>
+    <ClInclude Include="Heap.h">
+      <Filter>gc</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

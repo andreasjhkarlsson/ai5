@@ -8,7 +8,7 @@ public:
 	friend class GC;
 	static const VARIANT_TYPE TYPE = USER_FUNCTION;
 	~UserFunctionVariant(void);
-	std::wostream& format(std::wostream& stream);
+	std::wostream& format(std::wostream& stream) const override;
 	int getAddress();
 	VariantReference<Scope>& getEnclosingScope();
 	void setEnclosingScope(const VariantReference<Scope>& scope);
